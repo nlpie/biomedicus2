@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <primitive>false</primitive>
+    <delegateAnalysisEngineSpecifiers>
+        <delegateAnalysisEngine key="token">
+            <import location="annotator/TokenizerAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="sentence">
+            <import location="annotator/SentenceAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="sections">
+            <import location="annotator/RuleBasedSectionDetector.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="posAnnotator">
+            <import location="annotator/PosTaggerAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="normalizer">
+            <import location="annotator/TokenNormalizationAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="dictionaryMapper">
+            <import location="annotator/DictionaryConceptRecognizer.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="history">
+            <import location="annotator/HistoryModificationDetectorAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="negation">
+            <import location="annotator/NegationModificationDetectorAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="probability">
+            <import location="annotator/ProbabilityModificationDetectorAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="substanceUsageCandidates">
+            <import location="annotator/SubstanceUsageCandidateAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="substanceUsageDepParses">
+            <import location="annotator/SubstanceUsageDepParseAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="substanceUsageConParses">
+            <import location="annotator/SubstanceUsageConstituentParseAnnotator.xml"/>
+        </delegateAnalysisEngine>
+    </delegateAnalysisEngineSpecifiers>
+    <analysisEngineMetaData>
+        <name>Substance Usage Pipeline</name>
+        <version>${project.version}</version>
+        <vendor>${organization.name}</vendor>
+        <flowConstraints>
+            <fixedFlow>
+                <node>token</node>
+                <node>sentence</node>
+                <node>sections</node>
+                <node>posAnnotator</node>
+                <node>normalizer</node>
+                <node>dictionaryMapper</node>
+                <node>history</node>
+                <node>negation</node>
+                <node>probability</node>
+                <node>substanceUsageCandidates</node>
+                <node>substanceUsageDepParses</node>
+                <node>substanceUsageConParses</node>
+            </fixedFlow>
+        </flowConstraints>
+        <operationalProperties>
+            <modifiesCas>true</modifiesCas>
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <outputsNewCASes>false</outputsNewCASes>
+        </operationalProperties>
+    </analysisEngineMetaData>
+
+    <resourceManagerConfiguration>
+        <externalResources>
+            <externalResource>
+                <name>guiceInjector</name>
+                <description>The guice resource.</description>
+                <customResourceSpecifier>
+                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+                </customResourceSpecifier>
+            </externalResource>
+        </externalResources>
+    </resourceManagerConfiguration>
+</analysisEngineDescription>

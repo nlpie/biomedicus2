@@ -1,0 +1,73 @@
+# This file was copied from default_tokenizer_break_rules and modified.
+# Comments were inserted to provide some, hopefully, useful reminders for 
+# what different character classes refer to.  
+# Any additional modifications are noted in the comments.
+#
+# Refer to http://unicode.org/reports/tr29/#Word_Boundaries for type values (e.g. "Katakana")
+
+!!chain;
+$CR           = [\p{Word_Break = CR}];
+$LF           = [\p{Word_Break = LF}];
+$Newline      = [\p{Word_Break = Newline}];
+$Extend       = [\p{Word_Break = Extend}];  
+$Format       = [\p{Word_Break = Format}];
+$Katakana     = [\p{Word_Break = Katakana}];
+$ALetter      = [\p{Word_Break = ALetter}];
+#full stops (periods), quotation marks, apostrophes 
+$MidNumLet    = [\p{Word_Break = MidNumLet}]; 
+#colon
+$MidLetter    = [\p{Word_Break = MidLetter}];
+#comma, colon, semi-colon, period
+$MidNum       = [\p{Word_Break = MidNum}];
+$Numeric      = [\p{Word_Break = Numeric}];
+$ExtendNumLet = [\p{Word_Break = ExtendNumLet}];
+$dictionary   = [:LineBreak = Complex_Context:];
+$Control      = [\p{Grapheme_Cluster_Break = Control}];
+$ALetterPlus  = [$ALetter [$dictionary-$Extend-$Control]];
+$KatakanaEx     = $Katakana     ($Extend |  $Format)*;
+$ALetterEx      = $ALetterPlus  ($Extend |  $Format)*;
+$MidNumLetEx    = $MidNumLet    ($Extend |  $Format)*;
+$MidLetterEx    = $MidLetter    ($Extend |  $Format)*;
+$MidNumEx       = $MidNum       ($Extend |  $Format)*;
+$NumericEx      = $Numeric      ($Extend |  $Format)*;
+$ExtendNumLetEx = $ExtendNumLet ($Extend |  $Format)*;
+$Hiragana       = [\p{script=Hiragana}];
+$Ideographic    = [\p{Ideographic}];
+$HiraganaEx     = $Hiragana     ($Extend |  $Format)*;
+$IdeographicEx  = $Ideographic  ($Extend |  $Format)*;
+
+#uppercase letters with an ampersand.  Keeps 'PM&R' as a token.  Added by PVO
+$AcronymsWithAmpersand = [:Lu:]+[\&][:Lu:]+;
+$AcronymsWithDash = [:Lu:]+[\-][:Lu:]+;
+$PossessiveEnding = \'s;
+
+!!forward;
+$CR $LF;
+[^$CR $LF $Newline]? ($Extend |  $Format)+;
+$NumericEx {100};
+$ALetterEx {200};
+$KatakanaEx {300};
+$HiraganaEx {300};
+$IdeographicEx {400};
+$ALetterEx $ALetterEx {200};
+$ALetterEx ($MidLetterEx | $MidNumLetEx) $ALetterEx {200};
+$NumericEx $NumericEx {100};
+$ALetterEx $NumericEx {200};
+$NumericEx $ALetterEx {200};
+$NumericEx ($MidNumEx | $MidNumLetEx) $NumericEx {100};
+$KatakanaEx  $KatakanaEx {300};
+$ALetterEx      $ExtendNumLetEx {200};
+$NumericEx      $ExtendNumLetEx {100};
+$KatakanaEx     $ExtendNumLetEx {300};
+$ExtendNumLetEx $ExtendNumLetEx {200};
+$ExtendNumLetEx $ALetterEx  {200};
+$ExtendNumLetEx $NumericEx  {100};
+$ExtendNumLetEx $KatakanaEx {300};
+$AcronymsWithAmpersand; #PVO
+$PossessiveEnding {500};
+
+#removed reverse rules because we will only proceed forward
+!!reverse;
+
+#removed reverse rules because we will only proceed forward
+!!safe_reverse;

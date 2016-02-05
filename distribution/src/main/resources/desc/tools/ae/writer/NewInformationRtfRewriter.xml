@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <primitive>true</primitive>
+    <annotatorImplementationName>edu.umn.biomedicus.tools.newinfo.NewInformationRtfRewriter</annotatorImplementationName>
+    <analysisEngineMetaData>
+        <name>New Information RTF Annotation Inserting Writer</name>
+        <description>Inserts placeholders around annotations in the original RTF document.</description>
+        <version>${project.version}</version>
+        <vendor>${project.organization.name}</vendor>
+        <configurationParameters>
+            <configurationParameter>
+                <name>outputDirectory</name>
+                <description>Directory write the output RTF files to.</description>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>beginMap</name>
+                <description>
+                    Mapping of new information kind to the inserted text as a begin marker for the regions. For new
+                    information kinds k = { 0 : n } the array should contain the kinds at indexes k * 2 and their
+                    insertion text at indexes k * 2 + 1.
+                </description>
+                <type>String</type>
+                <multiValued>true</multiValued>
+            </configurationParameter>
+            <configurationParameter>
+                <name>endMap</name>
+                <description>
+                    Mapping of new information kind to the end marker insertion text. For new information kinds
+                    k = { 0 : n } the array should contain the kinds at indexes k * 2 and their insertion text at
+                    indexes k * 2 + 1.
+                </description>
+                <type>String</type>
+                <multiValued>true</multiValued>
+            </configurationParameter>
+            <configurationParameter>
+                <name>colorTableMarker</name>
+                <description>The marker that gets inserted at the end of the color table.</description>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>stylesheetMarker</name>
+                <description>The marker that gets inserted at the end of the stylesheet.</description>
+                <type>String</type>
+            </configurationParameter>
+        </configurationParameters>
+        <configurationParameterSettings>
+            <nameValuePair>
+                <name>beginMap</name>
+                <value>
+                    <array>
+                        <string>New</string>
+                        <string>\u572662299</string>
+                        <string>newProcedure</string>
+                        <string>\u572662315</string>
+                        <string>newMed</string>
+                        <string>\u572662331</string>
+                        <string>newMedication</string><!-- same as above -->
+                        <string>\u572662331</string>
+                        <string>newFindings</string>
+                        <string>\u572662347</string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>endMap</name>
+                <value>
+                    <array>
+                        <string>New</string>
+                        <string>\u572662302</string>
+                        <string>newProcedure</string>
+                        <string>\u572662318</string>
+                        <string>newMed</string>
+                        <string>\u572662334</string>
+                        <string>newMedication</string><!-- same as above -->
+                        <string>\u572662334</string>
+                        <string>newFindings</string>
+                        <string>\u572662350</string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>colorTableMarker</name>
+                <value>
+                    <string>\u572662283</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>stylesheetMarker</name>
+                <value>
+                    <string>\u572662284</string>
+                </value>
+            </nameValuePair>
+        </configurationParameterSettings>
+        <typeSystemDescription>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystem"/>
+            </imports>
+        </typeSystemDescription>
+        <capabilities>
+            <capability>
+                <inputs>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NewInformationAnnotation</type>
+                </inputs>
+                <inputSofas>
+                    <sofaName>OriginalDocumentView</sofaName>
+                </inputSofas>
+            </capability>
+        </capabilities>
+        <operationalProperties>
+            <modifiesCas>false</modifiesCas>
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <outputsNewCASes>false</outputsNewCASes>
+        </operationalProperties>
+    </analysisEngineMetaData>
+</analysisEngineDescription>

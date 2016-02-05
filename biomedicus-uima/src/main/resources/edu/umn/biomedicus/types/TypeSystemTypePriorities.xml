@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<typePriorities xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>Biomedicus UIMA Type System Type Priorities</name>
+    <description>The UIMA type priorities for the Biomedicus system.</description>
+    <version>{$project.version}</version>
+    <vendor>{$project.organization.name}</vendor>
+
+    <priorityLists>
+        <priorityList>
+            <type>edu.umn.biomedicus.type.ClinicalNoteAnnotation</type>
+            <type>edu.umn.biomedicus.type.SectionAnnotation</type>
+            <type>edu.umn.biomedicus.type.SentenceAnnotation</type>
+            <type>edu.umn.biomedicus.type.TermAnnotation</type>
+            <type>edu.umn.biomedicus.type.ConceptAnnotation</type>
+            <type>edu.umn.biomedicus.type.ChunkAnnotation</type>
+            <type>edu.umn.biomedicus.type.DateAnnotation</type>
+            <type>edu.umn.biomedicus.type.MeasurementAnnotation</type>
+            <type>edu.umn.biomedicus.type.SymbolAnnotation</type>
+            <type>edu.umn.biomedicus.type.TimeAnnotation</type>
+            <type>edu.umn.biomedicus.type.QuantityAnnotation</type>
+            <type>edu.umn.biomedicus.type.NamedEntityAnnotation</type>
+            <type>edu.umn.biomedicus.type.TokenAnnotation</type>
+        </priorityList>
+    </priorityLists>
+</typePriorities>

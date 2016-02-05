@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>MTSTypeSystem</name>
+    <description>A type system for manually created annotations over the MT samples corpus</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <types>
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.MetaData</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>documentId</name>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Document</name>
+            <description>Top level document annotation with a couple of features</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>sampleId</name>
+                    <description>The string representation of the document id in the collection</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>sampleName</name>
+                    <description>The title of the document in the MT collection</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>typeId</name>
+                    <description>The id of the specialty.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>typeName</name>
+                    <description>Specialty name</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Section</name>
+            <description>A document section</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>sectionTitle</name>
+                    <description>Title of the section</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Token</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>isWord</name>
+                    <description>Is this a word token?</description>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>tokenPOS</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>normForm</name>
+                    <description>Normalized form (LVG for example)</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Sentence</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>isHeading</name>
+                    <description>Indicates if this sentence is some sort of a heading (e.g. a section heading).
+                    </description>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Term</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>termMeaning</name>
+                    <description>The meaning of the term in the context in which it appears, expressed as plain text.
+                        For an unambiguous term, this will be the term itself. For an acronym, this will be the acronym
+                        expansion.
+                    </description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>termNegation</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>termCertainty</name>
+                    <description>If this term has a certainty modifier like
+                        1. confirmed
+                        2. probable
+                    </description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>termAspect</name>
+                    <description>The nature of the state of the condition to which the term referrs:
+
+                        1. current (ongoing condition)
+                        2. past (past medical history)
+                        3. future (has not happened yet but may)
+                    </description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>termAttribution</name>
+                    <description>Indicates if this term describes something about the patient or someone else (e.g. a
+                        family member).
+
+                        1. patient
+                        2. family
+                        3. other
+                    </description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>isAcronym</name>
+                    <description>Flag to indicate if this term is an acronym</description>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>termConcept</name>
+                    <description>Formalized meaning of the term if it could be mapped to an ontology. If not, use the
+                        termMeaning field. A term concept has to have three fields - id, source and confidence score.
+                    </description>
+                    <rangeTypeName>edu.umn.biomedicus.mtsamples.types.Concept</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Date</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Measurement</name>
+            <description>Any kind of measurement or lab value like BP or BUN or head circumference</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Symbol</name>
+            <description>Any kind of symbol like x10, #5, @</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>symbolMeaning</name>
+                    <description>The meaning of the symbol in the specific context in which it appears</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Time</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Concept</name>
+            <description>This is a type to capture meanings of different terms in a formalized manner</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>conceptId</name>
+                    <description>The unique identifier for a given concept/sense</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>conceptSource</name>
+                    <description>The ontology/vocabulary from which the concept came</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>conceptConfidence</name>
+                    <description>A confidence score, which indicates how confident the annotator is in assigning this
+                        concept to the term
+                    </description>
+                    <rangeTypeName>uima.cas.Float</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>conceptType</name>
+                    <description>Semantic type of the concept (e.g. Finding, disorder, symptom, procedure, drug.)
+                    </description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.Quantity</name>
+            <description>Similar to Measurement type but applies to substances and items that are external to the
+                patient (e.g. drug dosages)
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.NamedEntity</name>
+            <description>Named entities other than medical terms - typically places and proper names of various items
+                and locations, etc. (e.g. "ABCD General Hospital Operating Room #1")
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.mtsamples.types.SourceDocumentInformation</name>
+            <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>uri</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>offsetInSource</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>documentSize</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>lastSegment</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+    </types>
+</typeSystemDescription>

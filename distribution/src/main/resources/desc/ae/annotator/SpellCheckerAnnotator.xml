@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <primitive>true</primitive>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.spell.SpellCheckerAnnotator</annotatorImplementationName>
+    <analysisEngineMetaData>
+        <name>Spell Checker Annotator</name>
+        <description>Uses a SpellChecker to label tokens as mispelled or not.</description>
+        <version>${project.version}</version>
+        <vendor>${organization.name}</vendor>
+        <typeSystemDescription>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystem"/>
+            </imports>
+        </typeSystemDescription>
+        <typePriorities>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+            </imports>
+        </typePriorities>
+        <fsIndexCollection/>
+        <capabilities>
+            <capability>
+                <inputs>
+                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.TokenAnnotation</type>
+                </inputs>
+                <outputs>
+                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.TokenAnnotation</type>
+                    <feature>edu.umn.biomedicus.type.TokenAnnotation:isMisspelled</feature>
+                </outputs>
+                <languagesSupported/>
+            </capability>
+        </capabilities>
+        <operationalProperties>
+            <modifiesCas>true</modifiesCas>
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <outputsNewCASes>false</outputsNewCASes>
+        </operationalProperties>
+    </analysisEngineMetaData>
+
+    <externalResourceDependencies>
+        <externalResourceDependency>
+            <key>spellResource</key>
+            <description>Resource for spell checking and correction</description>
+            <interfaceName>edu.umn.biomedicus.uima.spell.SpellResource</interfaceName>
+        </externalResourceDependency>
+    </externalResourceDependencies>
+
+    <resourceManagerConfiguration>
+        <externalResources>
+        	<externalResource>
+        		<name>SpellResourceImpl</name>
+        		<description>Default implementation of the spell resource.</description>
+                <fileResourceSpecifier>
+                    <fileUrl>file:edu/umn/biomedicus/config/Spelling.properties</fileUrl>
+                </fileResourceSpecifier>
+        		<implementationName>edu.umn.biomedicus.uima.spell.SpellResourceImpl</implementationName>
+        	</externalResource>
+        </externalResources>
+        <externalResourceBindings>
+            <externalResourceBinding>
+                <key>spellResource</key>
+                <resourceName>SpellResourceImpl</resourceName>
+            </externalResourceBinding>
+        </externalResourceBindings>
+    </resourceManagerConfiguration>
+</analysisEngineDescription>
+

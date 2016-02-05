@@ -1,0 +1,2 @@
+(^[\t ]*\p{javaUpperCase}[\w \-&/]+?(:| - ))
+(^[\t ]*[\p{javaUpperCase}\d \-&/]{3,35}+\.?[\t ]*$)

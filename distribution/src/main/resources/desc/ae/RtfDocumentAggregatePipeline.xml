@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <primitive>false</primitive>
+    <delegateAnalysisEngineSpecifiers>
+        <delegateAnalysisEngine key="parser">
+            <import location="annotator/RtfParserAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="paragraph">
+            <import location="annotator/RtfParagraphAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="table">
+            <import location="annotator/RtfTableAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="textSegmenter">
+            <import location="annotator/RtfTextSegmenter.xml"/>
+        </delegateAnalysisEngine>
+    </delegateAnalysisEngineSpecifiers>
+    <analysisEngineMetaData>
+        <name>Rtf document pipeline</name>
+        <version>${project.version}</version>
+        <vendor>${organization.name}</vendor>
+        <configurationParameters>
+            <configurationParameter>
+                <name>originalDocumentViewName</name>
+                <description>The name of the original document view.</description>
+                <type>String</type>
+                <mandatory>true</mandatory>
+                <overrides>
+                    <param>parser/originalDocumentViewName</param>
+                </overrides>
+            </configurationParameter>
+            <configurationParameter>
+                <name>targetViewName</name>
+                <description>
+                    The name of the target view. Note: this also needs to be set in the cas mappings descriptor.
+                </description>
+                <type>String</type>
+                <overrides>
+                    <param>parser/targetViewName</param>
+                </overrides>
+            </configurationParameter>
+            <configurationParameter>
+                <name>rtfPropertiesDesc</name>
+                <description>
+                    Rtf properties descriptor. Classpath reference to XML file containing definitions of RTF properties.
+                </description>
+                <type>String</type>
+                <overrides>
+                    <param>parser/rtfPropertiesDesc</param>
+                </overrides>
+            </configurationParameter>
+            <configurationParameter>
+                <name>rtfControlKeywordsDesc</name>
+                <description>
+                    Rtf control keywords descriptor. Classpath reference to XML file containing definitions of RTF
+                    control keywords.
+                </description>
+                <type>String</type>
+                <overrides>
+                    <param>parser/rtfControlKeywordsDesc</param>
+                </overrides>
+            </configurationParameter>
+            <configurationParameter>
+                <name>rtfCasMappingsDesc</name>
+                <description>
+                    Rtf cas mappings descriptor. Class reference to XML file containing mappings from RTF
+                    destinations, properties, and control keywords to
+                </description>
+                <type>String</type>
+                <overrides>
+                    <param>parser/rtfCasMappingsDesc</param>
+                </overrides>
+            </configurationParameter>
+        </configurationParameters>
+        <configurationParameterSettings>
+            <nameValuePair>
+                <name>originalDocumentViewName</name>
+                <value>
+                    <string>OriginalDocumentView</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>targetViewName</name>
+                <value>
+                    <string>SystemView</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>rtfPropertiesDesc</name>
+                <value>
+                    <string>edu/umn/biomedicus/rtf/PropertiesDescription.xml</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>rtfControlKeywordsDesc</name>
+                <value>
+                    <string>edu/umn/biomedicus/rtf/ControlKeywords.xml</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>rtfCasMappingsDesc</name>
+                <value>
+                    <string>edu/umn/biomedicus/config/rtf/CasMappings.xml</string>
+                </value>
+            </nameValuePair>
+        </configurationParameterSettings>
+        <flowConstraints>
+            <fixedFlow>
+                <node>parser</node>
+                <node>paragraph</node>
+                <node>table</node>
+                <node>textSegmenter</node>
+            </fixedFlow>
+        </flowConstraints>
+        <operationalProperties>
+            <modifiesCas>true</modifiesCas>
+            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <outputsNewCASes>false</outputsNewCASes>
+        </operationalProperties>
+    </analysisEngineMetaData>
+    <sofaMappings>
+        <sofaMapping>
+            <componentKey>paragraph</componentKey>
+            <aggregateSofaName>SystemView</aggregateSofaName>
+        </sofaMapping>
+        <sofaMapping>
+            <componentKey>table</componentKey>
+            <aggregateSofaName>SystemView</aggregateSofaName>
+        </sofaMapping>
+        <sofaMapping>
+            <componentKey>textSegmenter</componentKey>
+            <aggregateSofaName>SystemView</aggregateSofaName>
+        </sofaMapping>
+    </sofaMappings>
+</analysisEngineDescription>

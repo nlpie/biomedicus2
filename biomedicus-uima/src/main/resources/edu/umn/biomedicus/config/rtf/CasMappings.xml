@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<casMappings>
+    <controlWordCasMappings>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.RowEnd</annotationName>
+            <controlWord>row</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.CellEnd</annotationName>
+            <controlWord>cell</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.NestRowEnd</annotationName>
+            <controlWord>nestrow</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.NestCellEnd</annotationName>
+            <controlWord>nestcell</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.LineBreak</annotationName>
+            <controlWord>line</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.TableRowFormattingDefaults</annotationName>
+            <controlWord>trowd</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.CellDefinitionEnd</annotationName>
+            <controlWord>cellx</controlWord>
+        </controlWordCasMapping>
+        <controlWordCasMapping>
+            <annotationName>edu.umn.biomedicus.rtfuima.type.NewParagraph</annotationName>
+            <controlWord>par</controlWord>
+        </controlWordCasMapping>
+    </controlWordCasMappings>
+
+    <destinationCasMappings>
+        <destinationCasMapping>
+            <destinationName>Rtf</destinationName>
+            <viewName>SystemView</viewName>
+        </destinationCasMapping>
+    </destinationCasMappings>
+
+    <propertyCasMappings>
+        <propertyCasMapping>
+            <annotationClassName>edu.umn.biomedicus.rtfuima.type.Bold</annotationClassName>
+            <minimumValue>1</minimumValue>
+            <propertyGroup>CharacterFormatting</propertyGroup>
+            <propertyName>Bold</propertyName>
+            <valueIncluded>false</valueIncluded>
+            <zeroLengthEmitted>false</zeroLengthEmitted>
+        </propertyCasMapping>
+        <propertyCasMapping>
+            <annotationClassName>edu.umn.biomedicus.rtfuima.type.Italic</annotationClassName>
+            <minimumValue>1</minimumValue>
+            <propertyGroup>CharacterFormatting</propertyGroup>
+            <propertyName>Italic</propertyName>
+            <valueIncluded>false</valueIncluded>
+            <zeroLengthEmitted>false</zeroLengthEmitted>
+        </propertyCasMapping>
+        <propertyCasMapping>
+            <annotationClassName>edu.umn.biomedicus.rtfuima.type.Underline</annotationClassName>
+            <minimumValue>1</minimumValue>
+            <propertyGroup>CharacterFormatting</propertyGroup>
+            <propertyName>Underline</propertyName>
+            <valueIncluded>false</valueIncluded>
+            <zeroLengthEmitted>false</zeroLengthEmitted>
+        </propertyCasMapping>
+        <propertyCasMapping>
+            <annotationClassName>edu.umn.biomedicus.rtfuima.type.ParagraphInTable</annotationClassName>
+            <minimumValue>1</minimumValue>
+            <propertyGroup>ParagraphFormatting</propertyGroup>
+            <propertyName>InTable</propertyName>
+            <valueIncluded>false</valueIncluded>
+            <zeroLengthEmitted>false</zeroLengthEmitted>
+        </propertyCasMapping>
+    </propertyCasMappings>
+</casMappings>
