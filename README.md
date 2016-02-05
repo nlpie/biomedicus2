@@ -98,8 +98,6 @@ contains all resources necessary to run biomedicus.
 
 *   config: configuration files such as .properties
 
-*   data: models and large data files used by annotators
-
 *   **desc: UIMA descriptor files**
 
     -   ae - location for pipelines/aggregates of multiple annotators
@@ -207,9 +205,11 @@ The config/biomedicus.properties contains some system-wide per-launch constants 
 
 About Us
 ========================================================================================================================
- BioMedICUS is developed by the
- [University of Minnesota Institute for Health Informatics NLP/IE Group](http://www.bmhi.umn.edu/ihi/research/nlpie/)
- with assistance from the [Open Health Natural Language Processing \(OHNLP\) Consortium](http://ohnlp.org/index.php/Main_Page).
+
+BioMedICUS is developed by the
+[University of Minnesota Institute for Health Informatics NLP/IE Group](http://www.bmhi.umn.edu/ihi/research/nlpie/)
+with assistance from the
+[Open Health Natural Language Processing \(OHNLP\) Consortium](http://ohnlp.org/index.php/Main_Page).
 
 
 Other Resources

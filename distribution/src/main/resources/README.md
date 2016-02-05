@@ -12,8 +12,9 @@ Install Guide
 ========================================================================================================================
 
 Along with the source code, we also release distribution of all the files required to immediately start running. You can
-download this file at [http://athena.ahc.umn.edu/biomedicus-downloads/](http://athena.ahc.umn.edu/biomedicus-downloads/).
-You will also need download the appropriate model data archive. See "Downloading Large Model Files".
+download this file at [https://bitbucket.org/nlpie/biomedicus/downloads](https://bitbucket.org/nlpie/biomedicus/downloads).
+You will also need download the appropriate model files at
+[http://athena.ahc.umn.edu/biomedicus-downloads/](http://athena.ahc.umn.edu/biomedicus-downloads/).
 
 Prerequisites
 ------------------------------------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ Environment Variables
 
 The following environment variables need to be set:
 
- 1. JAVA_HOME: 
+ 1. JAVA_HOME:
 
     *   On OS X, after installing Java SE Development Kit, you can find the path to the installation by typing this
     command:
@@ -47,19 +48,19 @@ The following environment variables need to be set:
         source .bash_profile
 
     *   Try 'echo $JAVA_HOME' to make sure the environment is pointing to the right Java version (currently 1.8.0)
- 
+
 
 Getting BioMedICUS
 ------------------------------------------------------------------------------------------------------------------------
 
-If you wish to compile BioMedICUS from source, instead of using the prepackaged version above, the following 
+If you wish to compile BioMedICUS from source, instead of using the prepackaged version above, the following
 instructions are provided.
 
 At a command prompt, change directories to where you want to install BioMedICUS, and then enter:
 
     git clone https://bitbucket.org/nlpie/biomedicus.git
 
-Notes: 
+Notes:
 
 *    FYI: This clone command will create a subdirectory called 'biomedicus' in the current working directory and create
      a git repository under that subdirectory.
@@ -96,8 +97,6 @@ Then maven install phase will create a "release" folder in the root directory of
 contains all resources necessary to run biomedicus.
 
 *   config: configuration files such as .properties
-
-*   data: models and large data files used by annotators
 
 *   **desc: UIMA descriptor files**
 
@@ -206,9 +205,11 @@ The config/biomedicus.properties contains some system-wide per-launch constants 
 
 About Us
 ========================================================================================================================
- BioMedICUS is developed by the
- [University of Minnesota Institute for Health Informatics NLP/IE Group](http://www.bmhi.umn.edu/ihi/research/nlpie/)
- with assistance from the [Open Health Natural Language Processing \(OHNLP\) Consortium](http://ohnlp.org/index.php/Main_Page).
+
+BioMedICUS is developed by the
+[University of Minnesota Institute for Health Informatics NLP/IE Group](http://www.bmhi.umn.edu/ihi/research/nlpie/)
+with assistance from the
+[Open Health Natural Language Processing \(OHNLP\) Consortium](http://ohnlp.org/index.php/Main_Page).
 
 
 Other Resources
