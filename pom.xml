@@ -239,8 +239,8 @@
         </license>
     </licenses>
     <scm>
-        <url>https://bitbucket.org/nlpie/biomedicus</url>
-        <connection>scm:git:https://bitbucket.org/nlpie/biomedicus.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/nlpie/biomedicus.git</developerConnection>
+        <url>https://github.com/NLPIE/BioMedICUS</url>
+        <connection>scm:git:https://github.com/NLPIE/BioMedICUS.git</connection>
+        <developerConnection>scm:git:https://github.com/NLPIE/BioMedICUS.git</developerConnection>
     </scm>
 </project>
