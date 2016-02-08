@@ -60,6 +60,7 @@
 
 
     <build>
+        <finalName>biomedicus-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -104,6 +105,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>src/assembly/descriptor.xml</descriptor>
                             </descriptors>
@@ -124,7 +126,7 @@
                         <configuration>
                             <target>
                                 <move todir="../release">
-                                    <fileset dir="target/${project.build.finalName}-bin/" />
+                                    <fileset dir="target/${project.build.finalName}/" />
                                 </move>
                                 <!-- <chmod dir="../resources/scripts" perm="ugo+rx" includes="**/*.sh" /> -->
                             </target>
