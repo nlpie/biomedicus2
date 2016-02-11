@@ -19,7 +19,7 @@
     <parent>
         <artifactId>biomedicus</artifactId>
         <groupId>edu.umn.biomedicus</groupId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,32 +29,32 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-core</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-rtf</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-uima</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-icu</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-opennlp</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-tools</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
         </dependency>
     </dependencies>
 

@@ -21,7 +21,7 @@
     <groupId>edu.umn.biomedicus</groupId>
     <artifactId>biomedicus</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <modules>
         <module>biomedicus-core</module>
