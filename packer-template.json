@@ -24,8 +24,8 @@
     },
     {
       "type": "file",
-      "source": "/tmp/app/distribution/target/biomedicus-1.4.0.zip",
-      "destination": "biomedicus-1.4.0.zip",
+      "source": "/tmp/app/distribution/target/biomedicus-1.4.2.zip",
+      "destination": "biomedicus-1.4.2.zip",
       "direction": "download"
     }
   ],
@@ -33,7 +33,7 @@
     [
       {
         "type": "artifice",
-        "files": ["biomedicus-1.4.0.zip"]
+        "files": ["biomedicus-1.4.2.zip"]
       },
       {
         "type": "atlas",
