@@ -21,7 +21,7 @@
     <groupId>edu.umn.biomedicus</groupId>
     <artifactId>biomedicus</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 
     <modules>
         <module>biomedicus-core</module>
@@ -239,8 +239,8 @@
         </license>
     </licenses>
     <scm>
-        <url>https://bitbucket.org/nlpie/biomedicus</url>
-        <connection>scm:git:https://bitbucket.org/nlpie/biomedicus.git</connection>
-        <developerConnection>scm:git:https://bitbucket.org/nlpie/biomedicus.git</developerConnection>
+        <url>https://github.com/NLPIE/BioMedICUS</url>
+        <connection>scm:git:https://github.com/NLPIE/BioMedICUS.git</connection>
+        <developerConnection>scm:git:https://github.com/NLPIE/BioMedICUS.git</developerConnection>
     </scm>
 </project>

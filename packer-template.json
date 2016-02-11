@@ -1,0 +1,45 @@
+{
+  "variables": {
+    "app_slug": "{{ env `ATLAS_APPLICATION_SLUG` }}"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "maven:latest",
+      "discard": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": ".",
+      "destination": "/tmp/app"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "cd /tmp/app",
+	"mvn clean package"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "/tmp/app/distribution/target/biomedicus-1.4.0.zip",
+      "destination": "biomedicus-1.4.0.zip",
+      "direction": "download"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "artifice",
+        "files": ["biomedicus-1.4.0.zip"]
+      },
+      {
+        "type": "atlas",
+        "artifact": "{{user `app_slug` }}",
+        "artifact_type": "archive"
+      }
+    ]
+  ]
+}
