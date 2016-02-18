@@ -44,10 +44,7 @@ class DefaultConfiguration implements BiomedicusConfiguration {
         }
 
         if (conf != null) {
-            configDir = Paths.get(conf);
-            if (!configDir.isAbsolute()) {
-                configDir = biomedicusHomeDir.resolve(configDir);
-            }
+            configDir = absoluteOrResolveAgainstHome(Paths.get(conf));
         } else {
             configDir = biomedicusHomeDir.resolve("config");
         }
@@ -68,11 +65,18 @@ class DefaultConfiguration implements BiomedicusConfiguration {
 
         settings = builder.build();
 
-        if (settings.containsSetting("path.data")) {
-            dataDir = absoluteOrResolveAgainstHome(settings.getAsPath("path.data"));
+        String dataEnv = System.getProperty("BIOMEDICUS_DATA");
+        if (dataEnv != null) {
+            dataDir = Paths.get(dataEnv);
         } else {
-            dataDir = biomedicusHomeDir.resolve("data");
+            if (settings.containsSetting("path.data")) {
+                dataDir = absoluteOrResolveAgainstHome(settings.getAsPath("path.data"));
+            } else {
+                dataDir = biomedicusHomeDir.resolve("data");
+            }
         }
+
+
     }
 
     @Override
