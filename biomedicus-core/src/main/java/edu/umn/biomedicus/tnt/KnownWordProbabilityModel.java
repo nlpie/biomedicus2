@@ -35,9 +35,8 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  * @author Ben Knoll
  */
-class KnownWordModel extends WordProbabilityModel {
-    private static final long serialVersionUID = 2957670264439070058L;
-    private final Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities;
+class KnownWordProbabilityModel implements WordProbabilityModel {
+    private Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities;
 
     /**
      * Default constructor. Takes the lexical probabilities, the probability that a word will be seen conditional on a
@@ -45,24 +44,19 @@ class KnownWordModel extends WordProbabilityModel {
      * nonzero probabilities for a given word.
      * @param lexicalProbabilities a map from the word and pos-capitalization triplets to their probabilities
      */
-    public KnownWordModel(Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities,
-                          WordCapFilter filter,
-                          WordCapAdapter wordCapAdapter) {
-        super(filter, wordCapAdapter);
+    public KnownWordProbabilityModel(Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities) {
         this.lexicalProbabilities = lexicalProbabilities;
     }
 
     @Override
-    double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
-        WordCap adapted = adaptWordCap(wordCap);
-        Map<PartOfSpeech, Double> partOfSpeechDoubleMap = lexicalProbabilities.get(adapted.getWord());
+    public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
+        Map<PartOfSpeech, Double> partOfSpeechDoubleMap = lexicalProbabilities.get(wordCap.getWord());
         return partOfSpeechDoubleMap == null ? Double.NEGATIVE_INFINITY : partOfSpeechDoubleMap.get(candidate);
     }
 
     @Override
-    Set<PartOfSpeech> getCandidates(WordCap wordCap) {
-        WordCap adapted = adaptWordCap(wordCap);
-        Map<PartOfSpeech, Double> partOfSpeechProbabilities = lexicalProbabilities.get(adapted.getWord());
+    public Set<PartOfSpeech> getCandidates(WordCap wordCap) {
+        Map<PartOfSpeech, Double> partOfSpeechProbabilities = lexicalProbabilities.get(wordCap.getWord());
         return partOfSpeechProbabilities.entrySet().stream()
                 .filter(e -> e.getValue() != Double.NEGATIVE_INFINITY)
                 .map(Map.Entry::getKey)
@@ -70,10 +64,15 @@ class KnownWordModel extends WordProbabilityModel {
     }
 
     @Override
-    boolean isKnown(WordCap wordCap) {
-        WordCap adapted = adaptWordCap(wordCap);
-        boolean filterMatches = super.isKnown(adapted);
-        boolean hasLexicalProbability = lexicalProbabilities.containsKey(adapted.getWord());
-        return filterMatches && hasLexicalProbability;
+    public boolean isKnown(WordCap wordCap) {
+        return lexicalProbabilities.containsKey(wordCap.getWord());
+    }
+
+    public Map<String, Map<PartOfSpeech, Double>> getLexicalProbabilities() {
+        return lexicalProbabilities;
+    }
+
+    public void setLexicalProbabilities(Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities) {
+        this.lexicalProbabilities = lexicalProbabilities;
     }
 }

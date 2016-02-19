@@ -45,41 +45,37 @@ import java.io.Serializable;
  * @author Ben Knoll
  * @since 1.0.0
  */
-class PosCapTrigramModel implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2113952147014147537L;
+class PosCapTrigramModel {
 
     /**
      * Probability that a pos cap ordinal will occur.
      */
-    private final double[] unigramProbabilities;
+    private double[] unigramProbabilities;
 
     /**
      * Probability that a pos cap bigram will occur.
      */
-    private final double[][] bigramProbabilities;
+    private double[][] bigramProbabilities;
 
     /**
      * Probability that a pos cap trigram will occur.
      */
-    private final double[][][] trigramProbabilities;
+    private double[][][] trigramProbabilities;
 
     /**
      * Lambda smoothing coefficient for unigrams.
      */
-    private final double unigramLambda;
+    private double unigramLambda;
 
     /**
      * Lambda smoothing coefficient for bigrams.
      */
-    private final double bigramLambda;
+    private double bigramLambda;
 
     /**
      * Lambda smoothing coefficient for trigrams.
      */
-    private final double trigramLambda;
+    private double trigramLambda;
 
     /**
      * Default constructor. Creates the model with the given probability maps.
@@ -121,11 +117,51 @@ class PosCapTrigramModel implements Serializable {
         return unigramLambda * unigramProbability + bigramLambda * bigramProbability + trigramLambda * trigramProbability;
     }
 
-    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
-        stream.defaultReadObject();
+    public double[] getUnigramProbabilities() {
+        return unigramProbabilities;
     }
 
-    private void writeObject(ObjectOutputStream stream) throws IOException {
-        stream.defaultWriteObject();
+    public void setUnigramProbabilities(double[] unigramProbabilities) {
+        this.unigramProbabilities = unigramProbabilities;
+    }
+
+    public double[][] getBigramProbabilities() {
+        return bigramProbabilities;
+    }
+
+    public void setBigramProbabilities(double[][] bigramProbabilities) {
+        this.bigramProbabilities = bigramProbabilities;
+    }
+
+    public double[][][] getTrigramProbabilities() {
+        return trigramProbabilities;
+    }
+
+    public void setTrigramProbabilities(double[][][] trigramProbabilities) {
+        this.trigramProbabilities = trigramProbabilities;
+    }
+
+    public double getUnigramLambda() {
+        return unigramLambda;
+    }
+
+    public void setUnigramLambda(double unigramLambda) {
+        this.unigramLambda = unigramLambda;
+    }
+
+    public double getBigramLambda() {
+        return bigramLambda;
+    }
+
+    public void setBigramLambda(double bigramLambda) {
+        this.bigramLambda = bigramLambda;
+    }
+
+    public double getTrigramLambda() {
+        return trigramLambda;
+    }
+
+    public void setTrigramLambda(double trigramLambda) {
+        this.trigramLambda = trigramLambda;
     }
 }

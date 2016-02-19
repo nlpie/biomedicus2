@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Paths;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -137,13 +138,6 @@ public class TntPosTrainerAE extends JCasAnnotator_ImplBase {
 
         Document jCasDocument = UimaAdapters.documentFromView(aJCas, viewName);
 
-        for (Token token : jCasDocument.getTokens()) {
-            if (token.getPartOfSpeech() == null) {
-                tossed++;
-                return;
-            }
-        }
-
         for (Sentence sentence : jCasDocument.getSentences()) {
             tntTrainer.addSentence(sentence);
         }
@@ -152,19 +146,14 @@ public class TntPosTrainerAE extends JCasAnnotator_ImplBase {
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
         assert tntTrainer != null;
+        assert outputFile != null;
         LOGGER.info("Finished processing documents for tnt trainer. We threw away {} documents because of unrecognized parts of speech.", tossed);
 
         TntModel tntModel = tntTrainer.createModel();
 
-        try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(gzipOutputStream)
-        ) {
-            objectOutputStream.writeObject(tntModel);
-            objectOutputStream.flush();
-            LOGGER.info("Finished writing model");
+        try {
+            tntModel.write(Paths.get(outputFile));
         } catch (IOException e) {
-            LOGGER.error("Error writing model: ", e);
             throw new AnalysisEngineProcessException(e);
         }
 

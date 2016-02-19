@@ -37,6 +37,8 @@ class DefaultConfiguration implements BiomedicusConfiguration {
         }
         biomedicusHomeDir = Paths.get(home).normalize();
 
+        LOGGER.info("Using home directory: {}", biomedicusHomeDir);
+
         String conf = System.getProperty("biomedicus.path.conf");
         Path configDir;
         if (conf == null) {
@@ -65,7 +67,7 @@ class DefaultConfiguration implements BiomedicusConfiguration {
 
         settings = builder.build();
 
-        String dataEnv = System.getProperty("BIOMEDICUS_DATA");
+        String dataEnv = System.getenv("BIOMEDICUS_DATA");
         if (dataEnv != null) {
             dataDir = Paths.get(dataEnv);
         } else {
@@ -75,6 +77,8 @@ class DefaultConfiguration implements BiomedicusConfiguration {
                 dataDir = biomedicusHomeDir.resolve("data");
             }
         }
+
+        LOGGER.info("Using data directory: {}", dataDir);
 
 
     }

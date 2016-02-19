@@ -18,6 +18,8 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.model.semantics.PartOfSpeech;
 import edu.umn.biomedicus.model.tuples.WordCap;
+import edu.umn.biomedicus.model.tuples.WordCapAdapter;
+import edu.umn.biomedicus.model.tuples.WordCapFilter;
 
 /**
  *
@@ -26,17 +28,15 @@ class FilteredWordPosFrequencies {
     private final WordPosFrequencies wordPosFrequencies;
     private final WordCapFilter filter;
     private final WordCapAdapter wordCapAdapter;
-    private final boolean repeatedWordCapFilter;
 
-    FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter, WordCapAdapter wordCapAdapter, boolean repeatedWordCapFilter) {
+    FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter, WordCapAdapter wordCapAdapter) {
         this.wordPosFrequencies = wordPosFrequencies;
         this.filter = filter;
         this.wordCapAdapter = wordCapAdapter;
-        this.repeatedWordCapFilter = repeatedWordCapFilter;
     }
 
-    FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter, boolean repeatedWordCapFilter) {
-        this(new WordPosFrequencies(), filter, wordCapAdapter, repeatedWordCapFilter);
+    FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter) {
+        this(new WordPosFrequencies(), filter, wordCapAdapter);
     }
 
     void addWord(WordCap wordCap, PartOfSpeech partOfSpeech) {
@@ -56,9 +56,5 @@ class FilteredWordPosFrequencies {
 
     WordPosFrequencies getWordPosFrequencies() {
         return wordPosFrequencies;
-    }
-
-    boolean isRepeatedWordCapFilter() {
-        return repeatedWordCapFilter;
     }
 }

@@ -38,33 +38,27 @@ import java.util.Set;
  * @author Ben Knoll
  * @since 1.0.0
  */
-class SuffixModel extends WordProbabilityModel {
-    private static final long serialVersionUID = 7083638411510525407L;
+class SuffixWordProbabilityModel implements WordProbabilityModel {
     private static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartOfSpeech.REAL_TAGS;
 
-    private final Map<String, Map<PartOfSpeech, Double>> probabilities;
-    private final int maxSuffixLength;
+    private Map<String, Map<PartOfSpeech, Double>> probabilities;
+    private int maxSuffixLength;
 
     /**
-     * Default SuffixModel constructor. Takes a Map of {@link edu.umn.biomedicus.model.tuples.WordPosCap} to
+     * Default SuffixWordProbabilityModel constructor. Takes a Map of {@link edu.umn.biomedicus.model.tuples.WordPosCap} to
      * {@link java.lang.Double} probabilities between NEGATIVE_INFINITY and 0.0, and a max suffix length
      *
      * @param probabilities
      * @param maxSuffixLength
      */
-    SuffixModel(Map<String, Map<PartOfSpeech, Double>> probabilities,
-                int maxSuffixLength,
-                WordCapFilter filter,
-                WordCapAdapter wordCapAdapter) {
-        super(filter, wordCapAdapter);
+    SuffixWordProbabilityModel(Map<String, Map<PartOfSpeech, Double>> probabilities, int maxSuffixLength) {
         this.probabilities = probabilities;
         this.maxSuffixLength = maxSuffixLength;
     }
 
     @Override
-    double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
-        WordCap adapted = adaptWordCap(wordCap);
-        Double probability = Strings.generateSuffixes(adapted.getWord(), maxSuffixLength)
+    public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
+        Double probability = Strings.generateSuffixes(wordCap.getWord(), maxSuffixLength)
                 .map(probabilities::get)
                 .filter(Objects::nonNull)
                 .findFirst()
@@ -74,7 +68,28 @@ class SuffixModel extends WordProbabilityModel {
     }
 
     @Override
-    Set<PartOfSpeech> getCandidates(WordCap wordCap) {
+    public Set<PartOfSpeech> getCandidates(WordCap wordCap) {
         return PARTS_OF_SPEECH;
+    }
+
+    @Override
+    public boolean isKnown(WordCap wordCap) {
+        return true;
+    }
+
+    public Map<String, Map<PartOfSpeech, Double>> getProbabilities() {
+        return probabilities;
+    }
+
+    public void setProbabilities(Map<String, Map<PartOfSpeech, Double>> probabilities) {
+        this.probabilities = probabilities;
+    }
+
+    public int getMaxSuffixLength() {
+        return maxSuffixLength;
+    }
+
+    public void setMaxSuffixLength(int maxSuffixLength) {
+        this.maxSuffixLength = maxSuffixLength;
     }
 }

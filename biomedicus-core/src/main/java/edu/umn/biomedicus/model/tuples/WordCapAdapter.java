@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.tnt;
+package edu.umn.biomedicus.model.tuples;
 
-import edu.umn.biomedicus.model.tuples.WordCap;
-
-import java.io.Serializable;
-import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 /**
  *
  */
-public interface WordCapFilter extends Predicate<WordCap>, Serializable {
+public interface WordCapAdapter extends UnaryOperator<WordCap> {
 }
