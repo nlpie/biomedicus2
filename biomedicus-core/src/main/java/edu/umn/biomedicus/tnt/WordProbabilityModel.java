@@ -33,4 +33,6 @@ public interface WordProbabilityModel {
      * @return true if this model can provide a probability for the word, false otherwise
      */
     boolean isKnown(WordCap wordCap);
+
+    void reduce();
 }

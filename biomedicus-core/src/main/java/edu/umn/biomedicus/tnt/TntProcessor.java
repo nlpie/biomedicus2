@@ -1,5 +1,6 @@
 package edu.umn.biomedicus.tnt;
 
+import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.model.text.Document;
@@ -16,9 +17,9 @@ public class TntProcessor implements DocumentProcessor {
     private final TntPosTagger tntPosTagger;
 
     @Inject
-    public TntProcessor(Document document, TntProcessorModel tntProcessorModel) {
+    public TntProcessor(Document document, TntModel tntModel, BiomedicusConfiguration biomedicusConfiguration) {
         this.document = document;
-        this.tntPosTagger = tntProcessorModel.getTntPosTagger();
+        this.tntPosTagger = new TntPosTagger(tntModel, biomedicusConfiguration.getSettings().getAsDouble("tnt.beam.threshold"));
     }
 
     @Override

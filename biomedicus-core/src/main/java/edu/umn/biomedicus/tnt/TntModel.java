@@ -20,14 +20,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.common.grams.Bigram;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.tuples.PosCap;
-import edu.umn.biomedicus.model.tuples.WordCap;
 import edu.umn.biomedicus.common.viterbi.CandidateProbability;
 import edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
-import edu.umn.biomedicus.model.tuples.WordPos;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.model.tuples.PosCap;
+import edu.umn.biomedicus.model.tuples.WordCap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -42,8 +43,11 @@ import java.util.stream.Collectors;
 /**
  *
  */
+@Singleton
 public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
         TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Trigram model used for transition probability.
@@ -53,24 +57,30 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
     /**
      * Word probability models used for emission probability.
      */
-    private final List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities;
+    final List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities;
 
     @Inject
     TntModel(BiomedicusConfiguration biomedicusConfiguration) throws BiomedicusException {
         Path trigram = biomedicusConfiguration.resolveDataFile("tnt.trigram.path");
         Path wordModels = biomedicusConfiguration.resolveDataFile("tnt.word.path");
 
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new PartOfSpeechConstructor(), new PartOfSpeechRepresenter());
 
         try {
-            posCapTrigramModel = (PosCapTrigramModel) yaml.load(Files.newInputStream(trigram));
+            LOGGER.info("Loading POS trigram model: {}", trigram);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> store = (Map<String, Object>) yaml.load(Files.newInputStream(trigram));
+            posCapTrigramModel = PosCapTrigramModel.createFromStore(store);
 
             filteredAdaptedWordProbabilities = new ArrayList<>();
-            Files.walkFileTree(wordModels, Collections.emptySet(), 0, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(wordModels, Collections.emptySet(), 1, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = (FilteredAdaptedWordProbabilityModel) yaml.load(Files.newInputStream(file));
-                    filteredAdaptedWordProbabilities.add(filteredAdaptedWordProbabilityModel);
+                    LOGGER.info("Loading POS word model #{}: {}", filteredAdaptedWordProbabilities.size() + 1, file);
+                    if (file.getFileName().toString().endsWith(".yml")) {
+                        FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = (FilteredAdaptedWordProbabilityModel) yaml.load(Files.newInputStream(file));
+                        filteredAdaptedWordProbabilities.add(filteredAdaptedWordProbabilityModel);
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -82,17 +92,20 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
     }
 
     public void write(Path folder) throws IOException {
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new PartOfSpeechConstructor(), new PartOfSpeechRepresenter());
 
         Files.createDirectories(folder);
 
-        yaml.dump(posCapTrigramModel, Files.newBufferedWriter(folder.resolve("trigram.yml")));
+        Map<String, Object> store = posCapTrigramModel.createStore();
+        yaml.dump(store, Files.newBufferedWriter(folder.resolve("trigram.yml")));
 
         Path words = folder.resolve("words");
-        Files.createDirectory(words);
+        Files.createDirectories(words);
 
         for (FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbability : filteredAdaptedWordProbabilities) {
-            yaml.dump(filteredAdaptedWordProbability, Files.newBufferedWriter(words.resolve(filteredAdaptedWordProbability.getPriority() + ".yml")));
+            filteredAdaptedWordProbability.reduce();
+            yaml.dump(filteredAdaptedWordProbability,
+                    Files.newBufferedWriter(words.resolve(filteredAdaptedWordProbability.getPriority() + ".yml")));
         }
     }
 

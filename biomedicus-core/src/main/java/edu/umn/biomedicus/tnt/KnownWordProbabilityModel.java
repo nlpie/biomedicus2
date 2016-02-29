@@ -35,23 +35,21 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  * @author Ben Knoll
  */
-class KnownWordProbabilityModel implements WordProbabilityModel {
+public class KnownWordProbabilityModel implements WordProbabilityModel {
     private Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities;
 
-    /**
-     * Default constructor. Takes the lexical probabilities, the probability that a word will be seen conditional on a
-     * tag and part of speech. Also takes a candidates list of {@link edu.umn.biomedicus.model.semantics.PartOfSpeech} that have
-     * nonzero probabilities for a given word.
-     * @param lexicalProbabilities a map from the word and pos-capitalization triplets to their probabilities
-     */
-    public KnownWordProbabilityModel(Map<String, Map<PartOfSpeech, Double>> lexicalProbabilities) {
-        this.lexicalProbabilities = lexicalProbabilities;
+    public KnownWordProbabilityModel() {
     }
 
     @Override
     public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
         Map<PartOfSpeech, Double> partOfSpeechDoubleMap = lexicalProbabilities.get(wordCap.getWord());
-        return partOfSpeechDoubleMap == null ? Double.NEGATIVE_INFINITY : partOfSpeechDoubleMap.get(candidate);
+        if (partOfSpeechDoubleMap == null) {
+            return Double.NEGATIVE_INFINITY;
+        } else {
+            Double aDouble = partOfSpeechDoubleMap.get(candidate);
+            return aDouble == null ? Double.NEGATIVE_INFINITY : aDouble;
+        }
     }
 
     @Override
@@ -66,6 +64,17 @@ class KnownWordProbabilityModel implements WordProbabilityModel {
     @Override
     public boolean isKnown(WordCap wordCap) {
         return lexicalProbabilities.containsKey(wordCap.getWord());
+    }
+
+    @Override
+    public void reduce() {
+        for (Map<PartOfSpeech, Double> partOfSpeechDoubleMap : lexicalProbabilities.values()) {
+            for (Map.Entry<PartOfSpeech, Double> entry : partOfSpeechDoubleMap.entrySet()) {
+                if (entry.getValue() == Double.NEGATIVE_INFINITY) {
+                    partOfSpeechDoubleMap.remove(entry.getKey());
+                }
+            }
+        }
     }
 
     public Map<String, Map<PartOfSpeech, Double>> getLexicalProbabilities() {

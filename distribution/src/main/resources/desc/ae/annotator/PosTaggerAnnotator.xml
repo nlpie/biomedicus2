@@ -60,7 +60,7 @@
                 <name>eagerLoad</name>
                 <value>
                     <array>
-                        <string>edu.umn.biomedicus.tnt.TntProcessorModel</string>
+                        <string>edu.umn.biomedicus.tnt.TntModel</string>
                     </array>
                 </value>
             </nameValuePair>

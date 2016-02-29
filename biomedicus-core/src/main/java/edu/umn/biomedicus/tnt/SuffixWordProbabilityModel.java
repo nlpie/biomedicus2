@@ -38,23 +38,11 @@ import java.util.Set;
  * @author Ben Knoll
  * @since 1.0.0
  */
-class SuffixWordProbabilityModel implements WordProbabilityModel {
-    private static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartOfSpeech.REAL_TAGS;
+public class SuffixWordProbabilityModel implements WordProbabilityModel {
+    static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartOfSpeech.REAL_TAGS;
 
     private Map<String, Map<PartOfSpeech, Double>> probabilities;
     private int maxSuffixLength;
-
-    /**
-     * Default SuffixWordProbabilityModel constructor. Takes a Map of {@link edu.umn.biomedicus.model.tuples.WordPosCap} to
-     * {@link java.lang.Double} probabilities between NEGATIVE_INFINITY and 0.0, and a max suffix length
-     *
-     * @param probabilities
-     * @param maxSuffixLength
-     */
-    SuffixWordProbabilityModel(Map<String, Map<PartOfSpeech, Double>> probabilities, int maxSuffixLength) {
-        this.probabilities = probabilities;
-        this.maxSuffixLength = maxSuffixLength;
-    }
 
     @Override
     public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
@@ -75,6 +63,17 @@ class SuffixWordProbabilityModel implements WordProbabilityModel {
     @Override
     public boolean isKnown(WordCap wordCap) {
         return true;
+    }
+
+    @Override
+    public void reduce() {
+        for (Map<PartOfSpeech, Double> partOfSpeechDoubleMap : probabilities.values()) {
+            for (Map.Entry<PartOfSpeech, Double> entry : partOfSpeechDoubleMap.entrySet()) {
+                if (entry.getValue() == null || entry.getValue() == Double.NEGATIVE_INFINITY) {
+                    partOfSpeechDoubleMap.remove(entry.getKey());
+                }
+            }
+        }
     }
 
     public Map<String, Map<PartOfSpeech, Double>> getProbabilities() {

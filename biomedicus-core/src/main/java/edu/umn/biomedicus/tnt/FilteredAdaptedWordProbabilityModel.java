@@ -18,8 +18,6 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.model.semantics.PartOfSpeech;
 import edu.umn.biomedicus.model.tuples.WordCap;
-import edu.umn.biomedicus.model.tuples.WordCapAdapter;
-import edu.umn.biomedicus.model.tuples.WordCapFilter;
 
 import java.util.Set;
 
@@ -31,17 +29,13 @@ import java.util.Set;
  * @author Ben Knoll
  * @since 1.0.0
  */
-class FilteredAdaptedWordProbabilityModel implements WordProbabilityModel {
+public class FilteredAdaptedWordProbabilityModel implements WordProbabilityModel {
     private int priority;
-    private WordCapFilter filter;
-    private WordCapAdapter wordCapAdapter;
     private WordProbabilityModel wordProbabilityModel;
+    private WordCapAdapter wordCapAdapter;
+    private WordCapFilter filter;
 
-    public FilteredAdaptedWordProbabilityModel(int priority, WordCapFilter filter, WordCapAdapter wordCapAdapter, WordProbabilityModel wordProbabilityModel) {
-        this.priority = priority;
-        this.filter = filter;
-        this.wordCapAdapter = wordCapAdapter;
-        this.wordProbabilityModel = wordProbabilityModel;
+    public FilteredAdaptedWordProbabilityModel() {
     }
 
     @Override
@@ -60,10 +54,6 @@ class FilteredAdaptedWordProbabilityModel implements WordProbabilityModel {
     public boolean isKnown(WordCap wordCap) {
         WordCap adapted = wordCapAdapter.apply(wordCap);
         return filter.test(adapted) && wordProbabilityModel.isKnown(adapted);
-    }
-
-    protected WordCap adaptWordCap(WordCap wordCap) {
-        return wordCapAdapter.apply(wordCap);
     }
 
     public int getPriority() {
@@ -96,5 +86,10 @@ class FilteredAdaptedWordProbabilityModel implements WordProbabilityModel {
 
     public void setWordProbabilityModel(WordProbabilityModel wordProbabilityModel) {
         this.wordProbabilityModel = wordProbabilityModel;
+    }
+
+    @Override
+    public void reduce() {
+        wordProbabilityModel.reduce();
     }
 }

@@ -18,8 +18,6 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.model.semantics.PartOfSpeech;
 import edu.umn.biomedicus.model.tuples.WordCap;
-import edu.umn.biomedicus.model.tuples.WordCapAdapter;
-import edu.umn.biomedicus.model.tuples.WordCapFilter;
 
 /**
  *

@@ -18,10 +18,9 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.model.tuples.PosCap;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Statistical model determining the probability of a trigram of part of speech tags. It is a maximum likelihood
@@ -38,9 +37,9 @@ import java.io.Serializable;
  * <p/>
  * <p>Unigrams, bigrams, and trigrams are smoothed in order to prevent the case of 0 probability when a specific
  * trigram has not been encountered in the training corpus.</p>
- * <p/>
+ * <p>
  * <p>This data is then factored into viterbi markov model calculations.
- * <p/>
+ * <p>
  *
  * @author Ben Knoll
  * @since 1.0.0
@@ -50,32 +49,32 @@ class PosCapTrigramModel {
     /**
      * Probability that a pos cap ordinal will occur.
      */
-    private double[] unigramProbabilities;
+    private final double[] unigramProbabilities;
 
     /**
      * Probability that a pos cap bigram will occur.
      */
-    private double[][] bigramProbabilities;
+    private final double[][] bigramProbabilities;
 
     /**
      * Probability that a pos cap trigram will occur.
      */
-    private double[][][] trigramProbabilities;
+    private final double[][][] trigramProbabilities;
 
     /**
      * Lambda smoothing coefficient for unigrams.
      */
-    private double unigramLambda;
+    private final double unigramLambda;
 
     /**
      * Lambda smoothing coefficient for bigrams.
      */
-    private double bigramLambda;
+    private final double bigramLambda;
 
     /**
      * Lambda smoothing coefficient for trigrams.
      */
-    private double trigramLambda;
+    private final double trigramLambda;
 
     /**
      * Default constructor. Creates the model with the given probability maps.
@@ -117,51 +116,94 @@ class PosCapTrigramModel {
         return unigramLambda * unigramProbability + bigramLambda * bigramProbability + trigramLambda * trigramProbability;
     }
 
-    public double[] getUnigramProbabilities() {
-        return unigramProbabilities;
+    public Map<String, Object> createStore() {
+        Map<String, Object> store = new TreeMap<>();
+        store.put("unigramLambda", unigramLambda);
+        store.put("bigramLambda", bigramLambda);
+        store.put("trigramLambda", trigramLambda);
+
+        Map<PosCap, Double> unigrams = new TreeMap<>();
+        for (int i = 0; i < unigramProbabilities.length; i++) {
+            if (unigramProbabilities[i] > 0) {
+                unigrams.put(PosCap.createFromOrdinal(i), unigramProbabilities[i]);
+            }
+        }
+        store.put("unigram", unigrams);
+
+        Map<PosCap, Map<PosCap, Double>> bigrams = new TreeMap<>();
+        for (int i = 0; i < bigramProbabilities.length; i++) {
+            for (int j = 0; j < bigramProbabilities[i].length; j++) {
+                int second = j;
+                if (bigramProbabilities[i][j] > 0) {
+                    bigrams.compute(PosCap.createFromOrdinal(i), (key, value) -> {
+                        if (value == null) {
+                            value = new TreeMap<>();
+                        }
+                        value.put(PosCap.createFromOrdinal(second), bigramProbabilities[key.ordinal()][second]);
+                        return value;
+                    });
+                }
+            }
+        }
+        store.put("bigram", bigrams);
+
+        Map<PosCap, Map<PosCap, Map<PosCap, Double>>> trigrams = new TreeMap<>();
+        for (int i = 0; i < trigramProbabilities.length; i++) {
+            for (int j = 0; j < trigramProbabilities[i].length; j++) {
+                for (int k = 0; k < trigramProbabilities[i][j].length; k++) {
+                    if (trigramProbabilities[i][j][k] > 0) {
+                        int second = j;
+                        int third = k;
+                        trigrams.compute(PosCap.createFromOrdinal(i), (key, value) -> {
+                            if (value == null) {
+                                value = new TreeMap<>();
+                            }
+                            value.compute(PosCap.createFromOrdinal(second), (key2, value2) -> {
+                                if (value2 == null) {
+                                    value2 = new TreeMap<>();
+                                }
+                                value2.put(PosCap.createFromOrdinal(third), trigramProbabilities[key.ordinal()][key2.ordinal()][third]);
+                                return value2;
+                            });
+                            return value;
+                        });
+                    }
+                }
+            }
+        }
+        store.put("trigram", trigrams);
+
+        return store;
     }
 
-    public void setUnigramProbabilities(double[] unigramProbabilities) {
-        this.unigramProbabilities = unigramProbabilities;
-    }
+    public static PosCapTrigramModel createFromStore(Map<String, Object> store) {
+        @SuppressWarnings("unchecked")
+        Map<PosCap, Double> unigram = (Map<PosCap, Double>) store.get("unigram");
+        double[] unigrams = new double[PosCap.cardinality()];
+        Arrays.fill(unigrams, 0.0);
+        unigram.entrySet().forEach(e -> unigrams[e.getKey().ordinal()] = e.getValue());
 
-    public double[][] getBigramProbabilities() {
-        return bigramProbabilities;
-    }
+        @SuppressWarnings("unchecked")
+        Map<PosCap, Map<PosCap, Double>> bigram = (Map<PosCap, Map<PosCap, Double>>) store.get("bigram");
+        double[][] bigrams = new double[PosCap.cardinality()][PosCap.cardinality()];
+        for (double[] doubles : bigrams) {
+            Arrays.fill(doubles, 0.0);
+        }
+        bigram.entrySet().forEach(e1 -> e1.getValue().entrySet()
+                .forEach(e2 -> bigrams[e1.getKey().ordinal()][e2.getKey().ordinal()] = e2.getValue()));
 
-    public void setBigramProbabilities(double[][] bigramProbabilities) {
-        this.bigramProbabilities = bigramProbabilities;
-    }
+        @SuppressWarnings("unchecked")
+        Map<PosCap, Map<PosCap, Map<PosCap, Double>>> trigram = (Map<PosCap, Map<PosCap, Map<PosCap, Double>>>) store.get("trigram");
+        double[][][] trigrams = new double[PosCap.cardinality()][PosCap.cardinality()][PosCap.cardinality()];
+        for (double[][] bigramsInTrigram : trigrams) {
+            for (double[] unigramsInTrigram : bigramsInTrigram) {
+                Arrays.fill(unigramsInTrigram, 0.0);
+            }
+        }
+        trigram.entrySet().forEach(e1 -> e1.getValue().entrySet().forEach(e2 -> e2.getValue().entrySet()
+                .forEach(e3 -> trigrams[e1.getKey().ordinal()][e2.getKey().ordinal()][e3.getKey().ordinal()] = e3.getValue())));
 
-    public double[][][] getTrigramProbabilities() {
-        return trigramProbabilities;
-    }
-
-    public void setTrigramProbabilities(double[][][] trigramProbabilities) {
-        this.trigramProbabilities = trigramProbabilities;
-    }
-
-    public double getUnigramLambda() {
-        return unigramLambda;
-    }
-
-    public void setUnigramLambda(double unigramLambda) {
-        this.unigramLambda = unigramLambda;
-    }
-
-    public double getBigramLambda() {
-        return bigramLambda;
-    }
-
-    public void setBigramLambda(double bigramLambda) {
-        this.bigramLambda = bigramLambda;
-    }
-
-    public double getTrigramLambda() {
-        return trigramLambda;
-    }
-
-    public void setTrigramLambda(double trigramLambda) {
-        this.trigramLambda = trigramLambda;
+        return new PosCapTrigramModel(unigrams, bigrams, trigrams, (double) store.get("unigramLambda"),
+                (double) store.get("bigramLambda"), (double) store.get("trigramLambda"));
     }
 }

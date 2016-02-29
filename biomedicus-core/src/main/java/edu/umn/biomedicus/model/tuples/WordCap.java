@@ -121,31 +121,4 @@ public class WordCap implements Comparable<WordCap>, Serializable {
                 + ", isCapitalized=" + isCapitalized
                 + '}';
     }
-
-    /**
-     * Lowercase the word and ignore the capitalization.
-     *
-     * @return this word cap, with word lowercased, and capitalization ignored.
-     */
-    public WordCap lowercaseIgnoreCapitalization() {
-        return new WordCap(word.toLowerCase(), false);
-    }
-
-    /**
-     * Lowercase the word.
-     *
-     * @return this word, lowercased
-     */
-    public WordCap lowercase() {
-        return new WordCap(word.toLowerCase(), isCapitalized);
-    }
-
-    /**
-     * Returns this same word cap.
-     *
-     * @return keeps word cap the same.
-     */
-    public WordCap identity() {
-        return this;
-    }
 }

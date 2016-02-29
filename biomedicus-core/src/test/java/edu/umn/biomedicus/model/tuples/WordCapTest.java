@@ -122,27 +122,4 @@ public class WordCapTest {
 
         assertEquals(wordCap.toString(), "WordCap{word='aWord', isCapitalized=false}");
     }
-
-    @Test
-    public void testLowercase() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false).lowercase();
-
-        assertEquals(wordCap.getWord(), "aword");
-    }
-
-    @Test
-    public void testLowercaseIgnoreCapitalization() throws Exception {
-        WordCap wordCap = new WordCap("aWord", true).lowercaseIgnoreCapitalization();
-
-        assertEquals(wordCap.getWord(), "aword");
-        assertEquals(wordCap.isCapitalized(), false);
-    }
-
-    @Test
-    public void testIdentity() throws Exception {
-        WordCap wordCap = new WordCap("aWord", true);
-        WordCap same = wordCap.identity();
-
-        assertEquals(wordCap, same);
-    }
 }

@@ -145,18 +145,23 @@ public class TntPosTrainerAE extends JCasAnnotator_ImplBase {
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        assert tntTrainer != null;
-        assert outputFile != null;
-        LOGGER.info("Finished processing documents for tnt trainer. We threw away {} documents because of unrecognized parts of speech.", tossed);
-
-        TntModel tntModel = tntTrainer.createModel();
-
         try {
-            tntModel.write(Paths.get(outputFile));
-        } catch (IOException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+            assert tntTrainer != null;
+            assert outputFile != null;
+            LOGGER.info("Finished processing documents for tnt trainer. We threw away {} documents because of unrecognized parts of speech.", tossed);
 
-        super.collectionProcessComplete();
+            TntModel tntModel = tntTrainer.createModel();
+
+            try {
+                tntModel.write(Paths.get(outputFile));
+            } catch (IOException e) {
+                throw new AnalysisEngineProcessException(e);
+            }
+
+            super.collectionProcessComplete();
+        } catch (Throwable th) {
+            LOGGER.error("error: {}", th);
+            throw th;
+        }
     }
 }
