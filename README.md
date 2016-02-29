@@ -14,9 +14,7 @@ Install Guide
 ========================================================================================================================
 
 Along with the source code, we also release distribution of all the files required to immediately start running. You can
-download this file at [https://bitbucket.org/nlpie/biomedicus/downloads](https://bitbucket.org/nlpie/biomedicus/downloads).
-You will also need download the appropriate model files at
-[http://athena.ahc.umn.edu/biomedicus-downloads/](http://athena.ahc.umn.edu/biomedicus-downloads/).
+download this file and appropriate model files at [http://athena.ahc.umn.edu/biomedicus-downloads/](http://athena.ahc.umn.edu/biomedicus-downloads/).
 
 Prerequisites
 ------------------------------------------------------------------------------------------------------------------------
