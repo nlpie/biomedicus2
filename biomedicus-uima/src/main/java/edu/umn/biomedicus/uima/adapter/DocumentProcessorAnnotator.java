@@ -3,9 +3,11 @@ package edu.umn.biomedicus.uima.adapter;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import edu.umn.biomedicus.application.BiomedicusScopes;
+import edu.umn.biomedicus.application.ModelLoader;
 import edu.umn.biomedicus.common.settings.Settings;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.application.ProcessorSettings;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -61,8 +63,11 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
         if (eagerLoad != null) {
             for (String className : eagerLoad) {
                 try {
-                    injector.getInstance(Class.forName(className));
-                } catch (ClassNotFoundException e) {
+                    Object eagerLoaded = injector.getInstance(Class.forName(className));
+                    if (eagerLoaded instanceof ModelLoader) {
+                        ((ModelLoader) eagerLoaded).eagerLoad();
+                    }
+                } catch (ClassNotFoundException | BiomedicusException e) {
                     throw new ResourceInitializationException(e);
                 }
             }

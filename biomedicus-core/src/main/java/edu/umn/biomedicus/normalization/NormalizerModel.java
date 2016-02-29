@@ -16,8 +16,10 @@
 
 package edu.umn.biomedicus.normalization;
 
+import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.model.semantics.PartOfSpeech;
 import edu.umn.biomedicus.model.text.Token;
 import edu.umn.biomedicus.model.tuples.WordPos;
@@ -41,19 +43,19 @@ import java.util.*;
  * @author Ben Knoll
  * @since 0.3.0
  */
-@Singleton
+@ProvidedBy(NormalizerModelProvider.class)
 class NormalizerModel {
     private static final Logger LOGGER = LogManager.getLogger(NormalizerModel.class);
 
     /**
      * A Table from the part of speech and entry to a base form.
      */
-    private final Map<WordPos, String> lexicon;
+    private Map<WordPos, String> lexicon;
 
     /**
      * Same as lexicon, but only used if pos / entry is not found in lexicon.
      */
-    private final Map<WordPos, String> fallbackLexicon;
+    private Map<WordPos, String> fallbackLexicon;
 
     /**
      * Default constructor. Initializes two tables.
@@ -65,27 +67,6 @@ class NormalizerModel {
     NormalizerModel(Map<WordPos, String> lexicon, Map<WordPos, String> fallbackLexicon) {
         this.lexicon = lexicon;
         this.fallbackLexicon = fallbackLexicon;
-    }
-
-    @Inject
-    NormalizerModel(BiomedicusConfiguration biomedicusConfiguration) {
-        Path lexiconFile = biomedicusConfiguration.resolveDataFile("normalization.lexicon.path");
-        Path fallbackLexiconFile = biomedicusConfiguration.resolveDataFile("normalization.fallback.path");
-
-        Yaml yaml = new Yaml();
-        try {
-            LOGGER.info("Loading normalization lexicon file: {}", lexiconFile);
-            @SuppressWarnings("unchecked")
-            Map<WordPos, String> lexicon = (Map<WordPos, String>) yaml.load(Files.newInputStream(lexiconFile));
-            this.lexicon = lexicon;
-
-            LOGGER.info("Loading normalization fallback lexicon file: {}", fallbackLexiconFile);
-            @SuppressWarnings("unchecked")
-            Map<WordPos, String> fallbackLexicon = (Map<WordPos, String>) yaml.load(Files.newInputStream(fallbackLexiconFile));
-            this.fallbackLexicon = fallbackLexicon;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load Normalizer model", e);
-        }
     }
 
     /**

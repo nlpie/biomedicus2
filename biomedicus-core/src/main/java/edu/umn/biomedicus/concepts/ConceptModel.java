@@ -16,8 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.model.semantics.Concept;
 import edu.umn.biomedicus.model.simple.SimpleTerm;
 import edu.umn.biomedicus.model.text.Span;
@@ -25,17 +24,10 @@ import edu.umn.biomedicus.model.text.Term;
 import edu.umn.biomedicus.model.tokensets.OrderedTokenSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -44,50 +36,20 @@ import java.util.stream.Collectors;
  * @author Ben Knoll
  * @since 1.0.0
  */
-@Singleton
+@ProvidedBy(ConceptModelLoader.class)
 class ConceptModel {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final Map<String, List<String>> dictionary;
-
     private final Map<String, List<String>> cuiToTuis;
 
-    /**
-     * Default constructor. Takes a dictionary of phrases to their associated concepts.
-     *
-     * @param dictionary a multimap from a phrase to associated concepts
-     */
-    ConceptModel(Map<String, List<String>> dictionary, Map<String, List<String>> cuiToTuis) {
-        this.dictionary = Objects.requireNonNull(dictionary);
-        this.cuiToTuis = Objects.requireNonNull(cuiToTuis);
-    }
+    private final Map<String, List<String>> dictionary;
 
-    @Inject
-    ConceptModel(BiomedicusConfiguration biomedicusConfiguration) {
-        Path dictionaryPath = biomedicusConfiguration.resolveDataFile("concepts.dictionary.path");
-        Path typesPath = biomedicusConfiguration.resolveDataFile("concepts.types.path");
-
-        try (InputStream dictionaryIS = Files.newInputStream(dictionaryPath);
-             InputStream typesIS = Files.newInputStream(typesPath)) {
-            Yaml yaml = new Yaml(new SafeConstructor());
-
-            LOGGER.info("Loading concepts dictionary: {}", dictionaryPath);
-            @SuppressWarnings("unchecked")
-            Map<String, List<String>> conceptDictionary = (Map<String, List<String>>) yaml.load(dictionaryIS);
-            this.dictionary = Objects.requireNonNull(conceptDictionary);
-
-            LOGGER.info("Loading concept types: {}", typesPath);
-            @SuppressWarnings("unchecked")
-            Map<String, List<String>> cuiToTuis = (Map<String, List<String>>) yaml.load(typesIS);
-            this.cuiToTuis = Objects.requireNonNull(cuiToTuis);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not load model files", e);
-        }
+    ConceptModel(Map<String, List<String>> cuiToTuis, Map<String, List<String>> dictionary) {
+        this.cuiToTuis = cuiToTuis;
+        this.dictionary = dictionary;
     }
 
     /**
-     * {@inheritDoc}
-     * <p/>
      * Attempts to find a concept for the orderedTokenSet by first checking their text and then checking their
      * normalized text.
      *

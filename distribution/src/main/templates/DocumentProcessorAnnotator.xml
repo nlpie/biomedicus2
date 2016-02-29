@@ -38,6 +38,10 @@
             </configurationParameter>
             <configurationParameter>
                 <name>eagerLoad</name>
+                <description>
+                    The name of any classes that need to be eagerly loaded by the Guice injector. Classes which are
+                    instances of LoadableDataModel will have the loadData method called.
+                </description>
                 <type>String</type>
                 <multiValued>true</multiValued>
                 <mandatory>false</mandatory>

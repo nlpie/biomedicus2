@@ -121,6 +121,27 @@ public class SimpleToken extends SimpleTextSpan implements Token {
         isMisspelled = misspelled;
     }
 
+    @Override
+    public boolean isAcronym() {
+        return false;
+    }
+
+    @Override
+    public void setIsAcronym(boolean acronym) {
+
+    }
+
+    @Nullable
+    @Override
+    public String getLongForm() {
+        return null;
+    }
+
+    @Override
+    public void setLongForm(@Nullable String longForm) {
+
+    }
+
     @Nullable
     @Override
     public String correctSpelling() {
