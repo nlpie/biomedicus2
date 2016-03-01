@@ -6,12 +6,13 @@ import java.util.function.Function;
 /**
  * Simple interface for vectors of floating-point numbers, which will most likely be sparse and hashed
  *
- * Created by gpfinley on 11/10/15.
+ * @since 1.5.0
  */
 public interface DoubleVector {
 
     /**
      * Get an element from this vector
+     *
      * @param index the index of the returned element
      * @return the value at that element (zero if absent)
      */
@@ -19,6 +20,7 @@ public interface DoubleVector {
 
     /**
      * The magnitude/length of this vector
+     *
      * @return magnitude
      */
     double magnitude();
@@ -30,24 +32,28 @@ public interface DoubleVector {
 
     /**
      * adds another vector to this one
+     *
      * @param v the vector to add (argument vector should not be changed)
      */
     void add(DoubleVector v);
 
     /**
      * sets this vector to the Hadamard/elementwise product with another vector
+     *
      * @param v the vector to multiply against this one (argument vector should not be changed)
      */
     void multiply(DoubleVector v);
 
     /**
      * Applies an operation to every element of this vector
+     *
      * @param operation a function that takes and outputs Double (sqrt, e.g.)
      */
     void applyOperation(Function<Double, Double> operation);
 
     /**
      * Calculates this vector's dot product with another vector
+     *
      * @param v the other vector
      * @return the dot product
      */
@@ -55,6 +61,7 @@ public interface DoubleVector {
 
     /**
      * Get all non-zero keys of this vector
+     *
      * @return a set of integer keys
      */
     Set<Integer> getKeySet();

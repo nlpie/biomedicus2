@@ -8,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,36 +18,23 @@ import java.util.Set;
  * Will tag tokens as acronym/abbreviations or not
  *
  * @author Greg Finley
+ * @since 1.5.0
  */
+@Singleton
 public class AcronymDetector {
-
+    /**
+     * class logger
+     */
     private static final Logger LOGGER = LogManager.getLogger(AcronymVectorModel.class);
 
-    // The model that contains everything known about acronyms
-    private AcronymModel model;
-
-    // Contains orthographic rules to identify unseen abbreviations
-    private AcronymOrthographicModel orthographicModel;
-
-    // All part of speech tags to exclude from consideration as acronyms.
-    // Some of the verbs may have to change, but PRP and CC are key (esp. for tokens like "it", "or")
-    private Set<String> excludePos = new HashSet<>();
-
-    /**
-     * Constructor to initialize the acronym detector
-     * @param model an AcronymModel that contains lists of acronyms and their senses
-     * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
+    /*
+     * All part of speech tags to exclude from consideration as acronyms.
+     * Some of the verbs may have to change, but PRP and CC are key (esp. for tokens like "it", "or")
      */
-    public AcronymDetector(AcronymModel model, @Nullable AcronymOrthographicModel orthographicModel) {
-        if(orthographicModel == null) {
-            this.orthographicModel = new AcronymOrthographicModel();
-        }
-        else {
-            this.orthographicModel = orthographicModel;
-        }
-        this.model = model;
+    private static final Set<String> EXCLUDE_POS = new HashSet<>();
 
-        Collections.addAll(excludePos,
+    static {
+        Collections.addAll(EXCLUDE_POS,
                 "PRP",  // personal pronoun
                 "DT",   // determiner
                 "CC",   // coordinating conjunction
@@ -61,12 +50,35 @@ public class AcronymDetector {
         );
     }
 
-    public AcronymDetector(AcronymModel model) {
-        this(model, null);
+    /*
+     * The model that contains everything known about acronyms
+     */
+    private final AcronymModel model;
+
+    /*
+     * Contains orthographic rules to identify unseen abbreviations
+     */
+    private final OrthographicAcronymModel orthographicModel;
+
+    /**
+     * Constructor to initialize the acronym detector
+     *
+     * @param model             an AcronymModel that contains lists of acronyms and their senses
+     * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
+     */
+    @Inject
+    public AcronymDetector(AcronymModel model, @Nullable OrthographicAcronymModel orthographicModel) {
+        if (orthographicModel == null) {
+            this.orthographicModel = new OrthographicAcronymModel();
+        } else {
+            this.orthographicModel = orthographicModel;
+        }
+        this.model = model;
     }
 
     /**
      * Go through a Document and mark abbreviations as such using the Token isAcronymAbbrev annotation
+     *
      * @param document a tokenized document`
      */
     public void detectAcronyms(Document document) {
@@ -77,21 +89,14 @@ public class AcronymDetector {
         Token prevToken = null;
         Token prevPrevToken = null;
 
-        for(Token token : document.getTokens()) {
-
-            boolean isAcr = false;
-
+        for (Token token : document.getTokens()) {
             // Determine if this is an abbreviation or acronym.
             // Ask the acronym model if this one is recognized.
             // If it isn't, ask the orthographic model if it seems like one.
-            if (model.hasAcronym(token))
-                isAcr = true;
-            else {
-                isAcr = orthographicModel.seemsLikeAbbreviation(token);
-            }
+            boolean isAcr = model.hasAcronym(token) || orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token);
 
             // See if this token and the previous together constitute an abbreviation
-            if(prevToken != null) {
+            if (prevToken != null) {
                 Token twoWordToken = new SimpleToken(document.getText(), prevToken.getBegin(), token.getEnd());
                 if (model.hasAcronym(twoWordToken)) {
                     isAcr = true;
@@ -109,7 +114,7 @@ public class AcronymDetector {
             }
 
             PartOfSpeech partOfSpeech = token.getPartOfSpeech();
-            if(partOfSpeech != null && excludePos.contains(partOfSpeech.toString()))
+            if (partOfSpeech != null && EXCLUDE_POS.contains(partOfSpeech.toString()))
                 isAcr = false;
 
             token.setIsAcronym(isAcr);

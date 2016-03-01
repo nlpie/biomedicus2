@@ -17,42 +17,38 @@ import java.util.function.Function;
  * Trains a vector space model for acronym detection
  *
  * @author Greg Finley
+ * @since 1.5.0
  */
 public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
     private static final Logger LOGGER = LogManager.getLogger(AcronymVectorModelTrainer.class);
-
+    // Number of tokens to look back/ahead when calculating word vectors
+    private final static double DEFAULT_MAX_DIST = 9;
+    // How counts will be transformed (default is sqrt to flatten out the vectors a bit)
+    private static Function<Double, Double> transformCounts = Math::sqrt;
     // These are loaded from text files
     // expansionMap works the same as in AcronymVectorModel
     // uniqueIdMap maps unique identifying strings of the acronym long forms (as appear in the preprocessed training
     // text file) to their English forms
-    private final Map<String,List<String>> expansionMap;
-    private final Map<String,String> uniqueIdMap;
-
+    private final Map<String, List<String>> expansionMap;
+    private final Map<String, String> uniqueIdMap;
     private AlignmentModel alignmentModel;
-
-    // Number of tokens to look back/ahead when calculating word vectors
-    private final static double DEFAULT_MAX_DIST = 9;
     private double maxDist = DEFAULT_MAX_DIST;
-
     private VectorSpaceDouble vectorSpace = new VectorSpaceDouble(maxDist);
-
     // Will map senses to their centroid context vectors
-    private Map<String,DoubleVector> senseMap = new HashMap<>();
-
-    // How counts will be transformed (default is sqrt to flatten out the vectors a bit)
-    private static Function<Double,Double> transformCounts = Math::sqrt;
+    private Map<String, DoubleVector> senseMap = new HashMap<>();
 
     /**
      * Initializes the acronym trainer. Needs paths to two or three text files:
+     *
      * @param expansionMapFile which maps short forms to long forms
-     * @param uniqueIdMapFile which maps unique identifying strings to long forms
-     * @param longformsFile which contains a list of long forms needed for the alignment model (unknown abbrs)
+     * @param uniqueIdMapFile  which maps unique identifying strings to long forms
+     * @param longformsFile    which contains a list of long forms needed for the alignment model (unknown abbrs)
      * @throws IOException
      */
     public AcronymVectorModelTrainer(String expansionMapFile, String uniqueIdMapFile, @Nullable String longformsFile) throws IOException {
-        Map<String,List<String>> expansionMapBuilder = new HashMap<>();
-        Map<String,String> uniqueIdMapBuilder = new HashMap<>();
+        Map<String, List<String>> expansionMapBuilder = new HashMap<>();
+        Map<String, String> uniqueIdMapBuilder = new HashMap<>();
 
         LOGGER.info("Loading data files to initialize the acronym model trainer");
 
@@ -61,9 +57,9 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
         String nextLine;
         while ((nextLine = fileReader.readLine()) != null) {
             List<String> fields = Arrays.asList(nextLine.split("\\|"));
-            if(fields.size() >= 1) {
+            if (fields.size() >= 1) {
                 String acronym = AcronymModel.standardFormString(fields.get(0));
-                List<String> senses = new ArrayList<>(fields.subList(1,fields.size()));
+                List<String> senses = new ArrayList<>(fields.subList(1, fields.size()));
                 expansionMapBuilder.put(acronym, senses);
             }
         }
@@ -77,7 +73,7 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
         expansionMap = expansionMapBuilder;
         uniqueIdMap = uniqueIdMapBuilder;
-        if(longformsFile != null)
+        if (longformsFile != null)
             alignmentModel = new AlignmentModel(longformsFile);
     }
 
@@ -91,13 +87,14 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
     /**
      * Call this after all documents have been added using addDocumentToModel(Document)
      * This will finalize the vectors and put them all into a knew AcronymVectorModel, which can be used or serialized
+     *
      * @return a finalized AcronymVectorModel
      */
     public AcronymVectorModel getModel() {
         vectorSpace.finishTraining();
 
         // Apply some final operations to the model--most critically, normalization
-        for(DoubleVector vector : senseMap.values()) {
+        for (DoubleVector vector : senseMap.values()) {
             vector.applyOperation(transformCounts);
             vector.multiply(vectorSpace.getIdf());
             vector.normVector();
@@ -110,6 +107,7 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
     /**
      * Adds a document to the model, which should have been initialized already
+     *
      * @param document a tokenized document
      */
     public void addDocumentToModel(Document document) {
@@ -130,9 +128,9 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
         int i = 0;
 
         // Find tokens of interest in the document and their context; populate the above lists
-        for(Token token : document.getTokens()) {
+        for (Token token : document.getTokens()) {
             allTokens.add(token);
-            if(uniqueIdMap.containsKey(token.getText())) {
+            if (uniqueIdMap.containsKey(token.getText())) {
                 tokensOfInterest.add(token);
                 startPositions.add(i - maxSize);
                 endPositions.add(i + maxSize + 1);
@@ -143,16 +141,16 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
         // Now go through to every token of interest, calculate a vector for it, and add it to the vectors already
         // found for that sense.
         i = 0;
-        for(Token tokenOfInterest : tokensOfInterest) {
+        for (Token tokenOfInterest : tokensOfInterest) {
             String senseEnglish = uniqueIdMap.get(tokenOfInterest.getText());
             int start = startPositions.get(i);
             int end = endPositions.get(i);
-            if(start < 0) start = 0;
-            if(end > allTokens.size()) end = allTokens.size() - 1;
+            if (start < 0) start = 0;
+            if (end > allTokens.size()) end = allTokens.size() - 1;
 
             DoubleVector calculatedVector = vectorSpace.vectorize(allTokens.subList(start, end), tokenOfInterest);
 
-            if( senseMap.putIfAbsent(senseEnglish, calculatedVector) != null ) {
+            if (senseMap.putIfAbsent(senseEnglish, calculatedVector) != null) {
                 senseMap.get(senseEnglish).add(calculatedVector);
             }
 
@@ -162,9 +160,10 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
     /**
      * Counts will be transformed (after summing) by a function. The default is Math.sqrt
+     *
      * @param function a different function to use (takes and returns double)
      */
-    public void setTransformFunction(Function<Double,Double> function) {
+    public void setTransformFunction(Function<Double, Double> function) {
         transformCounts = function;
     }
 

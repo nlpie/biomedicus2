@@ -9,7 +9,8 @@ import java.util.function.Function;
 /**
  * An implementation of sparse vectors of floating-point values (need not be word-based, really)
  *
- * Created by gpfinley on 10/23/15.
+ * @author Greg Finley
+ * @since 1.5.0
  */
 public class WordVectorDouble implements Serializable, DoubleVector {
 
@@ -18,6 +19,7 @@ public class WordVectorDouble implements Serializable, DoubleVector {
 
     /**
      * Constructor, which needs the values already set
+     *
      * @param vector a map between Integers and Doubles to create a new vector from
      */
     public WordVectorDouble(Map<Integer, Double> vector) {
@@ -35,7 +37,7 @@ public class WordVectorDouble implements Serializable, DoubleVector {
     // Normalize this vector
     public void normVector() {
         double mag = (double) magnitude();
-        for (Map.Entry<Integer,Double> e : vector.entrySet()) {
+        for (Map.Entry<Integer, Double> e : vector.entrySet()) {
             e.setValue(e.getValue() / mag);
         }
     }
@@ -49,26 +51,26 @@ public class WordVectorDouble implements Serializable, DoubleVector {
 
     // sets this vector to the Hadamard/elementwise product with the argument vector
     public void multiply(DoubleVector v) {
-        for(int k : getKeySet()) {
-            if(v.get(k) == 0) {
+        for (int k : getKeySet()) {
+            if (v.get(k) == 0) {
                 vector.remove(k);
-            }
-            else {
-                vector.put(k, vector.get(k)*v.get(k));
+            } else {
+                vector.put(k, vector.get(k) * v.get(k));
             }
         }
     }
 
     // Applies an operation to every element of this vector
-    public void applyOperation(Function<Double,Double> operation) {
-        for(Map.Entry<Integer,Double> e : vector.entrySet()) {
-            e.setValue( operation.apply(e.getValue()) );
+    public void applyOperation(Function<Double, Double> operation) {
+        for (Map.Entry<Integer, Double> e : vector.entrySet()) {
+            e.setValue(operation.apply(e.getValue()));
         }
     }
 
     /**
      * Return the dot product of this vector with another
      * Note that this operation is more efficient if you call it on the sparser vector
+     *
      * @param v another vector
      * @return their dot product
      */
