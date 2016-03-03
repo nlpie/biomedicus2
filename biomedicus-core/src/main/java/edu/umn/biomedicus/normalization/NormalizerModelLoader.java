@@ -19,7 +19,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class NormalizerModelProvider extends ModelLoader<NormalizerModel> {
+public class NormalizerModelLoader extends ModelLoader<NormalizerModel> {
     private final Logger LOGGER = LogManager.getLogger();
 
     private final Path lexiconFile;
@@ -27,7 +27,7 @@ public class NormalizerModelProvider extends ModelLoader<NormalizerModel> {
     private final Path fallbackLexiconFile;
 
     @Inject
-    public NormalizerModelProvider(BiomedicusConfiguration biomedicusConfiguration) {
+    public NormalizerModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
         lexiconFile = biomedicusConfiguration.resolveDataFile("normalization.lexicon.path");
         fallbackLexiconFile = biomedicusConfiguration.resolveDataFile("normalization.fallback.path");
     }

@@ -1,8 +1,6 @@
 package edu.umn.biomedicus.common.collect;
 
-import edu.umn.biomedicus.model.text.Span;
-
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Maps a subset of integers expressed as ranges to a continuous set of integers starting at 0.
@@ -13,78 +11,99 @@ public class RangeMap {
     /**
      * The source indexes of the ranges.
      */
-    private final int[] indexes;
+    private final List<Integer> indexes;
 
     /**
      * The length of the ranges.
      */
-    private final int[] lengths;
+    private final List<Integer> lengths;
 
     /**
      * The destination index of the ranges.
      */
-    private final int[] mapping;
+    private final List<Integer> mappings;
 
-    RangeMap(int[] indexes, int[] lengths, int[] mapping) {
+    public RangeMap(List<Integer> indexes, List<Integer> lengths, List<Integer> mappings) {
         this.indexes = indexes;
         this.lengths = lengths;
-        this.mapping = mapping;
+        this.mappings = mappings;
     }
 
     public int map(int index) {
-        int i = Arrays.binarySearch(indexes, index);
+        return genericMap(index, indexes, mappings);
+    }
+
+    private int genericMap(int index, List<Integer> from, List<Integer> to) {
+        int i = Collections.binarySearch(from, index);
 
         if (i >= 0) {
-            return mapping[i];
+            return to.get(i);
         }
 
-        int prev = -1 * (i + 1);
+        if (i == -1) {
+            return -1;
+        }
 
-        int offset = index - indexes[prev];
-        if (offset < lengths[prev]) {
-            return mapping[prev] + offset;
+        int prev = -1 * (i + 1) - 1;
+
+        int offset = index - from.get(prev);
+        if (offset < lengths.get(prev)) {
+            return to.get(prev) + offset;
         } else {
             return -1;
         }
     }
 
+    public int reverseMap(int index) {
+        return genericMap(index, mappings, indexes);
+    }
+
     public int size() {
-        int size = indexes.length - 1;
-        return mapping[size] + lengths[size];
+        int last = indexes.size() - 1;
+        return mappings.get(last) + lengths.get(last);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {
         private int size = 0;
 
-        private int[] indexes = new int[15];
+        private TreeSet<Integer> values = new TreeSet<>();
 
-        private int[] lengths = new int[15];
+        private Builder() {
 
-        public void add(Span span) {
-            addRange(span.getBegin(), span.length());
         }
 
-        public void addSpan(int begin, int end) {
-            assert begin >= 0;
-            assert end >= begin;
-            addRange(begin, end - begin);
-        }
-
-        public void addRange(int begin, int length) {
-            assert begin >= 0;
-            assert length >= 0;
-
-            int search = Arrays.binarySearch(indexes, begin);
-            if (search < 0) {
-                int insertion = search * -1 - 1;
-
-            } else {
-
-            }
+        public Builder add(int value) {
+            values.add(value);
+            return this;
         }
 
         public RangeMap build() {
-            return null;
+            List<Integer> indexes = new ArrayList<>();
+            List<Integer> lengths = new ArrayList<>();
+            List<Integer> mappings = new ArrayList<>();
+
+            int filled = 0;
+
+            Integer begin = values.pollFirst();
+            Integer prev = begin;
+            while (begin != null) {
+                Integer next;
+                while ((next = values.pollFirst()) != null && next - prev <= 1) {
+                    prev = next;
+                }
+                int length = prev - begin + 1;
+                indexes.add(begin);
+                lengths.add(length);
+                mappings.add(filled);
+                filled += length;
+                begin = next;
+                prev = begin;
+            }
+            return new RangeMap(indexes, lengths, mappings);
         }
     }
 }

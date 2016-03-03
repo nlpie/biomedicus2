@@ -1,12 +1,10 @@
 package edu.umn.biomedicus.common.vocabulary;
 
+import edu.umn.biomedicus.common.collect.IndexMapping;
+
 /**
  *
  */
-public interface CharacterSet {
-    int size();
-
-    int getIndex(char c);
-
-    char getCharacter(int index);
+public interface CharacterSet extends IndexMapping<Character> {
+    CharacterSet maskCharacters(CharSequence charSequence);
 }

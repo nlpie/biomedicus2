@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.tnt;
 
 import com.google.inject.ProvidedBy;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.viterbi.CandidateProbability;
 import edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
-@ProvidedBy(TntModelProvider.class)
+@ProvidedBy(TntModelLoader.class)
 public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>, TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
     private static final Logger LOGGER = LogManager.getLogger();
 

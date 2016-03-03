@@ -25,6 +25,9 @@
         <delegateAnalysisEngine key="sentence">
             <import location="annotator/SentenceAnnotator.xml"/>
         </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="acronym">
+            <import location="annotator/AcronymAnnotator.xml"/>
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="posAnnotator">
             <import location="annotator/PosTaggerAnnotator.xml"/>
         </delegateAnalysisEngine>
@@ -52,6 +55,7 @@
             <fixedFlow>
                 <node>token</node>
                 <node>sentence</node>
+                <node>acronym</node>
                 <node>posAnnotator</node>
                 <node>normalizer</node>
                 <node>dictionaryMapper</node>

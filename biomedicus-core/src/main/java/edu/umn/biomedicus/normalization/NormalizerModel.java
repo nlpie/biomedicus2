@@ -17,20 +17,12 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.ProvidedBy;
-import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.model.semantics.PartOfSpeech;
 import edu.umn.biomedicus.model.text.Token;
 import edu.umn.biomedicus.model.tuples.WordPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -43,7 +35,7 @@ import java.util.*;
  * @author Ben Knoll
  * @since 0.3.0
  */
-@ProvidedBy(NormalizerModelProvider.class)
+@ProvidedBy(NormalizerModelLoader.class)
 class NormalizerModel {
     private static final Logger LOGGER = LogManager.getLogger(NormalizerModel.class);
 

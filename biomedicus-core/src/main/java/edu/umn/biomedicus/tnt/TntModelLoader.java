@@ -24,7 +24,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class TntModelProvider extends ModelLoader<TntModel> {
+public class TntModelLoader extends ModelLoader<TntModel> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Path trigram;
@@ -32,7 +32,7 @@ public class TntModelProvider extends ModelLoader<TntModel> {
     private final Path wordModels;
 
     @Inject
-    public TntModelProvider(BiomedicusConfiguration biomedicusConfiguration) {
+    public TntModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
         trigram = biomedicusConfiguration.resolveDataFile("tnt.trigram.path");
         wordModels = biomedicusConfiguration.resolveDataFile("tnt.word.path");
     }

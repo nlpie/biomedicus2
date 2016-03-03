@@ -7,7 +7,6 @@ import edu.umn.biomedicus.model.text.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collections;
@@ -67,12 +66,8 @@ public class AcronymDetector {
      * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
      */
     @Inject
-    public AcronymDetector(AcronymModel model, @Nullable OrthographicAcronymModel orthographicModel) {
-        if (orthographicModel == null) {
-            this.orthographicModel = new OrthographicAcronymModel();
-        } else {
-            this.orthographicModel = orthographicModel;
-        }
+    public AcronymDetector(AcronymModel model, OrthographicAcronymModel orthographicModel) {
+        this.orthographicModel = orthographicModel;
         this.model = model;
     }
 
