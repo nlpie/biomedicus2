@@ -1,5 +1,6 @@
 package edu.umn.biomedicus.acronym;
 
+import edu.umn.biomedicus.application.PostProcessor;
 import edu.umn.biomedicus.model.text.Document;
 
 /**
@@ -10,7 +11,7 @@ import edu.umn.biomedicus.model.text.Document;
  *
  * Created by gpfinley on 10/30/15.
  */
-public interface AcronymModelTrainer {
+public interface AcronymModelTrainer extends PostProcessor {
 
     AcronymModel getModel();
 

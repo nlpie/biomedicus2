@@ -1,6 +1,5 @@
 package edu.umn.biomedicus.acronym;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -12,17 +11,20 @@ import java.util.function.Function;
  * @author Greg Finley
  * @since 1.5.0
  */
-public class WordVectorDouble implements Serializable, DoubleVector {
-
-    // Hash of values in this vector
-    private Map<Integer, Double> vector;
+public class WordVectorDouble implements DoubleVector {
 
     /**
-     * Constructor, which needs the values already set
-     *
-     * @param vector a map between Integers and Doubles to create a new vector from
+     * Hash of values in this vector
      */
-    public WordVectorDouble(Map<Integer, Double> vector) {
+    private Map<Integer, Double> vector;
+
+    @Override
+    public Map<Integer, Double> getVector() {
+        return vector;
+    }
+
+    @Override
+    public void setVector(Map<Integer, Double> vector) {
         this.vector = vector;
     }
 

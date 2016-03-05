@@ -1,10 +1,9 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.model.tuples.WordPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +18,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class NormalizerModelLoader extends ModelLoader<NormalizerModel> {
+public class NormalizerModelLoader extends DataLoader<NormalizerModel> {
     private final Logger LOGGER = LogManager.getLogger();
 
     private final Path lexiconFile;

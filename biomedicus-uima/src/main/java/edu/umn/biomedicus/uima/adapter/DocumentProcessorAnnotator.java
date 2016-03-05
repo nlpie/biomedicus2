@@ -2,12 +2,11 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import edu.umn.biomedicus.application.BiomedicusScopes;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.*;
 import edu.umn.biomedicus.common.settings.Settings;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.application.ProcessorSettings;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -29,6 +28,8 @@ import java.util.Objects;
  * @since 1.4
  */
 public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     public static final String RESOURCE_GUICE_INJECTOR = "guiceInjector";
 
     public static final String PARAM_DOCUMENT_PROCESSOR = "documentProcessor";
@@ -36,6 +37,8 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
     public static final String PARAM_VIEW_NAME = "viewName";
 
     public static final String PARAM_EAGER_LOAD = "eagerLoad";
+
+    private static final String PARAM_POST_PROCESSORS = "postProcessors";
 
     @Nullable
     private Injector injector;
@@ -48,6 +51,9 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
 
     @Nullable
     private ProcessorSettings processorSettings;
+
+    @Nullable
+    private String[] postProcessors;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -64,14 +70,17 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
             for (String className : eagerLoad) {
                 try {
                     Object eagerLoaded = injector.getInstance(Class.forName(className));
-                    if (eagerLoaded instanceof ModelLoader) {
-                        ((ModelLoader) eagerLoaded).eagerLoad();
+                    if (eagerLoaded instanceof DataLoader) {
+                        ((DataLoader) eagerLoaded).eagerLoad();
                     }
                 } catch (ClassNotFoundException | BiomedicusException e) {
+                    LOGGER.error("Error during document processor loading phase", e);
                     throw new ResourceInitializationException(e);
                 }
             }
         }
+
+        postProcessors = (String[]) aContext.getConfigParameterValue(PARAM_POST_PROCESSORS);
 
         String documentProcessorClassName = (String) aContext.getConfigParameterValue(PARAM_DOCUMENT_PROCESSOR);
         try {
@@ -114,7 +123,38 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
                 return null;
             }, seededObjects);
         } catch (Exception e) {
+            LOGGER.error("Error during processing", e);
             throw new AnalysisEngineProcessException(e);
+        }
+    }
+
+    @Override
+    public void collectionProcessComplete() throws AnalysisEngineProcessException {
+        super.collectionProcessComplete();
+
+        try {
+            if (postProcessors == null) {
+                return;
+            }
+
+            if (injector == null) {
+                throw new AnalysisEngineProcessException();
+            }
+
+            for (String postProcessorClassName : postProcessors) {
+                try {
+                    Class<? extends PostProcessor> postProcessorClass = Class.forName(postProcessorClassName).asSubclass(PostProcessor.class);
+                    PostProcessor postProcessor = injector.getInstance(postProcessorClass);
+                    postProcessor.afterProcessing();
+                } catch (ClassNotFoundException | BiomedicusException e) {
+                    LOGGER.error("Error during post processing", e);
+                    throw new AnalysisEngineProcessException(e);
+                }
+            }
+        } catch (Throwable throwable) {
+            // this is really ugly but the default UIMA CPE discards these errors without logging.
+            LOGGER.error("Error during collectionProcessingComplete.", throwable);
+            throw throwable;
         }
     }
 }

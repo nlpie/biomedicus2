@@ -1,5 +1,6 @@
 package edu.umn.biomedicus.acronym;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -17,6 +18,10 @@ public interface DoubleVector {
      * @return the value at that element (zero if absent)
      */
     double get(int index);
+
+    Map<Integer, Double> getVector();
+
+    void setVector(Map<Integer, Double> vector);
 
     /**
      * The magnitude/length of this vector

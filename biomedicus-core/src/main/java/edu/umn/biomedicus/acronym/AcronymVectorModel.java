@@ -1,14 +1,11 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.model.text.Token;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.annotation.Nullable;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * An implementation of an acronym model that uses word vectors and a cosine distance metric
@@ -16,19 +13,33 @@ import java.util.zip.GZIPOutputStream;
  * @author Greg Finley
  * @since 1.5.0
  */
-public class AcronymVectorModel implements Serializable, AcronymModel {
+public class AcronymVectorModel implements AcronymModel {
 
-    // A vector space with a built dictionary to use at test time
-    private final VectorSpaceDouble vectorSpaceDouble;
+    public static final String UNK = "(unknown)";
 
-    // A map between acronyms and all their possible long forms
-    private final Map<String, List<String>> expansionMap;
+    /**
+     *  A vector space with a built dictionary to use at test time
+     */
+    private VectorSpaceDouble vectorSpaceDouble;
 
-    // Maps long forms to their trained word vectors
-    private final Map<String, DoubleVector> senseMap;
+    /**
+     *  A map between acronyms and all their possible long forms
+     */
+    private Map<String, String[]> expansionMap;
 
-    // The alignment model will guess an acronym's full form based on its alignment if we don't know what it is
-    private final AlignmentModel alignmentModel;
+    /**
+     * Maps long forms to their trained word vectors
+     */
+    private Map<String, DoubleVector> senseMap;
+
+    /**
+     *  The alignment model will guess an acronym's full form based on its alignment if we don't know what it is.
+     */
+    private AlignmentModel alignmentModel;
+
+    public AcronymVectorModel() {
+
+    }
 
     /**
      * Constructor. Needs several things already made:
@@ -38,7 +49,7 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
      * @param expansionMap      which maps between acronym Strings and Lists of their possible senses
      * @param alignmentModel    a model used for alignment of unknown acronyms
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap, @Nullable AlignmentModel alignmentModel) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap, @Nullable AlignmentModel alignmentModel) {
         this.expansionMap = expansionMap;
         this.senseMap = senseMap;
         this.vectorSpaceDouble = vectorSpaceDouble;
@@ -48,8 +59,40 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
     /**
      * Constructor without providing an AlignmentModel
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap) {
         this(vectorSpaceDouble, senseMap, expansionMap, null);
+    }
+
+    public VectorSpaceDouble getVectorSpaceDouble() {
+        return vectorSpaceDouble;
+    }
+
+    public void setVectorSpaceDouble(VectorSpaceDouble vectorSpaceDouble) {
+        this.vectorSpaceDouble = vectorSpaceDouble;
+    }
+
+    public Map<String, String[]> getExpansionMap() {
+        return expansionMap;
+    }
+
+    public void setExpansionMap(Map<String, String[]> expansionMap) {
+        this.expansionMap = expansionMap;
+    }
+
+    public Map<String, DoubleVector> getSenseMap() {
+        return senseMap;
+    }
+
+    public void setSenseMap(Map<String, DoubleVector> senseMap) {
+        this.senseMap = senseMap;
+    }
+
+    public AlignmentModel getAlignmentModel() {
+        return alignmentModel;
+    }
+
+    public void setAlignmentModel(AlignmentModel alignmentModel) {
+        this.alignmentModel = alignmentModel;
     }
 
     /**
@@ -58,11 +101,11 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public List<String> getExpansions(Token token) {
-        String acronym = AcronymModel.standardForm(token);
+    public String[] getExpansions(Token token) {
+        String acronym = AcronymUtilities.standardForm(token);
         if (expansionMap.containsKey(acronym))
-            return new ArrayList<>(expansionMap.get(acronym));
-        return new ArrayList<>();
+            return expansionMap.get(acronym);
+        return new String[0];
     }
 
     /**
@@ -72,7 +115,7 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
      * @return
      */
     public boolean hasAcronym(Token token) {
-        String acronym = AcronymModel.standardForm(token);
+        String acronym = AcronymUtilities.standardForm(token);
         if (expansionMap.containsKey(acronym)) {
             return true;
         }
@@ -90,53 +133,49 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
     public String findBestSense(List<Token> context, Token token) {
 
         // String to assign to unknown acronyms
-        final String UNK = "(unknown)";
 
-        Set<String> allSenses;
-        Set<String> usableSenses = new HashSet<>();
-
-        String acronym = AcronymModel.standardForm(token);
+        String acronym = AcronymUtilities.standardForm(token);
 
         // If the model doesn't contain this acronym, make sure it doesn't contain an upper-case version of it
-        if (!expansionMap.containsKey(acronym)) {
-            if (!expansionMap.containsKey(acronym.toUpperCase())) {
-                // if it still doesn't, then try to expand using the alignment model
-                if (alignmentModel != null) {
-                    allSenses = new HashSet<>(alignmentModel.findBestLongforms(acronym));
-                } else {
-                    return UNK;
-                }
-            }
-            // If it contains only the upper-case form, just set it to that
-            else {
-                acronym = acronym.toUpperCase();
-                allSenses = new HashSet<>(expansionMap.get(acronym));
-            }
-        } else {
-            allSenses = new HashSet<>(expansionMap.get(acronym));
+
+        String[] senses = expansionMap.get(acronym);
+        if (senses == null) {
+            senses = expansionMap.get(acronym.toUpperCase());
+        }
+        if (senses == null && alignmentModel != null) {
+            senses = alignmentModel.findBestLongforms(acronym);
+        }
+        if (senses == null || senses.length == 0) {
+            return UNK;
         }
 
         // If the acronym is unambiguous, our work is done
-        if (allSenses.size() == 1) {
-            return (String) allSenses.toArray()[0];
+        if (senses.length == 1) {
+            return senses[0];
         }
 
+
+        List<String> usableSenses = new ArrayList<>();
         // Be sure that there even are disambiguation vectors for senses
-        for (String sense : allSenses) {
-            if (senseMap.containsKey(sense))
+        for (String sense : senses) {
+            if (senseMap.containsKey(sense)) {
                 usableSenses.add(sense);
+            }
         }
+
         // If no senses good for disambiguation were found, try the upper-case version
         if (usableSenses.size() == 0 && expansionMap.containsKey(acronym.toUpperCase())) {
-            for (String sense : allSenses) {
-                if (senseMap.containsKey(sense))
+            for (String sense : senses) {
+                if (senseMap.containsKey(sense)) {
                     usableSenses.add(sense);
+                }
             }
         }
 
         // Should this just guess the first sense instead?
-        if (usableSenses.size() == 0)
+        if (usableSenses.size() == 0) {
             return UNK;
+        }
 
         double best = -Double.MAX_VALUE;
         String winner = UNK;
@@ -157,21 +196,6 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
     }
 
     /**
-     * Write this object to a file
-     *
-     * @param filename the name of the output file (*.ser)
-     * @throws IOException
-     */
-    public void serialize(String filename) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(filename);
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(gzipOutputStream);
-        objectOutputStream.writeObject(this);
-        gzipOutputStream.flush();
-        gzipOutputStream.close();
-    }
-
-    /**
      * Remove a single word from the model
      *
      * @param word the word to remove
@@ -188,5 +212,4 @@ public class AcronymVectorModel implements Serializable, AcronymModel {
     public void removeWordsExcept(Set<String> wordsToRemove) {
         vectorSpaceDouble.removeWordsExcept(wordsToRemove);
     }
-
 }

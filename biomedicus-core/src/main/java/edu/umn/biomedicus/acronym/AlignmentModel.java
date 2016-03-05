@@ -1,7 +1,10 @@
 package edu.umn.biomedicus.acronym;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Will attempt to determine a long form candidate for an unknown abbreviation by a sequence matching algorithm
@@ -19,25 +22,38 @@ public class AlignmentModel implements Serializable {
      */
     private boolean caseSensitive;
 
-    /**
-     * Load longforms that will be used by the aligner
-     *
-     * @param longformsFilename the filename of longforms, each on its own line (no bars or other delimiters)
-     * @throws IOException
-     */
-    public AlignmentModel(String longformsFilename, boolean caseSensitive) throws IOException {
-        longforms = new HashSet<>();
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(longformsFilename);
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream));
-        String nextLine;
-        while ((nextLine = fileReader.readLine()) != null) {
-            longforms.add(nextLine);
-        }
+    public AlignmentModel() {
+
+    }
+
+    public AlignmentModel(Set<String> longforms, boolean caseSensitive) {
+        this.longforms = longforms;
         this.caseSensitive = caseSensitive;
     }
 
-    public AlignmentModel(String longformsFilename) throws IOException {
-        this(longformsFilename, false);
+    public Set<String> getLongforms() {
+        return longforms;
+    }
+
+    public void setLongforms(Set<String> longforms) {
+        this.longforms = longforms;
+    }
+
+    public boolean isCaseSensitive() {
+        return caseSensitive;
+    }
+
+    public void setCaseSensitive(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
+
+    public static AlignmentModel create(Path longformsPath, boolean caseSensitive) throws IOException {
+        Set<String> longforms = Files.lines(longformsPath).collect(Collectors.toSet());
+        return new AlignmentModel(longforms, caseSensitive);
+    }
+
+    public static AlignmentModel create(Path longformsPath) throws IOException {
+        return AlignmentModel.create(longformsPath, false);
     }
 
     /**
@@ -48,7 +64,6 @@ public class AlignmentModel implements Serializable {
      * @return the score of the match
      */
     public double align(String abbr, String longform) {
-
         if (!caseSensitive) {
             abbr = abbr.toLowerCase();
             longform = longform.toLowerCase();
@@ -147,7 +162,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return all longforms with the highest score
      */
-    public List<String> findBestLongforms(String abbrev) {
+    public String[] findBestLongforms(String abbrev) {
         List<String> best = new ArrayList<>();
         double maxScore = -Double.MAX_VALUE;
         for (String longform : longforms) {
@@ -159,7 +174,7 @@ public class AlignmentModel implements Serializable {
             if (thisScore == maxScore)
                 best.add(longform);
         }
-        return best;
+        return best.toArray(new String[best.size()]);
     }
 
     /**
@@ -173,14 +188,11 @@ public class AlignmentModel implements Serializable {
         for (String longform : longforms) {
             longformScores.put(longform, align(abbrev, longform));
         }
-        TreeMap<String, Double> sortedScores = new TreeMap<>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                int comparison = longformScores.get(o2).compareTo(longformScores.get(o1));
-                if (comparison == 0)
-                    comparison = o1.compareTo(o2);
-                return comparison;
-            }
+        TreeMap<String, Double> sortedScores = new TreeMap<>((Comparator<String>) (o1, o2) -> {
+            int comparison = longformScores.get(o2).compareTo(longformScores.get(o1));
+            if (comparison == 0)
+                comparison = o1.compareTo(o2);
+            return comparison;
         });
         sortedScores.putAll(longformScores);
 

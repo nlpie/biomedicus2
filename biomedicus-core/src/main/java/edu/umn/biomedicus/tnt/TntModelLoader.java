@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +24,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class TntModelLoader extends ModelLoader<TntModel> {
+public class TntModelLoader extends DataLoader<TntModel> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Path trigram;

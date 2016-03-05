@@ -3,21 +3,18 @@ package edu.umn.biomedicus.acronym;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.vocabulary.CharacterSet;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Loads the orthographic model.
@@ -25,7 +22,7 @@ import java.util.zip.GZIPInputStream;
  * @since 1.5.0
  */
 @Singleton
-public class OrthographicAcronymModelLoader extends ModelLoader<OrthographicAcronymModel> {
+public class OrthographicAcronymModelLoader extends DataLoader<OrthographicAcronymModel> {
     private final Path orthographicModel;
 
     private CharacterSet symbols;

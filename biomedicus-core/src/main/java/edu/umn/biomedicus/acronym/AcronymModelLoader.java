@@ -3,10 +3,11 @@ package edu.umn.biomedicus.acronym;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +22,7 @@ import java.util.zip.GZIPInputStream;
  * @since 1.5.0
  */
 @Singleton
-public class AcronymModelLoader extends ModelLoader<AcronymModel> {
+public class AcronymModelLoader extends DataLoader<AcronymModel> {
     private final Logger LOGGER = LogManager.getLogger();
 
     private final Path path;
@@ -34,11 +35,10 @@ public class AcronymModelLoader extends ModelLoader<AcronymModel> {
     @Override
     protected AcronymModel loadModel() throws BiomedicusException {
         LOGGER.info("Loading acronym model: {}", path);
-        try (InputStream in = Files.newInputStream(path)) {
-            GZIPInputStream gzipInputStream = new GZIPInputStream(in);
-            ObjectInputStream ois = new ObjectInputStream(gzipInputStream);
-            return (AcronymModel) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        Yaml yaml = new Yaml();
+        try {
+            return (AcronymModel) yaml.load(Files.newBufferedReader(path));
+        } catch (IOException e) {
             throw new BiomedicusException(e);
         }
     }

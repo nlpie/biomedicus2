@@ -5,6 +5,7 @@ import edu.umn.biomedicus.model.text.Token;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 /**
@@ -14,67 +15,125 @@ import java.util.stream.IntStream;
  * @author Greg Finley
  * @since 1.5.0
  */
-public class VectorSpaceDouble implements Serializable {
+public class VectorSpaceDouble {
+    /**
+     * How quickly the sigmoid falls off. More of an idiosyncratic steepness parameter than a slope
+     */
+    private static final double SLOPE = 0.3;
 
-    // Should the IDF be squared, to effectively apply it to both test and train vectors (or raised to another power)?
-    private final double idfPower;
-    // Distance to use for weighting function
-    private final double maxDist;
-    // The actual size of the window; past threshWeight, we won't even consider words
-    private final double windowSize;
+    /**
+     * Default weighting function is sigmoid that decreases with distance (to 0.5 at maxDist)
+     * Need to cast to Serializable to save it
+     */
+    private static final BiFunction<Integer, Double, Double> DIST_WEIGHT = (BiFunction<Integer, Double, Double> & Serializable) (dist, maxDist) -> 1.0 / (1.0 + Math.exp(SLOPE * (Math.abs(dist) - maxDist)));
+
+    /**
+     * Should the IDF be squared, to effectively apply it to both test and train vectors (or raised to another power)?
+     */
+    private static final double IDF_POWER = 1;
+
+    /**
+     *
+     */
+    private static final double THRESH_WEIGHT = 0.25;
+
+    private static final Pattern ALPHANUMERIC = Pattern.compile("[a-zA-Z0-9.&_]*");
+
+    /**
+     * Distance to use for weighting function
+     */
+    private transient double maxDist;
+
+    /**
+     * The actual size of the window; past threshWeight, we won't even consider words
+     */
+    private transient double windowSize;
+
     private Map<String, Integer> dictionary = new HashMap<>();
-    // A count of how many "documents" (training examples) contain each term
-    // Maps words (in their integer form, accessible through dictionary) to counts
+
+    /**
+     * A count of how many "documents" (training examples) contain each term
+     * Maps words (in their integer form, accessible through dictionary) to counts
+     */
     private Map<Integer, Integer> documentsPerTerm = new HashMap<>();
-    // Number of "documents" (contexts) seen in training
+
+    /**
+     *  Number of "documents" (contexts) seen in training
+     */
     private int totalDocs = 0;
-    // A log-transformed version of documentsPerTerm
-    private DoubleVector idf;
-    // This will be set to false when calculating the idf, and terms will no longer be added to IDF counts
+
+    /**
+     *  A log-transformed version of documentsPerTerm
+     */
+    private WordVectorDouble idf;
+
+    /**
+     * This will be set to false when calculating the idf, and terms will no longer be added to IDF counts
+     */
     private boolean training = true;
-    // How quickly the sigmoid falls off. More of an idiosyncratic steepness parameter than a slope
-    private double slope = 0.3;
-    // Default weighting function is sigmoid that decreases with distance (to 0.5 at maxDist)
-    // Need to cast to Serializable to save it
-    private BiFunction<Integer, Double, Double> distWeight = (BiFunction<Integer, Double, Double> & Serializable) (dist, maxDist) -> 1.0 / (1.0 + Math.exp(slope * (Math.abs(dist) - maxDist)));
 
     /**
      * Default constructor, uses maximum distance of 9.
      */
     public VectorSpaceDouble() {
-        this(9);
+        setMaxDist(9);
     }
 
-    /**
-     * Constructor taking maximum distance as an argument.
-     *
-     * @param maxDist maximum distance.
-     */
-    public VectorSpaceDouble(double maxDist) {
+    public double getMaxDist() {
+        return maxDist;
+    }
+
+    public void setMaxDist(double maxDist) {
         this.maxDist = maxDist;
-        idfPower = 1;
-        double threshWeight = 0.25;
-        // algebra tells us this is the window size to use
-        windowSize = Math.log(1.0 / threshWeight - 1) / slope + maxDist;
-    }
-
-    /**
-     * Check if a string is alphanumeric (with some symbols allowed)
-     *
-     * @param s string to check
-     * @return whether it is
-     */
-    private static boolean isAlphanumeric(String s) {
-        if (s.matches("[a-zA-Z0-9.&_]*")) return true;
-        return false;
-    }
-
-    public int numWords() {
-        return dictionary.size();
+        windowSize = Math.log(1.0 / THRESH_WEIGHT - 1) / SLOPE + maxDist;
     }
 
     public DoubleVector getIdf() {
         return idf;
+    }
+
+    public Map<String, Integer> getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(Map<String, Integer> dictionary) {
+        this.dictionary = dictionary;
+    }
+
+    public Map<Integer, Integer> getDocumentsPerTerm() {
+        return documentsPerTerm;
+    }
+
+    public void setDocumentsPerTerm(Map<Integer, Integer> documentsPerTerm) {
+        this.documentsPerTerm = documentsPerTerm;
+    }
+
+    public double getWindowSize() {
+        return windowSize;
+    }
+
+    public void setWindowSize(double windowSize) {
+        this.windowSize = windowSize;
+    }
+
+    public int getTotalDocs() {
+        return totalDocs;
+    }
+
+    public void setTotalDocs(int totalDocs) {
+        this.totalDocs = totalDocs;
+    }
+
+    public void setIdf(WordVectorDouble idf) {
+        this.idf = idf;
+    }
+
+    public boolean isTraining() {
+        return training;
+    }
+
+    public void setTraining(boolean training) {
+        this.training = training;
     }
 
     /**
@@ -85,10 +144,11 @@ public class VectorSpaceDouble implements Serializable {
         Map<Integer, Double> idf = new HashMap<>();
         // Add 1 to denominator in case there are zero-counts, and to numerator in case there are 'all'-counts
         for (Map.Entry<Integer, Integer> e : documentsPerTerm.entrySet()) {
-            double logged = Math.pow(Math.log((1 + (double) totalDocs) / (e.getValue())), idfPower);
+            double logged = Math.pow(Math.log((1 + (double) totalDocs) / (e.getValue())), IDF_POWER);
             idf.put(e.getKey(), logged);
         }
-        this.idf = new WordVectorDouble(idf);
+        this.idf = new WordVectorDouble();
+        this.idf.setVector(idf);
         training = false;
     }
 
@@ -128,7 +188,7 @@ public class VectorSpaceDouble implements Serializable {
 
             // Generate a list of words, if deemed acceptable words, whose values in the vector will be updated
             String word = standardForm(token);
-            if (isAlphanumeric(word) || token == tokenOfInterest) {
+            if (ALPHANUMERIC.matcher(word).matches() || token == tokenOfInterest) {
                 int wordInt = dictionary.getOrDefault(word, -1);
                 if (training) {
                     dictionary.putIfAbsent(word, dictionary.size());
@@ -146,7 +206,7 @@ public class VectorSpaceDouble implements Serializable {
         i = 0;
         for (int wordInt : wordIntList) {
             if (Math.abs(position[i]) <= windowSize && position[i] != 0) {
-                double thisCount = distWeight.apply(position[i], maxDist);
+                double thisCount = DIST_WEIGHT.apply(position[i], maxDist);
                 double oldWordScore = 0;
                 // Don't add the center token (the one at position 0); that's the term of interest
                 if (position[i] != 0) {
@@ -167,7 +227,9 @@ public class VectorSpaceDouble implements Serializable {
             }
             totalDocs++;
         }
-        return new WordVectorDouble(wordVector);
+        WordVectorDouble wordVectorDouble = new WordVectorDouble();
+        wordVectorDouble.setVector(wordVector);
+        return wordVectorDouble;
     }
 
     /**
@@ -180,7 +242,7 @@ public class VectorSpaceDouble implements Serializable {
         String form = t.getNormalForm();
         if (form == null)
             form = t.getText();
-        return AcronymModel.standardFormString(form).toLowerCase();
+        return AcronymUtilities.standardFormString(form).toLowerCase();
     }
 
     /**
@@ -191,7 +253,7 @@ public class VectorSpaceDouble implements Serializable {
      */
     public int removeWord(String word) {
         System.out.println(word);
-        return dictionary.remove(AcronymModel.standardFormString(word).toLowerCase());
+        return dictionary.remove(AcronymUtilities.standardFormString(word).toLowerCase());
     }
 
     /**
@@ -205,7 +267,7 @@ public class VectorSpaceDouble implements Serializable {
         Set<Integer> indicesRemoved = new HashSet<>();
         Set<String> wordsInDictionary = new HashSet<>(dictionary.keySet());
         for (String word : wordsInDictionary) {
-            word = AcronymModel.standardFormString(word).toLowerCase();
+            word = AcronymUtilities.standardFormString(word).toLowerCase();
             if (!wordsToKeep.contains(word)) {
                 indicesRemoved.add(removeWord(word));
             }

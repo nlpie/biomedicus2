@@ -22,35 +22,6 @@ import java.util.zip.GZIPInputStream;
 @ProvidedBy(AcronymModelLoader.class)
 public interface AcronymModel {
 
-    /**
-     * Gets a standardized form of a token, derived from Token.normalForm
-     *
-     * @param t
-     * @return
-     */
-    static String standardForm(Token t) {
-        return standardFormString(t.getText());
-    }
-
-    /**
-     * Get a standardized form for the dictionary
-     * Replace non-single-digit numerals (including decimals/commas) with a generic string
-     * Collapse certain non-alphanumeric characters ('conjunction' symbols like /, &, +)
-     *
-     * @param s
-     * @return
-     */
-    static String standardFormString(String s) {
-        // Collapse numbers
-        if (s.matches("[0-9]")) return "single_digit";
-        if (s.matches("[0-9]*\\.[0-9]+")) return "decimal_number";
-        if (s.matches("[0-9][0-9,]+")) return "big_number";
-        // Collapse certain symbols
-        s = s.replace('&', '/');
-        s = s.replace('+', '/');
-        return s;
-    }
-
     boolean hasAcronym(Token token);
 
     String findBestSense(List<Token> allTokens, Token token);
@@ -60,15 +31,12 @@ public interface AcronymModel {
      *
      * @param word the word to remove
      */
-    public void removeWord(String word);
+    void removeWord(String word);
 
     /**
      * Remove all words except a determined set from the model
      *
      * @param words a set of the words to keep
      */
-    public void removeWordsExcept(Set<String> words);
-
-    void serialize(String filename) throws IOException;
-
+    void removeWordsExcept(Set<String> words);
 }

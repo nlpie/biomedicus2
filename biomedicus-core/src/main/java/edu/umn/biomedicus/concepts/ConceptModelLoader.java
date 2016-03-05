@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
-import edu.umn.biomedicus.application.ModelLoader;
+import edu.umn.biomedicus.application.DataLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -20,7 +20,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class ConceptModelLoader extends ModelLoader<ConceptModel> {
+public class ConceptModelLoader extends DataLoader<ConceptModel> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Path dictionaryPath;
