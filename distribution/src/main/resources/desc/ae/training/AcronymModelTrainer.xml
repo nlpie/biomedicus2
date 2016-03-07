@@ -60,7 +60,7 @@
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainer</string>
+                    <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainerProcessor</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
@@ -74,6 +74,14 @@
                 <value>
                     <array>
                         <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainerLoader</string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>postProcessors</name>
+                <value>
+                    <array>
+                        <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainer</string>
                     </array>
                 </value>
             </nameValuePair>

@@ -31,6 +31,8 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
     private static final Pattern SPLITTER = Pattern.compile("\\|");
 
+    private static final Pattern DE_ID = Pattern.compile("_%#.*#%_");
+
     private static final Logger LOGGER = LogManager.getLogger(AcronymVectorModelTrainer.class);
 
     // Number of tokens to look back/ahead when calculating word vectors
@@ -126,23 +128,22 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
         List<Token> allTokens = new ArrayList<>();
 
-        // Our position in the document, for building the lists
-        int i = 0;
-
         // Find tokens of interest in the document and their context; populate the above lists
         for (Token token : document.getTokens()) {
-            allTokens.add(token);
-            if (uniqueIdMap.containsKey(token.getText())) {
-                tokensOfInterest.add(token);
-                startPositions.add(i - maxSize);
-                endPositions.add(i + maxSize + 1);
+            String text = token.getText();
+            if (!DE_ID.matcher(text).matches()) {
+                allTokens.add(token);
+                if (uniqueIdMap.containsKey(token.getText())) {
+                    tokensOfInterest.add(token);
+                    startPositions.add(allTokens.size() - 1 - maxSize);
+                    endPositions.add(allTokens.size() + maxSize);
+                }
             }
-            i++;
         }
 
         // Now go through to every token of interest, calculate a vector for it, and add it to the vectors already
         // found for that sense.
-        i = 0;
+        int i = 0;
         for (Token tokenOfInterest : tokensOfInterest) {
             String senseEnglish = uniqueIdMap.get(tokenOfInterest.getText());
             int start = startPositions.get(i);
