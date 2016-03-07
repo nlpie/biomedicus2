@@ -20,8 +20,8 @@
     <primitive>true</primitive>
     <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
-        <name><!-- TODO: name --></name>
-        <description><!-- TODO: description --></description>
+        <name>Acronym Model Trainer</name>
+        <description>Training for the acronym model.</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
@@ -55,19 +55,34 @@
                 <multiValued>true</multiValued>
                 <mandatory>false</mandatory>
             </configurationParameter>
-            <!-- TODO: Add any configuration parameters -->
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string><!-- TODO: document processor class name goes here --></string>
+                    <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainerProcessor</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
                 <name>viewName</name>
                 <value>
                     <string>SystemView</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>eagerLoad</name>
+                <value>
+                    <array>
+                        <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainerLoader</string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>postProcessors</name>
+                <value>
+                    <array>
+                        <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainer</string>
+                    </array>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>

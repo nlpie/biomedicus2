@@ -107,6 +107,35 @@ public interface Token extends Span, Editable {
     void setIsMisspelled(boolean misspelled);
 
     /**
+     * Returns whether or not this token is an acronym/abbreviation
+     *
+     * @return true if the token has been identified as an acronym/abbreviation, false otherwise
+     */
+    boolean isAcronym();
+
+    /**
+     * Sets whether or not this token is misspelled
+     *
+     * @param acronym true if the token is misspelled, false otherwise
+     */
+    void setIsAcronym(boolean acronym);
+
+    /**
+     * Accesses the long form of this abbreviation token
+     *
+     * @return the long form
+     */
+    @Nullable
+    String getLongForm();
+
+    /**
+     * Sets the long form of this abbreviation token
+     *
+     * @param longForm the long form to set
+     */
+    void setLongForm(@Nullable String longForm);
+
+    /**
      * Returns the corrected spelling of the token
      *
      * @return the correct spelling of the token, if it has been corrected, or null otherwise

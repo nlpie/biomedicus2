@@ -79,6 +79,27 @@ class TokenAdapter implements Token {
     }
 
     @Override
+    public boolean isAcronym() {
+        return tokenAnnotation.getIsAcronymAbbrev();
+    }
+
+    @Override
+    public void setIsAcronym(boolean acronym) {
+        tokenAnnotation.setIsAcronymAbbrev(acronym);
+    }
+
+    @Nullable
+    @Override
+    public String getLongForm() {
+        return tokenAnnotation.getAcronymAbbrevExpansion();
+    }
+
+    @Override
+    public void setLongForm(@Nullable String longForm) {
+        tokenAnnotation.setAcronymAbbrevExpansion(longForm);
+    }
+
+    @Override
     public String correctSpelling() {
         return tokenAnnotation.getCorrectSpelling();
     }

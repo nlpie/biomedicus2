@@ -31,6 +31,9 @@
         <delegateAnalysisEngine key="normalizer">
             <import location="annotator/TokenNormalizationAnnotator.xml"/>
         </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="acronym">
+            <import location="annotator/AcronymAnnotator.xml"/>
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="dictionaryMapper">
             <import location="annotator/DictionaryConceptRecognizer.xml"/>
         </delegateAnalysisEngine>
@@ -54,6 +57,7 @@
                 <node>sentence</node>
                 <node>posAnnotator</node>
                 <node>normalizer</node>
+                <node>acronym</node>
                 <node>dictionaryMapper</node>
                 <node>history</node>
                 <node>negation</node>

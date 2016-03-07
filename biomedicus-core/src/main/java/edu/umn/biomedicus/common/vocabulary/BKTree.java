@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A metric tree which uses Levenshtein distance as keys. It is based on the paper "Some approaches to best-match file
+ * A metric tree which uses Edit distance as keys. It is based on the paper "Some approaches to best-match file
  * searching" by W.A. Burkhard and R.M. Keller.
  * <a href="http://dl.acm.org/citation.cfm?doid=362003.362025">http://dl.acm.org/citation.cfm?doid=362003.362025</a>
  *
@@ -16,19 +16,23 @@ import java.util.stream.Stream;
 public class BKTree {
     private final Node rootNode;
 
-    private BKTree(Node rootNode) {
+    private final EditDistance editDistance;
+
+    private BKTree(Node rootNode, EditDistance editDistance) {
         this.rootNode = rootNode;
+        this.editDistance = editDistance;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    private BKTree(MutableNode rootNode, EditDistance editDistance) {
+        this.rootNode = rootNode.build(this);
+        this.editDistance = editDistance;
     }
 
     public Stream<String> search(String word, int maxDistance) {
         return rootNode.search(word, maxDistance);
     }
 
-    private static class Node {
+    private class Node {
         private final String word;
 
         @Nullable
@@ -44,7 +48,7 @@ public class BKTree {
         }
 
         private Stream<String> search(String query, int maxDistance) {
-            int distance = new EditDistance(Costs.LEVENSHTEIN, query, word).compute();
+            int distance = editDistance.compute(query, word);
             int min = distance - maxDistance;
             int max = distance + maxDistance;
 
@@ -74,10 +78,10 @@ public class BKTree {
             this.word = word;
         }
 
-        private Node build() {
+        private Node build(BKTree bkTree) {
             int childrenSize = children.size();
             if (childrenSize == 0) {
-                return new Node(word, null, null);
+                return bkTree.new Node(word, null, null);
             }
 
             List<Map.Entry<Integer, MutableNode>> sorted = sortChildrenByDistance();
@@ -87,9 +91,9 @@ public class BKTree {
             for (int i = 0; i < childrenSize; i++) {
                 Map.Entry<Integer, MutableNode> entry = sorted.get(i);
                 distances[i] = entry.getKey();
-                nodes[i] = entry.getValue().build();
+                nodes[i] = entry.getValue().build(bkTree);
             }
-            return new Node(word, distances, nodes);
+            return bkTree.new Node(word, distances, nodes);
         }
 
         private List<Map.Entry<Integer, MutableNode>> sortChildrenByDistance() {
@@ -101,14 +105,31 @@ public class BKTree {
         }
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static class Builder {
+        @Nullable
         private MutableNode rootNode = null;
+
+        @Nullable
+        private EditDistance editDistance;
 
         private Builder() {
 
         }
 
-        public void add(String word) {
+        public Builder withEditDistance(EditDistance editDistance) {
+            this.editDistance = editDistance;
+            return this;
+        }
+
+        public Builder add(String word) {
+            if (editDistance == null) {
+                throw new IllegalStateException("Edit distance method needs to be set before adding words");
+            }
+
             if (rootNode == null) {
                 rootNode = new MutableNode(word);
             }
@@ -116,7 +137,7 @@ public class BKTree {
             MutableNode currentNode = rootNode;
 
             while (true) {
-                int distance = new EditDistance(Costs.LEVENSHTEIN, currentNode.word, word).compute();
+                int distance = editDistance.compute(currentNode.word, word);
                 if (distance == 0) {
                     break;
                 }
@@ -127,10 +148,17 @@ public class BKTree {
 
                 currentNode = currentNode.children.get(distance);
             }
+            return this;
         }
 
         public BKTree build() {
-            return new BKTree(rootNode.build());
+            if (rootNode == null) {
+                throw new IllegalStateException("Empty BK Tree");
+            }
+            if (editDistance == null) {
+                throw new IllegalStateException("Edit distance method needs to be set before adding words");
+            }
+            return new BKTree(rootNode, editDistance);
         }
     }
 }

@@ -16,15 +16,12 @@
 
 package edu.umn.biomedicus.tnt;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.viterbi.CandidateProbability;
 import edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.model.tuples.PosCap;
 import edu.umn.biomedicus.model.tuples.WordCap;
 import org.apache.logging.log4j.LogManager;
@@ -32,22 +29,20 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  *
  */
-@Singleton
-public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
-        TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
-
+@ProvidedBy(TntModelLoader.class)
+public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>, TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
     private static final Logger LOGGER = LogManager.getLogger();
+
 
     /**
      * Trigram model used for transition probability.
@@ -57,38 +52,11 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
     /**
      * Word probability models used for emission probability.
      */
-    final List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities;
+    private final List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities;
 
-    @Inject
-    TntModel(BiomedicusConfiguration biomedicusConfiguration) throws BiomedicusException {
-        Path trigram = biomedicusConfiguration.resolveDataFile("tnt.trigram.path");
-        Path wordModels = biomedicusConfiguration.resolveDataFile("tnt.word.path");
-
-        Yaml yaml = new Yaml(new PartOfSpeechConstructor(), new PartOfSpeechRepresenter());
-
-        try {
-            LOGGER.info("Loading POS trigram model: {}", trigram);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> store = (Map<String, Object>) yaml.load(Files.newInputStream(trigram));
-            posCapTrigramModel = PosCapTrigramModel.createFromStore(store);
-
-            filteredAdaptedWordProbabilities = new ArrayList<>();
-            Files.walkFileTree(wordModels, Collections.emptySet(), 1, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    LOGGER.info("Loading POS word model #{}: {}", filteredAdaptedWordProbabilities.size() + 1, file);
-                    if (file.getFileName().toString().endsWith(".yml")) {
-                        FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = (FilteredAdaptedWordProbabilityModel) yaml.load(Files.newInputStream(file));
-                        filteredAdaptedWordProbabilities.add(filteredAdaptedWordProbabilityModel);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-
-            Collections.sort(filteredAdaptedWordProbabilities, (m1, m2) -> Integer.compare(m1.getPriority(), m2.getPriority()));
-        } catch (IOException e) {
-            throw new BiomedicusException(e);
-        }
+    public TntModel(PosCapTrigramModel posCapTrigramModel, List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities) {
+        this.posCapTrigramModel = posCapTrigramModel;
+        this.filteredAdaptedWordProbabilities = filteredAdaptedWordProbabilities;
     }
 
     public void write(Path folder) throws IOException {
@@ -107,11 +75,6 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
             yaml.dump(filteredAdaptedWordProbability,
                     Files.newBufferedWriter(words.resolve(filteredAdaptedWordProbability.getPriority() + ".yml")));
         }
-    }
-
-    public TntModel(PosCapTrigramModel posCapTrigramModel, List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities) {
-        this.posCapTrigramModel = posCapTrigramModel;
-        this.filteredAdaptedWordProbabilities = filteredAdaptedWordProbabilities;
     }
 
     private FilteredAdaptedWordProbabilityModel getWordProbabilityModel(WordCap emittedValue) {

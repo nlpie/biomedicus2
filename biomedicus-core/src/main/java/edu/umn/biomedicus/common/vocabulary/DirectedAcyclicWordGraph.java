@@ -30,11 +30,11 @@ public class DirectedAcyclicWordGraph extends AbstractCollection<CharSequence> i
 
         @Nullable
         public Node getChild(char c) {
-            return children[characterSet.getIndex(c)];
+            return children[characterSet.indexOf(c)];
         }
 
         public int indexUpTo(char c) {
-            return Arrays.stream(children, 0, characterSet.getIndex(c)).mapToInt(child -> child.words).sum();
+            return Arrays.stream(children, 0, characterSet.indexOf(c)).mapToInt(child -> child.words).sum();
         }
 
         public Node[] getChildren() {
