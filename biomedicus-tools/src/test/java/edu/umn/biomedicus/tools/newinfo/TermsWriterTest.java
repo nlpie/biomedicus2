@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.text.Token;
 import mockit.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;

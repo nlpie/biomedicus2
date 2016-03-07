@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.text.Span;
 
 import java.util.stream.Stream;
 

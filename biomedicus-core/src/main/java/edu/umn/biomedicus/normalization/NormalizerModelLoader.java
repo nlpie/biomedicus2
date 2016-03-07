@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.model.tuples.WordPos;
+import edu.umn.biomedicus.common.tuples.WordPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;

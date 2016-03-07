@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Token;
-import edu.umn.biomedicus.model.tuples.WordPos;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.tuples.WordPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * Token normalizer which uses a table of parts of speech and terms to provide a base term.

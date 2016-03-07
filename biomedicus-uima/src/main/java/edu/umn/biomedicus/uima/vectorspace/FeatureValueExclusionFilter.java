@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.vectorspace;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.uima.CasHelper;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;

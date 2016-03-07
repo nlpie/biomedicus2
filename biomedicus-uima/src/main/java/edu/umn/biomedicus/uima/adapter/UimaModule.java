@@ -2,7 +2,7 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.AbstractModule;
 import edu.umn.biomedicus.application.BiomedicusScopes;
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 

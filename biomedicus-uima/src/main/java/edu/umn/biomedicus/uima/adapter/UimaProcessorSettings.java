@@ -1,8 +1,8 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.common.settings.Settings;
 import edu.umn.biomedicus.application.ProcessorSettings;
+import edu.umn.biomedicus.common.settings.Settings;
 
 /**
  *

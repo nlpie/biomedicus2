@@ -1,6 +1,9 @@
 package edu.umn.biomedicus.common.collect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * Maps a subset of integers expressed as ranges to a continuous set of integers starting at 0.

@@ -17,16 +17,16 @@
 package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.text.Token;
-import edu.umn.biomedicus.model.tokensets.OrderedTokenSet;
-import edu.umn.biomedicus.model.tokensets.SentenceTextOrderedTokenSet;
-import edu.umn.biomedicus.model.tokensets.TextOrderedTokenSet;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
+import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
+import edu.umn.biomedicus.common.tokensets.TextOrderedTokenSet;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static edu.umn.biomedicus.model.semantics.PartOfSpeech.*;
+import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
 
 /**
  * Uses a {@link edu.umn.biomedicus.concepts.ConceptModel} to recognize concepts in text. First, it will

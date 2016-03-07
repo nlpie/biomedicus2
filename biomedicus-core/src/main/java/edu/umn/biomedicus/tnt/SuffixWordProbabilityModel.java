@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.tuples.WordCap;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.utilities.Strings;
 
 import java.util.Map;

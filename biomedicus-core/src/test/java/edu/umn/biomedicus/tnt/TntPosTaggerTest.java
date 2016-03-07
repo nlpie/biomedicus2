@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Token;
-import edu.umn.biomedicus.model.tuples.PosCap;
-import edu.umn.biomedicus.model.tuples.WordCap;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.tuples.PosCap;
+import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
 import mockit.*;

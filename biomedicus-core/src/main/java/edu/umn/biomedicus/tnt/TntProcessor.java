@@ -2,9 +2,9 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
 
 import javax.inject.Inject;
 

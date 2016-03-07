@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

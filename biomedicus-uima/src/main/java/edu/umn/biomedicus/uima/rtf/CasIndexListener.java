@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.rtf.reader.IndexListener;
 import edu.umn.biomedicus.rtfuima.type.ViewIndex;
 import org.apache.uima.jcas.JCas;

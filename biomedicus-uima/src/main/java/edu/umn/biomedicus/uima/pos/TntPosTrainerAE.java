@@ -16,9 +16,8 @@
 
 package edu.umn.biomedicus.uima.pos;
 
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.tnt.TntModel;
 import edu.umn.biomedicus.tnt.TntModelTrainer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
@@ -31,11 +30,8 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import javax.annotation.Nullable;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Trainer for the TnT part of speech tagger.

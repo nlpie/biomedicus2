@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.vectorspace;
 
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.text.Span;
 import org.apache.uima.jcas.JCas;
 
 import java.util.stream.Stream;

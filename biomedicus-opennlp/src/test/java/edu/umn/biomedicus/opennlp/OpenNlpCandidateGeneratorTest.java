@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.opennlp;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.TextSpan;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.TextSpan;
 import mockit.Injectable;
 import mockit.NonStrictExpectations;
 import mockit.Tested;
@@ -43,7 +43,7 @@ public class OpenNlpCandidateGeneratorTest {
             textSpan.containsNonWhitespace(); result = true;
             textSpan.containsNonWhitespace(); result = false;
         }};
-        List<edu.umn.biomedicus.model.text.Span> spans = openNlpCandidateGenerator.generateSentenceSpans(text);
+        List<edu.umn.biomedicus.common.text.Span> spans = openNlpCandidateGenerator.generateSentenceSpans(text);
         Assert.assertEquals(2, spans.size());
         Assert.assertEquals(spans.get(0), Spans.spanning(0, 38));
         Assert.assertEquals(spans.get(1), Spans.spanning(40, 42));

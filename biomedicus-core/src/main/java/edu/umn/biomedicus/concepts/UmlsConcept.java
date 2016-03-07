@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.model.semantics.Concept;
+import edu.umn.biomedicus.common.semantics.Concept;
 
 /**
  *

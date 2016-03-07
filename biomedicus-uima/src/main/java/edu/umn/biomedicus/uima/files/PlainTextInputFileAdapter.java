@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 /**
  * A simple collections reader that reads documents from a directory in the filesystem. Uses a documents text to

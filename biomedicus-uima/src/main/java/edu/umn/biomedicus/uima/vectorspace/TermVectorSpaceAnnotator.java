@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.vectorspace;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.vectorspace.TermVector;
 import edu.umn.biomedicus.common.vectorspace.TermVectorSpace;
 import edu.umn.biomedicus.common.vectorspace.TermVectorSpaceManager;

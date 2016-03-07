@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.files;
 
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.Views;
 import org.apache.logging.log4j.LogManager;

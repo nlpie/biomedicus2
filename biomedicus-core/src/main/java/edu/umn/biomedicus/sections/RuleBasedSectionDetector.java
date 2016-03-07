@@ -3,10 +3,10 @@ package edu.umn.biomedicus.sections;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Document;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

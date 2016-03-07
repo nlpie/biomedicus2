@@ -2,9 +2,9 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.model.simple.SimpleToken;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.simple.SimpleToken;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

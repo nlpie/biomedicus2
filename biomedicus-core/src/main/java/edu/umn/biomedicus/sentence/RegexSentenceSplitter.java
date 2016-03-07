@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

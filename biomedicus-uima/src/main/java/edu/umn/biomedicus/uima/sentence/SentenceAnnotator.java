@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.sentence;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.sentence.SentenceDetector;
 import edu.umn.biomedicus.sentence.SentenceDetectorFactory;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;

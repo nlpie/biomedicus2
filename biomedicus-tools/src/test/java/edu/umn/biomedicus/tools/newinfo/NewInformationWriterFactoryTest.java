@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.uima.files.DirectoryOutputStreamFactory;
 import edu.umn.biomedicus.uima.files.FileNameProvider;
 import edu.umn.biomedicus.uima.files.FileNameProviders;

@@ -16,15 +16,15 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.type.TokenAnnotation;
 
 import javax.annotation.Nullable;
 
 /**
  * Adapter from the annotation type {@link edu.umn.biomedicus.type.TokenAnnotation} to the biomedicus model interface
- * {@link edu.umn.biomedicus.model.text.Token}.
+ * {@link Token}.
  */
 class TokenAdapter implements Token {
     private final TokenAnnotation tokenAnnotation;

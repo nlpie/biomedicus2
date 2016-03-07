@@ -17,15 +17,14 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.simple.SimpleTerm;
-import edu.umn.biomedicus.model.text.Span;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.tokensets.OrderedTokenSet;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

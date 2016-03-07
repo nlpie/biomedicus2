@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.lucene.analysis;
 
-import edu.umn.biomedicus.model.simple.SimpleDocument;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.simple.SimpleDocument;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.processing.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;

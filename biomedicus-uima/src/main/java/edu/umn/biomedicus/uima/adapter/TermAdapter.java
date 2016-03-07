@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.text.Term;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.text.Term;
 import edu.umn.biomedicus.type.ConceptAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import org.apache.uima.jcas.JCas;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Adapts the {@link edu.umn.biomedicus.model.text.Term} interface for UIMA using the backing annotation
+ * Adapts the {@link Term} interface for UIMA using the backing annotation
  * {@link edu.umn.biomedicus.type.TermAnnotation}.
  */
 class TermAdapter implements Term {
@@ -63,7 +63,7 @@ class TermAdapter implements Term {
     }
 
     /**
-     * Creates a new {@link TermAdapter} by copying the {@link edu.umn.biomedicus.model.text.Term}
+     * Creates a new {@link TermAdapter} by copying the {@link Term}
      * object into the destination cas. Creates a new {@link edu.umn.biomedicus.type.TermAnnotation} and new
      * {@link edu.umn.biomedicus.type.ConceptAnnotation} for the term and each of the concepts in the term. The original
      * term is completely unchanged and the new term is completely separate from the existing one.

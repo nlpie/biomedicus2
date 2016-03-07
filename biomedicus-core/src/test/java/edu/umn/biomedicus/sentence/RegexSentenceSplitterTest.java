@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import mockit.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;

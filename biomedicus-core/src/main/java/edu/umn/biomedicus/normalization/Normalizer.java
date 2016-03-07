@@ -1,9 +1,9 @@
 package edu.umn.biomedicus.normalization;
 
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Token;
 
 import javax.inject.Inject;
 

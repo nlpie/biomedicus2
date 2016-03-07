@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

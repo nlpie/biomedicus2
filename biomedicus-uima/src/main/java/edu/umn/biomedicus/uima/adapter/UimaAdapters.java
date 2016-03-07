@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.text.*;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;

@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.text.Span;
-import edu.umn.biomedicus.model.text.TextConcept;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.TextConcept;
 import edu.umn.biomedicus.type.ConceptAnnotation;
 import org.apache.uima.jcas.JCas;
 

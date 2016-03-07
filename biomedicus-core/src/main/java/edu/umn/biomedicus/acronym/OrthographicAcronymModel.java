@@ -1,11 +1,11 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.vocabulary.CharacterSet;
 import edu.umn.biomedicus.common.vocabulary.MappedCharacterSet;
-import edu.umn.biomedicus.model.text.Token;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.Set;
 
 /**

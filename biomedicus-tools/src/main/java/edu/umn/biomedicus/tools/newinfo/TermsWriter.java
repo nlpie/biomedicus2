@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.text.Token;
 
 import java.io.IOException;
 import java.io.Writer;

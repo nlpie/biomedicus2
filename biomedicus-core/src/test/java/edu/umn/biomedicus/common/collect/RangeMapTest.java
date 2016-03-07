@@ -2,7 +2,7 @@ package edu.umn.biomedicus.common.collect;
 
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 
 /**
  * Unit test for {@link RangeMap}.

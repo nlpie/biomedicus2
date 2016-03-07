@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.processing;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 
 /**
  * Interface responsible for breaking a document or string into word tokens.

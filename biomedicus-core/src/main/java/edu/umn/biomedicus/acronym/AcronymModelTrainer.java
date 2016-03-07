@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.application.PostProcessor;
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 
 /**
  * Interface for a trainer of an acronym model

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.text.Span;
 
 /**
  * @since 1.3.0

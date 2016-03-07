@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.uima.pos;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Token;
 
 import java.io.IOException;
 import java.io.Writer;

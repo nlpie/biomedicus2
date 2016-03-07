@@ -1,22 +1,18 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 

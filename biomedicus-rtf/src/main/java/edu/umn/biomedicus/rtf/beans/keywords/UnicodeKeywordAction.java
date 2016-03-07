@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.beans.keywords;
 
-import edu.umn.biomedicus.model.simple.Spans;
+import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;

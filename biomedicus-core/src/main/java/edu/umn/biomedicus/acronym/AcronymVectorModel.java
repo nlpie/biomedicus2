@@ -1,11 +1,12 @@
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.model.text.Token;
-import org.yaml.snakeyaml.constructor.Constructor;
+import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An implementation of an acronym model that uses word vectors and a cosine distance metric

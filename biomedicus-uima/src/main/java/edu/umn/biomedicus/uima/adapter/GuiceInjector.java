@@ -1,10 +1,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import edu.umn.biomedicus.application.BiomedicusModule;
 import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.sections.SectionsModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.resource.Resource_ImplBase;
