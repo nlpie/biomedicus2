@@ -18,11 +18,10 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Term;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.TextOrderedTokenSet;
@@ -30,12 +29,12 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
 
@@ -44,9 +43,9 @@ import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
  * try to find direct matches against all in-order sublists of tokens in a sentence. Then it will perform syntactic
  * permutations on any prepositional phrases in those sublists.
  *
- * @since 1.0.0
  * @author Ben Knoll
  * @author Serguei Pakhomov
+ * @since 1.0.0
  */
 @DocumentScoped
 class DictionaryConceptRecognizer implements DocumentProcessor {
@@ -111,8 +110,20 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     }
 
     /**
+     * A set of English prepositions.
+     */
+    private static final Set<String> PREPOSITIONS;
+
+    static {
+        Set<String> builder = new HashSet<>();
+        Collections.addAll(builder, "in", "of", "at", "on");
+        PREPOSITIONS = Collections.unmodifiableSet(builder);
+    }
+
+    /**
      * Returns true if this OrderedTokenSet potentially will match concepts. The case is sets of size 1
      * that are parts of speech that won't match concepts, or auxiliary verbs.
+     *
      * @return false if the token set can be trivially skipped, true otherwise
      */
     static boolean matchesConcepts(OrderedTokenSet orderedTokenSet) {
@@ -137,7 +148,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     /**
      * The concept dictionary to look up concepts from.
      */
-    private final ConceptModel conceptDictionary;
+    private final ConceptModel conceptModel;
 
     private final Document document;
 
@@ -145,12 +156,12 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
      *
      * @param conceptModel the dictionary to get concepts from.
-     * @param document document to add new terms to.
+     * @param document     document to add new terms to.
      */
     @Inject
     DictionaryConceptRecognizer(ConceptModel conceptModel, Document document) {
         this.document = document;
-        this.conceptDictionary = conceptModel;
+        this.conceptModel = conceptModel;
     }
 
     /**
@@ -164,19 +175,62 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
         sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
                 .filter(DictionaryConceptRecognizer::matchesConcepts)
-                .map(conceptDictionary::findConcepts)
-                .filter((@Nullable Term t) -> t != null)
-                .forEach(document::addTerm);
+                .forEach(tokenSet -> {
+                    Span span = tokenSet.getSpan();
+                    String phrase = document.getText().substring(span.getBegin(), span.getEnd());
+                    List<CUI> phraseCUIs = conceptModel.forPhrase(phrase);
 
-        sentenceOrderedTokenSet.prepositionalSyntacticPermutationsStream()
-                .filter((@Nullable OrderedTokenSet p) -> p != null)
-                .map(conceptDictionary::findConcepts)
-                .filter((@Nullable Term t) -> t != null)
-                .forEach(document::addTerm);
+                    if (phraseCUIs != null && phraseCUIs.size() > 0) {
+                        makeTerm(span, phraseCUIs, 1);
+                        return;
+                    }
+
+                    List<Token> tokens = tokenSet.getTokens();
+                    List<String> norms = tokens.stream()
+                            .map(Token::getNormalForm)
+                            .sorted()
+                            .collect(Collectors.toList());
+
+                    List<CUI> normsCUI = conceptModel.forNorms(norms);
+
+                    if (normsCUI != null && normsCUI.size() > 0) {
+                        makeTerm(span, normsCUI, .6);
+                        return;
+                    }
+
+                    List<Token> filtered = tokenSet.getTokens()
+                            .stream()
+                            .filter(token -> !TRIVIAL_POS.contains(token.getPartOfSpeech()))
+                            .filter(token -> !AUXILIARY_VERBS.contains(token.getNormalForm()))
+                            .filter(token -> !PREPOSITIONS.contains(token.getNormalForm()))
+                            .collect(Collectors.toList());
+                    List<String> filteredNorms = filtered.stream()
+                            .map(Token::getNormalForm)
+                            .sorted()
+                            .collect(Collectors.toList());
+                    List<CUI> filteredNormsCUIs = conceptModel.forNorms(filteredNorms);
+                    if (filteredNormsCUIs != null && filteredNormsCUIs.size() > 0) {
+                        makeTerm(span, filteredNormsCUIs, .4);
+                    }
+                });
+    }
+
+    private void makeTerm(Span span, List<CUI> cuis, double confidence) {
+        List<Concept> concepts = cuis.stream().map(cui -> {
+            List<TUI> tuis = conceptModel.termsForCUI(cui);
+            if (tuis == null) {
+                tuis = Collections.emptyList();
+            }
+            return new UmlsConcept(cui, tuis, confidence);
+        }).collect(Collectors.toList());
+
+        Term term = new SimpleTerm(span.getBegin(), span.getEnd(), concepts.get(0), concepts.subList(1, concepts.size()));
+        document.addTerm(term);
     }
 
     @Override
     public void process() throws BiomedicusException {
+        LOGGER.info("Finding concepts in document.");
         for (Sentence sentence : document.getSentences()) {
             identifyTermsInSentence(sentence);
         }

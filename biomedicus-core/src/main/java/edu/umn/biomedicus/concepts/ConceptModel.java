@@ -17,17 +17,12 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.semantics.Concept;
-import edu.umn.biomedicus.common.simple.SimpleTerm;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.Term;
-import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Stores UMLS Concepts in a multimap (Map from String to List of Concepts).
@@ -39,43 +34,30 @@ import java.util.stream.Collectors;
 class ConceptModel {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final Map<String, List<String>> cuiToTuis;
+    private final Map<CUI, List<TUI>> cuiToTUIs;
 
-    private final Map<String, List<String>> dictionary;
+    private final Map<List<String>, List<CUI>> normDictionary;
 
-    ConceptModel(Map<String, List<String>> cuiToTuis, Map<String, List<String>> dictionary) {
-        this.cuiToTuis = cuiToTuis;
-        this.dictionary = dictionary;
+    private final Map<String, List<CUI>> phraseDictionary;
+
+    ConceptModel(Map<CUI, List<TUI>> cuiToTUIs, Map<List<String>, List<CUI>> normDictionary, Map<String, List<CUI>> phraseDictionary) {
+        this.cuiToTUIs = cuiToTUIs;
+        this.normDictionary = normDictionary;
+        this.phraseDictionary = phraseDictionary;
     }
 
-    /**
-     * Attempts to find a concept for the orderedTokenSet by first checking their text and then checking their
-     * normalized text.
-     *
-     * @param orderedTokenSet the tokens spanning the potential term that we should look up
-     * @return a newly initialized term
-     */
-    public Term findConcepts(OrderedTokenSet orderedTokenSet) {
-        String tokensText = orderedTokenSet.getTokensText().trim().toLowerCase();
-        List<String> cuis = dictionary.get(tokensText);
-        if (cuis == null || cuis.isEmpty()) {
-            String normalizedTokensText = orderedTokenSet.getNormalizedTokensText().trim().toLowerCase();
-            cuis = dictionary.get(normalizedTokensText);
-        }
+    @Nullable
+    List<CUI> forPhrase(String phrase) {
+        return phraseDictionary.get(phrase);
+    }
 
-        Term term = null;
-        if (cuis != null && cuis.size() > 0) {
-            Span span = orderedTokenSet.getSpan();
-            int begin = span.getBegin();
-            int end = span.getEnd();
+    @Nullable
+    List<CUI> forNorms(List<String> norms) {
+        return normDictionary.get(norms);
+    }
 
-            List<Concept> concepts = cuis.stream()
-                    .flatMap(cui -> cuiToTuis.get(cui).stream().map(tui -> new UmlsConcept(cui, tui)))
-                    .collect(Collectors.toList());
-
-            term = new SimpleTerm(begin, end, concepts.get(0), concepts.subList(1, concepts.size()));
-        }
-
-        return term;
+    @Nullable
+    List<TUI> termsForCUI(CUI cui) {
+        return cuiToTUIs.get(cui);
     }
 }

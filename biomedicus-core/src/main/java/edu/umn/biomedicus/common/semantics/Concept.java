@@ -36,11 +36,11 @@ public interface Concept {
      * Sets the semantic type or grouping of the concept, an example would be TUIs in UMLS
      * @return string identifier for the type of the concept
      */
-    String getType();
+    String getTypes();
 
     /**
      * Returns the confidence that this is a correct concept
      * @return the float confidence between 0.0 and 1.0
      */
-    float getConfidence();
+    double getConfidence();
 }

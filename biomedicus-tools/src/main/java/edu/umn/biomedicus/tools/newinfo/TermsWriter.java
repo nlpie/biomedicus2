@@ -107,7 +107,7 @@ final class TermsWriter {
         while (index < size && (term = terms.get(index)).getBegin() < end) {
             if (term.contains(token)) {
                 Concept primaryConcept = term.getPrimaryConcept();
-                String type = primaryConcept.getType();
+                String type = primaryConcept.getTypes();
                 writer.write(new TokenWithConceptLine(sentenceNumber, wordNumber, index, primaryConcept.getIdentifier(),
                         type).createLine() + "\n");
             }

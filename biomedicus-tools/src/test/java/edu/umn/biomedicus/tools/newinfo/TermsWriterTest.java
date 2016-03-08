@@ -88,7 +88,7 @@ public class TermsWriterTest {
             term.getBegin(); returns(4, 6);
             term.contains(token); result = true;
             term.getPrimaryConcept(); result = concept;
-            concept.getType(); result = "T555";
+            concept.getTypes(); result = "T555";
             concept.getIdentifier(); result = "CXXX";
             new TokenWithConceptLine(10, 10, 0, "CXXX", "T555"); result = tokenWithConceptLine;
             tokenWithConceptLine.createLine(); result = "The line.";

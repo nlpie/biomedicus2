@@ -55,8 +55,8 @@ class ConceptAdapter implements TextConcept {
      */
     static ConceptAdapter copyOf(Concept concept, Span span, JCas destinationCas) {
         ConceptAnnotation copyConceptAnnotation = new ConceptAnnotation(destinationCas, span.getBegin(), span.getEnd());
-        copyConceptAnnotation.setSemanticType(concept.getType());
-        copyConceptAnnotation.setConfidence(concept.getConfidence());
+        copyConceptAnnotation.setSemanticType(concept.getTypes());
+        copyConceptAnnotation.setConfidence((float) concept.getConfidence());
         copyConceptAnnotation.setSource(concept.getSource());
         copyConceptAnnotation.setIdentifier(concept.getIdentifier());
         copyConceptAnnotation.addToIndexes();
@@ -82,13 +82,12 @@ class ConceptAdapter implements TextConcept {
         return conceptAnnotation.getSource();
     }
 
-    @Override
-    public String getType() {
+    public String getTypes() {
         return conceptAnnotation.getSemanticType();
     }
 
     @Override
-    public float getConfidence() {
+    public double getConfidence() {
         return conceptAnnotation.getConfidence();
     }
 
