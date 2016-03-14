@@ -18,49 +18,15 @@ public class DirectedAcyclicWordGraph {
 
     class Node implements Comparable<Node> {
         private Node[] children;
+        private int[] wordsUpTo;
         private int words;
         private boolean isFinal;
 
         Node() {
             children = new Node[characterSet.size()];
+            wordsUpTo = new int[characterSet.size()];
             words = 0;
             isFinal = false;
-        }
-
-        @Nullable
-        public Node getChild(char c) {
-            return children[characterSet.indexOf(c)];
-        }
-
-        void setChild(char c, Node node) {
-            children[characterSet.indexOf(c)] = node;
-        }
-
-        int indexUpTo(char c) {
-            return Arrays.stream(children, 0, characterSet.indexOf(c))
-                    .filter(Objects::nonNull)
-                    .mapToInt(child -> child.words)
-                    .sum();
-        }
-
-        Node[] getChildren() {
-            return children;
-        }
-
-        int getWords() {
-            return words;
-        }
-
-        void setWords(int words) {
-            this.words = words;
-        }
-
-        boolean isFinal() {
-            return isFinal;
-        }
-
-        void setFinal(boolean aFinal) {
-            isFinal = aFinal;
         }
 
         @Override
@@ -127,21 +93,14 @@ public class DirectedAcyclicWordGraph {
     public int indexOf(CharSequence charSequence) {
         int index = 0;
         Node currentNode = graph;
-        for (int i = 0; i < charSequence.length(); i++) {
+        for (int i = 0, length = charSequence.length(); i < length && currentNode != null; i++) {
             char currentChar = charSequence.charAt(i);
-            if (currentNode.isFinal) {
-                index++;
-            }
-            Node child = currentNode.getChild(currentChar);
-            if (child != null) {
-                index += currentNode.indexUpTo(currentChar);
-                currentNode = child;
-            } else {
-                return -1;
-            }
+            int charIndex = characterSet.indexOf(currentChar);
+            index += currentNode.wordsUpTo[charIndex];
+            currentNode = currentNode.children[charIndex];
         }
 
-        if (currentNode.isFinal) {
+        if (currentNode != null && currentNode.isFinal) {
             return index;
         } else {
             return -1;
@@ -159,21 +118,22 @@ public class DirectedAcyclicWordGraph {
                 }
                 runningIndex--;
             }
-            Node[] children = currentNode.children;
-            for (int i = 0; i < children.length; i++) {
-                Node child = children[i];
+            int childrenLen = currentNode.children.length;
+            int i = Arrays.binarySearch(currentNode.wordsUpTo, runningIndex);
+
+            /* for (int i = 0; i < childrenLen; i++) {
+                Node child = currentNode.children[i];
                 if (child != null) {
                     int childWords = child.getWords();
                     if (runningIndex < childWords) {
                         currentNode = child;
-                        Character character = characterSet.forIndex(i);
-                        builder.append(character);
+                        builder.append(characterSet.forIndex(i));
                         break;
                     } else {
                         runningIndex -= childWords;
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -183,17 +143,13 @@ public class DirectedAcyclicWordGraph {
 
     public boolean contains(CharSequence charSequence) {
         Node currentNode = graph;
-        for (int i = 0; i < charSequence.length(); i++) {
+        for (int i = 0, length = charSequence.length(); i < length && currentNode != null; i++) {
             char currentChar = charSequence.charAt(i);
-            Node child = currentNode.getChild(currentChar);
-            if (child != null) {
-                currentNode = child;
-            } else {
-                return false;
-            }
+            int charIndex = characterSet.indexOf(currentChar);
+            currentNode = currentNode.children[charIndex];
         }
 
-        return currentNode.isFinal;
+        return currentNode != null && currentNode.isFinal;
     }
 
     public static Builder builder(MappedCharacterSet characterSet) {
@@ -204,6 +160,7 @@ public class DirectedAcyclicWordGraph {
         private final Map<Node, Node> nodes = new HashMap<>();
 
         private final Node finalNode = new Node();
+
         {
             finalNode.isFinal = true;
             finalNode.words = 1;
@@ -227,7 +184,8 @@ public class DirectedAcyclicWordGraph {
             trail.add(graph);
             for (int i = 0; i < word.length() - 1; i++) {
                 char c = word.charAt(i);
-                Node next = currentNode.getChild(c);
+                int charIndex = characterSet.indexOf(c);
+                Node next = currentNode.children[charIndex];
                 boolean nextFinal = next == finalNode;
                 if (next == null || nextFinal) {
                     next = new Node();
@@ -236,14 +194,14 @@ public class DirectedAcyclicWordGraph {
                         next.words = 1;
                     }
                     nodes.remove(currentNode);
-                    currentNode.setChild(c, next);
+                    currentNode.children[charIndex] = next;
                 }
                 currentNode.words++;
                 currentNode = next;
                 trail.add(currentNode);
             }
             currentNode.words++;
-            currentNode.setChild(word.charAt(word.length() - 1), finalNode);
+            currentNode.children[characterSet.indexOf(word.charAt(word.length() - 1))] = finalNode;
 
             // minimize step
             for (int i = trail.size() - 1; i > 0; i--) {
@@ -253,7 +211,7 @@ public class DirectedAcyclicWordGraph {
                     Node parent = trail.get(i - 1);
                     char c = word.charAt(i - 1);
                     nodes.remove(parent);
-                    parent.setChild(c, equivalent);
+                    parent.children[characterSet.indexOf(c)] = equivalent;
                     trail.set(i, equivalent);
                 } else {
                     break;
@@ -354,7 +312,7 @@ public class DirectedAcyclicWordGraph {
         }
 
         boolean nextIsFinal() {
-            return currentNode().isFinal();
+            return currentNode().isFinal;
         }
     }
 
