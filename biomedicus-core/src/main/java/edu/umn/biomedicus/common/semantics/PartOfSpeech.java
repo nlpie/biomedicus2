@@ -394,7 +394,15 @@ public enum PartOfSpeech {
                 COMMA_PUNCTUATION,
                 COLON_PUNCTUATION,
                 LEFT_PAREN,
-                RIGHT_PAREN
+                RIGHT_PAREN,
+                OPENING_QUOTATION,
+                CLOSING_QUOTATION,
+                OPENING_SINGLE_QUOTE,
+                CLOSING_SINGLE_QUOTE,
+                STRAIGHT_DOUBLE_QUOTE,
+                HYPH,
+                POUND_SIGN,
+                DOLLAR_SIGN
         );
         PUNCTUATION_CLASS = Collections.unmodifiableSet(punc);
     }

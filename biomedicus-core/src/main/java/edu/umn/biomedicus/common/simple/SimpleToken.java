@@ -21,6 +21,7 @@ import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * A simple token implementation.
@@ -139,6 +140,17 @@ public class SimpleToken extends SimpleTextSpan implements Token {
 
     @Override
     public void setLongForm(@Nullable String longForm) {
+
+    }
+
+    @Nullable
+    @Override
+    public List<String> getLongFormNorm() {
+        return null;
+    }
+
+    @Override
+    public void setLongFormNorm(List<String> longFormNorm) {
 
     }
 

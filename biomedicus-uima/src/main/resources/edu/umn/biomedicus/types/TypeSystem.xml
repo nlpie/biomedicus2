@@ -584,6 +584,10 @@
                     <description>If the token is an acronym or abbreviation, this is its expanded form.</description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
+                <featureDescription>
+                    <name>acronymLongFormNorm</name>
+                    <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+                </featureDescription>
             </features>
         </typeDescription>
         <typeDescription>

@@ -1,6 +1,6 @@
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.vocabulary.CharacterSet;
+import edu.umn.biomedicus.common.terms.MappedCharacterSet;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
@@ -37,11 +37,11 @@ public class OrthographicAcronymModelTrainer {
 
     private final boolean caseSensitive;
 
-    private final transient CharacterSet symbols;
+    private final transient MappedCharacterSet symbols;
 
     private final transient int symbolsCount;
 
-    private final transient CharacterSet chars;
+    private final transient MappedCharacterSet chars;
 
     private final double[][][] longformProbs;
 

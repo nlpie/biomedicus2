@@ -17,6 +17,8 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermVector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,24 +38,32 @@ class ConceptModel {
 
     private final Map<CUI, List<TUI>> cuiToTUIs;
 
-    private final Map<List<String>, List<CUI>> normDictionary;
+    private final Map<TermVector, SUI> normDictionary;
 
-    private final Map<String, List<CUI>> phraseDictionary;
+    private final Map<String, SUI> phraseDictionary;
 
-    ConceptModel(Map<CUI, List<TUI>> cuiToTUIs, Map<List<String>, List<CUI>> normDictionary, Map<String, List<CUI>> phraseDictionary) {
+    private final Map<SUI, List<CUI>> suiToCUIs;
+
+    public ConceptModel(Map<CUI, List<TUI>> cuiToTUIs, Map<TermVector, SUI> normDictionary, Map<String, SUI> phraseDictionary, Map<SUI, List<CUI>> suiToCUIs) {
         this.cuiToTUIs = cuiToTUIs;
         this.normDictionary = normDictionary;
         this.phraseDictionary = phraseDictionary;
+        this.suiToCUIs = suiToCUIs;
     }
 
     @Nullable
-    List<CUI> forPhrase(String phrase) {
+    SUI forPhrase(String phrase) {
         return phraseDictionary.get(phrase);
     }
 
     @Nullable
-    List<CUI> forNorms(List<String> norms) {
+    SUI forNorms(TermVector norms) {
         return normDictionary.get(norms);
+    }
+
+    @Nullable
+    List<CUI> forSUI(SUI sui) {
+        return suiToCUIs.get(sui);
     }
 
     @Nullable

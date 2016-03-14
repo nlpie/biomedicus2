@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Responsible for writing information about Tokens, Concepts, and Sentences to three separate output files for the
@@ -108,15 +109,18 @@ final class NewInformationWriter {
         LOGGER.debug("Writing sentence. begin: {}, end: {}", sentence.getBegin(), sentence.getEnd());
 
         for (Token token : sentence.getTokens()) {
-            tokensWriter.write(new TokenLine(sentenceNumber, wordNumber, token.getText()).line());
+            StringJoiner tokenLine = new StringJoiner("\t", "", "\n");
+            tokenLine.add(Integer.toString(sentenceNumber));
+            tokenLine.add(Integer.toString(wordNumber));
+            tokenLine.add(token.getText().replace("\\", "\\\\").replace("\t", "\\t"));
+            tokensWriter.write(tokenLine.toString());
 
             termsWriter.check(token, sentenceNumber, wordNumber);
 
             wordNumber++;
         }
 
-        SentenceLine sentenceLine = new SentenceLine(sentenceNumber, sentence.getText());
-        sentencesWriter.write(sentenceLine.line());
+        sentencesWriter.write(sentenceNumber + "\t" + sentence.getText().replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n") + "\n");
 
         sentenceNumber++;
     }

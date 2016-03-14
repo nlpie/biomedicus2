@@ -20,10 +20,13 @@ import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Term;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.concepts.SemanticTypeNetwork;
+import edu.umn.biomedicus.concepts.TUI;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,6 +48,8 @@ final class TermsWriter {
      */
     private final Writer writer;
 
+    private final SemanticTypeNetwork semanticTypeNetwork;
+
     /**
      * The index of the current first term possibly covered by the token.
      */
@@ -52,25 +57,26 @@ final class TermsWriter {
 
     /**
      * Private constructor.
-     *
-     * @param terms the list of terms in the document
+     *  @param terms the list of terms in the document
      * @param writer the writer to write the terms lines to.
+     * @param semanticTypeNetwork
      * @param firstTermIndex the index of the current first term possible covered by a token
      */
-    private TermsWriter(List<Term> terms, Writer writer, int firstTermIndex) {
+    private TermsWriter(List<Term> terms, Writer writer, SemanticTypeNetwork semanticTypeNetwork, int firstTermIndex) {
         this.terms = terms;
         this.writer = writer;
+        this.semanticTypeNetwork = semanticTypeNetwork;
         this.firstTermIndex = firstTermIndex;
     }
 
     /**
      * Private constructor. Initializes the terms index to 0.
-     *
-     * @param terms the list of the terms in the document.
+     *  @param terms the list of the terms in the document.
      * @param writer the writer to write the terms lines to.
+     * @param semanticTypeNetwork
      */
-    private TermsWriter(List<Term> terms, Writer writer) {
-        this(terms, writer, 0);
+    private TermsWriter(List<Term> terms, Writer writer, SemanticTypeNetwork semanticTypeNetwork) {
+        this(terms, writer, semanticTypeNetwork, 0);
     }
 
     /**
@@ -78,11 +84,12 @@ final class TermsWriter {
      *
      * @param document document to pull terms from
      * @param writer the writer to write the terms lines to.
+     * @param semanticTypeNetwork
      * @return newly created {@code TermsWriter}.
      */
-    static TermsWriter forDocument(Document document, Writer writer) {
+    static TermsWriter forDocument(Document document, Writer writer, SemanticTypeNetwork semanticTypeNetwork) {
         List<Term> terms = StreamSupport.stream(document.getTerms().spliterator(), false).collect(Collectors.toList());
-        return new TermsWriter(terms, writer);
+        return new TermsWriter(terms, writer, semanticTypeNetwork);
     }
 
     /**
@@ -107,9 +114,14 @@ final class TermsWriter {
         while (index < size && (term = terms.get(index)).getBegin() < end) {
             if (term.contains(token)) {
                 Concept primaryConcept = term.getPrimaryConcept();
-                String type = primaryConcept.getTypes();
-                writer.write(new TokenWithConceptLine(sentenceNumber, wordNumber, index, primaryConcept.getIdentifier(),
-                        type).createLine() + "\n");
+                StringJoiner stringJoiner = new StringJoiner("\t", "", "\n");
+                stringJoiner.add(Integer.toString(sentenceNumber));
+                stringJoiner.add(Integer.toString(wordNumber));
+                stringJoiner.add(Integer.toString(index));
+                stringJoiner.add(primaryConcept.getIdentifier());
+                stringJoiner.add(primaryConcept.getType());
+                stringJoiner.add(semanticTypeNetwork.getSemanticTypeGroup(new TUI(primaryConcept.getType())));
+                writer.write(stringJoiner.toString());
             }
 
             index++;

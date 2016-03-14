@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.application.ProcessorSettings;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;
@@ -22,26 +23,26 @@ public class AcronymVectorModelTrainerLoader extends DataLoader<AcronymVectorMod
 
     private final Path longformsPath;
 
-    private final Path acronymModelPath;
+    private final Path outputDir;
 
     @Inject
-    public AcronymVectorModelTrainerLoader(BiomedicusConfiguration biomedicusConfiguration) {
-        expansionMapPath = biomedicusConfiguration.resolveDataFile("acronym.training.expansionMap.path");
-        uniqueIdMapPath = biomedicusConfiguration.resolveDataFile("acronym.training.uniqueIdMap.path");
-        longformsPath = biomedicusConfiguration.resolveDataFile("acronym.training.longforms.path");
-        acronymModelPath = biomedicusConfiguration.resolveDataFile("acronym.acronymModel.path");
+    public AcronymVectorModelTrainerLoader(ProcessorSettings processorSettings) {
+        expansionMapPath = processorSettings.getSettings().getAsPath("expansionMap");
+        uniqueIdMapPath = processorSettings.getSettings().getAsPath("uniqueIds");
+        longformsPath = processorSettings.getSettings().getAsPath("longforms");
+        outputDir = processorSettings.getSettings().getAsPath("outputDir");
     }
 
     @Override
     protected AcronymVectorModelTrainer loadModel() throws BiomedicusException {
         try {
-            return AcronymVectorModelTrainer.create(expansionMapPath, uniqueIdMapPath, longformsPath, acronymModelPath);
+            return AcronymVectorModelTrainer.create(expansionMapPath, uniqueIdMapPath, longformsPath, outputDir);
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }
     }
 
-    public static void main(String[] args) throws BiomedicusException {
+    public static void main(String[] args) throws BiomedicusException, IOException {
         Bootstrapper bootstrapper = new Bootstrapper();
 
         AcronymVectorModelTrainerLoader loader = bootstrapper.injector().getInstance(AcronymVectorModelTrainerLoader.class);

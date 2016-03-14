@@ -19,131 +19,114 @@ package edu.umn.biomedicus.uima.adapter;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.type.TokenAnnotation;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.StringArray;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Adapter from the annotation type {@link edu.umn.biomedicus.type.TokenAnnotation} to the biomedicus model interface
  * {@link Token}.
  */
-class TokenAdapter implements Token {
-    private final TokenAnnotation tokenAnnotation;
-
-    TokenAdapter(TokenAnnotation tokenAnnotation) {
-        this.tokenAnnotation = tokenAnnotation;
-    }
-
-    @Override
-    public String getText() {
-        return tokenAnnotation.getCoveredText();
+class TokenAdapter extends AnnotationAdapter<TokenAnnotation> implements Token {
+    TokenAdapter(JCas jCas, TokenAnnotation tokenAnnotation) {
+        super(jCas, tokenAnnotation);
     }
 
     @Override
     public PartOfSpeech getPartOfSpeech() {
-        return PartOfSpeech.MAP.get(tokenAnnotation.getPartOfSpeech());
+        return PartOfSpeech.MAP.get(getAnnotation().getPartOfSpeech());
     }
 
     @Override
     public void setPennPartOfSpeech(PartOfSpeech partOfSpeech) {
-        tokenAnnotation.setPartOfSpeech(partOfSpeech.toString());
+        getAnnotation().setPartOfSpeech(partOfSpeech.toString());
     }
 
     @Override
     public String getNormalForm() {
-        return tokenAnnotation.getNormalForm();
+        return getAnnotation().getNormalForm();
     }
 
     @Override
     public void setNormalForm(String normalForm) {
-        tokenAnnotation.setNormalForm(normalForm);
+        getAnnotation().setNormalForm(normalForm);
     }
 
     @Override
     public void setIsStopword(boolean isStopword) {
-        tokenAnnotation.setIsStopword(isStopword);
+        getAnnotation().setIsStopword(isStopword);
     }
 
     @Override
     public boolean isStopword() {
-        return tokenAnnotation.getIsStopword();
+        return getAnnotation().getIsStopword();
     }
 
     @Override
     public boolean isMisspelled() {
-        return tokenAnnotation.getIsMisspelled();
+        return getAnnotation().getIsMisspelled();
     }
 
     @Override
     public void setIsMisspelled(boolean misspelled) {
-        tokenAnnotation.setIsMisspelled(misspelled);
+        getAnnotation().setIsMisspelled(misspelled);
     }
 
     @Override
     public boolean isAcronym() {
-        return tokenAnnotation.getIsAcronymAbbrev();
+        return getAnnotation().getIsAcronymAbbrev();
     }
 
     @Override
     public void setIsAcronym(boolean acronym) {
-        tokenAnnotation.setIsAcronymAbbrev(acronym);
+        getAnnotation().setIsAcronymAbbrev(acronym);
     }
 
     @Nullable
     @Override
     public String getLongForm() {
-        return tokenAnnotation.getAcronymAbbrevExpansion();
+        return getAnnotation().getAcronymAbbrevExpansion();
     }
 
     @Override
     public void setLongForm(@Nullable String longForm) {
-        tokenAnnotation.setAcronymAbbrevExpansion(longForm);
+        getAnnotation().setAcronymAbbrevExpansion(longForm);
+    }
+
+    @Nullable
+    @Override
+    public List<String> getLongFormNorm() {
+        return Arrays.asList(getAnnotation().getAcronymLongFormNorm().toArray());
+    }
+
+    @Override
+    public void setLongFormNorm(List<String> longFormNorm) {
+        int size = longFormNorm.size();
+        StringArray stringArray = new StringArray(getJCas(), size);
+        stringArray.copyFromArray(longFormNorm.toArray(new String[size]), 0, 0, size);
+        getAnnotation().setAcronymLongFormNorm(stringArray);
     }
 
     @Override
     public String correctSpelling() {
-        return tokenAnnotation.getCorrectSpelling();
+        return getAnnotation().getCorrectSpelling();
     }
 
     @Override
     public void setCorrectSpelling(String correctSpelling) {
-        tokenAnnotation.setCorrectSpelling(correctSpelling);
-    }
-
-    @Override
-    public int getBegin() {
-        return tokenAnnotation.getBegin();
-    }
-
-    @Override
-    public int getEnd() {
-        return tokenAnnotation.getEnd();
-    }
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TokenAdapter that = (TokenAdapter) o;
-
-        if (!tokenAnnotation.equals(that.tokenAnnotation))
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return tokenAnnotation.hashCode();
+        getAnnotation().setCorrectSpelling(correctSpelling);
     }
 
     @Override
     public void beginEditing() {
-        tokenAnnotation.removeFromIndexes();
+        getAnnotation().removeFromIndexes();
     }
 
     @Override
     public void endEditing() {
-        tokenAnnotation.addToIndexes();
+        getAnnotation().addToIndexes();
     }
 }

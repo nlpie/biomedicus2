@@ -25,6 +25,7 @@
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
+            <!-- TODO: Add any configuration parameters -->
             <configurationParameter>
                 <name>documentProcessor</name>
                 <description>The document processor class to instantiate.</description>
@@ -55,7 +56,6 @@
                 <multiValued>true</multiValued>
                 <mandatory>false</mandatory>
             </configurationParameter>
-            <!-- TODO: Add any configuration parameters -->
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>

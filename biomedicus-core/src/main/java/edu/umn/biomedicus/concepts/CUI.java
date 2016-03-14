@@ -1,7 +1,5 @@
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.common.vocabulary.IndexedWord;
-
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public class CUI implements IndexedWord {
+public class CUI {
     public static final Pattern CUI_PATTERN = Pattern.compile("C([\\d]{7})");
 
     private final int identifier;
@@ -45,16 +43,6 @@ public class CUI implements IndexedWord {
 
     @Override
     public String toString() {
-        return getText();
-    }
-
-    @Override
-    public int getIndex() {
-        return identifier;
-    }
-
-    @Override
-    public String getText() {
         return String.format("C%07d", identifier);
     }
 }

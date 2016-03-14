@@ -18,30 +18,29 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.common.semantics.Concept;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  *
  */
 class UmlsConcept implements Concept {
     private final CUI identifier;
-    private final List<TUI> types;
+    private final TUI type;
+    private final SUI sui;
     private final double confidence;
 
-    public UmlsConcept(CUI identifier, List<TUI> types, double confidence) {
+    public UmlsConcept(CUI identifier, TUI type, SUI sui, double confidence) {
         this.identifier = identifier;
-        this.types = types;
+        this.type = type;
+        this.sui = sui;
         this.confidence = confidence;
     }
 
     @Override
     public String getIdentifier() {
-        return identifier.getText();
+        return identifier.toString();
     }
 
-    public String getTypes() {
-        return types.stream().map(TUI::getText).collect(Collectors.joining(";"));
+    public String getType() {
+        return type.toString();
     }
 
     @Override
@@ -52,5 +51,9 @@ class UmlsConcept implements Concept {
     @Override
     public double getConfidence() {
         return confidence;
+    }
+
+    public SUI sui() {
+        return sui;
     }
 }

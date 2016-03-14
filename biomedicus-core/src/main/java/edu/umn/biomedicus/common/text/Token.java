@@ -19,6 +19,7 @@ package edu.umn.biomedicus.common.text;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Biomedicus basic unit for a single token in a document.
@@ -134,6 +135,11 @@ public interface Token extends Span, Editable {
      * @param longForm the long form to set
      */
     void setLongForm(@Nullable String longForm);
+
+    @Nullable
+    List<String> getLongFormNorm();
+
+    void setLongFormNorm(List<String> longFormNorm);
 
     /**
      * Returns the corrected spelling of the token

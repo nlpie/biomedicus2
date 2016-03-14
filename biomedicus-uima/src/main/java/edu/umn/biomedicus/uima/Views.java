@@ -37,6 +37,11 @@ public final class Views {
     public static final String GOLD_VIEW = "GoldView";
 
     /**
+     * The Augmented document view is used for documents modified during processing
+     */
+    public static final String AUGMENTED_DOCUMENT_VIEW = "AugmentedDocumentView";
+
+    /**
      * The original document view is used for the original document.
      */
     public static final String ORIGINAL_DOCUMENT_VIEW = "OriginalDocumentView";

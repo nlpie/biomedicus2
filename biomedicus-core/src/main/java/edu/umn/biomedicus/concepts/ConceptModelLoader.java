@@ -2,8 +2,11 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.terms.TermVector;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -29,32 +32,41 @@ public class ConceptModelLoader extends DataLoader<ConceptModel> {
 
     private final Path typesPath;
 
+    private final Path suiToCUIsPath;
+
+    private final TermIndex normIndex;
+
     @Inject
-    ConceptModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
+    ConceptModelLoader(BiomedicusConfiguration biomedicusConfiguration, Vocabulary vocabulary) {
         phrasesPath = biomedicusConfiguration.resolveDataFile("concepts.phrases.path");
         normsPath = biomedicusConfiguration.resolveDataFile("concepts.norms.path");
         typesPath = biomedicusConfiguration.resolveDataFile("concepts.types.path");
+        suiToCUIsPath = biomedicusConfiguration.resolveDataFile("concepts.suisToCUIs.path");
+        normIndex = vocabulary.normIndex();
     }
 
     @Override
     protected ConceptModel loadModel() throws BiomedicusException {
-        Yaml yaml = YamlSerialization.createYaml();
+        Yaml yaml = YamlSerialization.createYaml(normIndex);
 
         try {
             LOGGER.info("Loading concepts phrases: {}", phrasesPath);
             @SuppressWarnings("unchecked")
-            Map<String, List<CUI>> phraseDictionary = (Map<String, List<CUI>>) yaml.load(Files.newBufferedReader(phrasesPath));
+            Map<String, SUI> phraseDictionary = (Map<String, SUI>) yaml.load(Files.newBufferedReader(phrasesPath));
 
             LOGGER.info("Loading concept norm vectors: {}", normsPath);
             @SuppressWarnings("unchecked")
-            Map<List<String>, List<CUI>> normDictionary = (Map<List<String>, List<CUI>>) yaml.load(Files.newBufferedReader(normsPath));
+            Map<TermVector, SUI> normDictionary = (Map<TermVector, SUI>) yaml.load(Files.newBufferedReader(normsPath));
+
+            LOGGER.info("Loading SUI -> CUIs map: {}", suiToCUIsPath);
+            @SuppressWarnings("unchecked")
+            Map<SUI, List<CUI>> suiCUIs = (Map<SUI, List<CUI>>) yaml.load(Files.newBufferedReader(suiToCUIsPath));
 
             LOGGER.info("Loading CUI -> TUIs map: {}", typesPath);
             @SuppressWarnings("unchecked")
             Map<CUI, List<TUI>> cuiToTUIs = (Map<CUI, List<TUI>>) yaml.load(Files.newBufferedReader(typesPath));
 
-            return new ConceptModel(cuiToTUIs, normDictionary, phraseDictionary);
-
+            return new ConceptModel(cuiToTUIs, normDictionary, phraseDictionary, suiCUIs);
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }

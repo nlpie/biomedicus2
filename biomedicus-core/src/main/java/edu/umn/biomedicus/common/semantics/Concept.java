@@ -36,7 +36,7 @@ public interface Concept {
      * Sets the semantic type or grouping of the concept, an example would be TUIs in UMLS
      * @return string identifier for the type of the concept
      */
-    String getTypes();
+    String getType();
 
     /**
      * Returns the confidence that this is a correct concept

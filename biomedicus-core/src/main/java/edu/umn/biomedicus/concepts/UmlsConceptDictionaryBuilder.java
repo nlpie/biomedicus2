@@ -1,17 +1,22 @@
 package edu.umn.biomedicus.concepts;
 
+import com.google.inject.Inject;
+import edu.umn.biomedicus.application.Bootstrapper;
+import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.terms.TermVector;
 import edu.umn.biomedicus.serialization.YamlSerialization;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -24,32 +29,99 @@ public class UmlsConceptDictionaryBuilder {
 
     private static final Pattern SPACE_SPLITTER = Pattern.compile(" ");
 
-    private final Path mrconsoFile;
+    private final SemanticTypeNetwork semanticTypeNetwork;
+    private final Vocabulary vocabulary;
 
-    private final Path mrstyFile;
+    @Nullable
+    private Path rrfs;
 
-    private final Path mrxnsFile;
+    @Nullable
+    private Path outputDir;
 
-    private final Path outputDir;
+    @Nullable
+    private Path tuisOfInterestFile;
 
-    private final Path tuiWhitelistFile;
+    @Nullable
+    private Path ttysBannedFile;
 
-    public UmlsConceptDictionaryBuilder(Path rrfs, Path outputDir, Path tuiWhitelistFile) {
-        this.tuiWhitelistFile = tuiWhitelistFile;
-        this.mrconsoFile = rrfs.resolve("MRCONSO.RRF");
-        this.mrstyFile = rrfs.resolve("MRSTY.RRF");
-        this.mrxnsFile = rrfs.resolve("MRXNS_ENG.RRF");
+    @Inject
+    public UmlsConceptDictionaryBuilder(SemanticTypeNetwork semanticTypeNetwork, Vocabulary vocabulary) {
+        this.semanticTypeNetwork = semanticTypeNetwork;
+        this.vocabulary = vocabulary;
+    }
+
+    public void setRRFsPath(Path rrfs) {
+        if (this.rrfs != null) {
+            throw new IllegalStateException("RRFs path already set.");
+        }
+        if (rrfs == null) {
+            throw new IllegalArgumentException("RRFs path is null.");
+        }
+
+        this.rrfs = rrfs;
+    }
+
+    public void setTuisOfInterestFile(Path tuisOfInterestFile) {
+        if (this.tuisOfInterestFile != null) {
+            throw new IllegalStateException("Tui whitelist path already set.");
+        }
+        if (tuisOfInterestFile == null) {
+            throw new IllegalArgumentException("TUI whitelist path is null");
+        }
+
+        this.tuisOfInterestFile = tuisOfInterestFile;
+    }
+
+    public void setTtysBannedFile(Path ttysBannedFile) {
+        if (this.ttysBannedFile != null) {
+            throw new IllegalStateException("TTY banlist path already set.");
+        }
+        if (ttysBannedFile == null) {
+            throw new IllegalArgumentException("TTY banlist path is null");
+        }
+
+        this.ttysBannedFile = ttysBannedFile;
+    }
+
+    public void setOutputDir(Path outputDir) {
+        if (this.outputDir != null) {
+            throw new IllegalStateException("Output dir already set.");
+        }
+        if (outputDir == null) {
+            throw new IllegalArgumentException("Output dir already set.");
+        }
+
         this.outputDir = outputDir;
     }
 
     void process() throws IOException {
+        if (rrfs == null) {
+            throw new IllegalStateException("RRFS path not set");
+        }
+        if (tuisOfInterestFile == null) {
+            throw new IllegalStateException("TUI whitelist path not set");
+        }
+        if (ttysBannedFile == null) {
+            throw new IllegalStateException("TTY banlist path not set");
+        }
+        if (outputDir == null) {
+            throw new IllegalStateException("Output dir not set");
+        }
+
         Files.createDirectories(outputDir);
 
-        LOGGER.info("Loading whitelisted TUIs");
-        Set<TUI> whitelisted = Files.lines(tuiWhitelistFile).map(TUI::new).collect(Collectors.toSet());
+        LOGGER.info("Loading TUIs of interest: {}", tuisOfInterestFile);
+        Set<TUI> whitelist = Files.lines(tuisOfInterestFile).map(SPLITTER::split)
+                .filter(line -> line.length >= 3)
+                .map(line -> line[1])
+                .map(TUI::new)
+                .collect(Collectors.toSet());
 
-        LOGGER.info("Loading CUI -> TUIs map from MRSTY");
-        Map<CUI, List<TUI>> cuiToTUIs = Files.lines(mrstyFile)
+        Set<String> ttyBanlist = Files.lines(ttysBannedFile).collect(Collectors.toSet());
+
+        Path mrstyPath = rrfs.resolve("MRSTY.RRF");
+        LOGGER.info("Loading CUI -> TUIs map from MRSTY: {}", mrstyPath);
+        Map<CUI, List<TUI>> cuiToTUIs = Files.lines(mrstyPath)
                 .map(SPLITTER::split)
                 .map(line -> {
                     CUI cui = new CUI(line[0]);
@@ -58,97 +130,125 @@ public class UmlsConceptDictionaryBuilder {
                     tuis.add(tui);
                     return new AbstractMap.SimpleImmutableEntry<>(cui, tuis);
                 })
-                .collect(getCollector());
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (first, second) -> {
+                            for (TUI secondItem : second) {
+                                if (!first.contains(secondItem)) {
+                                    first.add(secondItem);
+                                }
+                            }
+                            return first;
+                        }));
 
-        LOGGER.info("Filtering CUIs based on whitelist");
+        LOGGER.info("Filtering CUIs based on interest list");
         cuiToTUIs.entrySet()
                 .removeIf(entry -> {
-                    boolean noneMatch = entry.getValue().stream().noneMatch(whitelisted::contains);
+                    boolean noneMatch = entry.getValue()
+                            .stream()
+                            .noneMatch(tui -> whitelist.stream().anyMatch(whitelisted -> semanticTypeNetwork.isa(tui, whitelisted)));
                     if (noneMatch) {
-                        LOGGER.trace("Filtering {} because it has no whitelisted types", entry.getKey());
+                        LOGGER.trace("Filtering {} because it has no interesting types", entry.getKey());
                     }
                     return noneMatch;
                 });
 
-        LOGGER.info("Writing TUIs out");
-        Yaml yaml = YamlSerialization.createYaml();
-        yaml.dump(cuiToTUIs, Files.newBufferedWriter(outputDir.resolve("tuis.yml")));
+        Path tuisPath = outputDir.resolve("tuis.yml");
+        LOGGER.info("Writing CUI -> TUIs out: {}", tuisPath);
+        TermIndex normIndex = vocabulary.normIndex();
+        Yaml yaml = YamlSerialization.createYaml(normIndex);
+        yaml.dump(cuiToTUIs, Files.newBufferedWriter(tuisPath));
 
-        LOGGER.info("Loading phrases from MRCONSO");
-        Map<String, List<CUI>> phraseDictionary = Files.lines(mrconsoFile)
-                .map(SPLITTER::split)
-                .filter(columns -> "ENG".equals(columns[1]))
-                .map(line -> {
-                    String phrase = line[14];
-                    CUI cui = new CUI(line[0]);
-                    List<CUI> cuis = new ArrayList<>();
-                    cuis.add(cui);
-                    return new AbstractMap.SimpleImmutableEntry<>(phrase, cuis);
-                })
-                // filter short entries since these will be handled by acronym detection / expansion
-                .filter(entry -> {
-                    boolean longEnough = entry.getKey().length() >= 3;
-                    if (!longEnough) {
-                        LOGGER.trace("Filtering \"{}\" because it is too short", entry.getKey());
-                    }
-                    return longEnough;
-                })
-                .filter(entry -> {
-                    entry.getValue().removeIf(cui -> !cuiToTUIs.containsKey(cui));
-                    boolean notFiltered = !entry.getValue().isEmpty();
-                    if (!notFiltered) {
-                        LOGGER.trace("Filtering \"{}\" because it has no whitelisted types", entry.getKey());
-                    }
-                    return notFiltered;
-                })
-                .collect(getCollector());
+        Path mrconsoPath = rrfs.resolve("MRCONSO.RRF");
+        LOGGER.info("Loading phrases and SUI -> CUIs from MRCONSO: {}", mrconsoPath);
+        Set<SUI> bannedSUIs = new HashSet<>();
 
-        LOGGER.info("Writing phrases out");
-        yaml.dump(phraseDictionary, Files.newBufferedWriter(outputDir.resolve("phrases.yml")));
+        // block so phrase dictionary gets freed once it's no longer needed
+        {
+            Map<String, SUI> phraseDictionary = new HashMap<>();
+            Map<SUI, List<CUI>> suiCUIs = new HashMap<>();
+            Files.lines(mrconsoPath)
+                    .map(SPLITTER::split)
+                    .filter(columns -> "ENG".equals(columns[1]))
+                    .forEach(columns -> {
+                        String phrase = columns[14];
+                        CUI cui = new CUI(columns[0]);
+                        SUI sui = new SUI(columns[5]);
+                        String obsoleteOrSuppressible = columns[16];
+                        String tty = columns[12];
 
-        LOGGER.info("Loading lowercase normalized strings from MRXNS_ENG");
-        Map<List<String>, List<CUI>> normDictionary = Files.lines(mrxnsFile)
+                        if (phrase.length() < 3) {
+                            return;
+                        }
+
+                        if (!"N".equals(obsoleteOrSuppressible)) {
+                            bannedSUIs.add(sui);
+                            return;
+                        }
+
+                        if (ttyBanlist.contains(tty)) {
+                            bannedSUIs.add(sui);
+                            return;
+                        }
+
+                        if (!cuiToTUIs.containsKey(cui)) {
+                            LOGGER.trace("Filtering \"{}\" because it has no interesting types", phrase);
+                            return;
+                        }
+
+                        phraseDictionary.put(phrase, sui);
+                        multimapPut(suiCUIs, sui, cui);
+                    });
+            Path phrasesPath = outputDir.resolve("phrases.yml");
+            LOGGER.info("Writing phrases out: {}", phrasesPath);
+            yaml.dump(phraseDictionary, Files.newBufferedWriter(phrasesPath));
+
+            Path suiCUIsPath = outputDir.resolve("suiCUIs.yml");
+            yaml.dump(suiCUIs, Files.newBufferedWriter(suiCUIsPath));
+        }
+
+        Path mrxnsPath = rrfs.resolve("MRXNS_ENG.RRF");
+        LOGGER.info("Loading lowercase normalized strings from MRXNS_ENG: {}", mrxnsPath);
+        Map<TermVector, SUI> normDictionary = new HashMap<>();
+        Files.lines(mrxnsPath)
                 .map(SPLITTER::split)
                 .filter(columns -> "ENG".equals(columns[0]))
-                .map(line -> {
+                .forEach(line -> {
                     List<String> norms = Arrays.asList(SPACE_SPLITTER.split(line[1]));
                     CUI cui = new CUI(line[2]);
-                    List<CUI> cuis = new ArrayList<>();
-                    cuis.add(cui);
-                    return new AbstractMap.SimpleImmutableEntry<>(norms, cuis);
-                })
-                // filter short entries since these will be handled by acronym detection / expansion
-                .filter(entry -> {
-                    boolean longEnough = entry.getKey().size() == 1 && entry.getKey().get(0).length() >= 3 || entry.getKey().size() > 1;
-                    if (!longEnough) {
-                        LOGGER.trace("Filtering \"{}\" because it is too short", entry.getKey());
+                    SUI sui = new SUI(line[4]);
+
+                    if (norms.size() == 1 && norms.get(0).length() < 3) {
+                        return;
                     }
-                    return longEnough;
-                })
-                .filter(entry -> {
-                    entry.getValue().removeIf(cui -> !cuiToTUIs.containsKey(cui));
-                    boolean notFiltered = !entry.getValue().isEmpty();
-                    if (!notFiltered) {
-                        LOGGER.trace("Filtering \"{}\" because it has no whitelisted types", entry.getKey());
+
+                    if (bannedSUIs.contains(sui)) {
+                        return;
                     }
-                    return notFiltered;
-                })
-                .collect(getCollector());
-        LOGGER.info("Writing lowercase normalized strings");
-        yaml.dump(normDictionary, Files.newBufferedWriter(outputDir.resolve("norms.yml")));
+
+                    if (!cuiToTUIs.containsKey(cui)) {
+                        LOGGER.trace("Filtering \"{}\" because it has no interesting types", norms);
+                        return;
+                    }
+
+                    normDictionary.put(normIndex.lookup(norms), sui);
+                });
+        Path normsPath = outputDir.resolve("norms.yml");
+        LOGGER.info("Writing lowercase normalized strings: {}", normsPath);
+        yaml.dump(normDictionary, Files.newBufferedWriter(normsPath));
     }
 
-    private <T, U> Collector<AbstractMap.SimpleImmutableEntry<U, List<T>>, ?, Map<U, List<T>>> getCollector() {
-        return Collectors.toMap(Map.Entry::getKey,
-                Map.Entry::getValue,
-                (first, second) -> {
-                    for (T secondItem : second) {
-                        if (!first.contains(secondItem)) {
-                            first.add(secondItem);
-                        }
-                    }
-                    return first;
-                });
+    private <K, V> void multimapPut(Map<K, List<V>> map, K key, V value) {
+        if (map.containsKey(key)) {
+            List<V> list = map.get(key);
+            if (!list.contains(value)) {
+                list.add(value);
+            }
+        } else {
+            List<V> list = new ArrayList<>();
+            list.add(value);
+            map.put(key, list);
+        }
     }
 
     public static void main(String[] args) {
@@ -156,11 +256,16 @@ public class UmlsConceptDictionaryBuilder {
 
         Path outputDir = Paths.get(args[1]);
 
-        Path tuiWhitelistFile = Paths.get(args[2]);
+        Path tuisOfInterestFile = Paths.get(args[2]);
 
-        UmlsConceptDictionaryBuilder umlsConceptDictionaryBuilder = new UmlsConceptDictionaryBuilder(rrfs, outputDir, tuiWhitelistFile);
+        Path ttyBanlistFile = Paths.get(args[3]);
 
         try {
+            UmlsConceptDictionaryBuilder umlsConceptDictionaryBuilder = Bootstrapper.create().getInstance(UmlsConceptDictionaryBuilder.class);
+            umlsConceptDictionaryBuilder.setRRFsPath(rrfs);
+            umlsConceptDictionaryBuilder.setOutputDir(outputDir);
+            umlsConceptDictionaryBuilder.setTuisOfInterestFile(tuisOfInterestFile);
+            umlsConceptDictionaryBuilder.setTtysBannedFile(ttyBanlistFile);
             umlsConceptDictionaryBuilder.process();
         } catch (IOException e) {
             e.printStackTrace();

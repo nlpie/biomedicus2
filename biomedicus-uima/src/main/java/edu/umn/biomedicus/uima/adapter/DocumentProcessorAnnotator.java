@@ -10,16 +10,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Runs a class of type {@link DocumentProcessor}, injecting it with the document data.
@@ -37,6 +35,8 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
     public static final String PARAM_VIEW_NAME = "viewName";
 
     public static final String PARAM_EAGER_LOAD = "eagerLoad";
+
+    public static final List<String> KNOWN_PARAMS = Arrays.asList(PARAM_DOCUMENT_PROCESSOR, PARAM_VIEW_NAME, PARAM_EAGER_LOAD);
 
     private static final String PARAM_POST_PROCESSORS = "postProcessors";
 
@@ -59,8 +59,18 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
 
+        Settings.Builder settingsBuilder = Settings.builder();
+        for (String parameterName : aContext.getConfigParameterNames()) {
+            if (parameterName != null && !KNOWN_PARAMS.contains(parameterName)) {
+                settingsBuilder.put(parameterName, aContext.getConfigParameterValue(parameterName));
+            }
+        }
+
+        processorSettings = new UimaProcessorSettings(settingsBuilder.build());
+
         try {
-            injector = ((GuiceInjector) aContext.getResourceObject(RESOURCE_GUICE_INJECTOR)).getInjector();
+            injector = ((GuiceInjector) aContext.getResourceObject(RESOURCE_GUICE_INJECTOR)).getInjector()
+                    .createChildInjector(new ProcessorSettingsModule(processorSettings));
         } catch (ResourceAccessException e) {
             throw new ResourceInitializationException(e);
         }
@@ -89,15 +99,6 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
             throw new ResourceInitializationException(e);
         }
 
-        Settings.Builder settingsBuilder = Settings.builder();
-        for (String parameterName : aContext.getConfigParameterNames()) {
-            if (parameterName != null && !Arrays.asList(PARAM_DOCUMENT_PROCESSOR, PARAM_VIEW_NAME, PARAM_EAGER_LOAD).contains(parameterName)) {
-                settingsBuilder.put(parameterName, aContext.getConfigParameterValue(parameterName));
-            }
-        }
-
-        processorSettings = new UimaProcessorSettings(settingsBuilder.build());
-
         viewName = (String) aContext.getConfigParameterValue(PARAM_VIEW_NAME);
     }
 
@@ -106,16 +107,18 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
         assert injector != null;
         assert documentProcessorClass != null;
         JCas view;
-        try {
-            view = aJCas.getView(viewName);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
+        if (CAS.NAME_DEFAULT_SOFA.equals(viewName)) {
+            view = aJCas;
+        } else {
+            try {
+                view = aJCas.getView(viewName);
+            } catch (CASException e) {
+                throw new AnalysisEngineProcessException(e);
+            }
         }
 
         Map<Key<?>, Object> seededObjects = new HashMap<>();
         seededObjects.put(Key.get(JCas.class), view);
-        seededObjects.put(Key.get(ProcessorSettings.class),
-                Objects.requireNonNull(processorSettings, "processor settings should be non-null"));
 
         try {
             BiomedicusScopes.runInDocumentScope(() -> {

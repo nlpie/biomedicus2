@@ -6,6 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.resource.Resource_ImplBase;
 
+import java.io.IOException;
+
 /**
  * Guice injector resource implementation.
  *
@@ -19,7 +21,11 @@ public class GuiceInjector extends Resource_ImplBase {
 
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
-        injector = new Bootstrapper(new UimaModule()).injector();
+        try {
+            injector = new Bootstrapper(new UimaModule()).injector();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public Injector getInjector() {

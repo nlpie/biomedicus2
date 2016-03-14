@@ -2,8 +2,7 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.vocabulary.CharacterSet;
-import edu.umn.biomedicus.common.vocabulary.MappedCharacterSet;
+import edu.umn.biomedicus.common.terms.MappedCharacterSet;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -16,19 +15,23 @@ import java.util.Set;
 @ProvidedBy(OrthographicAcronymModelLoader.class)
 public class OrthographicAcronymModel implements Serializable {
 
-    public static final CharacterSet CASE_SENS_SYMBOLS = MappedCharacterSet.builder()
+    public static final MappedCharacterSet CASE_SENS_SYMBOLS = MappedCharacterSet.builder()
             .addAll("abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             .addAll("0?^$")
             .build();
 
-    public static final CharacterSet CASE_SENS_CHARS = CASE_SENS_SYMBOLS.maskCharacters("0?^$");
+    public static final MappedCharacterSet CASE_SENS_CHARS = MappedCharacterSet.builder()
+            .addAll("abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            .build();
 
-    public static final CharacterSet CASE_INSENS_SYMBOLS = MappedCharacterSet.builder()
+    public static final MappedCharacterSet CASE_INSENS_SYMBOLS = MappedCharacterSet.builder()
             .addAll("abcdefghijklmnopqrstuvwxyz.-")
             .addAll("0?^$")
             .build();
 
-    public static final CharacterSet CASE_INSENS_CHARS = CASE_INSENS_SYMBOLS.maskCharacters("0?^$");
+    public static final MappedCharacterSet CASE_INSENS_CHARS = MappedCharacterSet.builder()
+            .addAll("abcdefghijklmnopqrstuvwxyz.-")
+            .build();
 
     // Log probabilities that certain character trigrams are an abbreviation or a longform
     private final double[][][] abbrevProbs;
@@ -39,9 +42,9 @@ public class OrthographicAcronymModel implements Serializable {
 
     private final Set<String> longformsLower;
 
-    private final transient CharacterSet symbols;
+    private final transient MappedCharacterSet symbols;
 
-    private final transient CharacterSet chars;
+    private final transient MappedCharacterSet chars;
 
     public OrthographicAcronymModel(double[][][] abbrevProbs, double[][][] longformProbs, boolean caseSensitive, Set<String> longformsLower) {
         this.abbrevProbs = abbrevProbs;

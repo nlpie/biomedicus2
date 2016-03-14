@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class AlignmentModel implements Serializable {
 
-    private Set<String> longforms;
+    private List<String> longforms;
 
     /*
      * Defaults to false, which is the recommended value
@@ -27,16 +27,16 @@ public class AlignmentModel implements Serializable {
 
     }
 
-    public AlignmentModel(Set<String> longforms, boolean caseSensitive) {
+    public AlignmentModel(List<String> longforms, boolean caseSensitive) {
         this.longforms = longforms;
         this.caseSensitive = caseSensitive;
     }
 
-    public Set<String> getLongforms() {
+    public List<String> getLongforms() {
         return longforms;
     }
 
-    public void setLongforms(Set<String> longforms) {
+    public void setLongforms(List<String> longforms) {
         this.longforms = longforms;
     }
 
@@ -50,7 +50,7 @@ public class AlignmentModel implements Serializable {
 
     public static AlignmentModel create(Path longformsPath, boolean caseSensitive) throws IOException {
         Set<String> longforms = Files.lines(longformsPath).collect(Collectors.toSet());
-        return new AlignmentModel(longforms, caseSensitive);
+        return new AlignmentModel(new ArrayList<>(longforms), caseSensitive);
     }
 
     public static AlignmentModel create(Path longformsPath) throws IOException {
