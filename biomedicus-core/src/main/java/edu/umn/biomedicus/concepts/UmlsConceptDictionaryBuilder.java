@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -209,7 +211,8 @@ public class UmlsConceptDictionaryBuilder {
 
         Path mrxnsPath = rrfs.resolve("MRXNS_ENG.RRF");
         LOGGER.info("Loading lowercase normalized strings from MRXNS_ENG: {}", mrxnsPath);
-        Map<TermVector, SUI> normDictionary = new HashMap<>();
+        Path normsPath = outputDir.resolve("norms.txt");
+        Map<TermVector, List<CUI>> normMap = new HashMap<>();
         Files.lines(mrxnsPath)
                 .map(SPLITTER::split)
                 .filter(columns -> "ENG".equals(columns[0]))
@@ -231,11 +234,30 @@ public class UmlsConceptDictionaryBuilder {
                         return;
                     }
 
-                    normDictionary.put(normIndex.lookup(norms), sui);
+                    TermVector termVector = normIndex.lookup(norms).get();
+
+                    List<CUI> cuis;
+                    if (normMap.containsKey(termVector)) {
+                        cuis = normMap.get(termVector);
+                    } else {
+                        cuis = new ArrayList<>();
+                        normMap.put(termVector, cuis);
+                    }
+                    if (!cuis.contains(cui)) {
+                        cuis.add(cui);
+                    }
                 });
-        Path normsPath = outputDir.resolve("norms.yml");
+
         LOGGER.info("Writing lowercase normalized strings: {}", normsPath);
-        yaml.dump(normDictionary, Files.newBufferedWriter(normsPath));
+
+        try (BufferedWriter normsWriter = Files.newBufferedWriter(normsPath)) {
+            for (Map.Entry<TermVector, List<CUI>> entry : normMap.entrySet()) {
+                normsWriter.write(normIndex.getStrings(entry.getKey()).stream().collect(Collectors.joining(",")));
+                normsWriter.newLine();
+                normsWriter.write(entry.getValue().stream().map(CUI::toString).collect(Collectors.joining(",")));
+                normsWriter.newLine();
+            }
+        }
     }
 
     private <K, V> void multimapPut(Map<K, List<V>> map, K key, V value) {

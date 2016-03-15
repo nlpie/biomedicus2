@@ -1,5 +1,7 @@
 package edu.umn.biomedicus.acronym;
 
+import com.google.inject.ProvidedBy;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
  * @author Greg Finley
  * @since 1.5.0
  */
+@ProvidedBy(AlignmentModelLoader.class)
 public class AlignmentModel implements Serializable {
 
     private List<String> longforms;
@@ -163,7 +166,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return all longforms with the highest score
      */
-    public String[] findBestLongforms(String abbrev) {
+    public List<String> findBestLongforms(String abbrev) {
         List<String> best = new ArrayList<>();
         double maxScore = -Double.MAX_VALUE;
         for (String longform : longforms) {
@@ -175,7 +178,7 @@ public class AlignmentModel implements Serializable {
             if (thisScore == maxScore)
                 best.add(longform);
         }
-        return best.toArray(new String[best.size()]);
+        return best;
     }
 
     /**

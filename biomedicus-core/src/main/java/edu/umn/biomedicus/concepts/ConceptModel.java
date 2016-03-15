@@ -38,13 +38,13 @@ class ConceptModel {
 
     private final Map<CUI, List<TUI>> cuiToTUIs;
 
-    private final Map<TermVector, SUI> normDictionary;
+    private final Map<TermVector, List<CUI>> normDictionary;
 
     private final Map<String, SUI> phraseDictionary;
 
     private final Map<SUI, List<CUI>> suiToCUIs;
 
-    public ConceptModel(Map<CUI, List<TUI>> cuiToTUIs, Map<TermVector, SUI> normDictionary, Map<String, SUI> phraseDictionary, Map<SUI, List<CUI>> suiToCUIs) {
+    public ConceptModel(Map<CUI, List<TUI>> cuiToTUIs, Map<TermVector, List<CUI>> normDictionary, Map<String, SUI> phraseDictionary, Map<SUI, List<CUI>> suiToCUIs) {
         this.cuiToTUIs = cuiToTUIs;
         this.normDictionary = normDictionary;
         this.phraseDictionary = phraseDictionary;
@@ -57,7 +57,7 @@ class ConceptModel {
     }
 
     @Nullable
-    SUI forNorms(TermVector norms) {
+    List<CUI> forNorms(TermVector norms) {
         return normDictionary.get(norms);
     }
 

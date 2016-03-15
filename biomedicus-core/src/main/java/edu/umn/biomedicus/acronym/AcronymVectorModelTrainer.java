@@ -38,7 +38,7 @@ public class AcronymVectorModelTrainer implements PostProcessor {
     // expansionMap works the same as in AcronymVectorModel
     // uniqueIdMap maps unique identifying strings of the acronym long forms (as appear in the preprocessed training
     // text file) to their English forms
-    private final Map<String, String[]> expansionMap;
+    private final Map<String, List<String>> expansionMap;
     private final Map<String, String> uniqueIdMap;
     private final AlignmentModel alignmentModel;
     private final Path outputDir;
@@ -47,7 +47,7 @@ public class AcronymVectorModelTrainer implements PostProcessor {
     // Will map senses to their centroid context vectors
     private Map<String, DoubleVector> senseMap = new HashMap<>();
 
-    public AcronymVectorModelTrainer(Map<String, String[]> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path outputDir) {
+    public AcronymVectorModelTrainer(Map<String, List<String>> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path outputDir) {
         this.expansionMap = expansionMap;
         this.uniqueIdMap = uniqueIdMap;
         this.alignmentModel = alignmentModel;
@@ -71,10 +71,10 @@ public class AcronymVectorModelTrainer implements PostProcessor {
                                                    Path acronymModelPath) throws IOException {
         LOGGER.info("Loading data files to initialize the acronym model trainer");
 
-        Map<String, String[]> expansionMap = Files.lines(expansionMapPath)
+        Map<String, List<String>> expansionMap = Files.lines(expansionMapPath)
                 .map(SPLITTER::split)
                 .collect(Collectors.toMap(splits -> splits[0],
-                        splits -> Arrays.copyOfRange(splits, 1, splits.length)));
+                        splits -> Arrays.asList(Arrays.copyOfRange(splits, 1, splits.length))));
 
         Map<String, String> uniqueIdMap = Files.lines(uniqueIdMapPath)
                 .map(SPLITTER::split)

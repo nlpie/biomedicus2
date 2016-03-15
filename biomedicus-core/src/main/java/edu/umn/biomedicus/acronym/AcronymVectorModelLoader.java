@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,7 +56,7 @@ public class AcronymVectorModelLoader extends DataLoader<AcronymVectorModel> {
 
             LOGGER.info("Loading acronym expansions: {}", acronymExpansionsPath);
             @SuppressWarnings("unchecked")
-            Map<String, String[]> expansions = (Map<String, String[]>) yaml.load(Files.newBufferedReader(acronymExpansionsPath));
+            Map<String, List<String>> expansions = (Map<String, List<String>>) yaml.load(Files.newBufferedReader(acronymExpansionsPath));
 
             return new AcronymVectorModel(vectorSpaceDouble, senseMap, expansions, alignmentModel);
         } catch (IOException e) {

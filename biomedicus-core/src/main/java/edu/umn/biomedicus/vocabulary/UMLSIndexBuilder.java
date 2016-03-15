@@ -1,10 +1,7 @@
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.common.terms.DirectedAcyclicWordGraph;
-
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;

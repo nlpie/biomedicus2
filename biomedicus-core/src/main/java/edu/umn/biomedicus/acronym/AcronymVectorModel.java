@@ -9,10 +9,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An implementation of an acronym model that uses word vectors and a cosine distance metric
@@ -33,7 +30,7 @@ public class AcronymVectorModel implements AcronymModel {
     /**
      *  A map between acronyms and all their possible long forms
      */
-    private final Map<String, String[]> expansionMap;
+    private final Map<String, List<String>> expansionMap;
 
     /**
      * Maps long forms to their trained word vectors
@@ -53,7 +50,7 @@ public class AcronymVectorModel implements AcronymModel {
      * @param expansionMap      which maps between acronym Strings and Lists of their possible senses
      * @param alignmentModel    a model used for alignment of unknown acronyms
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap, @Nullable AlignmentModel alignmentModel) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap, @Nullable AlignmentModel alignmentModel) {
         this.expansionMap = expansionMap;
         this.senseMap = senseMap;
         this.vectorSpaceDouble = vectorSpaceDouble;
@@ -63,7 +60,7 @@ public class AcronymVectorModel implements AcronymModel {
     /**
      * Constructor without providing an AlignmentModel
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap) {
         this(vectorSpaceDouble, senseMap, expansionMap, null);
     }
 
@@ -73,11 +70,11 @@ public class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public String[] getExpansions(Token token) {
+    public List<String> getExpansions(Token token) {
         String acronym = AcronymUtilities.standardForm(token);
         if (expansionMap.containsKey(acronym))
             return expansionMap.get(acronym);
-        return new String[0];
+        return Collections.emptyList();
     }
 
     /**
@@ -110,20 +107,20 @@ public class AcronymVectorModel implements AcronymModel {
 
         // If the model doesn't contain this acronym, make sure it doesn't contain an upper-case version of it
 
-        String[] senses = expansionMap.get(acronym);
+        List<String> senses = expansionMap.get(acronym);
         if (senses == null) {
             senses = expansionMap.get(acronym.toUpperCase());
         }
         if (senses == null && alignmentModel != null) {
             senses = alignmentModel.findBestLongforms(acronym);
         }
-        if (senses == null || senses.length == 0) {
+        if (senses == null || senses.size() == 0) {
             return UNK;
         }
 
         // If the acronym is unambiguous, our work is done
-        if (senses.length == 1) {
-            return senses[0];
+        if (senses.size() == 1) {
+            return senses.get(0);
         }
 
 
