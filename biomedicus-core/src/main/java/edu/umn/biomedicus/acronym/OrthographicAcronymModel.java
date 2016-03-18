@@ -6,12 +6,8 @@ import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.common.text.Token;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Will use orthographic rules to determine if tokens not known to be abbreviations are abbreviations

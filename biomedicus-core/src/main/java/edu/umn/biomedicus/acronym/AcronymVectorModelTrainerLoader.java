@@ -2,7 +2,6 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.application.ProcessorSettings;

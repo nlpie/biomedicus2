@@ -1,10 +1,10 @@
 package edu.umn.biomedicus.serialization;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermVector;
 import edu.umn.biomedicus.common.tuples.PosCap;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.concepts.CUI;
 import edu.umn.biomedicus.concepts.SUI;
 import edu.umn.biomedicus.concepts.TUI;

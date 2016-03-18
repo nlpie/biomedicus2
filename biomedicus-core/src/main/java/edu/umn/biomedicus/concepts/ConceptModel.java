@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermVector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
