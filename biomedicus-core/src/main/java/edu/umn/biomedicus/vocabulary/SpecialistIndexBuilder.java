@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  *
  */
-public class UMLSIndexBuilder {
+public class SpecialistIndexBuilder {
     public static void main(String[] args) {
         Path existingWordsPath = null;
         if (args.length == 3) {
@@ -22,9 +22,10 @@ public class UMLSIndexBuilder {
         try {
             Set<String> words = existingWordsPath != null ? Files.lines(existingWordsPath).collect(Collectors.toSet()) : new HashSet<>();
 
-            Path mrxwPath = Paths.get(args[0]);
             Pattern split = Pattern.compile("\\|");
-            Files.lines(mrxwPath).map(split::split).map(columns -> columns[1]).forEach(words::add);
+            Files.lines(Paths.get(args[0])).map(split::split)
+                    .map(columns -> columns[0])
+                    .forEach(words::add);
 
             Path outputPath = Paths.get(args[1]);
             Files.write(outputPath, words, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);

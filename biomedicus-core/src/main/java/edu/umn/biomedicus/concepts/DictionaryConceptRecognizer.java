@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
+import edu.umn.biomedicus.acronym.AcronymVectorModel;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.Concept;
@@ -27,6 +28,7 @@ import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.TextOrderedTokenSet;
+import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
@@ -172,15 +174,41 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
     private void checkTokenSet(TextOrderedTokenSet tokenSet) {
         Span span = tokenSet.getSpan();
-        String phrase = document.getText().substring(span.getBegin(), span.getEnd());
+
+        List<Token> tokens = tokenSet.getTokens();
+        int spanBegin = span.getBegin();
+        String phrase = document.getText().substring(spanBegin, span.getEnd());
         SUI phraseSUI = conceptModel.forPhrase(phrase);
+        if (phraseSUI == null) {
+            StringBuilder phraseEdited = new StringBuilder(phrase);
+
+            int offset = 0;
+            for (Token token : tokens) {
+                String replacement = null;
+                if (token.isAcronym()) {
+                    replacement = token.getLongForm();
+                } else if (token.isMisspelled()) {
+                    replacement = token.correctSpelling();
+                }
+                if (replacement != null && !AcronymVectorModel.UNK.equals(replacement)) {
+                    int tokenBegin = token.getBegin();
+                    int beginOffset = tokenBegin - spanBegin + offset;
+                    int tokenEnd = token.getEnd();
+                    int endOffset = tokenEnd - spanBegin + offset;
+                    offset += replacement.length() - (tokenEnd - tokenBegin);
+                    phraseEdited.replace(beginOffset, endOffset, replacement);
+                }
+            }
+            phrase = phraseEdited.toString();
+        }
+
+        phraseSUI = conceptModel.forPhrase(phrase);
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 1);
             return;
         }
 
-        List<Token> tokens = tokenSet.getTokens();
         List<String> norms = tokens.stream()
                 .map(Token::getNormalForm)
                 .sorted()
@@ -252,7 +280,8 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         LOGGER.info("Finding concepts in document.");
         for (Sentence sentence : document.getSentences()) {
             LOGGER.trace("Identifying concepts in a sentence");
-            TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence);
+            TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence)
+                    .filter(token -> Patterns.A_LETTER_OR_NUMBER.matcher(token.getText()).find());
 
             sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
                     .filter(DictionaryConceptRecognizer::matchesConcepts)

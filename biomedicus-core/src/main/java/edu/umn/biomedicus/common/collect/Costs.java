@@ -1,4 +1,4 @@
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.collect;
 
 /**
  *

@@ -1,6 +1,7 @@
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.collect;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,53 +17,59 @@ import java.util.stream.Stream;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class BKTree {
-    private final Node rootNode;
+public class MetricTree<T> {
+    private final Node<T> rootNode;
 
-    private final EditDistance editDistance;
+    private final Metric<T> metric;
 
-    private BKTree(Node rootNode, EditDistance editDistance) {
+    private MetricTree(Node<T> rootNode, Metric<T> metric) {
         this.rootNode = rootNode;
-        this.editDistance = editDistance;
+        this.metric = metric;
     }
 
-    private BKTree(MutableNode rootNode, EditDistance editDistance) {
+    private MetricTree(MutableNode<T> rootNode, Metric<T> metric) {
         this.rootNode = rootNode.build(this);
-        this.editDistance = editDistance;
+        this.metric = metric;
     }
 
-    public Stream<String> search(String word, int maxDistance) {
-        return rootNode.search(word, maxDistance);
+    public Stream<T> search(T word, int maxDistance) {
+        return rootNode.search(metric, word, maxDistance);
     }
 
-    private class Node {
-        private final String word;
+    private static class Node<T> {
+        private final T word;
 
         @Nullable
         private final int[] childDistances;
 
         @Nullable
-        private final Node[] children;
+        private final Node<T>[] children;
 
-        private Node(String word, @Nullable int[] childDistances, @Nullable Node[] children) {
+        private Node() {
+            word = null;
+            childDistances = null;
+            children = null;
+        }
+
+        private Node(T word, @Nullable int[] childDistances, @Nullable Node<T>[] children) {
             this.word = word;
             this.childDistances = childDistances;
             this.children = children;
         }
 
-        private Stream<String> search(String query, int maxDistance) {
-            int distance = editDistance.compute(query, word);
+        private Stream<T> search(Metric<T> metric, T query, int maxDistance) {
+            int distance = metric.compute(query, word);
             int min = distance - maxDistance;
             int max = distance + maxDistance;
 
-            Stream<String> returnStream = childrenBetween(min, max).flatMap(child -> child.search(query, maxDistance));
+            Stream<T> returnStream = childrenBetween(min, max).flatMap(child -> child.search(metric, query, maxDistance));
             if (distance <= maxDistance) {
                 returnStream = Stream.concat(Stream.of(word), returnStream);
             }
             return returnStream;
         }
 
-        private Stream<Node> childrenBetween(int min, int max) {
+        private Stream<Node<T>> childrenBetween(int min, int max) {
             if (childDistances == null || children == null) {
                 return Stream.empty();
             }
@@ -72,34 +79,34 @@ public class BKTree {
         }
     }
 
-    private static class MutableNode {
-        private final String word;
+    private static class MutableNode<T> {
+        private final T word;
 
-        private final Map<Integer, MutableNode> children = new HashMap<>();
+        private final Map<Integer, MutableNode<T>> children = new HashMap<>();
 
-        private MutableNode(String word) {
+        private MutableNode(T word) {
             this.word = word;
         }
 
-        private Node build(BKTree bkTree) {
+        private Node<T> build(MetricTree<T> metricTree) {
             int childrenSize = children.size();
             if (childrenSize == 0) {
-                return bkTree.new Node(word, null, null);
+                return new Node<T>(word, null, null);
             }
 
-            List<Map.Entry<Integer, MutableNode>> sorted = sortChildrenByDistance();
+            List<Map.Entry<Integer, MutableNode<T>>> sorted = sortChildrenByDistance();
 
             int[] distances = new int[childrenSize];
-            Node[] nodes = new Node[childrenSize];
+            Node<T>[] nodes = (Node<T>[]) Array.newInstance((new Node<T>()).getClass(), childrenSize);
             for (int i = 0; i < childrenSize; i++) {
-                Map.Entry<Integer, MutableNode> entry = sorted.get(i);
+                Map.Entry<Integer, MutableNode<T>> entry = sorted.get(i);
                 distances[i] = entry.getKey();
-                nodes[i] = entry.getValue().build(bkTree);
+                nodes[i] = entry.getValue().build(metricTree);
             }
-            return bkTree.new Node(word, distances, nodes);
+            return new Node<>(word, distances, nodes);
         }
 
-        private List<Map.Entry<Integer, MutableNode>> sortChildrenByDistance() {
+        private List<Map.Entry<Integer, MutableNode<T>>> sortChildrenByDistance() {
             return children
                     .entrySet()
                     .stream()
@@ -108,44 +115,44 @@ public class BKTree {
         }
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
     }
 
-    public static class Builder {
+    public static class Builder<T> {
         @Nullable
-        private MutableNode rootNode = null;
+        private MutableNode<T> rootNode = null;
 
         @Nullable
-        private EditDistance editDistance;
+        private Metric<T> metric;
 
         private Builder() {
 
         }
 
-        public Builder withEditDistance(EditDistance editDistance) {
-            this.editDistance = editDistance;
+        public Builder<T> withMetric(Metric<T> metric) {
+            this.metric = metric;
             return this;
         }
 
-        public Builder add(String word) {
-            if (editDistance == null) {
+        public Builder<T> add(T word) {
+            if (metric == null) {
                 throw new IllegalStateException("Edit distance method needs to be set before adding words");
             }
 
             if (rootNode == null) {
-                rootNode = new MutableNode(word);
+                rootNode = new MutableNode<>(word);
             }
 
-            MutableNode currentNode = rootNode;
+            MutableNode<T> currentNode = rootNode;
 
             while (true) {
-                int distance = editDistance.compute(currentNode.word, word);
+                int distance = metric.compute(currentNode.word, word);
                 if (distance == 0) {
                     break;
                 }
                 if (!currentNode.children.containsKey(distance)) {
-                    currentNode.children.put(distance, new MutableNode(word));
+                    currentNode.children.put(distance, new MutableNode<>(word));
                     break;
                 }
 
@@ -154,14 +161,14 @@ public class BKTree {
             return this;
         }
 
-        public BKTree build() {
+        public MetricTree<T> build() {
             if (rootNode == null) {
                 throw new IllegalStateException("Empty BK Tree");
             }
-            if (editDistance == null) {
+            if (metric == null) {
                 throw new IllegalStateException("Edit distance method needs to be set before adding words");
             }
-            return new BKTree(rootNode, editDistance);
+            return new MetricTree<T>(rootNode, metric);
         }
     }
 }

@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -173,6 +174,10 @@ public abstract class TextOrderedTokenSet implements OrderedTokenSet {
      */
     public Collection<OrderedTokenSet> prepositionalSyntacticPermutations() {
         return prepositionalSyntacticPermutationsStream().collect(Collectors.toList());
+    }
+
+    public TextOrderedTokenSet filter(Predicate<Token> tokenPredicate) {
+        return new SimpleTextOrderedTokenSet(getTokens().stream().filter(tokenPredicate).collect(Collectors.toList()));
     }
 
     /**

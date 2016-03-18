@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.collect;
 
 /**
  * Class for computing the edit distance between two words.
@@ -23,15 +23,19 @@ package edu.umn.biomedicus.common.terms;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class StandardEditDistance implements EditDistance {
+public class StandardEditDistance<T extends CharSequence> implements Metric<T> {
     private final Costs costs;
 
     public StandardEditDistance(Costs costs) {
         this.costs = costs;
     }
 
+    public static <T extends CharSequence> StandardEditDistance<T> levenstein() {
+        return new StandardEditDistance<>(Costs.LEVENSHTEIN);
+    }
+
     @Override
-    public int compute(CharSequence first, CharSequence second) {
+    public int compute(T first, T second) {
         int firstLength = first.length();
         int secondLength = second.length();
 
@@ -51,7 +55,7 @@ public class StandardEditDistance implements EditDistance {
             thisRow[column] = row * costs.getDelete();
 
             for (column = 1; column <= secondLength; column++) {
-                boolean isMatch = first.charAt(row) == second.charAt(column);
+                boolean isMatch = first.charAt(row - 1) == second.charAt(column - 1);
                 int matchOrReplace = (isMatch ? costs.getMatch() : costs.getReplace()) + lastRow[column - 1];
                 int insert = costs.getInsert() + thisRow[column - 1];
                 int delete = costs.getDelete() + lastRow[column];

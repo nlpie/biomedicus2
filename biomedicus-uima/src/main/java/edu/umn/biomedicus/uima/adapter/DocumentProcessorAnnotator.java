@@ -17,7 +17,10 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Runs a class of type {@link DocumentProcessor}, injecting it with the document data.
@@ -36,9 +39,9 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
 
     public static final String PARAM_EAGER_LOAD = "eagerLoad";
 
-    public static final List<String> KNOWN_PARAMS = Arrays.asList(PARAM_DOCUMENT_PROCESSOR, PARAM_VIEW_NAME, PARAM_EAGER_LOAD);
+    public static final String PARAM_POST_PROCESSORS = "postProcessors";
 
-    private static final String PARAM_POST_PROCESSORS = "postProcessors";
+    public static final List<String> KNOWN_PARAMS = Arrays.asList(PARAM_DOCUMENT_PROCESSOR, PARAM_VIEW_NAME, PARAM_EAGER_LOAD, PARAM_POST_PROCESSORS);
 
     @Nullable
     private Injector injector;

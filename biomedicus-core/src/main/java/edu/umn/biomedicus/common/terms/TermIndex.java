@@ -3,11 +3,9 @@ package edu.umn.biomedicus.common.terms;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -25,6 +23,10 @@ public class TermIndex {
         for (CharSequence charSequence : collection) {
             addTerm(charSequence);
         }
+    }
+
+    public boolean contains(String string) {
+        return hashIndexMap.contains(string);
     }
 
     public void addTerm(CharSequence term) {
@@ -71,5 +73,17 @@ public class TermIndex {
     public Optional<IndexedTerm> lookup(CharSequence term) {
         int termIdentifier = lookupIdentifier(term);
         return termIdentifier == -1 ? Optional.empty() : Optional.of(new IndexedTerm(termIdentifier));
+    }
+
+    public Iterator<IndexedTerm> iterator() {
+        return stream().iterator();
+    }
+
+    public Stream<IndexedTerm> stream() {
+        return IntStream.range(0, hashIndexMap.size()).mapToObj(IndexedTerm::new);
+    }
+
+    public int size() {
+        return hashIndexMap.size();
     }
 }

@@ -104,7 +104,7 @@ public class Settings {
         }
 
         public Builder put(String key, Object value) {
-            put(Objects.requireNonNull(key, "null key"), Objects.requireNonNull(value, "null value for key" + key).toString());
+            put(Objects.requireNonNull(key, "null key"), Objects.requireNonNull(value, "null value for key " + key).toString());
             return this;
         }
 
