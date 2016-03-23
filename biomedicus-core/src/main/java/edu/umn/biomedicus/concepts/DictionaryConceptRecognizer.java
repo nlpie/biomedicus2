@@ -22,7 +22,6 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleTerm;
-import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermVector;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
@@ -30,12 +29,14 @@ import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.TextOrderedTokenSet;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
@@ -121,7 +122,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
     static {
         Set<String> builder = new HashSet<>();
-        Collections.addAll(builder, "in", "of", "at", "on");
+        Collections.addAll(builder, "in", "of", "at", "on", "under");
         PREPOSITIONS = Collections.unmodifiableSet(builder);
     }
 
@@ -157,8 +158,6 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
     private final Document document;
 
-    private final TermIndex normIndex;
-
     /**
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
      *
@@ -166,10 +165,9 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * @param document     document to add new terms to.
      */
     @Inject
-    DictionaryConceptRecognizer(ConceptModel conceptModel, Document document, Vocabulary vocabulary) {
+    DictionaryConceptRecognizer(ConceptModel conceptModel, Document document) {
         this.document = document;
         this.conceptModel = conceptModel;
-        this.normIndex = vocabulary.normIndex();
     }
 
     private void checkTokenSet(TextOrderedTokenSet tokenSet) {
@@ -178,7 +176,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         List<Token> tokens = tokenSet.getTokens();
         int spanBegin = span.getBegin();
         String phrase = document.getText().substring(spanBegin, span.getEnd());
-        SUI phraseSUI = conceptModel.forPhrase(phrase);
+        List<SuiCuiTui> phraseSUI = conceptModel.forPhrase(phrase);
         if (phraseSUI == null) {
             StringBuilder phraseEdited = new StringBuilder(phrase);
 
@@ -209,66 +207,24 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             return;
         }
 
-        List<String> norms = tokens.stream()
-                .map(Token::getNormalForm)
-                .sorted()
-                .collect(Collectors.toList());
+        phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase());
 
-        Optional<TermVector> lookup = normIndex.lookup(norms);
-        if (lookup.isPresent()) {
-            List<CUI> normsCUI = conceptModel.forNorms(lookup.get());
-            if (normsCUI != null) {
-                makeTerm(span, normsCUI, .6);
-                return;
-            }
+        if (phraseSUI != null) {
+            makeTerm(span, phraseSUI, 0.6);
+            return;
         }
 
-        List<Token> filtered = new ArrayList<>();
-        if (tokens.size() > 2) {
-            filtered.addAll(tokens.subList(1, tokens.size() - 1)
-                    .stream()
-                    .filter(token -> !TRIVIAL_POS.contains(token.getPartOfSpeech()))
-                    .filter(token -> !AUXILIARY_VERBS.contains(token.getNormalForm()))
-                    .filter(token -> !PREPOSITIONS.contains(token.getNormalForm()))
-                    .collect(Collectors.toList()));
-        }
+        TermVector normVector = tokenSet.getNormVector();
 
-        filtered.add(0, tokens.get(0));
-
-        filtered.add(tokens.get(tokens.size() - 1));
-
-        if (!filtered.equals(tokens)) {
-            List<String> filteredNorms = filtered.stream()
-                    .map(Token::getNormalForm)
-                    .sorted()
-                    .collect(Collectors.toList());
-
-            Optional<TermVector> filterNormsLookup = normIndex.lookup(filteredNorms);
-            if (filterNormsLookup.isPresent()) {
-                List<CUI> filteredNormsCUI = conceptModel.forNorms(filterNormsLookup.get());
-                if (filteredNormsCUI != null) {
-                    makeTerm(span, filteredNormsCUI, .4);
-                }
-            }
-
+        List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
+        if (normsCUI != null) {
+            makeTerm(span, normsCUI, .3);
         }
     }
 
-    private void makeTerm(Span span, SUI sui, double confidence) {
-        List<Concept> concepts = conceptModel.forSUI(sui).stream()
-                .flatMap(cui -> conceptModel.termsForCUI(cui)
-                        .stream()
-                        .map(tui -> new UmlsConcept(cui, tui, sui, confidence))).collect(Collectors.toList());
-
-        Term term = new SimpleTerm(span.getBegin(), span.getEnd(), concepts.get(0),
-                concepts.subList(1, concepts.size()));
-        document.addTerm(term);
-    }
-
-    private void makeTerm(Span span, List<CUI> cuis, double confidence) {
-        List<Concept> concepts = cuis.stream().flatMap(cui -> conceptModel.termsForCUI(cui)
-                .stream()
-                .map(tui -> new UmlsConcept(cui, tui, null, confidence))).collect(Collectors.toList());
+    private void makeTerm(Span span, List<SuiCuiTui> cuis, double confidence) {
+        List<Concept> concepts = cuis.stream()
+                .map(suiCuiTui -> suiCuiTui.toConcept(confidence)).collect(Collectors.toList());
 
         Term term = new SimpleTerm(span.getBegin(), span.getEnd(), concepts.get(0),
                 concepts.subList(1, concepts.size()));
@@ -281,7 +237,11 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         for (Sentence sentence : document.getSentences()) {
             LOGGER.trace("Identifying concepts in a sentence");
             TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence)
-                    .filter(token -> Patterns.A_LETTER_OR_NUMBER.matcher(token.getText()).find());
+                    .filter(token -> !token.getNormTerm().isUnknown())
+                    .filter(token -> Patterns.A_LETTER_OR_NUMBER.matcher(token.getText()).find())
+                    .filter(token -> !TRIVIAL_POS.contains(token.getPartOfSpeech()))
+                    .filter(token -> !AUXILIARY_VERBS.contains(token.getNormalForm()))
+                    .filter(token -> !PREPOSITIONS.contains(token.getNormalForm()));
 
             sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
                     .filter(DictionaryConceptRecognizer::matchesConcepts)

@@ -81,6 +81,6 @@ class NormalizerModel {
         if (normalForm == null) {
             normalForm = key;
         }
-        token.setNormalForm(normalForm);
+        token.setNormalForm(normalForm.toLowerCase());
     }
 }

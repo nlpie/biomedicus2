@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.common.text;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -164,4 +165,14 @@ public interface Token extends Span, Editable {
     default boolean isCapitalized() {
         return Character.isUpperCase(getText().charAt(0));
     }
+
+    @Nullable
+    IndexedTerm getWordTerm();
+
+    void setWordTerm(IndexedTerm wordTerm);
+
+    @Nullable
+    IndexedTerm getNormTerm();
+
+    void setNormTerm(IndexedTerm normTerm);
 }

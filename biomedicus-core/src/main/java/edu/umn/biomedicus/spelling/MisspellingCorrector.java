@@ -17,9 +17,11 @@ import org.apache.logging.log4j.Logger;
  */
 @DocumentScoped
 public class MisspellingCorrector implements DocumentProcessor {
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Document document;
+
     private final SpellingModel spellingModel;
 
     @Inject
@@ -43,6 +45,7 @@ public class MisspellingCorrector implements DocumentProcessor {
                 if (token.isMisspelled()) {
                     String suggested = spellingModel.suggestCorrection(word, Ngram.create(first, prev));
                     if (suggested != null) {
+                        LOGGER.debug("Correcting word: {} with {}", word, suggested);
                         token.setCorrectSpelling(suggested);
                     }
                 }

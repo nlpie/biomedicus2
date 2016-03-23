@@ -8,12 +8,16 @@ import javax.annotation.Nullable;
 public class IndexedTerm implements Comparable<IndexedTerm> {
     private final int termIdentifier;
 
-    IndexedTerm(int termIdentifier) {
+    public IndexedTerm(int termIdentifier) {
         this.termIdentifier = termIdentifier;
     }
 
-    int termIdentifier() {
+    public int termIdentifier() {
         return termIdentifier;
+    }
+
+    public boolean isUnknown() {
+        return termIdentifier == -1;
     }
 
     @Override
@@ -24,7 +28,6 @@ public class IndexedTerm implements Comparable<IndexedTerm> {
         IndexedTerm that = (IndexedTerm) o;
 
         return termIdentifier == that.termIdentifier;
-
     }
 
     @Override

@@ -25,7 +25,10 @@
         <Root level="trace">
             <AppenderRef ref="STDOUT"/>
         </Root>
-        <logger name="edu.umn.biomedicus" level="debug" additivity="false">
+        <logger name="edu.umn.biomedicus" level="info" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </logger>
+        <logger name="edu.umn.biomedicus.spelling" level="debug" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </logger>
         <!-- example package based increased level logging

@@ -56,7 +56,7 @@ public class SpellingModel {
         LOGGER.info("Building BK tree for spelling model using {} words.", wordIndex.size());
         MetricTree.Builder<String> builder = MetricTree.builder();
         builder.withMetric(StandardEditDistance.levenstein());
-        wordIndex.stream().map(wordIndex::getString).forEach(builder::add);
+        wordIndex.stream().map(wordIndex::getTerm).forEach(builder::add);
         termsTree = builder.build();
 
         Path arpaPath = biomedicusConfiguration.resolveDataFile("spelling.arpa.path");

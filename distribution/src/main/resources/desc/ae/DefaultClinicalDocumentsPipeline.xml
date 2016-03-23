@@ -22,6 +22,9 @@
         <delegateAnalysisEngine key="token">
             <import location="annotator/TokenizerAnnotator.xml"/>
         </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="words">
+            <import location="annotator/WordLabeler.xml"/>
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="sentence">
             <import location="annotator/SentenceAnnotator.xml"/>
         </delegateAnalysisEngine>
@@ -36,6 +39,9 @@
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="normalizer">
             <import location="annotator/TokenNormalizationAnnotator.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="normIndexes">
+            <import location="annotator/NormLabeler.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="acronym">
             <import location="annotator/AcronymAnnotator.xml"/>
@@ -60,11 +66,13 @@
         <flowConstraints>
             <fixedFlow>
                 <node>token</node>
+                <node>words</node>
                 <node>sentence</node>
                 <node>misspellings</node>
                 <node>spellCorrect</node>
                 <node>posAnnotator</node>
                 <node>normalizer</node>
+                <node>normIndexes</node>
                 <node>acronym</node>
                 <node>dictionaryMapper</node>
                 <node>history</node>

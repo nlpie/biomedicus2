@@ -17,6 +17,7 @@ import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,14 +85,14 @@ public final class YamlSerialization {
                         @Override
                         public Object construct(Node node) {
                             String val = (String) constructScalar((ScalarNode) node);
-                            return termIndex.lookup(val);
+                            return termIndex.getIndexedTerm(val);
                         }
                     });
                     yamlConstructors.put(new Tag("!tv"), new AbstractConstruct() {
                         @Override
                         public Object construct(Node node) {
                             String[] val = (String[]) constructArray((SequenceNode) node);
-                            return termIndex.lookup(val);
+                            return termIndex.getTermVector(Arrays.asList(val));
                         }
                     });
                 }
@@ -130,12 +131,12 @@ public final class YamlSerialization {
                 if (termIndex != null) {
                     representers.put(IndexedTerm.class, o -> {
                         IndexedTerm it = (IndexedTerm) o;
-                        String value = termIndex.getString(it);
+                        String value = termIndex.getTerm(it);
                         return representScalar(new Tag("!t"), value);
                     });
                     representers.put(TermVector.class, o -> {
                         TermVector tv = (TermVector) o;
-                        List<String> expanded = termIndex.getStrings(tv);
+                        List<String> expanded = termIndex.getTerms(tv);
                         return representSequence(new Tag("!tv"), expanded, null);
                     });
                 }

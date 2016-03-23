@@ -22,9 +22,9 @@ import edu.umn.biomedicus.common.semantics.Concept;
  *
  */
 class UmlsConcept implements Concept {
+    private final SUI sui;
     private final CUI identifier;
     private final TUI type;
-    private final SUI sui;
     private final double confidence;
 
     public UmlsConcept(CUI identifier, TUI type, SUI sui, double confidence) {

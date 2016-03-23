@@ -23,14 +23,13 @@ import java.util.stream.Collectors;
 /**
  *
  */
-public class UmlsConceptDictionaryBuilder {
+public class ConceptModelBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final Pattern SPLITTER = Pattern.compile("\\|");
 
     private static final Pattern SPACE_SPLITTER = Pattern.compile(" ");
 
-    private final SemanticTypeNetwork semanticTypeNetwork;
     private final Vocabulary vocabulary;
 
     @Nullable
@@ -46,8 +45,7 @@ public class UmlsConceptDictionaryBuilder {
     private Path ttysBannedFile;
 
     @Inject
-    public UmlsConceptDictionaryBuilder(SemanticTypeNetwork semanticTypeNetwork, Vocabulary vocabulary) {
-        this.semanticTypeNetwork = semanticTypeNetwork;
+    public ConceptModelBuilder(Vocabulary vocabulary) {
         this.vocabulary = vocabulary;
     }
 
@@ -147,18 +145,14 @@ public class UmlsConceptDictionaryBuilder {
                 .removeIf(entry -> {
                     boolean noneMatch = entry.getValue()
                             .stream()
-                            .noneMatch(tui -> whitelist.stream().anyMatch(whitelisted -> semanticTypeNetwork.isa(tui, whitelisted)));
+                            .noneMatch(whitelist::contains);
                     if (noneMatch) {
                         LOGGER.trace("Filtering {} because it has no interesting types", entry.getKey());
                     }
                     return noneMatch;
                 });
 
-        Path tuisPath = outputDir.resolve("tuis.yml");
-        LOGGER.info("Writing CUI -> TUIs out: {}", tuisPath);
         TermIndex normIndex = vocabulary.normIndex();
-        Yaml yaml = YamlSerialization.createYaml(normIndex);
-        yaml.dump(cuiToTUIs, Files.newBufferedWriter(tuisPath));
 
         Path mrconsoPath = rrfs.resolve("MRCONSO.RRF");
         LOGGER.info("Loading phrases and SUI -> CUIs from MRCONSO: {}", mrconsoPath);
@@ -166,8 +160,7 @@ public class UmlsConceptDictionaryBuilder {
 
         // block so phrase dictionary gets freed once it's no longer needed
         {
-            Map<String, SUI> phraseDictionary = new HashMap<>();
-            Map<SUI, List<CUI>> suiCUIs = new HashMap<>();
+            Map<String, List<SuiCuiTui>> phraseDictionary = new HashMap<>();
             Files.lines(mrconsoPath)
                     .map(SPLITTER::split)
                     .filter(columns -> "ENG".equals(columns[1]))
@@ -192,26 +185,31 @@ public class UmlsConceptDictionaryBuilder {
                             return;
                         }
 
-                        if (!cuiToTUIs.containsKey(cui)) {
+                        List<TUI> tuis = cuiToTUIs.get(cui);
+                        if (tuis == null || tuis.size() == 0) {
                             LOGGER.trace("Filtering \"{}\" because it has no interesting types", phrase);
                             return;
                         }
-
-                        phraseDictionary.put(phrase, sui);
-                        multimapPut(suiCUIs, sui, cui);
+                        for (TUI tui : tuis) {
+                            multimapPut(phraseDictionary, phrase, new SuiCuiTui(sui, cui, tui));
+                        }
                     });
-            Path phrasesPath = outputDir.resolve("phrases.yml");
+            Path phrasesPath = outputDir.resolve("phrases.txt");
             LOGGER.info("Writing phrases out: {}", phrasesPath);
-            yaml.dump(phraseDictionary, Files.newBufferedWriter(phrasesPath));
-
-            Path suiCUIsPath = outputDir.resolve("suiCUIs.yml");
-            yaml.dump(suiCUIs, Files.newBufferedWriter(suiCUIsPath));
+            try (BufferedWriter normsWriter = Files.newBufferedWriter(phrasesPath)) {
+                for (Map.Entry<String, List<SuiCuiTui>> entry : phraseDictionary.entrySet()) {
+                    normsWriter.write(entry.getKey());
+                    normsWriter.newLine();
+                    normsWriter.write(entry.getValue().stream().map(SuiCuiTui::toString).collect(Collectors.joining(",")));
+                    normsWriter.newLine();
+                }
+            }
         }
 
         Path mrxnsPath = rrfs.resolve("MRXNS_ENG.RRF");
         LOGGER.info("Loading lowercase normalized strings from MRXNS_ENG: {}", mrxnsPath);
         Path normsPath = outputDir.resolve("norms.txt");
-        Map<TermVector, List<CUI>> normMap = new HashMap<>();
+        Map<TermVector, List<SuiCuiTui>> normMap = new HashMap<>();
         Files.lines(mrxnsPath)
                 .map(SPLITTER::split)
                 .filter(columns -> "ENG".equals(columns[0]))
@@ -220,7 +218,7 @@ public class UmlsConceptDictionaryBuilder {
                     CUI cui = new CUI(line[2]);
                     SUI sui = new SUI(line[4]);
 
-                    if (norms.size() == 1 && norms.get(0).length() < 3) {
+                    if (norms.size() < 2) {
                         return;
                     }
 
@@ -228,32 +226,23 @@ public class UmlsConceptDictionaryBuilder {
                         return;
                     }
 
-                    if (!cuiToTUIs.containsKey(cui)) {
-                        LOGGER.trace("Filtering \"{}\" because it has no interesting types", norms);
+                    TermVector termVector = normIndex.getTermVector(norms);
+                    List<TUI> tuis = cuiToTUIs.get(cui);
+                    if (tuis == null || tuis.size() == 0) {
+                        LOGGER.trace("Filtering \"{}\" because it has no interesting types", termVector);
                         return;
                     }
-
-                    TermVector termVector = normIndex.lookup(norms).get();
-
-                    List<CUI> cuis;
-                    if (normMap.containsKey(termVector)) {
-                        cuis = normMap.get(termVector);
-                    } else {
-                        cuis = new ArrayList<>();
-                        normMap.put(termVector, cuis);
-                    }
-                    if (!cuis.contains(cui)) {
-                        cuis.add(cui);
+                    for (TUI tui : tuis) {
+                        multimapPut(normMap, termVector, new SuiCuiTui(sui, cui, tui));
                     }
                 });
 
         LOGGER.info("Writing lowercase normalized strings: {}", normsPath);
-
         try (BufferedWriter normsWriter = Files.newBufferedWriter(normsPath)) {
-            for (Map.Entry<TermVector, List<CUI>> entry : normMap.entrySet()) {
-                normsWriter.write(normIndex.getStrings(entry.getKey()).stream().collect(Collectors.joining(",")));
+            for (Map.Entry<TermVector, List<SuiCuiTui>> entry : normMap.entrySet()) {
+                normsWriter.write(normIndex.getTerms(entry.getKey()).stream().collect(Collectors.joining(",")));
                 normsWriter.newLine();
-                normsWriter.write(entry.getValue().stream().map(CUI::toString).collect(Collectors.joining(",")));
+                normsWriter.write(entry.getValue().stream().map(SuiCuiTui::toString).collect(Collectors.joining(",")));
                 normsWriter.newLine();
             }
         }
@@ -282,12 +271,12 @@ public class UmlsConceptDictionaryBuilder {
         Path ttyBanlistFile = Paths.get(args[3]);
 
         try {
-            UmlsConceptDictionaryBuilder umlsConceptDictionaryBuilder = Bootstrapper.create().getInstance(UmlsConceptDictionaryBuilder.class);
-            umlsConceptDictionaryBuilder.setRRFsPath(rrfs);
-            umlsConceptDictionaryBuilder.setOutputDir(outputDir);
-            umlsConceptDictionaryBuilder.setTuisOfInterestFile(tuisOfInterestFile);
-            umlsConceptDictionaryBuilder.setTtysBannedFile(ttyBanlistFile);
-            umlsConceptDictionaryBuilder.process();
+            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().getInstance(ConceptModelBuilder.class);
+            conceptModelBuilder.setRRFsPath(rrfs);
+            conceptModelBuilder.setOutputDir(outputDir);
+            conceptModelBuilder.setTuisOfInterestFile(tuisOfInterestFile);
+            conceptModelBuilder.setTtysBannedFile(ttyBanlistFile);
+            conceptModelBuilder.process();
         } catch (IOException e) {
             e.printStackTrace();
         }

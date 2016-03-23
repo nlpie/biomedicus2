@@ -588,6 +588,14 @@
                     <name>acronymLongFormNorm</name>
                     <rangeTypeName>uima.cas.StringArray</rangeTypeName>
                 </featureDescription>
+                <featureDescription>
+                    <name>wordTerm</name>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>normTerm</name>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
             </features>
         </typeDescription>
         <typeDescription>

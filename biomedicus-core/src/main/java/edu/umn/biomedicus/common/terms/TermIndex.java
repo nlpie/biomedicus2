@@ -38,41 +38,35 @@ public class TermIndex {
         return hashIndexMap.forIndex(termIdentifier);
     }
 
-    int lookupIdentifier(CharSequence term) {
+    int getIdentifier(CharSequence term) {
         String item = term.toString();
         Integer index = hashIndexMap.indexOf(item);
         return index == null ? -1 : index;
     }
 
-    public List<String> getStrings(TermVector termVector) {
-        return termVector.toTerms().stream().map(this::getString).collect(Collectors.toList());
-    }
-
-    public Optional<TermVector> lookup(List<? extends CharSequence> terms) {
-        return getTermVector(terms.stream());
-    }
-
-    private Optional<TermVector> getTermVector(Stream<? extends CharSequence> strim) {
-        int[] termIdentifiers = strim.mapToInt(this::lookupIdentifier).sorted().distinct().toArray();
-        if (Arrays.stream(termIdentifiers).anyMatch(i -> i == -1)) {
-            return Optional.empty();
-        }
-        return Optional.of(new TermVector(termIdentifiers));
-    }
-
-    public <T extends CharSequence> Optional<TermVector> lookup(T[] terms) {
-        return getTermVector(Arrays.stream(terms));
-    }
-
     @Nullable
-    public String getString(IndexedTerm indexedTerm) {
-        int index = indexedTerm.termIdentifier();
-        return index == -1 ? null : getTerm(index);
+    public String getTerm(IndexedTerm indexedTerm) {
+        if (indexedTerm.isUnknown()) {
+            return null;
+        }
+        return getTerm(indexedTerm.termIdentifier());
     }
 
-    public Optional<IndexedTerm> lookup(CharSequence term) {
-        int termIdentifier = lookupIdentifier(term);
-        return termIdentifier == -1 ? Optional.empty() : Optional.of(new IndexedTerm(termIdentifier));
+    public IndexedTerm getIndexedTerm(CharSequence term) {
+        return new IndexedTerm(getIdentifier(term));
+    }
+
+    public TermVector getTermVector(Iterable<? extends CharSequence> terms) {
+        TermVector.Builder builder = TermVector.builder();
+        for (CharSequence term : terms) {
+            IndexedTerm indexedTerm = getIndexedTerm(term);
+            builder.addTerm(indexedTerm);
+        }
+        return builder.build();
+    }
+
+    public List<String> getTerms(TermVector termVector) {
+        return termVector.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
     }
 
     public Iterator<IndexedTerm> iterator() {

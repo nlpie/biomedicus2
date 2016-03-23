@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.type.TokenAnnotation;
 import org.apache.uima.jcas.JCas;
@@ -118,6 +119,29 @@ class TokenAdapter extends AnnotationAdapter<TokenAnnotation> implements Token {
     @Override
     public void setCorrectSpelling(String correctSpelling) {
         getAnnotation().setCorrectSpelling(correctSpelling);
+    }
+
+    @Nullable
+    @Override
+    public IndexedTerm getWordTerm() {
+        int wordTerm = getAnnotation().getWordTerm();
+        return new IndexedTerm(wordTerm);
+    }
+
+    @Override
+    public void setWordTerm(IndexedTerm wordTerm) {
+        getAnnotation().setWordTerm(wordTerm.termIdentifier());
+    }
+
+    @Nullable
+    @Override
+    public IndexedTerm getNormTerm() {
+        return new IndexedTerm(getAnnotation().getNormTerm());
+    }
+
+    @Override
+    public void setNormTerm(IndexedTerm normTerm) {
+        getAnnotation().setNormTerm(normTerm.termIdentifier());
     }
 
     @Override

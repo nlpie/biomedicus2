@@ -97,6 +97,7 @@ public class MetricTree<T> {
             List<Map.Entry<Integer, MutableNode<T>>> sorted = sortChildrenByDistance();
 
             int[] distances = new int[childrenSize];
+            @SuppressWarnings("unchecked")
             Node<T>[] nodes = (Node<T>[]) Array.newInstance((new Node<T>()).getClass(), childrenSize);
             for (int i = 0; i < childrenSize; i++) {
                 Map.Entry<Integer, MutableNode<T>> entry = sorted.get(i);

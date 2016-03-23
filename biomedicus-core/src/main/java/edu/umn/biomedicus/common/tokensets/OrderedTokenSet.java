@@ -17,10 +17,13 @@
 package edu.umn.biomedicus.common.tokensets;
 
 import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermVector;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Token;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,5 +86,19 @@ public interface OrderedTokenSet {
      */
     default String getNormalizedTokensText() {
         return getTokensStream().map(Token::getNormalForm).collect(Collectors.joining(" "));
+    }
+
+    default TermVector getWordVector() {
+        return getTermVector(Token::getWordTerm);
+    }
+
+    default TermVector getNormVector() {
+        return getTermVector(Token::getNormTerm);
+    }
+
+    default TermVector getTermVector(Function<Token, IndexedTerm> accessor) {
+        TermVector.Builder builder = TermVector.builder();
+        getTokensStream().map(accessor).forEach(builder::addTerm);
+        return builder.build();
     }
 }

@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Token;
 
@@ -163,6 +164,28 @@ public class SimpleToken extends SimpleTextSpan implements Token {
     @Override
     public void setCorrectSpelling(String correctSpelling) {
         correctedSpelling = correctSpelling;
+    }
+
+    @Nullable
+    @Override
+    public IndexedTerm getWordTerm() {
+        return null;
+    }
+
+    @Override
+    public void setWordTerm(IndexedTerm wordTerm) {
+
+    }
+
+    @Nullable
+    @Override
+    public IndexedTerm getNormTerm() {
+        return null;
+    }
+
+    @Override
+    public void setNormTerm(IndexedTerm normTerm) {
+
     }
 
     @Override
