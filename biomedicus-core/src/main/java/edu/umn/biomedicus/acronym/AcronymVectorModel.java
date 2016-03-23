@@ -1,10 +1,14 @@
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.model.text.Token;
-import org.yaml.snakeyaml.constructor.Constructor;
+import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.serialization.YamlSerialization;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
-import java.io.Serializable;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -13,6 +17,7 @@ import java.util.*;
  * @author Greg Finley
  * @since 1.5.0
  */
+@ProvidedBy(AcronymVectorModelLoader.class)
 public class AcronymVectorModel implements AcronymModel {
 
     public static final String UNK = "(unknown)";
@@ -20,26 +25,22 @@ public class AcronymVectorModel implements AcronymModel {
     /**
      *  A vector space with a built dictionary to use at test time
      */
-    private VectorSpaceDouble vectorSpaceDouble;
+    private final VectorSpaceDouble vectorSpaceDouble;
 
     /**
      *  A map between acronyms and all their possible long forms
      */
-    private Map<String, String[]> expansionMap;
+    private final Map<String, List<String>> expansionMap;
 
     /**
      * Maps long forms to their trained word vectors
      */
-    private Map<String, DoubleVector> senseMap;
+    private final Map<String, DoubleVector> senseMap;
 
     /**
      *  The alignment model will guess an acronym's full form based on its alignment if we don't know what it is.
      */
-    private AlignmentModel alignmentModel;
-
-    public AcronymVectorModel() {
-
-    }
+    private final AlignmentModel alignmentModel;
 
     /**
      * Constructor. Needs several things already made:
@@ -49,7 +50,7 @@ public class AcronymVectorModel implements AcronymModel {
      * @param expansionMap      which maps between acronym Strings and Lists of their possible senses
      * @param alignmentModel    a model used for alignment of unknown acronyms
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap, @Nullable AlignmentModel alignmentModel) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap, @Nullable AlignmentModel alignmentModel) {
         this.expansionMap = expansionMap;
         this.senseMap = senseMap;
         this.vectorSpaceDouble = vectorSpaceDouble;
@@ -59,40 +60,8 @@ public class AcronymVectorModel implements AcronymModel {
     /**
      * Constructor without providing an AlignmentModel
      */
-    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, String[]> expansionMap) {
+    public AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, Map<String, List<String>> expansionMap) {
         this(vectorSpaceDouble, senseMap, expansionMap, null);
-    }
-
-    public VectorSpaceDouble getVectorSpaceDouble() {
-        return vectorSpaceDouble;
-    }
-
-    public void setVectorSpaceDouble(VectorSpaceDouble vectorSpaceDouble) {
-        this.vectorSpaceDouble = vectorSpaceDouble;
-    }
-
-    public Map<String, String[]> getExpansionMap() {
-        return expansionMap;
-    }
-
-    public void setExpansionMap(Map<String, String[]> expansionMap) {
-        this.expansionMap = expansionMap;
-    }
-
-    public Map<String, DoubleVector> getSenseMap() {
-        return senseMap;
-    }
-
-    public void setSenseMap(Map<String, DoubleVector> senseMap) {
-        this.senseMap = senseMap;
-    }
-
-    public AlignmentModel getAlignmentModel() {
-        return alignmentModel;
-    }
-
-    public void setAlignmentModel(AlignmentModel alignmentModel) {
-        this.alignmentModel = alignmentModel;
     }
 
     /**
@@ -101,11 +70,11 @@ public class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public String[] getExpansions(Token token) {
+    public List<String> getExpansions(Token token) {
         String acronym = AcronymUtilities.standardForm(token);
         if (expansionMap.containsKey(acronym))
             return expansionMap.get(acronym);
-        return new String[0];
+        return Collections.emptyList();
     }
 
     /**
@@ -138,20 +107,20 @@ public class AcronymVectorModel implements AcronymModel {
 
         // If the model doesn't contain this acronym, make sure it doesn't contain an upper-case version of it
 
-        String[] senses = expansionMap.get(acronym);
+        List<String> senses = expansionMap.get(acronym);
         if (senses == null) {
             senses = expansionMap.get(acronym.toUpperCase());
         }
         if (senses == null && alignmentModel != null) {
             senses = alignmentModel.findBestLongforms(acronym);
         }
-        if (senses == null || senses.length == 0) {
+        if (senses == null || senses.size() == 0) {
             return UNK;
         }
 
         // If the acronym is unambiguous, our work is done
-        if (senses.length == 1) {
-            return senses[0];
+        if (senses.size() == 1) {
+            return senses.get(0);
         }
 
 
@@ -211,5 +180,14 @@ public class AcronymVectorModel implements AcronymModel {
      */
     public void removeWordsExcept(Set<String> wordsToRemove) {
         vectorSpaceDouble.removeWordsExcept(wordsToRemove);
+    }
+
+    public void writeToDirectory(Path outputDir) throws IOException {
+        Yaml yaml = YamlSerialization.createYaml();
+
+        yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
+        yaml.dump(vectorSpaceDouble, Files.newBufferedWriter(outputDir.resolve("vectorSpace.yml")));
+        yaml.dump(senseMap, Files.newBufferedWriter(outputDir.resolve("senseMap.yml")));
+        yaml.dump(expansionMap, Files.newBufferedWriter(outputDir.resolve("acronymExpansions.yml")));
     }
 }

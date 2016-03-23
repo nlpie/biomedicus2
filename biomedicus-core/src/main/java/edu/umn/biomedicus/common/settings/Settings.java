@@ -5,7 +5,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 /**
  *
@@ -101,7 +104,7 @@ public class Settings {
         }
 
         public Builder put(String key, Object value) {
-            put(Objects.requireNonNull(key, "null key"), Objects.requireNonNull(value, "null value for key" + key).toString());
+            put(Objects.requireNonNull(key, "null key"), Objects.requireNonNull(value, "null value for key " + key).toString());
             return this;
         }
 

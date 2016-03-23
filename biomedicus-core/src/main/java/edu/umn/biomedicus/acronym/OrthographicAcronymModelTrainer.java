@@ -1,13 +1,17 @@
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.vocabulary.CharacterSet;
+import edu.umn.biomedicus.common.collect.IndexMap;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -33,11 +37,11 @@ public class OrthographicAcronymModelTrainer {
 
     private final boolean caseSensitive;
 
-    private final transient CharacterSet symbols;
+    private final transient IndexMap<Character> symbols;
 
     private final transient int symbolsCount;
 
-    private final transient CharacterSet chars;
+    private final transient Set<Character> chars;
 
     private final double[][][] longformProbs;
 
@@ -246,7 +250,7 @@ public class OrthographicAcronymModelTrainer {
         }
         if (Character.isDigit(c)) {
             c = '0';
-        } else if (chars.indexOf(c) == -1) {
+        } else if (!chars.contains(c)) {
             c = '?';
         }
         return c;

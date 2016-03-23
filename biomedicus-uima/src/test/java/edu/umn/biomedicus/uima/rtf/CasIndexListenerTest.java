@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.model.simple.Spans;
+import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.rtfuima.type.ViewIndex;
 import mockit.*;
 import org.apache.uima.jcas.JCas;

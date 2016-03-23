@@ -3,6 +3,7 @@ package edu.umn.biomedicus.tnt;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -39,7 +40,7 @@ public class TntModelLoader extends DataLoader<TntModel> {
 
     @Override
     protected TntModel loadModel() throws BiomedicusException {
-        Yaml yaml = new Yaml(new PartOfSpeechConstructor(), new PartOfSpeechRepresenter());
+        Yaml yaml = YamlSerialization.createYaml();
 
         try {
             LOGGER.info("Loading TnT trigram model: {}", trigram);
@@ -51,8 +52,8 @@ public class TntModelLoader extends DataLoader<TntModel> {
             Files.walkFileTree(wordModels, Collections.emptySet(), 1, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    LOGGER.info("Loading TnT word model #{}: {}", filteredAdaptedWordProbabilities.size() + 1, file);
                     if (file.getFileName().toString().endsWith(".yml")) {
+                        LOGGER.info("Loading TnT word model #{}: {}", filteredAdaptedWordProbabilities.size() + 1, file);
                         FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = (FilteredAdaptedWordProbabilityModel) yaml.load(Files.newInputStream(file));
                         filteredAdaptedWordProbabilities.add(filteredAdaptedWordProbabilityModel);
                     }

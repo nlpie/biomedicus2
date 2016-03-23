@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.SubstanceUsageType;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 /**
  * Adapts the Biomedicus UIMA Annotation type {@link edu.umn.biomedicus.type.SentenceAnnotation} to the Biomedicus
- * {@link edu.umn.biomedicus.model.text.Sentence} interface.
+ * {@link Sentence} interface.
  *
  * @author Ben Knoll
  * @since 1.3.0

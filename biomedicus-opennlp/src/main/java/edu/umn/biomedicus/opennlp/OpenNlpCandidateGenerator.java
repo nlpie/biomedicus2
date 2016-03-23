@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.opennlp;
 
-import edu.umn.biomedicus.model.simple.SimpleTextSpan;
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.simple.SimpleTextSpan;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.sentence.SentenceCandidateGenerator;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 

@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.tuples.PosCap;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.tuples.PosCap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +45,7 @@ class PosCapTrigramModelTrainer {
 
     /**
      * Default constructor. Initializes variables for counting tokens and trigrams, bigrams, and unigrams of
-     * {@link edu.umn.biomedicus.model.tuples.PosCap} objects
+     * {@link PosCap} objects
      *
      * @param taggedTokens       the total number of tagged tokens seen by the trainer.
      * @param trigramFrequencies a multiset used to count the number of occurrences of PosCap trigrams

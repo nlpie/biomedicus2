@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;

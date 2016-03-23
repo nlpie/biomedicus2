@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.type.*;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
 import org.apache.logging.log4j.LogManager;

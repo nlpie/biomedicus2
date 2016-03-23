@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.common.vocabulary.CharacterSet;
+import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -25,7 +25,7 @@ import java.util.Set;
 public class OrthographicAcronymModelLoader extends DataLoader<OrthographicAcronymModel> {
     private final Path orthographicModel;
 
-    private CharacterSet symbols;
+    private IndexMap<Character> symbols;
 
     @Inject
     OrthographicAcronymModelLoader(BiomedicusConfiguration biomedicusConfiguration) {

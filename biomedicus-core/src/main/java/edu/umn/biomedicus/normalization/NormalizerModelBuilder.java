@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.normalization;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.tuples.WordPos;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.tuples.WordPos;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedWriter;

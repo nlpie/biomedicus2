@@ -16,28 +16,31 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.model.semantics.Concept;
+import edu.umn.biomedicus.common.semantics.Concept;
 
 /**
  *
  */
 class UmlsConcept implements Concept {
-    private final String identifier;
-    private final String type;
+    private final SUI sui;
+    private final CUI identifier;
+    private final TUI type;
+    private final double confidence;
 
-    public UmlsConcept(String identifier, String type) {
+    public UmlsConcept(CUI identifier, TUI type, SUI sui, double confidence) {
         this.identifier = identifier;
         this.type = type;
+        this.sui = sui;
+        this.confidence = confidence;
     }
 
     @Override
     public String getIdentifier() {
-        return identifier;
+        return identifier.toString();
     }
 
-    @Override
     public String getType() {
-        return type;
+        return type.toString();
     }
 
     @Override
@@ -46,7 +49,11 @@ class UmlsConcept implements Concept {
     }
 
     @Override
-    public float getConfidence() {
-        return 1.0f;
+    public double getConfidence() {
+        return confidence;
+    }
+
+    public SUI sui() {
+        return sui;
     }
 }

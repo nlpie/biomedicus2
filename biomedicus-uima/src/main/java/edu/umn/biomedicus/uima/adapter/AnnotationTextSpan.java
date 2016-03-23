@@ -1,6 +1,6 @@
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.text.TextSpan;
+import edu.umn.biomedicus.common.text.TextSpan;
 import org.apache.uima.jcas.tcas.Annotation;
 
 /**

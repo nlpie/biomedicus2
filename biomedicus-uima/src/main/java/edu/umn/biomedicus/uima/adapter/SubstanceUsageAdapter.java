@@ -1,9 +1,9 @@
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.SubstanceUsage;
-import edu.umn.biomedicus.model.semantics.SubstanceUsageType;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.TextSpan;
+import edu.umn.biomedicus.common.semantics.SubstanceUsage;
+import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.type.SubstanceUsageAnnotation;
 import org.apache.uima.jcas.JCas;
 

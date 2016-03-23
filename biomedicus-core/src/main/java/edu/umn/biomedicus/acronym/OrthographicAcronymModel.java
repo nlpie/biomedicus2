@@ -1,12 +1,13 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.vocabulary.CharacterSet;
-import edu.umn.biomedicus.common.vocabulary.MappedCharacterSet;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.collect.HashIndexMap;
+import edu.umn.biomedicus.common.collect.IndexMap;
+import edu.umn.biomedicus.common.text.Token;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Will use orthographic rules to determine if tokens not known to be abbreviations are abbreviations
@@ -16,19 +17,28 @@ import java.util.Set;
 @ProvidedBy(OrthographicAcronymModelLoader.class)
 public class OrthographicAcronymModel implements Serializable {
 
-    public static final CharacterSet CASE_SENS_SYMBOLS = MappedCharacterSet.builder()
-            .addAll("abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-            .addAll("0?^$")
-            .build();
+    public static final IndexMap<Character> CASE_SENS_SYMBOLS;
+    public static final Set<Character> CASE_SENS_CHARS;
+    public static final IndexMap<Character> CASE_INSENS_SYMBOLS;
+    public static final Set<Character> CASE_INSENS_CHARS;
 
-    public static final CharacterSet CASE_SENS_CHARS = CASE_SENS_SYMBOLS.maskCharacters("0?^$");
+    static {
+        Set<Character> symbols = "abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ0?^$".chars()
+                .mapToObj(i -> (char) i)
+                .collect(Collectors.toSet());
+        CASE_SENS_SYMBOLS = new HashIndexMap<>(symbols);
+        CASE_SENS_CHARS = "abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars()
+                .mapToObj(i -> (char) i)
+                .collect(Collectors.toSet());
 
-    public static final CharacterSet CASE_INSENS_SYMBOLS = MappedCharacterSet.builder()
-            .addAll("abcdefghijklmnopqrstuvwxyz.-")
-            .addAll("0?^$")
-            .build();
-
-    public static final CharacterSet CASE_INSENS_CHARS = CASE_INSENS_SYMBOLS.maskCharacters("0?^$");
+        Set<Character> caseInsensSymbols = "abcdefghijklmnopqrstuvwxyz.-0?^$".chars()
+                .mapToObj(i -> (char) i)
+                .collect(Collectors.toSet());
+        CASE_INSENS_SYMBOLS = new HashIndexMap<>(caseInsensSymbols);
+        CASE_INSENS_CHARS = "abcdefghijklmnopqrstuvwxyz.-".chars()
+                .mapToObj(i -> (char) i)
+                .collect(Collectors.toSet());
+    }
 
     // Log probabilities that certain character trigrams are an abbreviation or a longform
     private final double[][][] abbrevProbs;
@@ -39,9 +49,9 @@ public class OrthographicAcronymModel implements Serializable {
 
     private final Set<String> longformsLower;
 
-    private final transient CharacterSet symbols;
+    private final transient IndexMap<Character> symbols;
 
-    private final transient CharacterSet chars;
+    private final transient Set<Character> chars;
 
     public OrthographicAcronymModel(double[][][] abbrevProbs, double[][][] longformProbs, boolean caseSensitive, Set<String> longformsLower) {
         this.abbrevProbs = abbrevProbs;
@@ -144,7 +154,7 @@ public class OrthographicAcronymModel implements Serializable {
         }
         if (Character.isDigit(c)) {
             c = '0';
-        } else if (chars.indexOf(c) == -1) {
+        } else if (!chars.contains(c)) {
             c = '?';
         }
         return c;

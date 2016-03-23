@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.StrictExpectations;

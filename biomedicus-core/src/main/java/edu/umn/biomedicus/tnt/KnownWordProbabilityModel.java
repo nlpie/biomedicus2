@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.tuples.WordCap;
-import edu.umn.biomedicus.model.tuples.WordPosCap;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.tuples.WordCap;
+import edu.umn.biomedicus.common.tuples.WordPosCap;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * part of speech tag and capitalization. It stores these probabilities in a Map from
  * {@link WordPosCap} objects to their double probabilities between 0.0 and 1.0.
  *
- * <p>Stores candidates {@link edu.umn.biomedicus.model.semantics.PartOfSpeech} values for words for speed, even though this
+ * <p>Stores candidates {@link PartOfSpeech} values for words for speed, even though this
  * data is recoverable from the probabilities map.</p>
  *
  * @since 1.0.0

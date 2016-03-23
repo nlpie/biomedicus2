@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.tuples.WordCap;
+import edu.umn.biomedicus.common.tuples.WordCap;
 
 import java.util.function.UnaryOperator;
 

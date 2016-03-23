@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.token;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.processing.Tokenizer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.logging.log4j.LogManager;

@@ -1,6 +1,5 @@
 package edu.umn.biomedicus.application;
 
-import com.google.inject.Inject;
 import edu.umn.biomedicus.common.settings.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +24,6 @@ class DefaultConfiguration implements BiomedicusConfiguration {
 
     private final Path dataDir;
 
-    @Inject
     DefaultConfiguration() throws IOException {
         String home = System.getProperty("biomedicus.path.home");
         if (home == null) {
@@ -79,8 +77,6 @@ class DefaultConfiguration implements BiomedicusConfiguration {
         }
 
         LOGGER.info("Using data directory: {}", dataDir);
-
-
     }
 
     @Override
@@ -91,6 +87,11 @@ class DefaultConfiguration implements BiomedicusConfiguration {
     @Override
     public Path getDataDir() {
         return dataDir;
+    }
+
+    @Override
+    public Path getConfigDir() {
+        return configDir;
     }
 
     private Path absoluteOrResolveAgainstHome(Path path) {

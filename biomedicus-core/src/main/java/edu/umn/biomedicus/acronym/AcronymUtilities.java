@@ -1,6 +1,6 @@
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.text.Token;
 
 import java.util.regex.Pattern;
 

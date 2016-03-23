@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.lucene.analysis;
 
+import edu.umn.biomedicus.common.utilities.Resources;
 import edu.umn.biomedicus.icu.BreakIteratorTokenizer;
 import edu.umn.biomedicus.processing.Tokenizer;
-import edu.umn.biomedicus.common.utilities.Resources;
 import org.apache.lucene.analysis.Analyzer;
 
 import java.io.IOException;

@@ -18,12 +18,13 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.common.grams.Bigram;
+import edu.umn.biomedicus.common.tuples.PosCap;
+import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.viterbi.CandidateProbability;
 import edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
-import edu.umn.biomedicus.model.tuples.PosCap;
-import edu.umn.biomedicus.model.tuples.WordCap;
+import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -60,7 +61,7 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>, Tran
     }
 
     public void write(Path folder) throws IOException {
-        Yaml yaml = new Yaml(new PartOfSpeechConstructor(), new PartOfSpeechRepresenter());
+        Yaml yaml = YamlSerialization.createYaml();
 
         Files.createDirectories(folder);
 

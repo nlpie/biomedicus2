@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.Concept;
-import edu.umn.biomedicus.model.text.Span;
-import edu.umn.biomedicus.model.text.TextConcept;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.TextConcept;
 import edu.umn.biomedicus.type.ConceptAnnotation;
 import org.apache.uima.jcas.JCas;
 
@@ -56,7 +56,7 @@ class ConceptAdapter implements TextConcept {
     static ConceptAdapter copyOf(Concept concept, Span span, JCas destinationCas) {
         ConceptAnnotation copyConceptAnnotation = new ConceptAnnotation(destinationCas, span.getBegin(), span.getEnd());
         copyConceptAnnotation.setSemanticType(concept.getType());
-        copyConceptAnnotation.setConfidence(concept.getConfidence());
+        copyConceptAnnotation.setConfidence((float) concept.getConfidence());
         copyConceptAnnotation.setSource(concept.getSource());
         copyConceptAnnotation.setIdentifier(concept.getIdentifier());
         copyConceptAnnotation.addToIndexes();
@@ -82,13 +82,12 @@ class ConceptAdapter implements TextConcept {
         return conceptAnnotation.getSource();
     }
 
-    @Override
     public String getType() {
         return conceptAnnotation.getSemanticType();
     }
 
     @Override
-    public float getConfidence() {
+    public double getConfidence() {
         return conceptAnnotation.getConfidence();
     }
 

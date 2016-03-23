@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.semantics.SubstanceUsageBuilder;
-import edu.umn.biomedicus.model.text.Span;
+import edu.umn.biomedicus.common.semantics.SubstanceUsageBuilder;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.type.*;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;

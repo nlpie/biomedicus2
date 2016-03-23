@@ -16,37 +16,39 @@
 
 package edu.umn.biomedicus.concepts;
 
+import edu.umn.biomedicus.acronym.AcronymVectorModel;
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Term;
-import edu.umn.biomedicus.model.text.Token;
-import edu.umn.biomedicus.model.tokensets.OrderedTokenSet;
-import edu.umn.biomedicus.model.tokensets.SentenceTextOrderedTokenSet;
-import edu.umn.biomedicus.model.tokensets.TextOrderedTokenSet;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.semantics.Concept;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
+import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
+import edu.umn.biomedicus.common.tokensets.TextOrderedTokenSet;
+import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static edu.umn.biomedicus.model.semantics.PartOfSpeech.*;
+import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
 
 /**
  * Uses a {@link edu.umn.biomedicus.concepts.ConceptModel} to recognize concepts in text. First, it will
  * try to find direct matches against all in-order sublists of tokens in a sentence. Then it will perform syntactic
  * permutations on any prepositional phrases in those sublists.
  *
- * @since 1.0.0
  * @author Ben Knoll
  * @author Serguei Pakhomov
+ * @since 1.0.0
  */
 @DocumentScoped
 class DictionaryConceptRecognizer implements DocumentProcessor {
@@ -76,7 +78,10 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                 PRP$,
                 MD,
                 EX,
-                IN);
+                IN,
+                XX);
+        Collections.addAll(builder,
+                PartOfSpeech.PUNCTUATION_CLASS.toArray(new PartOfSpeech[PartOfSpeech.PUNCTUATION_CLASS.size()]));
         TRIVIAL_POS = Collections.unmodifiableSet(builder);
     }
 
@@ -111,8 +116,20 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     }
 
     /**
+     * A set of English prepositions.
+     */
+    private static final Set<String> PREPOSITIONS;
+
+    static {
+        Set<String> builder = new HashSet<>();
+        Collections.addAll(builder, "in", "of", "at", "on", "under");
+        PREPOSITIONS = Collections.unmodifiableSet(builder);
+    }
+
+    /**
      * Returns true if this OrderedTokenSet potentially will match concepts. The case is sets of size 1
      * that are parts of speech that won't match concepts, or auxiliary verbs.
+     *
      * @return false if the token set can be trivially skipped, true otherwise
      */
     static boolean matchesConcepts(OrderedTokenSet orderedTokenSet) {
@@ -137,7 +154,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     /**
      * The concept dictionary to look up concepts from.
      */
-    private final ConceptModel conceptDictionary;
+    private final ConceptModel conceptModel;
 
     private final Document document;
 
@@ -145,40 +162,90 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
      *
      * @param conceptModel the dictionary to get concepts from.
-     * @param document document to add new terms to.
+     * @param document     document to add new terms to.
      */
     @Inject
     DictionaryConceptRecognizer(ConceptModel conceptModel, Document document) {
         this.document = document;
-        this.conceptDictionary = conceptModel;
+        this.conceptModel = conceptModel;
     }
 
-    /**
-     * Finds the terms in a specific sentence, adding those terms to the document.
-     *
-     * @param sentence sentence to find terms in.
-     */
-    void identifyTermsInSentence(Sentence sentence) {
-        LOGGER.trace("Identifying concepts in a sentence");
-        TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence);
+    private void checkTokenSet(TextOrderedTokenSet tokenSet) {
+        Span span = tokenSet.getSpan();
 
-        sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
-                .filter(DictionaryConceptRecognizer::matchesConcepts)
-                .map(conceptDictionary::findConcepts)
-                .filter((@Nullable Term t) -> t != null)
-                .forEach(document::addTerm);
+        List<Token> tokens = tokenSet.getTokens();
+        int spanBegin = span.getBegin();
+        String phrase = document.getText().substring(spanBegin, span.getEnd());
+        List<SuiCuiTui> phraseSUI = conceptModel.forPhrase(phrase);
+        if (phraseSUI == null) {
+            StringBuilder phraseEdited = new StringBuilder(phrase);
 
-        sentenceOrderedTokenSet.prepositionalSyntacticPermutationsStream()
-                .filter((@Nullable OrderedTokenSet p) -> p != null)
-                .map(conceptDictionary::findConcepts)
-                .filter((@Nullable Term t) -> t != null)
-                .forEach(document::addTerm);
+            int offset = 0;
+            for (Token token : tokens) {
+                String replacement = null;
+                if (token.isAcronym()) {
+                    replacement = token.getLongForm();
+                } else if (token.isMisspelled()) {
+                    replacement = token.correctSpelling();
+                }
+                if (replacement != null && !AcronymVectorModel.UNK.equals(replacement)) {
+                    int tokenBegin = token.getBegin();
+                    int beginOffset = tokenBegin - spanBegin + offset;
+                    int tokenEnd = token.getEnd();
+                    int endOffset = tokenEnd - spanBegin + offset;
+                    offset += replacement.length() - (tokenEnd - tokenBegin);
+                    phraseEdited.replace(beginOffset, endOffset, replacement);
+                }
+            }
+            phrase = phraseEdited.toString();
+        }
+
+        phraseSUI = conceptModel.forPhrase(phrase);
+
+        if (phraseSUI != null) {
+            makeTerm(span, phraseSUI, 1);
+            return;
+        }
+
+        phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase());
+
+        if (phraseSUI != null) {
+            makeTerm(span, phraseSUI, 0.6);
+            return;
+        }
+
+        TermVector normVector = tokenSet.getNormVector();
+
+        List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
+        if (normsCUI != null) {
+            makeTerm(span, normsCUI, .3);
+        }
+    }
+
+    private void makeTerm(Span span, List<SuiCuiTui> cuis, double confidence) {
+        List<Concept> concepts = cuis.stream()
+                .map(suiCuiTui -> suiCuiTui.toConcept(confidence)).collect(Collectors.toList());
+
+        Term term = new SimpleTerm(span.getBegin(), span.getEnd(), concepts.get(0),
+                concepts.subList(1, concepts.size()));
+        document.addTerm(term);
     }
 
     @Override
     public void process() throws BiomedicusException {
+        LOGGER.info("Finding concepts in document.");
         for (Sentence sentence : document.getSentences()) {
-            identifyTermsInSentence(sentence);
+            LOGGER.trace("Identifying concepts in a sentence");
+            TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence)
+                    .filter(token -> !token.getNormTerm().isUnknown())
+                    .filter(token -> Patterns.A_LETTER_OR_NUMBER.matcher(token.getText()).find())
+                    .filter(token -> !TRIVIAL_POS.contains(token.getPartOfSpeech()))
+                    .filter(token -> !AUXILIARY_VERBS.contains(token.getNormalForm()))
+                    .filter(token -> !PREPOSITIONS.contains(token.getNormalForm()));
+
+            sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
+                    .filter(DictionaryConceptRecognizer::matchesConcepts)
+                    .forEach(this::checkTokenSet);
         }
     }
 }

@@ -1,22 +1,18 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.application.PostProcessor;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -27,7 +23,7 @@ import java.util.stream.Collectors;
  * @since 1.5.0
  */
 @ProvidedBy(AcronymVectorModelTrainerLoader.class)
-public class AcronymVectorModelTrainer implements AcronymModelTrainer {
+public class AcronymVectorModelTrainer implements PostProcessor {
 
     private static final Pattern SPLITTER = Pattern.compile("\\|");
 
@@ -41,22 +37,22 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
     // expansionMap works the same as in AcronymVectorModel
     // uniqueIdMap maps unique identifying strings of the acronym long forms (as appear in the preprocessed training
     // text file) to their English forms
-    private final Map<String, String[]> expansionMap;
+    private final Map<String, List<String>> expansionMap;
     private final Map<String, String> uniqueIdMap;
     private final AlignmentModel alignmentModel;
-    private final Path acronymModelPath;
+    private final Path outputDir;
     private double maxDist = DEFAULT_MAX_DIST;
     private final VectorSpaceDouble vectorSpace;
     // Will map senses to their centroid context vectors
     private Map<String, DoubleVector> senseMap = new HashMap<>();
 
-    public AcronymVectorModelTrainer(Map<String, String[]> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path acronymModelPath) {
+    public AcronymVectorModelTrainer(Map<String, List<String>> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path outputDir) {
         this.expansionMap = expansionMap;
         this.uniqueIdMap = uniqueIdMap;
         this.alignmentModel = alignmentModel;
         vectorSpace = new VectorSpaceDouble();
         vectorSpace.setMaxDist(maxDist);
-        this.acronymModelPath = acronymModelPath;
+        this.outputDir = outputDir;
     }
 
     /**
@@ -74,10 +70,10 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
                                                    Path acronymModelPath) throws IOException {
         LOGGER.info("Loading data files to initialize the acronym model trainer");
 
-        Map<String, String[]> expansionMap = Files.lines(expansionMapPath)
+        Map<String, List<String>> expansionMap = Files.lines(expansionMapPath)
                 .map(SPLITTER::split)
                 .collect(Collectors.toMap(splits -> splits[0],
-                        splits -> Arrays.copyOfRange(splits, 1, splits.length)));
+                        splits -> Arrays.asList(Arrays.copyOfRange(splits, 1, splits.length))));
 
         Map<String, String> uniqueIdMap = Files.lines(uniqueIdMapPath)
                 .map(SPLITTER::split)
@@ -163,11 +159,10 @@ public class AcronymVectorModelTrainer implements AcronymModelTrainer {
 
     @Override
     public void afterProcessing() throws BiomedicusException {
-        Yaml yaml = new Yaml();
         AcronymVectorModel model = getModel();
 
         try {
-            yaml.dump(model, Files.newBufferedWriter(acronymModelPath));
+            model.writeToDirectory(outputDir);
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }

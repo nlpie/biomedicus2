@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.tools.newinfo;
 
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.concepts.SemanticTypeNetwork;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
 import edu.umn.biomedicus.uima.files.DirectoryOutputStreamFactory;
 import edu.umn.biomedicus.uima.files.FileNameProvider;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
@@ -51,19 +52,23 @@ class NewInformationWriterFactory {
      */
     private final DirectoryOutputStreamFactory sentencesDirectoryOSF;
 
+    private final SemanticTypeNetwork semanticTypeNetwork;
+
     /**
      * Private constructor. Initializes the different factories for the output streams to files.
      *
      * @param tokensDirectoryOSF    factory for the directory of token files output streams
      * @param termsDirectoryOSF     factory for the directory of term files output streams
      * @param sentencesDirectoryOSF factory for the directory of sentence files output streams.
+     * @param semanticTypeNetwork
      */
     protected NewInformationWriterFactory(DirectoryOutputStreamFactory tokensDirectoryOSF,
                                           DirectoryOutputStreamFactory termsDirectoryOSF,
-                                          DirectoryOutputStreamFactory sentencesDirectoryOSF) {
+                                          DirectoryOutputStreamFactory sentencesDirectoryOSF, SemanticTypeNetwork semanticTypeNetwork) {
         this.tokensDirectoryOSF = tokensDirectoryOSF;
         this.termsDirectoryOSF = termsDirectoryOSF;
         this.sentencesDirectoryOSF = sentencesDirectoryOSF;
+        this.semanticTypeNetwork = semanticTypeNetwork;
     }
 
     /**
@@ -74,12 +79,12 @@ class NewInformationWriterFactory {
      * @return a {@code NewInformationWriterFactory} which outputs to the designated folder
      * @throws BiomedicusException if it fails to create the subdirectories.
      */
-    static NewInformationWriterFactory createWithOutputDirectory(Path outputDir) throws BiomedicusException {
+    static NewInformationWriterFactory createWithOutputDirectory(Path outputDir, SemanticTypeNetwork semanticTypeNetwork) throws BiomedicusException {
         DirectoryOutputStreamFactory tokensDirectoryOSF = new DirectoryOutputStreamFactory(outputDir.resolve("tokens"));
         DirectoryOutputStreamFactory termsDirectoryOSF = new DirectoryOutputStreamFactory(outputDir.resolve("terms"));
         DirectoryOutputStreamFactory sentencesDirectoryOSF = new DirectoryOutputStreamFactory(outputDir.resolve("sentences"));
 
-        return new NewInformationWriterFactory(tokensDirectoryOSF, termsDirectoryOSF, sentencesDirectoryOSF);
+        return new NewInformationWriterFactory(tokensDirectoryOSF, termsDirectoryOSF, sentencesDirectoryOSF, semanticTypeNetwork);
     }
 
     /**
@@ -102,7 +107,7 @@ class NewInformationWriterFactory {
 
             NewInformationWriter newInformationWriter = NewInformationWriter.builder()
                     .withSentencesWriter(sentencesWriter)
-                    .withTermsWriter(TermsWriter.forDocument(document, termsBufferedWriter))
+                    .withTermsWriter(TermsWriter.forDocument(document, termsBufferedWriter, semanticTypeNetwork))
                     .withTokensWriter(tokensWriter)
                     .withDocument(document)
                     .build();

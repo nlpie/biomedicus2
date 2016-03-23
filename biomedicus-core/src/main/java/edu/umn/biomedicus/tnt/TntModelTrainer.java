@@ -16,14 +16,17 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.semantics.PartOfSpeech;
-import edu.umn.biomedicus.model.text.Sentence;
-import edu.umn.biomedicus.model.text.Token;
-import edu.umn.biomedicus.model.tuples.*;
+import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.tuples.WordCap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Trains a model for the TnT part of speech tagger.
@@ -261,7 +264,7 @@ public class TntModelTrainer {
 
         /**
          * Whether we should restrict suffix models to the open class of
-         * {@link edu.umn.biomedicus.model.semantics.PartOfSpeech}
+         * {@link PartOfSpeech}
          *
          * @param restrictToOpenClass true if suffix models should only develop probabilities for open class parts of
          *                            speech.

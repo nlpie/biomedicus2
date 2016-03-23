@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.text.*;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
@@ -51,7 +51,11 @@ public class UimaAdapters {
 
     public static Token tokenAdapter(Annotation token) {
         if (token instanceof TokenAnnotation) {
-            return new TokenAdapter((TokenAnnotation) token);
+            try {
+                return new TokenAdapter(token.getCAS().getJCas(), (TokenAnnotation) token);
+            } catch (CASException e) {
+                throw new IllegalArgumentException(e);
+            }
         } else {
             throw new IllegalArgumentException("Annotation is not of type Token");
         }

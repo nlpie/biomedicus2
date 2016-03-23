@@ -50,7 +50,7 @@ public abstract class DataLoader<T> implements Provider<T> {
             try {
                 load();
             } catch (BiomedicusException e) {
-                throw new IllegalStateException();
+                throw new IllegalStateException(e);
             }
         }
         return instance;

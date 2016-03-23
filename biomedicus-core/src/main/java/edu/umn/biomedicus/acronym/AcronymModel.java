@@ -1,14 +1,10 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.model.text.Token;
+import edu.umn.biomedicus.common.text.Token;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Describes any generic acronym detection and normalization model
@@ -19,7 +15,7 @@ import java.util.zip.GZIPInputStream;
  *
  * @author Greg Finley
  */
-@ProvidedBy(AcronymModelLoader.class)
+@ProvidedBy(AcronymVectorModelLoader.class)
 public interface AcronymModel {
 
     boolean hasAcronym(Token token);

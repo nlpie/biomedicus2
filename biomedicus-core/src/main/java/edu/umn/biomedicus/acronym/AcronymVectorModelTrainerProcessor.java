@@ -3,8 +3,8 @@ package edu.umn.biomedicus.acronym;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.model.text.Document;
 
 /**
  *

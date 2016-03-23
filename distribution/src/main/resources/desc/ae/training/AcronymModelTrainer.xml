@@ -26,6 +26,22 @@
         <vendor>${organization.name}</vendor>
         <configurationParameters>
             <configurationParameter>
+                <name>expansionMap</name>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>uniqueIds</name>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>longforms</name>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>outputDir</name>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
                 <name>documentProcessor</name>
                 <description>The document processor class to instantiate.</description>
                 <type>String</type>

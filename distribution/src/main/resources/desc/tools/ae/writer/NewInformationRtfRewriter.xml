@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Copyright (c) 2015 Regents of the University of Minnesota.
   ~
@@ -19,94 +18,59 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.tools.newinfo.NewInformationRtfRewriter</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
-        <name>New Information RTF Annotation Inserting Writer</name>
-        <description>Inserts placeholders around annotations in the original RTF document.</description>
+        <name>New Information RTF Rewriter</name>
+        <description>Rewrites New Information into RTF Files</description>
         <version>${project.version}</version>
-        <vendor>${project.organization.name}</vendor>
+        <vendor>${organization.name}</vendor>
         <configurationParameters>
             <configurationParameter>
-                <name>outputDirectory</name>
-                <description>Directory write the output RTF files to.</description>
+                <name>outputDir</name>
                 <type>String</type>
             </configurationParameter>
             <configurationParameter>
-                <name>beginMap</name>
+                <name>documentProcessor</name>
+                <description>The document processor class to instantiate.</description>
+                <type>String</type>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>viewName</name>
+                <description>The name of the UIMA view to use.</description>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>eagerLoad</name>
                 <description>
-                    Mapping of new information kind to the inserted text as a begin marker for the regions. For new
-                    information kinds k = { 0 : n } the array should contain the kinds at indexes k * 2 and their
-                    insertion text at indexes k * 2 + 1.
+                    The name of any classes that need to be eagerly loaded by the Guice injector. Classes which are
+                    instances of LoadableDataModel will have the loadData method called.
                 </description>
                 <type>String</type>
                 <multiValued>true</multiValued>
+                <mandatory>false</mandatory>
             </configurationParameter>
             <configurationParameter>
-                <name>endMap</name>
+                <name>postProcessors</name>
                 <description>
-                    Mapping of new information kind to the end marker insertion text. For new information kinds
-                    k = { 0 : n } the array should contain the kinds at indexes k * 2 and their insertion text at
-                    indexes k * 2 + 1.
+                    The class names of any post processors that should be run after all documents have been processed.
                 </description>
                 <type>String</type>
                 <multiValued>true</multiValued>
-            </configurationParameter>
-            <configurationParameter>
-                <name>colorTableMarker</name>
-                <description>The marker that gets inserted at the end of the color table.</description>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>stylesheetMarker</name>
-                <description>The marker that gets inserted at the end of the stylesheet.</description>
-                <type>String</type>
+                <mandatory>false</mandatory>
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>
-                <name>beginMap</name>
+                <name>documentProcessor</name>
                 <value>
-                    <array>
-                        <string>New</string>
-                        <string>\u572662299</string>
-                        <string>newProcedure</string>
-                        <string>\u572662315</string>
-                        <string>newMed</string>
-                        <string>\u572662331</string>
-                        <string>newMedication</string><!-- same as above -->
-                        <string>\u572662331</string>
-                        <string>newFindings</string>
-                        <string>\u572662347</string>
-                    </array>
+                    <string>edu.umn.biomedicus.tools.newinfo.NewInformationRtfRewriterDocumentProcessor</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
-                <name>endMap</name>
+                <name>viewName</name>
                 <value>
-                    <array>
-                        <string>New</string>
-                        <string>\u572662302</string>
-                        <string>newProcedure</string>
-                        <string>\u572662318</string>
-                        <string>newMed</string>
-                        <string>\u572662334</string>
-                        <string>newMedication</string><!-- same as above -->
-                        <string>\u572662334</string>
-                        <string>newFindings</string>
-                        <string>\u572662350</string>
-                    </array>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>colorTableMarker</name>
-                <value>
-                    <string>\u572662283</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>stylesheetMarker</name>
-                <value>
-                    <string>\u572662284</string>
+                    <string>SystemView</string>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>
@@ -115,20 +79,41 @@
                 <import name="edu.umn.biomedicus.types.TypeSystem"/>
             </imports>
         </typeSystemDescription>
-        <capabilities>
-            <capability>
-                <inputs>
-                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NewInformationAnnotation</type>
-                </inputs>
-                <inputSofas>
-                    <sofaName>OriginalDocumentView</sofaName>
-                </inputSofas>
-            </capability>
-        </capabilities>
+        <typePriorities>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+            </imports>
+        </typePriorities>
         <operationalProperties>
-            <modifiesCas>false</modifiesCas>
+            <modifiesCas>true</modifiesCas>
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
             <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
     </analysisEngineMetaData>
+
+    <externalResourceDependencies>
+        <externalResourceDependency>
+            <key>guiceInjector</key>
+            <description>The guice injector resource.</description>
+        </externalResourceDependency>
+    </externalResourceDependencies>
+
+    <resourceManagerConfiguration>
+        <externalResources>
+            <externalResource>
+                <name>guiceInjector</name>
+                <description>The guice resource.</description>
+                <customResourceSpecifier>
+                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+                </customResourceSpecifier>
+            </externalResource>
+        </externalResources>
+        <externalResourceBindings>
+            <externalResourceBinding>
+                <key>guiceInjector</key>
+                <resourceName>guiceInjector</resourceName>
+            </externalResourceBinding>
+        </externalResourceBindings>
+    </resourceManagerConfiguration>
 </analysisEngineDescription>
+

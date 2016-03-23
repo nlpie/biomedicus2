@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.pos;
 
-import edu.umn.biomedicus.model.text.Document;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;

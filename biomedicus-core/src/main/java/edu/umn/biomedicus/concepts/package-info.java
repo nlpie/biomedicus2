@@ -18,6 +18,11 @@
  *
  */
 @ParametersAreNonnullByDefault
+@ReturnTypesAreNonnullByDefault
+@FieldsAreNonnullByDefault
 package edu.umn.biomedicus.concepts;
+
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

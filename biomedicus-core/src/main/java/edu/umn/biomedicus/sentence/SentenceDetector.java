@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.TextSpan;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.processing.Preprocessor;
 
 /**

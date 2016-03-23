@@ -18,12 +18,12 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.model.semantics.SubstanceUsage;
-import edu.umn.biomedicus.model.semantics.SubstanceUsageBuilder;
-import edu.umn.biomedicus.model.semantics.SubstanceUsageType;
-import edu.umn.biomedicus.model.simple.SimpleTextSpan;
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.*;
+import edu.umn.biomedicus.common.semantics.SubstanceUsage;
+import edu.umn.biomedicus.common.semantics.SubstanceUsageBuilder;
+import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
+import edu.umn.biomedicus.common.simple.SimpleTextSpan;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.type.*;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;

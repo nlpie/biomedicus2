@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.opennlp;
 
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.sentdetect.*;
 import opennlp.tools.util.CollectionObjectStream;

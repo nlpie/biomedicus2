@@ -1,6 +1,9 @@
 package edu.umn.biomedicus.acronym;
 
-import java.io.*;
+import com.google.inject.ProvidedBy;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -13,9 +16,10 @@ import java.util.stream.Collectors;
  * @author Greg Finley
  * @since 1.5.0
  */
+@ProvidedBy(AlignmentModelLoader.class)
 public class AlignmentModel implements Serializable {
 
-    private Set<String> longforms;
+    private List<String> longforms;
 
     /*
      * Defaults to false, which is the recommended value
@@ -26,16 +30,16 @@ public class AlignmentModel implements Serializable {
 
     }
 
-    public AlignmentModel(Set<String> longforms, boolean caseSensitive) {
+    public AlignmentModel(List<String> longforms, boolean caseSensitive) {
         this.longforms = longforms;
         this.caseSensitive = caseSensitive;
     }
 
-    public Set<String> getLongforms() {
+    public List<String> getLongforms() {
         return longforms;
     }
 
-    public void setLongforms(Set<String> longforms) {
+    public void setLongforms(List<String> longforms) {
         this.longforms = longforms;
     }
 
@@ -49,7 +53,7 @@ public class AlignmentModel implements Serializable {
 
     public static AlignmentModel create(Path longformsPath, boolean caseSensitive) throws IOException {
         Set<String> longforms = Files.lines(longformsPath).collect(Collectors.toSet());
-        return new AlignmentModel(longforms, caseSensitive);
+        return new AlignmentModel(new ArrayList<>(longforms), caseSensitive);
     }
 
     public static AlignmentModel create(Path longformsPath) throws IOException {
@@ -162,7 +166,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return all longforms with the highest score
      */
-    public String[] findBestLongforms(String abbrev) {
+    public List<String> findBestLongforms(String abbrev) {
         List<String> best = new ArrayList<>();
         double maxScore = -Double.MAX_VALUE;
         for (String longform : longforms) {
@@ -174,7 +178,7 @@ public class AlignmentModel implements Serializable {
             if (thisScore == maxScore)
                 best.add(longform);
         }
-        return best.toArray(new String[best.size()]);
+        return best;
     }
 
     /**

@@ -19,11 +19,11 @@ package edu.umn.biomedicus.icu;
 
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
-import edu.umn.biomedicus.model.simple.SimpleTextSpan;
-import edu.umn.biomedicus.model.simple.Spans;
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Span;
-import edu.umn.biomedicus.model.text.TextSpan;
+import edu.umn.biomedicus.common.simple.SimpleTextSpan;
+import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.processing.Tokenizer;
 
 /**

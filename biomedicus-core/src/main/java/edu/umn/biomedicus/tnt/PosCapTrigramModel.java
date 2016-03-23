@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.model.tuples.PosCap;
+import edu.umn.biomedicus.common.tuples.PosCap;
 
 import java.util.Arrays;
 import java.util.Map;

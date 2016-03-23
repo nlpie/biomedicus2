@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.tools.newinfo;
 
-import edu.umn.biomedicus.model.text.Document;
-import edu.umn.biomedicus.model.text.Sentence;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.type.NewInformationAnnotation;
 import edu.umn.biomedicus.uima.Views;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;

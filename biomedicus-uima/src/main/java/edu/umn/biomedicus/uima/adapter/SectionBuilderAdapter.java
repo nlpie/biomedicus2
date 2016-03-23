@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.model.text.Section;
-import edu.umn.biomedicus.model.text.SectionBuilder;
+import edu.umn.biomedicus.common.text.Section;
+import edu.umn.biomedicus.common.text.SectionBuilder;
 import edu.umn.biomedicus.type.SectionAnnotation;
 import org.apache.uima.jcas.JCas;
 

@@ -43,6 +43,13 @@ public final class Patterns {
     public static final Pattern NON_WHITESPACE = Pattern.compile("\\S");
 
     /**
+     * A Pattern that will match against a string that only contains one or more unicode alphabetic characters.
+     */
+    public static final Pattern ALPHABETIC_WORD = Pattern.compile("[\\p{IsAlphabetic}]+");
+
+    public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{IsAlphabetic}\\p{Digit}]");
+
+    /**
      * Loads a pattern from a file in the resource path by joining all of the lines of the file with an OR symbol '|'
      *
      * @param resourceName the path to the resource of regex statements to be joined
