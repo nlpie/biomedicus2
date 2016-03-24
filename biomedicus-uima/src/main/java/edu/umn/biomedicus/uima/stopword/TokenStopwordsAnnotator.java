@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -59,7 +60,12 @@ public class TokenStopwordsAnnotator extends JCasAnnotator_ImplBase {
     public void process(JCas jCas) throws AnalysisEngineProcessException {
         LOGGER.info("Processing a document for stopwords");
 
-        Document document = UimaAdapters.documentFromInitialView(jCas);
+        Document document;
+        try {
+            document = UimaAdapters.documentFromInitialView(jCas);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
 
         stopwords.annotateStopwords(document);
     }

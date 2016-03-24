@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -56,7 +57,12 @@ public class TokenizerAnnotator extends JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas aJCas) throws AnalysisEngineProcessException {
-        Document document = UimaAdapters.documentFromInitialView(aJCas);
+        Document document = null;
+        try {
+            document = UimaAdapters.documentFromInitialView(aJCas);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
         LOGGER.info("Tokenizing document.");
 
         tokenizer.tokenize(document);

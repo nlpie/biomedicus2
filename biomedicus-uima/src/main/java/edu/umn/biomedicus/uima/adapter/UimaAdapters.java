@@ -75,9 +75,9 @@ public class UimaAdapters {
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @return newly instantiated {@code Document} object from the data stored in the SystemView.
-     * @throws AnalysisEngineProcessException
+     * @throws CASException
      */
-    public static Document documentFromInitialView(JCas initialView) throws AnalysisEngineProcessException {
+    public static Document documentFromInitialView(JCas initialView) throws CASException {
         return documentFromView(initialView, Views.SYSTEM_VIEW);
     }
 
@@ -87,9 +87,9 @@ public class UimaAdapters {
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @return newly instantiated {@code Document} object from the data stored in the GoldView.
-     * @throws AnalysisEngineProcessException
+     * @throws CASException
      */
-    public static Document goldDocumentFromInitialView(JCas initialView) throws AnalysisEngineProcessException {
+    public static Document goldDocumentFromInitialView(JCas initialView) throws CASException {
         return documentFromView(initialView, Views.SYSTEM_VIEW);
     }
 
@@ -100,14 +100,10 @@ public class UimaAdapters {
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @param viewName    the view to create a document from
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
-     * @throws AnalysisEngineProcessException
+     * @throws CASException
      */
-    public static Document documentFromView(JCas initialView, String viewName) throws AnalysisEngineProcessException {
-        try {
-            return new JCasDocument(initialView.getView(viewName));
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+    public static Document documentFromView(JCas initialView, String viewName) throws CASException {
+        return new JCasDocument(initialView.getView(viewName));
     }
 
     /**
