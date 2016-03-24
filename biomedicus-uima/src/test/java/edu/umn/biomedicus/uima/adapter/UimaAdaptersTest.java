@@ -49,7 +49,7 @@ public class UimaAdaptersTest {
         assertNotNull(jCasDocument);
     }
 
-    @Test(expectedExceptions = AnalysisEngineProcessException.class)
+    @Test(expectedExceptions = CASException.class)
     public void testDocumentFromViewException(@Mocked JCas jCas) throws Exception {
         new StrictExpectations() {{
             jCas.getView("blah");
