@@ -43,5 +43,37 @@ public interface BiomedicusConfiguration {
             path = getDataDir().resolve(path);
         }
         return path;
-    };
+    }
+
+    default Path getSettingAsPath(String key) {
+        return getSettings().getAsPath(key);
+    }
+
+    default double getSettingAsDouble(String key) {
+        return getSettings().getAsDouble(key);
+    }
+
+    default float getSettingAsFloat(String key) {
+        return getSettings().getAsFloat(key);
+    }
+
+    default long getSettingAsLong(String key) {
+        return getSettings().getAsLong(key);
+    }
+
+    default int getSettingAsInt(String key) {
+        return getSettings().getAsInt(key);
+    }
+
+    default boolean getSettingAsBoolean(String key) {
+        return getSettings().getAsBoolean(key);
+    }
+
+    default boolean containsSetting(String key) {
+        return getSettings().containsSetting(key);
+    }
+
+    default String getSetting(String key) {
+        return getSettings().get(key);
+    }
 }
