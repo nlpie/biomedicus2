@@ -58,10 +58,9 @@ public final class FileNameProviders {
      * @param extension  extension to add, should include the separator e.g. ".".
      * @return return new DocumentIdFileNameProvider with the created file name.
      */
-    private static FileNameProvider withPotentiallyNullIdentifier(@Nullable String identifier, String extension) {
+    private static String withPotentiallyNullIdentifier(@Nullable String identifier, String extension) {
         String documentId = identifier == null ? "unidentified-" + UUID.randomUUID().toString() : identifier;
-        String fileName = documentId + extension;
-        return new BaseFileNameProvider(fileName);
+        return documentId + extension;
     }
 
     /**
@@ -71,7 +70,7 @@ public final class FileNameProviders {
      * @param extension  the extension to name the file, should include the separator e.g. ".".
      * @return new file name provider
      */
-    public static FileNameProvider fromSystemView(JCas systemView, String extension) {
+    public static String fromSystemView(JCas systemView, String extension) {
         String documentIdentifier = null;
         JFSIndexRepository jfsIndexRepository = systemView.getJFSIndexRepository();
         if (jfsIndexRepository != null) {
@@ -97,7 +96,7 @@ public final class FileNameProviders {
      * @return a newly initialized file name provider.
      * @throws BiomedicusException if we fail to get the system view
      */
-    public static FileNameProvider fromInitialView(JCas jCas, String extension) throws BiomedicusException {
+    public static String fromInitialView(JCas jCas, String extension) throws BiomedicusException {
         JCas systemView;
         try {
             systemView = jCas.getView(Views.SYSTEM_VIEW);
@@ -114,7 +113,7 @@ public final class FileNameProviders {
      * @param extension the extension to give the file name
      * @return the file name provider which gives the file name.
      */
-    public static FileNameProvider fromDocument(Document document, String extension) {
+    public static String fromDocument(Document document, String extension) {
         String documentIdentifier = document.getIdentifier();
         return FileNameProviders.withPotentiallyNullIdentifier(documentIdentifier, extension);
     }

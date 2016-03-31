@@ -16,10 +16,7 @@
 
 package edu.umn.biomedicus.tools.rtfrewriting;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.Views;
-import edu.umn.biomedicus.uima.files.DirectoryOutputStreamFactory;
-import edu.umn.biomedicus.uima.files.FileNameProvider;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -51,37 +48,27 @@ import java.util.stream.IntStream;
  */
 public class AnnotationInsertingWriter extends JCasAnnotator_ImplBase {
     /**
-     * UIMA parameter for the annotation types to insert into rtf document.
-     */
-    public static final String PARAM_ANNOTATION_TYPES = "annotationTypes";
-
-    /**
-     * UIMA parameter for the output directory for the finished rewritten document.
-     */
-    public static final String PARAM_OUTPUT_DIR = "outputDirectory";
-
-    /**
      * The annotation types to insert into the the rtf document.
      */
     @Nullable
     private String[] annotationTypes = null;
 
     /**
-     * Provides the output stream to the rewritten file.
+     * The output directory.
      */
     @Nullable
-    private DirectoryOutputStreamFactory writerFactory = null;
+    private Path outputDir;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
 
-        annotationTypes = (String[]) aContext.getConfigParameterValue(PARAM_ANNOTATION_TYPES);
+        annotationTypes = (String[]) aContext.getConfigParameterValue("annotationTypes");
 
-        Path outputDir = Paths.get((String) aContext.getConfigParameterValue(PARAM_OUTPUT_DIR));
+        outputDir = Paths.get((String) aContext.getConfigParameterValue("outputDirectory"));
         try {
-            writerFactory = new DirectoryOutputStreamFactory(outputDir);
-        } catch (BiomedicusException e) {
+            Files.createDirectories(outputDir);
+        } catch (IOException e) {
             throw new ResourceInitializationException(e);
         }
     }
@@ -139,13 +126,8 @@ public class AnnotationInsertingWriter extends JCasAnnotator_ImplBase {
 
         String rewrittenDocument = symbolIndexedDocument.getDocument();
 
-        Path file;
-        try {
-            FileNameProvider fileNameProvider = FileNameProviders.fromSystemView(view, ".rtf");
-            file = Objects.requireNonNull(writerFactory).getPath(fileNameProvider);
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+        String fileName = FileNameProviders.fromSystemView(view, ".rtf");
+        Path file = outputDir.resolve(fileName);
 
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
             bufferedWriter.write(rewrittenDocument);
