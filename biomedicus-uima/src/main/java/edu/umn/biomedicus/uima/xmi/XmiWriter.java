@@ -17,8 +17,6 @@
 package edu.umn.biomedicus.uima.xmi;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.files.DirectoryOutputStreamFactory;
-import edu.umn.biomedicus.uima.files.FileNameProvider;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +32,7 @@ import org.xml.sax.SAXException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -43,23 +42,12 @@ import java.nio.file.Paths;
 public class XmiWriter extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LogManager.getLogger(XmiWriter.class);
 
-    /**
-     * The path to the directory where the files will be written.
-     */
-    public static final String PARAM_OUTPUT_DIR = "outputDirectory";
-
-    /**
-     * Resource responsible for writing the typesystem once to the output directory.
-     */
-    public static final String RESOURCE_TS_WRITER = "typeSystemWriterResource";
-
-    private DirectoryOutputStreamFactory directoryOutputStreamFactory;
     private TypeSystemWriterResource typeSystemWriter;
+
     private Path outputDir;
 
     /**
-     * Initializes the {@link DirectoryOutputStreamFactory} and the
-     * outputDirectory.
+     * Initializes the outputDirectory.
      *
      * @param context the uima context
      * @throws ResourceInitializationException if we fail to initialize DocumentIdOutputStreamFactory
@@ -69,15 +57,15 @@ public class XmiWriter extends JCasAnnotator_ImplBase {
         super.initialize(context);
         LOGGER.info("Initializing XMI writer AE");
 
-        outputDir = Paths.get((String) context.getConfigParameterValue(PARAM_OUTPUT_DIR));
+        outputDir = Paths.get((String) context.getConfigParameterValue("outputDirectory"));
         try {
-            directoryOutputStreamFactory = new DirectoryOutputStreamFactory(outputDir);
-        } catch (BiomedicusException e) {
+            Files.createDirectories(outputDir);
+        } catch (IOException e) {
             throw new ResourceInitializationException(e);
         }
 
         try {
-            typeSystemWriter = (TypeSystemWriterResource) context.getResourceObject(RESOURCE_TS_WRITER);
+            typeSystemWriter = (TypeSystemWriterResource) context.getResourceObject("typeSystemWriterResource");
         } catch (ResourceAccessException e) {
             throw new ResourceInitializationException(e);
         }
@@ -96,18 +84,13 @@ public class XmiWriter extends JCasAnnotator_ImplBase {
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }
-        FileNameProvider fileNameProvider;
+        String fileName = null;
         try {
-            fileNameProvider = FileNameProviders.fromInitialView(aJCas, ".xmi");
+            fileName = FileNameProviders.fromInitialView(aJCas, ".xmi");
         } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
-        Path path;
-        try {
-            path = directoryOutputStreamFactory.getPath(fileNameProvider);
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+        Path path = outputDir.resolve(fileName);
 
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Writing XMI CAS to location: {}", path.toString());

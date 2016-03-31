@@ -38,12 +38,8 @@ import java.nio.file.Paths;
  */
 public class PlainTextWriter extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LogManager.getLogger(PlainTextWriter.class);
-    /**
-     * The path to the directory where the files will be written.
-     */
-    public static final String PARAM_OUTPUT_DIR = "outputDirectory";
 
-    private DirectoryOutputStreamFactory writerFactory;
+    private Path outputDir;
 
     /**
      * Initializes the writer factory
@@ -57,10 +53,10 @@ public class PlainTextWriter extends JCasAnnotator_ImplBase {
 
         LOGGER.info("initializing system view writer");
 
-        Path outputDir = Paths.get((String) aContext.getConfigParameterValue(PARAM_OUTPUT_DIR));
+        outputDir = Paths.get((String) aContext.getConfigParameterValue("outputDirectory"));
         try {
-            writerFactory = new DirectoryOutputStreamFactory(outputDir);
-        } catch (BiomedicusException e) {
+            Files.createDirectories(outputDir);
+        } catch (IOException e) {
             throw new ResourceInitializationException(e);
         }
     }
@@ -82,17 +78,10 @@ public class PlainTextWriter extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        InputStream sofaDataStream = systemView.getSofaDataStream();
+        String fileName = FileNameProviders.fromSystemView(systemView, ".txt");
+        Path file = outputDir.resolve(fileName);
 
-        Path file;
-        try {
-            FileNameProvider fileNameProvider = FileNameProviders.fromSystemView(systemView, ".txt");
-            file = writerFactory.getPath(fileNameProvider);
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-
-        try {
+        try (InputStream sofaDataStream = systemView.getSofaDataStream()) {
             Files.copy(sofaDataStream, file);
         } catch (IOException e) {
             throw new AnalysisEngineProcessException(e);

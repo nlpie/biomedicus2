@@ -16,12 +16,10 @@
 
 package edu.umn.biomedicus.uima.section;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.type.SubSectionAnnotation;
 import edu.umn.biomedicus.uima.Views;
-import edu.umn.biomedicus.uima.files.DirectoryOutputStreamFactory;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,7 +47,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,11 +66,6 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LogManager.getLogger();
 
     /**
-     * UIMA parameter for output directory.
-     */
-    public static final String PARAM_OUTPUT_DIR = "outputDirectory";
-
-    /**
      * DOM document builder.
      */
     private final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -83,9 +76,10 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
     private final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
     /**
-     * Responsible for creating output streams.
+     * Output directory to write to.
      */
-    private DirectoryOutputStreamFactory writerFactory;
+    @Nullable
+    private Path outputDir;
 
     /**
      * Initializes the writer factory
@@ -97,10 +91,11 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
 
-        Path outputDir = Paths.get((String) aContext.getConfigParameterValue(PARAM_OUTPUT_DIR));
+        outputDir = Paths.get((String) aContext.getConfigParameterValue("outputDirectory"));
+
         try {
-            writerFactory = new DirectoryOutputStreamFactory(outputDir);
-        } catch (BiomedicusException e) {
+            Files.createDirectories(outputDir);
+        } catch (IOException e) {
             throw new ResourceInitializationException(e);
         }
     }
@@ -189,13 +184,9 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
         Text afterSectionsTextNode = document.createTextNode(afterSections);
         note.appendChild(afterSectionsTextNode);
         DOMSource source = new DOMSource(document);
-        File outFile;
-        try {
-            outFile = writerFactory.getPath(FileNameProviders.fromSystemView(systemView, ".xml")).toFile();
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-        StreamResult result = new StreamResult(outFile);
+        String other = FileNameProviders.fromSystemView(systemView, ".xml");
+        Path outFilePath = outputDir.resolve(other);
+        StreamResult result = new StreamResult(outFilePath.toFile());
 
 
         Transformer transformer;
@@ -211,13 +202,8 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
         }
     }
 
-    public void malformedDocument(JCas systemView, String reason) throws AnalysisEngineProcessException {
-        Path path;
-        try {
-            path = writerFactory.getPath(() -> "malformedDocuments.txt");
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+    private void malformedDocument(JCas systemView, String reason) throws AnalysisEngineProcessException {
+        Path path = outputDir.resolve("malformedDocuments.txt");
 
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             ClinicalNoteAnnotation note = (ClinicalNoteAnnotation) systemView.getAnnotationIndex(ClinicalNoteAnnotation.type).iterator().next();
