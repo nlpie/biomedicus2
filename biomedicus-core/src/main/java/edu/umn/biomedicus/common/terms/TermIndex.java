@@ -34,11 +34,14 @@ public class TermIndex {
         hashIndexMap.addItem(string);
     }
 
-    String getTerm(int termIdentifier) {
+    private String getTerm(int termIdentifier) {
         return hashIndexMap.forIndex(termIdentifier);
     }
 
-    int getIdentifier(CharSequence term) {
+    private int getIdentifier(@Nullable CharSequence term) {
+        if (term == null) {
+            return -1;
+        }
         String item = term.toString();
         Integer index = hashIndexMap.indexOf(item);
         return index == null ? -1 : index;
@@ -52,7 +55,7 @@ public class TermIndex {
         return getTerm(indexedTerm.termIdentifier());
     }
 
-    public IndexedTerm getIndexedTerm(CharSequence term) {
+    public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {
         return new IndexedTerm(getIdentifier(term));
     }
 

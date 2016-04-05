@@ -3,7 +3,6 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
@@ -20,19 +19,20 @@ public class NormLabeler implements DocumentProcessor {
 
     private final Document document;
 
-    private final TermIndex normIndex;
+    private final TermIndex wordIndex;
 
     @Inject
     public NormLabeler(Document document, Vocabulary vocabulary) {
         this.document = document;
-        this.normIndex = vocabulary.normIndex();
+        this.wordIndex = vocabulary.wordIndex();
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Labeling norm term index identifiers in a document.");
         for (Token token : document.getTokens()) {
-            token.setNormTerm(normIndex.getIndexedTerm(token.getNormalForm()));
+            String normalForm = token.getNormalForm();
+            token.setNormTerm(wordIndex.getIndexedTerm(normalForm));
         }
     }
 }
