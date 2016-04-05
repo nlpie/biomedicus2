@@ -22,12 +22,10 @@ public class VocabularyLoader extends DataLoader<Vocabulary> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Path wordsPath;
-    private final Path normsPath;
 
     @Inject
     public VocabularyLoader(BiomedicusConfiguration biomedicusConfiguration) {
         wordsPath = biomedicusConfiguration.resolveDataFile("vocabulary.wordIndex.path");
-        normsPath = biomedicusConfiguration.resolveDataFile("vocabulary.normIndex.path");
     }
 
     @Override
@@ -38,12 +36,7 @@ public class VocabularyLoader extends DataLoader<Vocabulary> {
             TermIndex wordIndex = new TermIndex();
             Files.lines(wordsPath).forEach(wordIndex::addTerm);
 
-            LOGGER.info("Loading norms into term index from path: {}", normsPath);
-
-            TermIndex normIndex = new TermIndex();
-            Files.lines(normsPath).forEach(normIndex::addTerm);
-
-            return new Vocabulary(wordIndex, normIndex);
+            return new Vocabulary(wordIndex);
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }

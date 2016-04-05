@@ -210,4 +210,17 @@ public abstract class TextOrderedTokenSet implements OrderedTokenSet {
         TextOrderedTokenSubsetsSpliterator spliterator = TextOrderedTokenSubsetsSpliterator.create(this, size);
         return StreamSupport.stream(spliterator, false);
     }
+
+    public Token firstToken() {
+        return getTokens().get(0);
+    }
+
+    public Token lastToken() {
+        List<Token> tokens = getTokens();
+        return tokens.get(tokens.size() - 1);
+    }
+
+    public int size() {
+        return getTokens().size();
+    }
 }

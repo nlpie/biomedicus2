@@ -152,7 +152,7 @@ public class ConceptModelBuilder {
                     return noneMatch;
                 });
 
-        TermIndex normIndex = vocabulary.normIndex();
+        TermIndex normIndex = vocabulary.wordIndex();
 
         Path mrconsoPath = rrfs.resolve("MRCONSO.RRF");
         LOGGER.info("Loading phrases and SUI -> CUIs from MRCONSO: {}", mrconsoPath);

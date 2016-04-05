@@ -170,7 +170,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         this.conceptModel = conceptModel;
     }
 
-    private void checkTokenSet(TextOrderedTokenSet tokenSet) {
+    private boolean checkPhrase(TextOrderedTokenSet tokenSet) {
         Span span = tokenSet.getSpan();
 
         List<Token> tokens = tokenSet.getTokens();
@@ -204,16 +204,28 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 1);
-            return;
+            return true;
+        }
+
+        if (tokenSet.size() <= 1) {
+            return false;
         }
 
         phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase());
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 0.6);
+            return true;
+        }
+        return false;
+    }
+
+    private void checkTokenSet(TextOrderedTokenSet tokenSet) {
+        if (tokenSet.size() <= 1) {
             return;
         }
 
+        Span span = tokenSet.getSpan();
         TermVector normVector = tokenSet.getNormVector();
 
         List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
@@ -236,16 +248,24 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         LOGGER.info("Finding concepts in document.");
         for (Sentence sentence : document.getSentences()) {
             LOGGER.trace("Identifying concepts in a sentence");
-            TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence)
-                    .filter(token -> !token.getNormTerm().isUnknown())
-                    .filter(token -> Patterns.A_LETTER_OR_NUMBER.matcher(token.getText()).find())
-                    .filter(token -> !TRIVIAL_POS.contains(token.getPartOfSpeech()))
-                    .filter(token -> !AUXILIARY_VERBS.contains(token.getNormalForm()))
-                    .filter(token -> !PREPOSITIONS.contains(token.getNormalForm()));
 
-            sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
-                    .filter(DictionaryConceptRecognizer::matchesConcepts)
-                    .forEach(this::checkTokenSet);
+            TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence);
+
+            sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE).forEach(textOrderedTokenSet -> {
+                boolean phraseFound = checkPhrase(textOrderedTokenSet);
+                if (!phraseFound) {
+                    if (matchesConcepts(textOrderedTokenSet.firstToken()) && matchesConcepts(textOrderedTokenSet.lastToken())) {
+                        checkTokenSet(textOrderedTokenSet.filter(this::matchesConcepts));
+                    }
+                }
+            });
         }
+    }
+
+    boolean matchesConcepts(Token token) {
+        String text = token.getText();
+        return !PREPOSITIONS.contains(text) && !AUXILIARY_VERBS.contains(text)
+                && !TRIVIAL_POS.contains(token.getPartOfSpeech()) && !token.getNormTerm().isUnknown()
+                && Patterns.A_LETTER_OR_NUMBER.matcher(text).find();
     }
 }

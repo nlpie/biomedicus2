@@ -93,11 +93,19 @@ class ConceptModel {
         Path normsPath = biomedicusConfiguration.resolveDataFile("concepts.norms.path");
         LOGGER.info("Loading concept norm vectors: {}", normsPath);
         normDictionary = new HashMap<>();
-        TermIndex normIndex = vocabulary.normIndex();
+        TermIndex normIndex = vocabulary.wordIndex();
         try (BufferedReader normsReader = Files.newBufferedReader(normsPath)) {
             String line;
             while ((line = normsReader.readLine()) != null) {
-                TermVector termVector = normIndex.getTermVector(Arrays.asList(splitter.split(line)));
+                String[] split = splitter.split(line);
+                List<String> terms = Arrays.asList(split);
+                terms.replaceAll(string -> {
+                    if (string.equals("scull")) {
+                        return "skull";
+                    }
+                    return string;
+                });
+                TermVector termVector = normIndex.getTermVector(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());
