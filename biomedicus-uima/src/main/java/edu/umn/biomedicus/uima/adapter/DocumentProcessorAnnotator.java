@@ -3,6 +3,7 @@ package edu.umn.biomedicus.uima.adapter;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import edu.umn.biomedicus.application.*;
+import edu.umn.biomedicus.common.settings.MapBasedSettings;
 import edu.umn.biomedicus.common.settings.Settings;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,6 @@ import org.apache.uima.resource.ResourceInitializationException;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,18 +31,6 @@ import java.util.Map;
 public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final String RESOURCE_GUICE_INJECTOR = "guiceInjector";
-
-    public static final String PARAM_DOCUMENT_PROCESSOR = "documentProcessor";
-
-    public static final String PARAM_VIEW_NAME = "viewName";
-
-    public static final String PARAM_EAGER_LOAD = "eagerLoad";
-
-    public static final String PARAM_POST_PROCESSORS = "postProcessors";
-
-    public static final List<String> KNOWN_PARAMS = Arrays.asList(PARAM_DOCUMENT_PROCESSOR, PARAM_VIEW_NAME, PARAM_EAGER_LOAD, PARAM_POST_PROCESSORS);
-
     @Nullable
     private Injector injector;
 
@@ -53,32 +41,33 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
     private Class<? extends DocumentProcessor> documentProcessorClass;
 
     @Nullable
-    private ProcessorSettings processorSettings;
-
-    @Nullable
     private String[] postProcessors;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
 
-        Settings.Builder settingsBuilder = Settings.builder();
+        MapBasedSettings.Builder settingsBuilder = MapBasedSettings.builder();
         for (String parameterName : aContext.getConfigParameterNames()) {
-            if (parameterName != null && !KNOWN_PARAMS.contains(parameterName)) {
+            if (parameterName != null && !Arrays.asList("documentProcessor", "viewName", "eagerLoad", "postProcessors").contains(parameterName)) {
                 settingsBuilder.put(parameterName, aContext.getConfigParameterValue(parameterName));
             }
         }
 
-        processorSettings = new UimaProcessorSettings(settingsBuilder.build());
+        Settings processorSettings = settingsBuilder.build();
 
         try {
-            injector = ((GuiceInjector) aContext.getResourceObject(RESOURCE_GUICE_INJECTOR)).getInjector()
+            injector = ((GuiceInjector) aContext.getResourceObject("guiceInjector")).getInjector()
                     .createChildInjector(new ProcessorSettingsModule(processorSettings));
         } catch (ResourceAccessException e) {
             throw new ResourceInitializationException(e);
         }
 
-        String[] eagerLoad = (String[]) aContext.getConfigParameterValue(PARAM_EAGER_LOAD);
+        if (injector == null) {
+            throw new ResourceInitializationException();
+        }
+
+        String[] eagerLoad = (String[]) aContext.getConfigParameterValue("eagerLoad");
         if (eagerLoad != null) {
             for (String className : eagerLoad) {
                 try {
@@ -93,16 +82,16 @@ public class DocumentProcessorAnnotator extends JCasAnnotator_ImplBase {
             }
         }
 
-        postProcessors = (String[]) aContext.getConfigParameterValue(PARAM_POST_PROCESSORS);
+        postProcessors = (String[]) aContext.getConfigParameterValue("postProcessors");
 
-        String documentProcessorClassName = (String) aContext.getConfigParameterValue(PARAM_DOCUMENT_PROCESSOR);
+        String documentProcessorClassName = (String) aContext.getConfigParameterValue("documentProcessor");
         try {
             documentProcessorClass = Class.forName(documentProcessorClassName).asSubclass(DocumentProcessor.class);
         } catch (ClassNotFoundException e) {
             throw new ResourceInitializationException(e);
         }
 
-        viewName = (String) aContext.getConfigParameterValue(PARAM_VIEW_NAME);
+        viewName = (String) aContext.getConfigParameterValue("viewName");
     }
 
     @Override

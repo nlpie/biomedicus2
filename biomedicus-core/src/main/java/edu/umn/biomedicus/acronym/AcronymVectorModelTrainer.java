@@ -46,7 +46,7 @@ public class AcronymVectorModelTrainer implements PostProcessor {
     // Will map senses to their centroid context vectors
     private Map<String, DoubleVector> senseMap = new HashMap<>();
 
-    public AcronymVectorModelTrainer(Map<String, List<String>> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path outputDir) {
+    private AcronymVectorModelTrainer(Map<String, List<String>> expansionMap, Map<String, String> uniqueIdMap, AlignmentModel alignmentModel, Path outputDir) {
         this.expansionMap = expansionMap;
         this.uniqueIdMap = uniqueIdMap;
         this.alignmentModel = alignmentModel;
@@ -110,7 +110,7 @@ public class AcronymVectorModelTrainer implements PostProcessor {
      *
      * @param document a tokenized document
      */
-    public void addDocumentToModel(Document document) {
+    void addDocumentToModel(Document document) {
 
         // Maximum number of words to look at (needn't look much farther than maxDist)
         int maxSize = (int) (maxDist * 1.5);

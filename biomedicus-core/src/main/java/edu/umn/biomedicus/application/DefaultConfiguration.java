@@ -1,5 +1,6 @@
 package edu.umn.biomedicus.application;
 
+import edu.umn.biomedicus.common.settings.MapBasedSettings;
 import edu.umn.biomedicus.common.settings.Settings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,7 @@ class DefaultConfiguration implements BiomedicusConfiguration {
         this.configDir = configDir;
 
         Path biomedicusProperties = configDir.resolve("biomedicus.properties");
-        Settings.Builder builder = Settings.builder().loadProperties(biomedicusProperties);
+        MapBasedSettings.Builder builder = MapBasedSettings.builder().loadProperties(biomedicusProperties);
 
         Properties properties = System.getProperties();
 
@@ -79,8 +80,7 @@ class DefaultConfiguration implements BiomedicusConfiguration {
         LOGGER.info("Using data directory: {}", dataDir);
     }
 
-    @Override
-    public Settings getSettings() {
+    public Settings getMapBasedSettings() {
         return settings;
     }
 

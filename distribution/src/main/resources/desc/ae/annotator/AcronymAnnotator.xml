@@ -65,7 +65,6 @@
                 <value>
                     <array>
                         <string>edu.umn.biomedicus.acronym.AcronymVectorModelLoader</string>
-                        <string>edu.umn.biomedicus.acronym.AlignmentModelLoader</string>
                         <string>edu.umn.biomedicus.acronym.OrthographicAcronymModelLoader</string>
                     </array>
                 </value>

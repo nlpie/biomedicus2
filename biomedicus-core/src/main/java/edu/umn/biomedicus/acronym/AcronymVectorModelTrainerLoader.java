@@ -26,10 +26,10 @@ public class AcronymVectorModelTrainerLoader extends DataLoader<AcronymVectorMod
 
     @Inject
     public AcronymVectorModelTrainerLoader(ProcessorSettings processorSettings) {
-        expansionMapPath = processorSettings.getSettings().getAsPath("expansionMap");
-        uniqueIdMapPath = processorSettings.getSettings().getAsPath("uniqueIds");
-        longformsPath = processorSettings.getSettings().getAsPath("longforms");
-        outputDir = processorSettings.getSettings().getAsPath("outputDir");
+        expansionMapPath = processorSettings.getAsPath("expansionMap");
+        uniqueIdMapPath = processorSettings.getAsPath("uniqueIds");
+        longformsPath = processorSettings.getAsPath("longforms");
+        outputDir = processorSettings.getAsPath("outputDir");
     }
 
     @Override

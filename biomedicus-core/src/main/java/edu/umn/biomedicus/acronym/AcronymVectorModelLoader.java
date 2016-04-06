@@ -38,7 +38,7 @@ public class AcronymVectorModelLoader extends DataLoader<AcronymVectorModel> {
     @Inject
     public AcronymVectorModelLoader(Provider<AlignmentModel> alignmentModel, BiomedicusConfiguration biomedicusConfiguration) {
         this.alignmentModel = alignmentModel;
-        useAlignment = biomedicusConfiguration.getSettings().getAsBoolean("acronym.useAlignment");
+        useAlignment = biomedicusConfiguration.getMapBasedSettings().getAsBoolean("acronym.useAlignment");
         vectorSpacePath = biomedicusConfiguration.resolveDataFile("acronym.vectorSpace.path");
         senseMapPath = biomedicusConfiguration.resolveDataFile("acronym.senseMap.path");
         acronymExpansionsPath = biomedicusConfiguration.resolveDataFile("acronym.acronymExpansions.path");

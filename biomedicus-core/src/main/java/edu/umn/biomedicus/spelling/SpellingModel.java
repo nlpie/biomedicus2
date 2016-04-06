@@ -119,7 +119,7 @@ public class SpellingModel {
             }
         });
 
-        maxEditDistance = biomedicusConfiguration.getSettings().getAsInt("spelling.maxEditDistance");
+        maxEditDistance = biomedicusConfiguration.getMapBasedSettings().getAsInt("spelling.maxEditDistance");
     }
 
     /**

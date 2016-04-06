@@ -23,7 +23,7 @@ public class TntProcessor implements DocumentProcessor {
     @Inject
     public TntProcessor(Document document, TntModel tntModel, BiomedicusConfiguration biomedicusConfiguration) {
         this.document = document;
-        this.tntPosTagger = new TntPosTagger(tntModel, biomedicusConfiguration.getSettings().getAsDouble("tnt.beam.threshold"));
+        this.tntPosTagger = new TntPosTagger(tntModel, biomedicusConfiguration.getMapBasedSettings().getAsDouble("tnt.beam.threshold"));
     }
 
     @Override

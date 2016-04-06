@@ -15,7 +15,7 @@ public interface BiomedicusConfiguration {
      *
      * @return settings object
      */
-    Settings getSettings();
+    Settings getMapBasedSettings();
 
     /**
      * Gets the path to the data directory.
@@ -38,7 +38,7 @@ public interface BiomedicusConfiguration {
      * @return path to data file.
      */
     default Path resolveDataFile(String settingsKey) {
-        Path path = getSettings().getAsPath(settingsKey);
+        Path path = getMapBasedSettings().getAsPath(settingsKey);
         if (!path.isAbsolute()) {
             path = getDataDir().resolve(path);
         }
@@ -46,34 +46,34 @@ public interface BiomedicusConfiguration {
     }
 
     default Path getSettingAsPath(String key) {
-        return getSettings().getAsPath(key);
+        return getMapBasedSettings().getAsPath(key);
     }
 
     default double getSettingAsDouble(String key) {
-        return getSettings().getAsDouble(key);
+        return getMapBasedSettings().getAsDouble(key);
     }
 
     default float getSettingAsFloat(String key) {
-        return getSettings().getAsFloat(key);
+        return getMapBasedSettings().getAsFloat(key);
     }
 
     default long getSettingAsLong(String key) {
-        return getSettings().getAsLong(key);
+        return getMapBasedSettings().getAsLong(key);
     }
 
     default int getSettingAsInt(String key) {
-        return getSettings().getAsInt(key);
+        return getMapBasedSettings().getAsInt(key);
     }
 
     default boolean getSettingAsBoolean(String key) {
-        return getSettings().getAsBoolean(key);
+        return getMapBasedSettings().getAsBoolean(key);
     }
 
     default boolean containsSetting(String key) {
-        return getSettings().containsSetting(key);
+        return getMapBasedSettings().containsSetting(key);
     }
 
     default String getSetting(String key) {
-        return getSettings().get(key);
+        return getMapBasedSettings().get(key);
     }
 }
