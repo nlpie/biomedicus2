@@ -3,7 +3,7 @@ package edu.umn.biomedicus.serialization;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.concepts.CUI;
 import edu.umn.biomedicus.concepts.SUI;
@@ -134,8 +134,8 @@ public final class YamlSerialization {
                         String value = termIndex.getTerm(it);
                         return representScalar(new Tag("!t"), value);
                     });
-                    representers.put(TermVector.class, o -> {
-                        TermVector tv = (TermVector) o;
+                    representers.put(TermsBag.class, o -> {
+                        TermsBag tv = (TermsBag) o;
                         List<String> expanded = termIndex.getTerms(tv);
                         return representSequence(new Tag("!tv"), expanded, null);
                     });

@@ -22,7 +22,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleTerm;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
 import edu.umn.biomedicus.common.tokensets.SentenceTextOrderedTokenSet;
@@ -226,7 +226,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         }
 
         Span span = tokenSet.getSpan();
-        TermVector normVector = tokenSet.getNormVector();
+        TermsBag normVector = tokenSet.getNormVector();
 
         List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
         if (normsCUI != null) {

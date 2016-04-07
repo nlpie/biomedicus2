@@ -18,7 +18,7 @@ package edu.umn.biomedicus.common.tokensets;
 
 import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Token;
 
@@ -88,16 +88,16 @@ public interface OrderedTokenSet {
         return getTokensStream().map(Token::getNormalForm).collect(Collectors.joining(" "));
     }
 
-    default TermVector getWordVector() {
+    default TermsBag getWordVector() {
         return getTermVector(Token::getWordTerm);
     }
 
-    default TermVector getNormVector() {
+    default TermsBag getNormVector() {
         return getTermVector(Token::getNormTerm);
     }
 
-    default TermVector getTermVector(Function<Token, IndexedTerm> accessor) {
-        TermVector.Builder builder = TermVector.builder();
+    default TermsBag getTermVector(Function<Token, IndexedTerm> accessor) {
+        TermsBag.Builder builder = TermsBag.builder();
         getTokensStream().map(accessor).forEach(builder::addTerm);
         return builder.build();
     }

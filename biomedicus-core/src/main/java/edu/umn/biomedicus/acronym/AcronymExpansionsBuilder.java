@@ -1,8 +1,10 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.spelling.SpecialistSpellingModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,15 +36,21 @@ public class AcronymExpansionsBuilder {
 
     private final TermIndex termIndex;
 
+    private final SpecialistSpellingModel specialistSpellingModel;
+
     private Path masterFile;
 
     private Path dataSet;
 
-    private Path specialistDirectory;
+    private Path specialistLrabrPath;
 
     @Inject
-    public AcronymExpansionsBuilder(TermIndex termIndex) {
+    public AcronymExpansionsBuilder(TermIndex termIndex,
+                                    SpecialistSpellingModel specialistSpellingModel,
+                                    BiomedicusConfiguration biomedicusConfiguration) {
         this.termIndex = termIndex;
+        this.specialistSpellingModel = specialistSpellingModel;
+        specialistLrabrPath = biomedicusConfiguration.resolveDataFile("specialist.path").resolve("LRABR");
     }
 
     public void setMasterFile(Path masterFile) {
@@ -51,10 +59,6 @@ public class AcronymExpansionsBuilder {
 
     public void setDataSet(Path dataSet) {
         this.dataSet = dataSet;
-    }
-
-    public void setSpecialistDirectory(Path specialistDirectory) {
-        this.specialistDirectory = specialistDirectory;
     }
 
     public void buildAcronymExpansions() throws IOException {
@@ -70,6 +74,22 @@ public class AcronymExpansionsBuilder {
                     if ("GENERAL ENGLISH".equals(sense)) {
                         sense = abbreviation.toLowerCase();
                     }
+                    Set<String> senses = expansions.get(abbreviation);
+                    if (senses == null) {
+                        senses = new HashSet<>();
+                        expansions.put(abbreviation, senses);
+                    }
+                    senses.add(sense);
+                });
+
+        LOGGER.info("Loading LRABR file from SPECIALIST: {}", specialistLrabrPath);
+        Files.lines(specialistLrabrPath)
+                .map(splitter::split)
+                .forEach(splits -> {
+                    String abbreviation = splits[1];
+                    String longform = splits[4];
+                    String sense = specialistSpellingModel.getCanonicalForm(longform);
+
                     Set<String> senses = expansions.get(abbreviation);
                     if (senses == null) {
                         senses = new HashSet<>();
@@ -102,13 +122,6 @@ public class AcronymExpansionsBuilder {
                         senses.add(sense);
                     }
                 });
-
-        LOGGER.info("Loading LRABR file from SPECIALIST: {}", specialistDirectory);
-        Files.lines(specialistDirectory.resolve("LRABR"))
-                .map(splitter::split)
-                .forEach(splits -> {
-
-                });
     }
 
     public static void main(String args[]) {
@@ -117,7 +130,6 @@ public class AcronymExpansionsBuilder {
             AcronymExpansionsBuilder acronymExpansionsBuilder = bootstrapper.getInstance(AcronymExpansionsBuilder.class);
             acronymExpansionsBuilder.setMasterFile(Paths.get(args[0]));
             acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
-            acronymExpansionsBuilder.setSpecialistDirectory(Paths.get(args[2]));
 
             acronymExpansionsBuilder.buildAcronymExpansions();
         } catch (IOException e) {

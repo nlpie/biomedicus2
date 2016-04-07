@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 class ConceptModel {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final Map<TermVector, List<SuiCuiTui>> normDictionary;
+    private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
 
     private final Map<String, List<SuiCuiTui>> phrases;
 
@@ -105,7 +105,7 @@ class ConceptModel {
                     }
                     return string;
                 });
-                TermVector termVector = normIndex.getTermVector(terms);
+                TermsBag termsBag = normIndex.getTermVector(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());
@@ -113,7 +113,7 @@ class ConceptModel {
                         || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
                         || filteredTuis.contains(sct.tui()));
                 List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-                normDictionary.put(termVector, unmodifiableList);
+                normDictionary.put(termsBag, unmodifiableList);
             }
         }
     }
@@ -129,7 +129,7 @@ class ConceptModel {
     }
 
     @Nullable
-    List<SuiCuiTui> forNorms(TermVector norms) {
+    List<SuiCuiTui> forNorms(TermsBag norms) {
         return normDictionary.get(norms);
     }
 
