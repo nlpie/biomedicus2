@@ -8,15 +8,18 @@ import edu.umn.biomedicus.spelling.SpecialistSpellingModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.regex.Pattern;
+
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 /**
  * <p>Main class for building the acronym expansions data file. Uses three files to build the set of acronym expansions:
@@ -44,6 +47,8 @@ public class AcronymExpansionsBuilder {
 
     private Path specialistLrabrPath;
 
+    private Path outPath;
+
     @Inject
     public AcronymExpansionsBuilder(TermIndex termIndex,
                                     SpecialistSpellingModel specialistSpellingModel,
@@ -59,6 +64,10 @@ public class AcronymExpansionsBuilder {
 
     public void setDataSet(Path dataSet) {
         this.dataSet = dataSet;
+    }
+
+    public void setOutPath(Path outPath) {
+        this.outPath = outPath;
     }
 
     public void buildAcronymExpansions() throws IOException {
@@ -122,6 +131,23 @@ public class AcronymExpansionsBuilder {
                         senses.add(sense);
                     }
                 });
+
+        LOGGER.info("Writing expansions: {}", outPath);
+        try (BufferedWriter writer = Files.newBufferedWriter(outPath, CREATE, TRUNCATE_EXISTING)) {
+            for (Map.Entry<String, Set<String>> abbrExpansion : expansions.entrySet()) {
+                writer.write(abbrExpansion.getKey());
+                writer.newLine();
+                StringJoiner stringJoiner = new StringJoiner("|");
+                for (String expansion : abbrExpansion.getValue()) {
+                    if (expansion.contains("|")) {
+                        throw new IllegalStateException("Expansion contains a | character");
+                    }
+                    stringJoiner.add(expansion);
+                }
+                writer.write(stringJoiner.toString());
+                writer.newLine();
+            }
+        }
     }
 
     public static void main(String args[]) {
