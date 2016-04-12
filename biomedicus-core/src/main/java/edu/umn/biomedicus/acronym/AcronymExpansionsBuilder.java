@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -51,7 +51,7 @@ public class AcronymExpansionsBuilder {
     @Inject
     public AcronymExpansionsBuilder(TermIndex termIndex,
                                     SpecialistSpellingModel specialistSpellingModel,
-                                    @Named("specialist.path") Path specialistPath) {
+                                    @Setting("specialist.path") Path specialistPath) {
         this.termIndex = termIndex;
         this.specialistSpellingModel = specialistSpellingModel;
         specialistLrabrPath = specialistPath.resolve("LRABR");
@@ -151,8 +151,8 @@ public class AcronymExpansionsBuilder {
 
     public static void main(String args[]) {
         try {
-            Bootstrapper bootstrapper = new Bootstrapper();
-            AcronymExpansionsBuilder acronymExpansionsBuilder = bootstrapper.getInstance(AcronymExpansionsBuilder.class);
+            AcronymExpansionsBuilder acronymExpansionsBuilder = Bootstrapper.create()
+                    .createClass(AcronymExpansionsBuilder.class);
             acronymExpansionsBuilder.setMasterFile(Paths.get(args[0]));
             acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
 

@@ -18,13 +18,17 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>Acronym Model Trainer</name>
         <description>Training for the acronym model.</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
+            <configurationParameter>
+                <name>collectionProcessor</name>
+                <type>String</type>
+            </configurationParameter>
             <configurationParameter>
                 <name>expansionMap</name>
                 <type>String</type>
@@ -73,6 +77,12 @@
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
+            <nameValuePair>
+                <name>collectionProcessor</name>
+                <value>
+                    <string>edu.umn.biomedicus.application.DocumentProcessorRunner</string>
+                </value>
+            </nameValuePair>
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>

@@ -2,7 +2,7 @@ package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.collect.MetricTree;
 import edu.umn.biomedicus.common.collect.StandardEditDistance;
 import edu.umn.biomedicus.common.grams.Bigram;
@@ -51,15 +51,15 @@ public class SpellingModel {
     private final int maxEditDistance;
 
     @Inject
-    SpellingModel(BiomedicusConfiguration biomedicusConfiguration, Vocabulary vocabulary) throws IOException {
+    SpellingModel(@Setting("spelling.arpa.path") Path arpaPath,
+                  Vocabulary vocabulary,
+                  @Setting("spelling.maxEditDistance") Integer maxEditDistance) throws IOException {
         TermIndex wordIndex = vocabulary.wordIndex();
         LOGGER.info("Building BK tree for spelling model using {} words.", wordIndex.size());
         MetricTree.Builder<String> builder = MetricTree.builder();
         builder.withMetric(StandardEditDistance.levenstein());
         wordIndex.stream().map(wordIndex::getTerm).forEach(builder::add);
         termsTree = builder.build();
-
-        Path arpaPath = biomedicusConfiguration.resolveDataFile("spelling.arpa.path");
         LOGGER.info("Loading Spelling n-grams from ARPA file: {}", arpaPath);
 
         Pattern unigramPattern = Pattern.compile("(\\-?[0-9]\\.[0-9]{4}) ([\\p{IsAlphabetic}]+)\\t(\\-?[0-9]\\.[0-9]{4})");
@@ -119,7 +119,7 @@ public class SpellingModel {
             }
         });
 
-        maxEditDistance = biomedicusConfiguration.getMapBasedSettings().getAsInt("spelling.maxEditDistance");
+        this.maxEditDistance = maxEditDistance;
     }
 
     /**

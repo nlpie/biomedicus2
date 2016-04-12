@@ -1,9 +1,9 @@
 package edu.umn.biomedicus.application;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.BiomedicusModule.NamedImplementationBinding;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,13 +28,7 @@ public class Bootstrapper {
 
     private final Injector injector;
 
-    private final Path dataPath;
-    private final Map<String, String> settingInterfaces;
-    private final Map<String, Map<String, String>> interfaceImplementations;
-    private final Collection<NamedImplementationBinding> namedImplementationBindings;
-
     private String home;
-    private final Map<String, Object> settings;
 
     public Bootstrapper(Module... additionalModules) throws BiomedicusException {
         List<Module> modules = new ArrayList<>();
@@ -89,6 +83,7 @@ public class Bootstrapper {
         if (dataEnv == null) {
             dataEnv = System.getenv("BIOMEDICUS_DATA");
         }
+        Path dataPath;
         if (dataEnv != null) {
             dataPath = Paths.get(dataEnv);
         } else {
@@ -102,86 +97,49 @@ public class Bootstrapper {
         LOGGER.info("Using data directory: {}", dataPath);
 
         @SuppressWarnings("unchecked")
-        Map<String, String> settingInterfaces =  (Map<String, String>) biomedicusConfiguration.get("settingInterfaces");
-        this.settingInterfaces = settingInterfaces;
+        Map<String, String> settingInterfacesYaml =  (Map<String, String>) biomedicusConfiguration.get("settingInterfaces");
+        Map<String, Class<?>> settingInterfaces = getClassMap(settingInterfacesYaml);
 
         @SuppressWarnings("unchecked")
-        Map<String, Map<String, String>> interfaceImplementations = (Map<String, Map<String, String>>) biomedicusConfiguration.get("interfaceImplementations");
-        this.interfaceImplementations = interfaceImplementations;
-
-        namedImplementationBindings = new ArrayList<>();
-        for (Map.Entry<String, Map<String, String>> entry : interfaceImplementations.entrySet()) {
-            String superClassName = entry.getKey();
-            Map<String, String> implementations = entry.getValue();
-            for (Map.Entry<String, String> implementationEntry : implementations.entrySet()) {
-                String key = implementationEntry.getKey();
-                String className = implementationEntry.getValue();
-                addBinding(superClassName, key, className);
+        Map<String, Map<String, String>> interfaceImplementationsYaml = (Map<String, Map<String, String>>) biomedicusConfiguration.get("interfaceImplementations");
+        Map<Class<?>, Map<String, Class<?>>> interfaceImplementations = new HashMap<>();
+        for (Map.Entry<String, Map<String, String>> interfaceEntry : interfaceImplementationsYaml.entrySet()) {
+            try {
+                Class<?> interfaceClass = Class.forName(interfaceEntry.getKey());
+                Map<String, String> interfaceMapYaml = interfaceEntry.getValue();
+                Map<String, Class<?>> interfaceMap = getClassMap(interfaceMapYaml);
+                interfaceImplementations.put(interfaceClass, interfaceMap);
+            } catch (ClassNotFoundException e) {
+                throw new BiomedicusException(e);
             }
-
         }
 
-        interfaceImplementations.forEach((superclassClassName, implementations) -> {
-            implementations.forEach((key, className) -> {
-
-            });
-        });
-
         // collapse settings maps
-        settings = new HashMap<>();
         @SuppressWarnings("unchecked")
         Map<String, Object> settingsYaml = (Map<String, Object>) biomedicusConfiguration.get("settings");
-        recursiveAddSettings(settingsYaml, null);
 
-        modules.add(new BiomedicusModule(settings, namedImplementationBindings));
+        SettingsBinder settingsBinder = new SettingsBinder(settingInterfaces, dataPath);
+        settingsBinder.setSettingsMap(settingsYaml);
+        settingsBinder.setInterfaceImplementations(interfaceImplementations);
+
+        modules.add(new BiomedicusModule());
+        modules.add(settingsBinder.createModule());
         modules.addAll(Arrays.asList(additionalModules));
 
         injector = Guice.createInjector(modules.toArray(new Module[modules.size()]));
     }
 
-    private void addBinding(String superClassName, String key, String className) throws BiomedicusException {
-        Class<?> superclass;
-        Class<?> aClass;
-        try {
-            superclass = Class.forName(superClassName);
-            aClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new BiomedicusException("Bound class not found.", e);
-        }
-        namedImplementationBindings.add(NamedImplementationBinding.create(superclass, key, aClass));
-    }
-
-    private void recursiveAddSettings(Map<String, Object> yaml, String prevKey) throws BiomedicusException {
-        for (Map.Entry<String, Object> settingEntry : yaml.entrySet()) {
-            String entryKey = settingEntry.getKey();
-            String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
-            Object value = settingEntry.getValue();
-
-            String superclassClassName = settingInterfaces.get(key);
-            if (superclassClassName != null) {
-                String className = interfaceImplementations.get(superclassClassName).get(value);
-                addBinding(superclassClassName, key, className);
-            }
-
-            if (value instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> valueMap = (Map<String, Object>) value;
-                recursiveAddSettings(valueMap, key);
-            } else if (key.endsWith(".path")) {
-                Path path = absoluteOrResolveAgainstData(Paths.get((String) value));
-                settings.put(key, path);
-            } else {
-                settings.put(key, value);
+    private Map<String, Class<?>> getClassMap(Map<String, String> settingInterfacesYaml) throws BiomedicusException {
+        Map<String, Class<?>> settingInterfaces = new HashMap<>();
+        for (Map.Entry<String, String> entry : settingInterfacesYaml.entrySet()) {
+            try {
+                Class<?> aClass = Class.forName(entry.getValue());
+                settingInterfaces.put(entry.getKey(), aClass);
+            } catch (ClassNotFoundException e) {
+                throw new BiomedicusException(e);
             }
         }
-
-    }
-
-    private Path absoluteOrResolveAgainstData(Path path) {
-        if (path.isAbsolute()) {
-            return path;
-        }
-        return dataPath.resolve(path);
+        return settingInterfaces;
     }
 
     private Path absoluteOrResolveAgainstHome(Path path) {
@@ -201,15 +159,15 @@ public class Bootstrapper {
         return Paths.get(home);
     }
 
-    public static Bootstrapper create(Module... additionalModules) throws BiomedicusException {
-        return new Bootstrapper(additionalModules);
+    public <T> T createClass(Class<T> tClass) {
+        return injector.getInstance(tClass);
     }
 
     public Injector injector() {
         return injector;
     }
 
-    public <T> T getInstance(Class<T> tClass) {
-        return injector.getInstance(tClass);
+    public static Bootstrapper create(Module... additionalModules) throws BiomedicusException {
+        return new Bootstrapper(additionalModules);
     }
 }

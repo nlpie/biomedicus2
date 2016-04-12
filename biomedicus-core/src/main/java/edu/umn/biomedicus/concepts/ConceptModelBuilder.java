@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -269,13 +270,13 @@ public class ConceptModelBuilder {
         Path ttyBanlistFile = Paths.get(args[3]);
 
         try {
-            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().getInstance(ConceptModelBuilder.class);
+            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().createClass(ConceptModelBuilder.class);
             conceptModelBuilder.setRRFsPath(rrfs);
             conceptModelBuilder.setOutputDir(outputDir);
             conceptModelBuilder.setTuisOfInterestFile(tuisOfInterestFile);
             conceptModelBuilder.setTtysBannedFile(ttyBanlistFile);
             conceptModelBuilder.process();
-        } catch (IOException e) {
+        } catch (IOException | BiomedicusException e) {
             e.printStackTrace();
         }
     }

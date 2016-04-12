@@ -1,20 +1,26 @@
 package edu.umn.biomedicus.application;
 
 import com.google.inject.AbstractModule;
-import edu.umn.biomedicus.common.settings.Settings;
+import com.google.inject.Key;
+
+import java.util.Collection;
 
 /**
  *
  */
 public class ProcessorSettingsModule extends AbstractModule {
-    private final ProcessorSettings processorSettings;
+    private final Collection<Key<?>> processorSettings;
 
-    public ProcessorSettingsModule(Settings processorSettings) {
-        this.processorSettings = new StandardProcessorSettings(processorSettings);
+    public ProcessorSettingsModule(Collection<Key<?>> processorSettings) {
+        this.processorSettings = processorSettings;
     }
 
     @Override
     protected void configure() {
-        bind(ProcessorSettings.class).toInstance(processorSettings);
+        processorSettings.forEach(this::bindToScope);
+    }
+
+    private <T> void bindToScope(Key<T> key) {
+        bind(key).toProvider(BiomedicusScopes.providedViaSeeding()).in(BiomedicusScopes.PROCESSOR_SCOPE);
     }
 }

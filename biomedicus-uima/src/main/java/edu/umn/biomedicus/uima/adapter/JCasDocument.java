@@ -45,7 +45,6 @@ import java.util.stream.StreamSupport;
  * @author Ben Knoll
  * @since 1.3.0
  */
-@DocumentScoped
 class JCasDocument extends AbstractDocument {
     /**
      * The system view JCas of the document.
@@ -63,7 +62,6 @@ class JCasDocument extends AbstractDocument {
      *
      * @param systemView the {@link JCas} system view
      */
-    @Inject
     JCasDocument(JCas systemView) {
         this.systemView = systemView;
         AnnotationIndex<Annotation> index = systemView.getAnnotationIndex(ClinicalNoteAnnotation.type);

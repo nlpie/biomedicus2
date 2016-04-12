@@ -2,6 +2,7 @@ package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import org.apache.logging.log4j.LogManager;
@@ -27,10 +28,8 @@ public class SpecialistSpellingModel {
     private final Map<String, String> dictionary;
 
     @Inject
-    public SpecialistSpellingModel(BiomedicusConfiguration biomedicusConfiguration) throws IOException {
-
-
-        Path lrsplPath = biomedicusConfiguration.resolveDataFile("specialist.path").resolve("LRSPL");
+    public SpecialistSpellingModel(@Setting("specialist.path") Path specialistPath) throws IOException {
+        Path lrsplPath = specialistPath.resolve("LRSPL");
 
         LOGGER.info("Loading SPECIALIST LRSPL dictionary from path: {}", lrsplPath);
         dictionary = Files.lines(lrsplPath).map(Pattern.compile("/|")::split)

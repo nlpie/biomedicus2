@@ -1,9 +1,5 @@
 package edu.umn.biomedicus.annotations;
 
-/**
- * Annotation which marks an object as being document scoped for injection.
- */
-
 import com.google.inject.ScopeAnnotation;
 
 import java.lang.annotation.Retention;
@@ -13,8 +9,11 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ *
+ */
 @Target({TYPE, METHOD})
 @Retention(RUNTIME)
 @ScopeAnnotation
-public @interface DocumentScoped {
+public @interface ProcessorScoped {
 }

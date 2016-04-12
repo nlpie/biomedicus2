@@ -1,7 +1,8 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.application.PostProcessor;
+import edu.umn.biomedicus.annotations.ProcessorScoped;
+import edu.umn.biomedicus.application.CollectionProcessor;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * @since 1.5.0
  */
 @ProvidedBy(AcronymVectorModelTrainerLoader.class)
-public class AcronymVectorModelTrainer implements PostProcessor {
+public class AcronymVectorModelTrainer implements CollectionProcessor {
 
     private static final Pattern SPLITTER = Pattern.compile("\\|");
 
@@ -105,13 +106,8 @@ public class AcronymVectorModelTrainer implements PostProcessor {
         return new AcronymVectorModel(vectorSpace, senseMap, expansionMap, alignmentModel);
     }
 
-    /**
-     * Adds a document to the model, which should have been initialized already
-     *
-     * @param document a tokenized document
-     */
-    void addDocumentToModel(Document document) {
-
+    @Override
+    public void processDocument(Document document) throws BiomedicusException {
         // Maximum number of words to look at (needn't look much farther than maxDist)
         int maxSize = (int) (maxDist * 1.5);
 
@@ -158,7 +154,7 @@ public class AcronymVectorModelTrainer implements PostProcessor {
     }
 
     @Override
-    public void afterProcessing() throws BiomedicusException {
+    public void allDocumentsProcessed() throws BiomedicusException {
         AcronymVectorModel model = getModel();
 
         try {

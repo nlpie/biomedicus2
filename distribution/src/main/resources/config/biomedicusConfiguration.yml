@@ -18,7 +18,13 @@ settings:
   acronym:
     useAlignment: false
     alignmentModel.path: acronym/alignment.yml
-    vectorSpace.path: acronym/vectorSpace.yml
+    vector:
+      model.path: acronym/vectorSpace.yml
+      trainer:
+        expansionMap.path: /path-to
+        uniqueIdMap.path: /path-to
+        longforms.path: /path-to
+        outputDir.path: /path-to
     senseMap.path: acronym/senseMap.yml
     acronymExpansions.path: acronym/acronymExpansions.yml
     orthographicModel.path: acronym/orthographicModel.yml
@@ -39,6 +45,8 @@ settings:
     parser.model.path: opennlp/en-parser-chunking.bin
     sentence.model.path: NOT_USED
   specialist.path: SPECIALIST/LEX
+
+
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
   parser.implementation: edu.umn.biomedicus.parsing.Parser

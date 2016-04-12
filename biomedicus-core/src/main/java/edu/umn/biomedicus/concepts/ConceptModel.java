@@ -18,7 +18,7 @@ package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
@@ -52,12 +52,12 @@ class ConceptModel {
     private final Map<String, List<SuiCuiTui>> lowercasePhrases;
 
     @Inject
-    ConceptModel(@Named("concepts.filters.sui.path") Path filteredSuisPath,
-                 @Named("concepts.filters.cui.path") Path filteredCuisPath,
-                 @Named("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-                 @Named("concepts.filters.tui.path") Path filteredTuisPath,
-                 @Named("concepts.phrases.path") Path phrasesPath,
-                 @Named("concepts.norms.path") Path normsPath,
+    ConceptModel(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
+                 @Setting("concepts.filters.cui.path") Path filteredCuisPath,
+                 @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
+                 @Setting("concepts.filters.tui.path") Path filteredTuisPath,
+                 @Setting("concepts.phrases.path") Path phrasesPath,
+                 @Setting("concepts.norms.path") Path normsPath,
                  Vocabulary vocabulary) throws IOException {
         Pattern splitter = Pattern.compile(",");
 

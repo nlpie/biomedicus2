@@ -2,7 +2,7 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -28,7 +28,7 @@ public class OrthographicAcronymModelLoader extends DataLoader<OrthographicAcron
     private IndexMap<Character> symbols;
 
     @Inject
-    OrthographicAcronymModelLoader(@Named("acronym.orthographicModel.path") Path orthographicModel) {
+    OrthographicAcronymModelLoader(@Setting("acronym.orthographicModel.path") Path orthographicModel) {
         this.orthographicModel = orthographicModel;
     }
 

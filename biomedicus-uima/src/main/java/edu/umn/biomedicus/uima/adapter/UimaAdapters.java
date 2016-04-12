@@ -22,6 +22,7 @@ import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
 import edu.umn.biomedicus.uima.Views;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -103,7 +104,8 @@ public class UimaAdapters {
      * @throws CASException
      */
     public static Document documentFromView(JCas initialView, String viewName) throws CASException {
-        return new JCasDocument(initialView.getView(viewName));
+        JCas view = CAS.NAME_DEFAULT_SOFA.equals(viewName) ? initialView : initialView.getView(viewName);
+        return new JCasDocument(view);
     }
 
     /**

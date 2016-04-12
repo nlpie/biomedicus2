@@ -2,7 +2,7 @@ package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -24,7 +24,7 @@ public class VocabularyLoader extends DataLoader<Vocabulary> {
     private final Path wordsPath;
 
     @Inject
-    public VocabularyLoader(@Named("vocabulary.wordIndex.path") Path wordsPath) {
+    public VocabularyLoader(@Setting("vocabulary.wordIndex.path") Path wordsPath) {
         this.wordsPath = wordsPath;
     }
 

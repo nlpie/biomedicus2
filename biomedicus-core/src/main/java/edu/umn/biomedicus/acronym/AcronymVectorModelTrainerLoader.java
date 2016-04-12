@@ -2,9 +2,11 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.ProcessorScoped;
+import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.application.ProcessorSettings;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.nio.file.Path;
 /**
  *
  */
+@ProcessorScoped
 @Singleton
 public class AcronymVectorModelTrainerLoader extends DataLoader<AcronymVectorModelTrainer> {
 
@@ -25,11 +28,14 @@ public class AcronymVectorModelTrainerLoader extends DataLoader<AcronymVectorMod
     private final Path outputDir;
 
     @Inject
-    public AcronymVectorModelTrainerLoader(ProcessorSettings processorSettings) {
-        expansionMapPath = processorSettings.getAsPath("expansionMap");
-        uniqueIdMapPath = processorSettings.getAsPath("uniqueIds");
-        longformsPath = processorSettings.getAsPath("longforms");
-        outputDir = processorSettings.getAsPath("outputDir");
+    public AcronymVectorModelTrainerLoader(@ProcessorSetting("acronym.vector.trainer.expansionMap.path") Path expansionMapPath,
+                                           @ProcessorSetting("acronym.vector.trainer.uniqueIdMap.path") Path uniqueIdMapPath,
+                                           @ProcessorSetting("acronym.vector.trainer.longforms.path") Path longformsPath,
+                                           @ProcessorSetting("acronym.vector.trainer.outputDir.path") Path outputDir) {
+        this.expansionMapPath = expansionMapPath;
+        this.uniqueIdMapPath = uniqueIdMapPath;
+        this.longformsPath = longformsPath;
+        this.outputDir = outputDir;
     }
 
     @Override
@@ -42,12 +48,10 @@ public class AcronymVectorModelTrainerLoader extends DataLoader<AcronymVectorMod
     }
 
     public static void main(String[] args) throws BiomedicusException, IOException {
-        Bootstrapper bootstrapper = new Bootstrapper();
-
-        AcronymVectorModelTrainerLoader loader = bootstrapper.injector().getInstance(AcronymVectorModelTrainerLoader.class);
+        AcronymVectorModelTrainerLoader loader = Bootstrapper.create().createClass(AcronymVectorModelTrainerLoader.class);
 
         AcronymVectorModelTrainer acronymVectorModelTrainer = loader.get();
 
-        acronymVectorModelTrainer.afterProcessing();
+        acronymVectorModelTrainer.allDocumentsProcessed();
     }
 }
