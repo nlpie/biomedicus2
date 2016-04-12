@@ -2,7 +2,6 @@ package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import org.apache.logging.log4j.LogManager;

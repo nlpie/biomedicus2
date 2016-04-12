@@ -1,0 +1,48 @@
+# paths can be set here, by environment variable or java property.
+paths:
+  #home: /absolute-path
+  #data: /absolute-path
+# settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
+settings:
+  vocabulary.wordIndex.path: vocabulary/words.txt
+  spelling:
+    arpa.path: spell/UPMC.arpa
+    maxEditDistance: 4
+  tnt:
+    trigram.path: tnt/trigram.yml
+    word.path: tnt/words/
+    beam.threshold: 2.0
+  normalization:
+    lexicon.path: normalization/lexicon.yml
+    fallback.path: normalization/fallbackLexicon.yml
+  acronym:
+    useAlignment: false
+    alignmentModel.path: acronym/alignment.yml
+    vectorSpace.path: acronym/vectorSpace.yml
+    senseMap.path: acronym/senseMap.yml
+    acronymExpansions.path: acronym/acronymExpansions.yml
+    orthographicModel.path: acronym/orthographicModel.yml
+  semanticNetwork:
+    srdef.path: semnetwork/SRDEF
+    semgroups.path: semnetwork/SemGroups.txt
+  concepts:
+    phrases.path: concepts/phrases.txt
+    norms.path: concepts/norms.txt
+    filters:
+      sui.path: concepts/filteredSuis.txt
+      suicui.path: concepts/filteredSuiCuis.txt
+      cui.path: concepts/filteredCuis.txt
+      tui.path: concepts/filteredTuis.txt
+  sections.headers: sections/headers.txt
+  parser.implementation: opennlp
+  opennlp:
+    parser.model.path: opennlp/en-parser-chunking.bin
+    sentence.model.path: NOT_USED
+  specialist.path: SPECIALIST/LEX
+# these indicate settings keys which are bound against a certain class
+settingInterfaces:
+  parser.implementation: edu.umn.biomedicus.parsing.Parser
+# these indicate the options for the bindings above
+interfaceImplementations:
+  edu.umn.biomedicus.parsing.Parser:
+    opennlp: edu.umn.biomedicus.opennlp.OpenNlpParser

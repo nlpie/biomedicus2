@@ -1,20 +1,19 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.spelling.SpecialistSpellingModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -52,10 +51,10 @@ public class AcronymExpansionsBuilder {
     @Inject
     public AcronymExpansionsBuilder(TermIndex termIndex,
                                     SpecialistSpellingModel specialistSpellingModel,
-                                    BiomedicusConfiguration biomedicusConfiguration) {
+                                    @Named("specialist.path") Path specialistPath) {
         this.termIndex = termIndex;
         this.specialistSpellingModel = specialistSpellingModel;
-        specialistLrabrPath = biomedicusConfiguration.resolveDataFile("specialist.path").resolve("LRABR");
+        specialistLrabrPath = specialistPath.resolve("LRABR");
     }
 
     public void setMasterFile(Path masterFile) {
@@ -158,7 +157,7 @@ public class AcronymExpansionsBuilder {
             acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
 
             acronymExpansionsBuilder.buildAcronymExpansions();
-        } catch (IOException e) {
+        } catch (IOException | BiomedicusException e) {
             e.printStackTrace();
         }
     }

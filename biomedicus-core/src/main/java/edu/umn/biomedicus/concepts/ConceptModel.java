@@ -18,7 +18,7 @@ package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
@@ -52,25 +52,26 @@ class ConceptModel {
     private final Map<String, List<SuiCuiTui>> lowercasePhrases;
 
     @Inject
-    ConceptModel(BiomedicusConfiguration biomedicusConfiguration, Vocabulary vocabulary) throws IOException {
+    ConceptModel(@Named("concepts.filters.sui.path") Path filteredSuisPath,
+                 @Named("concepts.filters.cui.path") Path filteredCuisPath,
+                 @Named("concepts.filters.suicui.path") Path filteredSuiCuisPath,
+                 @Named("concepts.filters.tui.path") Path filteredTuisPath,
+                 @Named("concepts.phrases.path") Path phrasesPath,
+                 @Named("concepts.norms.path") Path normsPath,
+                 Vocabulary vocabulary) throws IOException {
         Pattern splitter = Pattern.compile(",");
 
-        Set<SUI> filteredSuis = Files.lines(biomedicusConfiguration.resolveDataFile("concepts.filters.sui.path"))
-                .map(SUI::new).collect(Collectors.toSet());
+        Set<SUI> filteredSuis = Files.lines(filteredSuisPath).map(SUI::new).collect(Collectors.toSet());
 
-        Set<CUI> filteredCuis = Files.lines(biomedicusConfiguration.resolveDataFile("concepts.filters.cui.path"))
-                .map(CUI::new).collect(Collectors.toSet());
+        Set<CUI> filteredCuis = Files.lines(filteredCuisPath).map(CUI::new).collect(Collectors.toSet());
 
-        Path filteredSuiCuisPath = biomedicusConfiguration.resolveDataFile("concepts.filters.suicui.path");
         Set<SuiCui> filteredSuiCuis = Files.lines(filteredSuiCuisPath)
                 .map(splitter::split)
                 .map(line -> new SuiCui(new SUI(line[0]), new CUI(line[1])))
                 .collect(Collectors.toSet());
 
-        Set<TUI> filteredTuis = Files.lines(biomedicusConfiguration.resolveDataFile("concepts.filters.tui.path"))
-                .map(TUI::new).collect(Collectors.toSet());
+        Set<TUI> filteredTuis = Files.lines(filteredTuisPath).map(TUI::new).collect(Collectors.toSet());
 
-        Path phrasesPath = biomedicusConfiguration.resolveDataFile("concepts.phrases.path");
         LOGGER.info("Loading concepts phrases: {}", phrasesPath);
         phrases = new HashMap<>();
         lowercasePhrases = new HashMap<>();
@@ -89,8 +90,6 @@ class ConceptModel {
             }
         }
 
-
-        Path normsPath = biomedicusConfiguration.resolveDataFile("concepts.norms.path");
         LOGGER.info("Loading concept norm vectors: {}", normsPath);
         normDictionary = new HashMap<>();
         TermIndex normIndex = vocabulary.wordIndex();

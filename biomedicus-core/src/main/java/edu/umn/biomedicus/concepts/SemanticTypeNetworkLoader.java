@@ -2,7 +2,7 @@ package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -20,9 +20,10 @@ public class SemanticTypeNetworkLoader extends DataLoader<SemanticTypeNetwork> {
     private final Path semgroupsPath;
 
     @Inject
-    public SemanticTypeNetworkLoader(BiomedicusConfiguration biomedicusConfiguration) {
-        srdefPath = biomedicusConfiguration.resolveDataFile("semanticNetwork.srdef.path");
-        semgroupsPath = biomedicusConfiguration.resolveDataFile("semanticNetwork.semgroups.path");
+    public SemanticTypeNetworkLoader(@Named("semanticNetwork.srdef.path") Path srdefPath,
+                                     @Named("semanticNetwork.semgroups.path") Path semgroupsPath) {
+        this.srdefPath = srdefPath;
+        this.semgroupsPath = semgroupsPath;
     }
 
     @Override

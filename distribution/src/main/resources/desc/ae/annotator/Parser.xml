@@ -20,8 +20,8 @@
     <primitive>true</primitive>
     <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
-        <name>Substance Usage Constituent Parser</name>
-        <description>Performs a constituent parse on substance usage candidates.</description>
+        <name>Constituent Parser</name>
+        <description>Parses all sentences.</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
@@ -60,7 +60,7 @@
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string>edu.umn.biomedicus.parsing.SocialHistoryCandidateParser</string>
+                    <string>edu.umn.biomedicus.parsing.AllSentencesParser</string>
                 </value>
             </nameValuePair>
             <nameValuePair>

@@ -1,6 +1,6 @@
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
@@ -33,9 +33,9 @@ public class TntModelLoader extends DataLoader<TntModel> {
     private final Path wordModels;
 
     @Inject
-    public TntModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
-        trigram = biomedicusConfiguration.resolveDataFile("tnt.trigram.path");
-        wordModels = biomedicusConfiguration.resolveDataFile("tnt.word.path");
+    public TntModelLoader(@Named("tnt.trigram.path") Path trigram, @Named("tnt.word.path") Path wordModels) {
+        this.trigram = trigram;
+        this.wordModels = wordModels;
     }
 
     @Override

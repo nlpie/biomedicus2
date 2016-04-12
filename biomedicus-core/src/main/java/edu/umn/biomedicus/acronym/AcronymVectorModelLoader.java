@@ -3,7 +3,7 @@ package edu.umn.biomedicus.acronym;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
@@ -36,12 +36,16 @@ public class AcronymVectorModelLoader extends DataLoader<AcronymVectorModel> {
 
 
     @Inject
-    public AcronymVectorModelLoader(Provider<AlignmentModel> alignmentModel, BiomedicusConfiguration biomedicusConfiguration) {
+    public AcronymVectorModelLoader(Provider<AlignmentModel> alignmentModel,
+                                    @Named("acronym.useAlignment") Boolean useAlignment,
+                                    @Named("acronym.vectorSpace.path") Path vectorSpacePath,
+                                    @Named("acronym.senseMap.path") Path senseMapPath,
+                                    @Named("acronym.acronymExpansions.path") Path acronymExpansionsPath) {
         this.alignmentModel = alignmentModel;
-        useAlignment = biomedicusConfiguration.getMapBasedSettings().getAsBoolean("acronym.useAlignment");
-        vectorSpacePath = biomedicusConfiguration.resolveDataFile("acronym.vectorSpace.path");
-        senseMapPath = biomedicusConfiguration.resolveDataFile("acronym.senseMap.path");
-        acronymExpansionsPath = biomedicusConfiguration.resolveDataFile("acronym.acronymExpansions.path");
+        this.useAlignment = useAlignment;
+        this.vectorSpacePath = vectorSpacePath;
+        this.senseMapPath = senseMapPath;
+        this.acronymExpansionsPath = acronymExpansionsPath;
     }
 
     @Override
