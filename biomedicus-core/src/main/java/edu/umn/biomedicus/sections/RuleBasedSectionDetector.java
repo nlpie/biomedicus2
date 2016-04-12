@@ -32,12 +32,12 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
      * Injectable constructor.
      *
      * @param document the document to process.
-     * @param headers the section title/headers pattern.
+     * @param ruleBasedSectionDetectorModel patterns.
      */
     @Inject
-    RuleBasedSectionDetector(Document document, @Named("sectionHeaders") Pattern headers) {
+    RuleBasedSectionDetector(Document document, RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
         this.document = document;
-        this.headers = headers;
+        this.headers = ruleBasedSectionDetectorModel.getSectionHeaderPattern();
     }
 
 

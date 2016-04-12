@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
@@ -277,7 +278,7 @@ public class ConceptModelBuilder {
             conceptModelBuilder.setTuisOfInterestFile(tuisOfInterestFile);
             conceptModelBuilder.setTtysBannedFile(ttyBanlistFile);
             conceptModelBuilder.process();
-        } catch (IOException e) {
+        } catch (IOException | BiomedicusException e) {
             e.printStackTrace();
         }
     }

@@ -2,7 +2,7 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
@@ -24,8 +24,8 @@ public class AlignmentModelLoader extends DataLoader<AlignmentModel> {
     private final Path modelPath;
 
     @Inject
-    public AlignmentModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
-        modelPath = biomedicusConfiguration.resolveDataFile("acronym.alignmentModel.path");
+    public AlignmentModelLoader(@Named("acronym.alignmentModel.path") Path modelPath) {
+        this.modelPath = modelPath;
     }
 
     @Override

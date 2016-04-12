@@ -1,5 +1,6 @@
-package edu.umn.biomedicus.tnt;
+package edu.umn.biomedicus.parsing;
 
+import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
@@ -8,29 +9,26 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.inject.Inject;
-
 /**
  *
  */
-public class TntProcessor implements DocumentProcessor {
+public class AllSentencesParser implements DocumentProcessor {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final Document document;
-
-    private final TntPosTagger tntPosTagger;
+    private final Parser parser;
 
     @Inject
-    public TntProcessor(Document document, TntModel tntModel, @Named("tnt.beam.threshold") Double beamThreshold) {
+    public AllSentencesParser(Document document, @Named("parser.implementation") Parser parser) {
         this.document = document;
-        this.tntPosTagger = new TntPosTagger(tntModel, beamThreshold);
+        this.parser = parser;
     }
 
     @Override
     public void process() throws BiomedicusException {
-        LOGGER.info("Tagging tokens in document.");
+        LOGGER.info("Performing constituent parsing for a document.");
         for (Sentence sentence : document.getSentences()) {
-            tntPosTagger.tagSentence(sentence);
+            parser.parseSentence(sentence);
         }
     }
 }
