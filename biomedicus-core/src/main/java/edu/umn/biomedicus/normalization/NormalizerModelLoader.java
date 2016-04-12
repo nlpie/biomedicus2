@@ -2,7 +2,7 @@ package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.tuples.WordPos;
 import org.apache.logging.log4j.LogManager;
@@ -26,9 +26,10 @@ public class NormalizerModelLoader extends DataLoader<NormalizerModel> {
     private final Path fallbackLexiconFile;
 
     @Inject
-    public NormalizerModelLoader(BiomedicusConfiguration biomedicusConfiguration) {
-        lexiconFile = biomedicusConfiguration.resolveDataFile("normalization.lexicon.path");
-        fallbackLexiconFile = biomedicusConfiguration.resolveDataFile("normalization.fallback.path");
+    public NormalizerModelLoader(@Named("normalization.lexicon.path") Path lexiconFile,
+                                 @Named("normalization.fallback.path") Path fallbackLexiconFile) {
+        this.lexiconFile = lexiconFile;
+        this.fallbackLexiconFile = fallbackLexiconFile;
     }
 
     @Override

@@ -5,10 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 /**
  *
@@ -53,6 +50,18 @@ public class Settings {
 
     public Path getAsPath(String key) {
         return Paths.get(get(key));
+    }
+
+    public Class<?> getAsClass(String key) throws ClassNotFoundException {
+        return Class.forName(get(key));
+    }
+
+    public <T> Class<? extends T> getAsSubclass(String key, Class<T> superclass) throws ClassNotFoundException {
+        return getAsClass(key).asSubclass(superclass);
+    }
+
+    public Set<String> allKeys() {
+        return Collections.unmodifiableSet(settingsMap.keySet());
     }
 
     public static Builder builder() {

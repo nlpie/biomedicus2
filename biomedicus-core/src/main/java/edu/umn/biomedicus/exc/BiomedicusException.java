@@ -52,4 +52,8 @@ public class BiomedicusException extends Exception {
     public BiomedicusException(String message, String... args) {
         super(String.format(message, args));
     }
+
+    public BiomedicusException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

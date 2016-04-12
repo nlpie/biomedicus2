@@ -16,9 +16,13 @@
 
 package edu.umn.biomedicus.common.utilities;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -49,6 +53,8 @@ public final class Patterns {
 
     public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{IsAlphabetic}\\p{Digit}]");
 
+
+
     /**
      * Loads a pattern from a file in the resource path by joining all of the lines of the file with an OR symbol '|'
      *
@@ -58,9 +64,21 @@ public final class Patterns {
     public static Pattern loadPatternByJoiningLines(String resourceName) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(resourceName)))){
-            return Pattern.compile(reader.lines().collect(Collectors.joining("|")), Pattern.MULTILINE);
+            return getPattern(reader);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static Pattern getPattern(BufferedReader reader) {
+        return Pattern.compile(reader.lines().collect(Collectors.joining("|")), Pattern.MULTILINE);
+    }
+
+    public static Pattern loadPatternByJoiningLines(Path path) throws BiomedicusException {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            return getPattern(reader);
+        } catch (IOException e) {
+            throw new BiomedicusException("Failed to load pattern.", e);
         }
     }
 }

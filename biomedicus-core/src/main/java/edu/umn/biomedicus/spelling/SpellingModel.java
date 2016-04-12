@@ -2,7 +2,7 @@ package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.BiomedicusConfiguration;
+import com.google.inject.name.Named;
 import edu.umn.biomedicus.common.collect.MetricTree;
 import edu.umn.biomedicus.common.collect.StandardEditDistance;
 import edu.umn.biomedicus.common.grams.Bigram;
@@ -51,7 +51,9 @@ public class SpellingModel {
     private final int maxEditDistance;
 
     @Inject
-    SpellingModel(BiomedicusConfiguration biomedicusConfiguration, Vocabulary vocabulary) throws IOException {
+    SpellingModel(@Named("spelling.arpa.path") Path arpaPath,
+                  Vocabulary vocabulary,
+                  @Named("spelling.maxEditDistance") Integer maxEditDistance) throws IOException {
         TermIndex wordIndex = vocabulary.wordIndex();
         LOGGER.info("Building BK tree for spelling model using {} words.", wordIndex.size());
         MetricTree.Builder<String> builder = MetricTree.builder();
@@ -59,9 +61,7 @@ public class SpellingModel {
         wordIndex.stream().map(wordIndex::getTerm).forEach(builder::add);
         termsTree = builder.build();
 
-        Path arpaPath = biomedicusConfiguration.resolveDataFile("spelling.arpa.path");
         LOGGER.info("Loading Spelling n-grams from ARPA file: {}", arpaPath);
-
         Pattern unigramPattern = Pattern.compile("(\\-?[0-9]\\.[0-9]{4}) ([\\p{IsAlphabetic}]+)\\t(\\-?[0-9]\\.[0-9]{4})");
         Pattern bigramPattern = Pattern.compile("(\\-?[0-9]\\.[0-9]{4}) ([\\p{IsAlphabetic}]+) ([\\p{IsAlphabetic}]+) (\\-?[0-9]\\.[0-9]{4})");
         Pattern trigramPattern = Pattern.compile("(\\-?[0-9]\\.[0-9]{4}) ([\\p{IsAlphabetic}]+) ([\\p{IsAlphabetic}]+) ([\\p{IsAlphabetic}]+)");
@@ -119,7 +119,7 @@ public class SpellingModel {
             }
         });
 
-        maxEditDistance = biomedicusConfiguration.getSettings().getAsInt("spelling.maxEditDistance");
+        this.maxEditDistance = maxEditDistance;
     }
 
     /**
