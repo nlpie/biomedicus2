@@ -2,7 +2,6 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.ProcessorScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.application.CollectionProcessor;
@@ -63,15 +62,15 @@ public class AcronymVectorModelTrainer implements CollectionProcessor {
      * Initializes the acronym trainer. Needs paths to two or three text files:
      *
      * @param acronymExpansionsModel which maps short forms to long forms
-     * @param uniqueIdMapPath  which maps unique identifying strings to long forms
-     * @param longformsPath    which contains a list of long forms needed for the alignment model (unknown abbrs)
-     * @param acronymModelPath
+     * @param uniqueIdMapPath        which maps unique identifying strings to long forms
+     * @param longformsPath          which contains a list of long forms needed for the alignment model (unknown abbrs)
+     * @param acronymModelPath       where to write the acronym model.
      * @throws IOException
      */
     private static AcronymVectorModelTrainer create(AcronymExpansionsModel acronymExpansionsModel,
-                                                   Path uniqueIdMapPath,
-                                                   @Nullable Path longformsPath,
-                                                   Path acronymModelPath) throws IOException {
+                                                    Path uniqueIdMapPath,
+                                                    @Nullable Path longformsPath,
+                                                    Path acronymModelPath) throws IOException {
         LOGGER.info("Loading data files to initialize the acronym model trainer");
 
         Map<String, String> uniqueIdMap = Files.lines(uniqueIdMapPath)

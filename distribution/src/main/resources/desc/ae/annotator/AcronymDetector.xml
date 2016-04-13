@@ -74,8 +74,8 @@
                 <name>eagerLoad</name>
                 <value>
                     <array>
-                        <string>edu.umn.biomedicus.acronym.AcronymVectorModel.AcronymVectorModelLoader</string>
-                        <string>edu.umn.biomedicus.acronym.OrthographicAcronymModel.OrthographicAcronymModelLoader</string>
+                        <string>edu.umn.biomedicus.acronym.AcronymVectorModel</string>
+                        <string>edu.umn.biomedicus.acronym.OrthographicAcronymModel</string>
                     </array>
                 </value>
             </nameValuePair>

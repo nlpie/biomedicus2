@@ -3,6 +3,7 @@ package edu.umn.biomedicus.acronym;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.simple.SimpleToken;
 import edu.umn.biomedicus.common.text.Document;
@@ -31,7 +32,7 @@ class AcronymExpander implements DocumentProcessor {
     private final Document document;
 
     @Inject
-    public AcronymExpander(AcronymModel model, Document document) {
+    public AcronymExpander(@Setting("acronym.model") AcronymModel model, Document document) {
         this.model = model;
         this.document = document;
     }

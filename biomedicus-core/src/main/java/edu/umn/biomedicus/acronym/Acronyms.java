@@ -23,8 +23,8 @@ public final class Acronyms {
     /**
      * Gets a standardized form of a token, derived from Token.normalForm
      *
-     * @param t
-     * @return
+     * @param t the token to standardize
+     * @return the standard form of the token
      */
     static String standardForm(Token t) {
         return standardFormString(t.getText());
@@ -35,8 +35,8 @@ public final class Acronyms {
      * Replace non-single-digit numerals (including decimals/commas) with a generic string
      * Collapse certain non-alphanumeric characters ('conjunction' symbols like /, &, +)
      *
-     * @param charSequence
-     * @return
+     * @param charSequence the character sequence
+     * @return the standardized form
      */
     static String standardFormString(CharSequence charSequence) {
         // Collapse numbers

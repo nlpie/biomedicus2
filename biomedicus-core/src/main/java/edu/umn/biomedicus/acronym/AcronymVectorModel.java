@@ -104,6 +104,9 @@ class AcronymVectorModel implements AcronymModel {
         if (senses == null) {
             senses = acronymExpansionsModel.getExpansions(acronym.toUpperCase());
         }
+        if (senses == null) {
+            senses = acronymExpansionsModel.getExpansions(acronym.toLowerCase());
+        }
         if (senses == null && alignmentModel != null) {
             senses = alignmentModel.findBestLongforms(acronym);
         }

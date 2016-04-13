@@ -1,6 +1,7 @@
 package edu.umn.biomedicus.parsing;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
@@ -21,7 +22,7 @@ public class SocialHistoryCandidateParser implements DocumentProcessor {
 
     @Inject
     public SocialHistoryCandidateParser(Document document,
-                                        @Setting("parser.implementation") Parser candidateParser) {
+                                        @ProcessorSetting("socialhistory.parser") Parser candidateParser) {
         this.document = document;
         this.candidateParser = candidateParser;
     }

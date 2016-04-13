@@ -8,7 +8,6 @@ import edu.umn.biomedicus.common.terms.TermIndex;
  */
 @ProvidedBy(VocabularyLoader.class)
 public class Vocabulary {
-
     private final TermIndex wordIndex;
 
     Vocabulary(TermIndex wordIndex) {
