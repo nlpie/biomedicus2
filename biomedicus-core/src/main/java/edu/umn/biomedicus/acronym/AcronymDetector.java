@@ -1,9 +1,12 @@
 package edu.umn.biomedicus.acronym;
 
+import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleToken;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,8 +22,8 @@ import java.util.Set;
  * @author Greg Finley
  * @since 1.5.0
  */
-@Singleton
-public class AcronymDetector {
+@DocumentScoped
+class AcronymDetector implements DocumentProcessor {
     /**
      * class logger
      */
@@ -59,6 +62,9 @@ public class AcronymDetector {
      */
     private final OrthographicAcronymModel orthographicModel;
 
+
+    private final Document document;
+
     /**
      * Constructor to initialize the acronym detector
      *
@@ -66,20 +72,15 @@ public class AcronymDetector {
      * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
      */
     @Inject
-    public AcronymDetector(AcronymModel model, OrthographicAcronymModel orthographicModel) {
+    public AcronymDetector(AcronymModel model, OrthographicAcronymModel orthographicModel, Document document) {
         this.orthographicModel = orthographicModel;
         this.model = model;
+        this.document = document;
     }
 
-    /**
-     * Go through a Document and mark abbreviations as such using the Token isAcronymAbbrev annotation
-     *
-     * @param document a tokenized document`
-     */
-    public void detectAcronyms(Document document) {
-
-        LOGGER.info("Detecting acronyms");
-
+    @Override
+    public void process() throws BiomedicusException {
+        LOGGER.info("Detecting acronyms in a document.");
         // Look one and two tokens back for multi-token abbreviations (could make more?)
         Token prevToken = null;
         Token prevPrevToken = null;

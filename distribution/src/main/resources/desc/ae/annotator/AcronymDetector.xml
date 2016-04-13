@@ -61,7 +61,7 @@
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string>edu.umn.biomedicus.acronym.AcronymProcessor</string>
+                    <string>edu.umn.biomedicus.acronym.AcronymDetector</string>
                 </value>
             </nameValuePair>
             <nameValuePair>

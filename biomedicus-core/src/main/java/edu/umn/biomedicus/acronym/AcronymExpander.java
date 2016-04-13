@@ -2,9 +2,12 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.simple.SimpleToken;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,24 +21,31 @@ import java.util.List;
  * @author Greg Finley
  * @since 1.5.0
  */
-@Singleton
-public class AcronymExpander {
+@DocumentScoped
+class AcronymExpander implements DocumentProcessor {
 
     private static final Logger LOGGER = LogManager.getLogger(AcronymModel.class);
 
     private final AcronymModel model;
 
+    private final Document document;
+
     @Inject
-    public AcronymExpander(AcronymModel model) {
+    public AcronymExpander(AcronymModel model, Document document) {
         this.model = model;
+        this.document = document;
     }
 
     /**
-     * Go through all tagged acronyms in a document and fill in their long forms according to an AcronymModel
-     *
-     * @param document a tokenized Document
+     * @param token a Token to check
+     * @return true if the token has any letters
      */
-    public void expandAcronyms(Document document) {
+    private boolean hasLetters(Token token) {
+        return !token.getText().toLowerCase().matches("[^a-z]*");
+    }
+
+    @Override
+    public void process() throws BiomedicusException {
         LOGGER.info("Expanding acronyms and abbreviations");
 
         List<Token> allTokens = new ArrayList<>();
@@ -88,13 +98,5 @@ public class AcronymExpander {
             prevPrevToken = prevToken;
             prevToken = token;
         }
-    }
-
-    /**
-     * @param token a Token to check
-     * @return true if the token has any letters
-     */
-    private boolean hasLetters(Token token) {
-        return !token.getText().toLowerCase().matches("[^a-z]*");
     }
 }
