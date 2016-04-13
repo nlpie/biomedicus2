@@ -1,11 +1,23 @@
 package edu.umn.biomedicus.acronym;
 
+import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,13 +26,13 @@ import java.util.stream.Collectors;
  *
  * @author Greg Finley
  */
-@ProvidedBy(OrthographicAcronymModelLoader.class)
+@ProvidedBy(OrthographicAcronymModel.Loader.class)
 public class OrthographicAcronymModel implements Serializable {
 
-    public static final IndexMap<Character> CASE_SENS_SYMBOLS;
-    public static final Set<Character> CASE_SENS_CHARS;
-    public static final IndexMap<Character> CASE_INSENS_SYMBOLS;
-    public static final Set<Character> CASE_INSENS_CHARS;
+    static final IndexMap<Character> CASE_SENS_SYMBOLS;
+    static final Set<Character> CASE_SENS_CHARS;
+    static final IndexMap<Character> CASE_INSENS_SYMBOLS;
+    static final Set<Character> CASE_INSENS_CHARS;
 
     static {
         Set<Character> symbols = "abcdefghijklmnopqrstuvwxyz.-ABCDEFGHIJKLMNOPQRSTUVWXYZ0?^$".chars()
@@ -53,7 +65,7 @@ public class OrthographicAcronymModel implements Serializable {
 
     private final transient Set<Character> chars;
 
-    public OrthographicAcronymModel(double[][][] abbrevProbs, double[][][] longformProbs, boolean caseSensitive, Set<String> longformsLower) {
+    private OrthographicAcronymModel(double[][][] abbrevProbs, double[][][] longformProbs, boolean caseSensitive, Set<String> longformsLower) {
         this.abbrevProbs = abbrevProbs;
         this.longformProbs = longformProbs;
         this.caseSensitive = caseSensitive;
@@ -68,7 +80,7 @@ public class OrthographicAcronymModel implements Serializable {
      * @param token the Token to check
      * @return true if it seems to be an abbreviation, false otherwise
      */
-    public boolean seemsLikeAbbreviation(Token token) {
+    boolean seemsLikeAbbreviation(Token token) {
 
         String wordRaw = token.getText();
         String wordLower = wordRaw.toLowerCase();
@@ -108,7 +120,7 @@ public class OrthographicAcronymModel implements Serializable {
      * @param form the string form in question
      * @return true if abbreviation, false if not
      */
-    public boolean seemsLikeAbbrevByTrigram(String form) {
+    private boolean seemsLikeAbbrevByTrigram(String form) {
         return !(abbrevProbs == null || longformProbs == null) && getWordLikelihood(form, abbrevProbs) > getWordLikelihood(form, longformProbs);
     }
 
@@ -121,7 +133,7 @@ public class OrthographicAcronymModel implements Serializable {
      * @param probs a 3-d array of log probabilities
      * @return the log likelihood of this word
      */
-    public double getWordLikelihood(String word, double[][][] probs) {
+    private double getWordLikelihood(String word, double[][][] probs) {
         char minus2 = '^';
         char minus1 = '^';
         char thisChar = '^';
@@ -158,5 +170,55 @@ public class OrthographicAcronymModel implements Serializable {
             c = '?';
         }
         return c;
+    }
+
+    /**
+     * Loads the orthographic model.
+     *
+     * @since 1.5.0
+     */
+    @Singleton
+    static class Loader extends DataLoader<OrthographicAcronymModel> {
+        private final Path orthographicModel;
+
+        private IndexMap<Character> symbols;
+
+        @Inject
+        Loader(@Setting("acronym.orthographicModel.path") Path orthographicModel) {
+            this.orthographicModel = orthographicModel;
+        }
+
+        @Override
+        protected OrthographicAcronymModel loadModel() throws BiomedicusException {
+            Yaml yaml = new Yaml();
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> serObj = (Map<String, Object>) yaml.load(Files.newBufferedReader(orthographicModel));
+                boolean caseSensitive = (Boolean) serObj.get("caseSensitive");
+                symbols = caseSensitive ? CASE_SENS_SYMBOLS : CASE_INSENS_SYMBOLS;
+                @SuppressWarnings("unchecked")
+                Map<String, Double> abbrevProbsMap = (Map<String, Double>) serObj.get("abbrevProbs");
+                double[][][] abbrevProbs = expandProbs(abbrevProbsMap);
+                @SuppressWarnings("unchecked")
+                Map<String, Double> longformProbsMap = (Map<String, Double>) serObj.get("longformProbs");
+                double[][][] longformProbs = expandProbs(longformProbsMap);
+                Set<String> longformsLower = new HashSet<>();
+                @SuppressWarnings("unchecked")
+                List<String> longformsLowerList = (List<String>) serObj.get("longformsLower");
+                longformsLower.addAll(longformsLowerList);
+                return new OrthographicAcronymModel(abbrevProbs, longformProbs, caseSensitive, longformsLower);
+            } catch (IOException e) {
+                throw new BiomedicusException(e);
+            }
+        }
+
+        private double[][][] expandProbs(Map<String, Double> collapsedProbs) {
+            double[][][] probs = new double[symbols.size()][symbols.size()][symbols.size()];
+            for (Map.Entry<String, Double> entry : collapsedProbs.entrySet()) {
+                String key = entry.getKey();
+                probs[symbols.indexOf(key.charAt(0))][symbols.indexOf(key.charAt(1))][symbols.indexOf(key.charAt(2))] = entry.getValue();
+            }
+            return probs;
+        }
     }
 }

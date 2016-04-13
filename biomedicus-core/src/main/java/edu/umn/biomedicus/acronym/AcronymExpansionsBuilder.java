@@ -5,12 +5,14 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.spelling.SpecialistAgreementModel;
 import edu.umn.biomedicus.spelling.SpecialistSpellingModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,22 +40,23 @@ public class AcronymExpansionsBuilder {
 
     private final TermIndex termIndex;
 
-    private final SpecialistSpellingModel specialistSpellingModel;
-
     private Path masterFile;
+
+    private SpecialistAgreementModel specialistAgreementModel;
 
     private Path dataSet;
 
     private Path specialistLrabrPath;
 
     private Path outPath;
+    private Map<String, Set<String>> expansions;
 
     @Inject
     public AcronymExpansionsBuilder(TermIndex termIndex,
-                                    SpecialistSpellingModel specialistSpellingModel,
+                                    SpecialistAgreementModel specialistAgreementModel,
                                     @Setting("specialist.path") Path specialistPath) {
         this.termIndex = termIndex;
-        this.specialistSpellingModel = specialistSpellingModel;
+        this.specialistAgreementModel = specialistAgreementModel;
         specialistLrabrPath = specialistPath.resolve("LRABR");
     }
 
@@ -70,11 +73,12 @@ public class AcronymExpansionsBuilder {
     }
 
     public void buildAcronymExpansions() throws IOException {
-        Map<String, Set<String>> expansions = new HashMap<>();
+        expansions = new HashMap<>();
         Pattern splitter = Pattern.compile("\\|");
 
         LOGGER.info("Loading CASI data set: {}", dataSet);
-        Files.lines(dataSet)
+        Files.lines(dataSet, StandardCharsets.ISO_8859_1)
+                .filter(line -> line.length() > 0)
                 .map(splitter::split)
                 .forEach(splits -> {
                     String abbreviation = splits[0];
@@ -82,12 +86,10 @@ public class AcronymExpansionsBuilder {
                     if ("GENERAL ENGLISH".equals(sense)) {
                         sense = abbreviation.toLowerCase();
                     }
-                    Set<String> senses = expansions.get(abbreviation);
-                    if (senses == null) {
-                        senses = new HashSet<>();
-                        expansions.put(abbreviation, senses);
+                    Set<String> senses = getOrAdd(abbreviation);
+                    if (!senses.contains(sense)) {
+                        senses.add(sense);
                     }
-                    senses.add(sense);
                 });
 
         LOGGER.info("Loading LRABR file from SPECIALIST: {}", specialistLrabrPath);
@@ -96,14 +98,16 @@ public class AcronymExpansionsBuilder {
                 .forEach(splits -> {
                     String abbreviation = splits[1];
                     String longform = splits[4];
-                    String sense = specialistSpellingModel.getCanonicalForm(longform);
 
-                    Set<String> senses = expansions.get(abbreviation);
-                    if (senses == null) {
-                        senses = new HashSet<>();
-                        expansions.put(abbreviation, senses);
+                    if (longform == null) {
+                        return;
                     }
-                    senses.add(sense);
+
+                    Collection<String> specialistSenses = specialistAgreementModel.getCanonicalFormForBase(longform);
+                    if (specialistSenses != null) {
+                        Set<String> senses = getOrAdd(abbreviation);
+                        specialistSenses.stream().filter(sense -> !senses.contains(sense)).forEach(senses::add);
+                    }
                 });
 
         LOGGER.info("Loading CASI master file: {}", masterFile);
@@ -149,12 +153,22 @@ public class AcronymExpansionsBuilder {
         }
     }
 
+    private Set<String> getOrAdd(String abbreviation) {
+        Set<String> senses = expansions.get(abbreviation);
+        if (senses == null) {
+            senses = new HashSet<>();
+            expansions.put(abbreviation, senses);
+        }
+        return senses;
+    }
+
     public static void main(String args[]) {
         try {
             AcronymExpansionsBuilder acronymExpansionsBuilder = Bootstrapper.create()
                     .createClass(AcronymExpansionsBuilder.class);
             acronymExpansionsBuilder.setMasterFile(Paths.get(args[0]));
             acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
+            acronymExpansionsBuilder.setOutPath(Paths.get(args[2]));
 
             acronymExpansionsBuilder.buildAcronymExpansions();
         } catch (IOException | BiomedicusException e) {

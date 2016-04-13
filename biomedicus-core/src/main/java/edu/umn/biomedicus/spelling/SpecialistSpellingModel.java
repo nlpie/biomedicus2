@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -32,13 +33,18 @@ public class SpecialistSpellingModel {
         Path lrsplPath = specialistPath.resolve("LRSPL");
 
         LOGGER.info("Loading SPECIALIST LRSPL dictionary from path: {}", lrsplPath);
-        dictionary = Files.lines(lrsplPath).map(Pattern.compile("/|")::split)
+        dictionary = Files.lines(lrsplPath).map(Pattern.compile("\\|")::split)
                 .map(columns -> {
                     String variant = columns[1];
                     String canonical = columns[2];
                     return Ngram.create(variant, canonical);
                 })
-                .collect(Collectors.toMap(Bigram::getFirst, Bigram::getSecond));
+                .collect(Collectors.toMap(Bigram::getFirst, Bigram::getSecond, (String first, String second) -> {
+                    if (!Objects.equals(first, second)) {
+                        throw new IllegalStateException(String.format("Duplicate key mapping to different values: %s, %s", first, second));
+                    }
+                    return first;
+                }));
     }
 
     public String getCanonicalForm(String variant) {

@@ -242,7 +242,7 @@ public class VectorSpaceDouble {
         String form = t.getNormalForm();
         if (form == null)
             form = t.getText();
-        return AcronymUtilities.standardFormString(form).toLowerCase();
+        return Acronyms.standardFormString(form).toLowerCase();
     }
 
     /**
@@ -253,7 +253,7 @@ public class VectorSpaceDouble {
      */
     public int removeWord(String word) {
         System.out.println(word);
-        return dictionary.remove(AcronymUtilities.standardFormString(word).toLowerCase());
+        return dictionary.remove(Acronyms.standardFormString(word).toLowerCase());
     }
 
     /**
@@ -267,7 +267,7 @@ public class VectorSpaceDouble {
         Set<Integer> indicesRemoved = new HashSet<>();
         Set<String> wordsInDictionary = new HashSet<>(dictionary.keySet());
         for (String word : wordsInDictionary) {
-            word = AcronymUtilities.standardFormString(word).toLowerCase();
+            word = Acronyms.standardFormString(word).toLowerCase();
             if (!wordsToKeep.contains(word)) {
                 indicesRemoved.add(removeWord(word));
             }

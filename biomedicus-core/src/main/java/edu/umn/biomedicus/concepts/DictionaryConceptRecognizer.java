@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.acronym.AcronymVectorModel;
+import edu.umn.biomedicus.acronym.Acronyms;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.Concept;
@@ -188,7 +188,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                 } else if (token.isMisspelled()) {
                     replacement = token.correctSpelling();
                 }
-                if (replacement != null && !AcronymVectorModel.UNK.equals(replacement)) {
+                if (replacement != null && !Acronyms.UNKNOWN.equals(replacement)) {
                     int tokenBegin = token.getBegin();
                     int beginOffset = tokenBegin - spanBegin + offset;
                     int tokenEnd = token.getEnd();

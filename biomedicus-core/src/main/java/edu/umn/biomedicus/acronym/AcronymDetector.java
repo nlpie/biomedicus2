@@ -1,6 +1,7 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleToken;
@@ -72,7 +73,9 @@ class AcronymDetector implements DocumentProcessor {
      * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
      */
     @Inject
-    public AcronymDetector(AcronymModel model, OrthographicAcronymModel orthographicModel, Document document) {
+    public AcronymDetector(@Setting("acronym.model") AcronymModel model,
+                           OrthographicAcronymModel orthographicModel,
+                           Document document) {
         this.orthographicModel = orthographicModel;
         this.model = model;
         this.document = document;

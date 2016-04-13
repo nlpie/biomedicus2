@@ -15,8 +15,7 @@ import java.util.Set;
  *
  * @author Greg Finley
  */
-@ProvidedBy(AcronymVectorModelLoader.class)
-public interface AcronymModel {
+interface AcronymModel {
 
     boolean hasAcronym(Token token);
 

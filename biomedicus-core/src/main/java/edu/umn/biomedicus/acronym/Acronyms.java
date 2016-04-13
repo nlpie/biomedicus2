@@ -7,10 +7,12 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public final class AcronymUtilities {
-    private AcronymUtilities() {
+public final class Acronyms {
+    private Acronyms() {
         throw new UnsupportedOperationException();
     }
+
+    public static final String UNKNOWN = "(unknown)";
 
     private static final Pattern SINGLE_DIGIT = Pattern.compile("[0-9]");
 
@@ -24,7 +26,7 @@ public final class AcronymUtilities {
      * @param t
      * @return
      */
-    public static String standardForm(Token t) {
+    static String standardForm(Token t) {
         return standardFormString(t.getText());
     }
 
@@ -36,7 +38,7 @@ public final class AcronymUtilities {
      * @param charSequence
      * @return
      */
-    public static String standardFormString(CharSequence charSequence) {
+    static String standardFormString(CharSequence charSequence) {
         // Collapse numbers
         if (SINGLE_DIGIT.matcher(charSequence).matches()) {
             return "single_digit";
