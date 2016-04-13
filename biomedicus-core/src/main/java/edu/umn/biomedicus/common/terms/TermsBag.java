@@ -2,22 +2,30 @@ package edu.umn.biomedicus.common.terms;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
+ * A bag of terms and their counts.
  *
+ * @author Ben Knoll
+ * @since 1.5.0
  */
-public class TermVector implements Comparable<TermVector> {
+public class TermsBag implements Comparable<TermsBag> {
+    /**
+     * The term identifiers, sorted increasing.
+     */
     private final int[] identifiers;
 
+    /**
+     * The number of times a term occurs in the bag.
+     */
     private final int[] counts;
 
-    private TermVector(int[] identifiers, int[] counts) {
+    private TermsBag(int[] identifiers, int[] counts) {
         this.identifiers = identifiers;
         this.counts = counts;
     }
 
-    public List<IndexedTerm> toTerms() {
+    List<IndexedTerm> toTerms() {
         List<IndexedTerm> indexedTerms = new ArrayList<>(identifiers.length);
         for (int i = 0; i < identifiers.length; i++) {
             IndexedTerm indexedTerm = new IndexedTerm(identifiers[i]);
@@ -28,8 +36,20 @@ public class TermVector implements Comparable<TermVector> {
         return indexedTerms;
     }
 
+    private int indexOf(IndexedTerm indexedTerm) {
+        return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier());
+    }
+
     public boolean contains(IndexedTerm indexedTerm) {
-        return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier()) >= 0;
+        return indexOf(indexedTerm) >= 0;
+    }
+
+    public int countOf(IndexedTerm indexedTerm) {
+        int index = indexOf(indexedTerm);
+        if (index < 0) {
+            return 0;
+        }
+        return counts[index];
     }
 
     @Override
@@ -37,7 +57,7 @@ public class TermVector implements Comparable<TermVector> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TermVector that = (TermVector) o;
+        TermsBag that = (TermsBag) o;
 
         return Arrays.equals(identifiers, that.identifiers) && Arrays.equals(counts, that.counts);
     }
@@ -49,7 +69,7 @@ public class TermVector implements Comparable<TermVector> {
     }
 
     @Override
-    public int compareTo(TermVector o) {
+    public int compareTo(TermsBag o) {
         int compare = Integer.compare(identifiers.length, o.identifiers.length);
         if (compare != 0) {
             return compare;
@@ -88,7 +108,7 @@ public class TermVector implements Comparable<TermVector> {
             return this;
         }
 
-        public TermVector build() {
+        public TermsBag build() {
             int size = identifierToCount.size();
             int[] identifiers = new int[size];
             int[] counts = new int[size];
@@ -99,7 +119,7 @@ public class TermVector implements Comparable<TermVector> {
                 counts[i] = entry.getValue();
             }
 
-            return new TermVector(identifiers, counts);
+            return new TermsBag(identifiers, counts);
         }
     }
 }

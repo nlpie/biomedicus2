@@ -4,7 +4,9 @@ paths:
   #data: /absolute-path
 # settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
-  vocabulary.wordIndex.path: vocabulary/words.txt
+  vocabulary:
+    wordIndex.path: vocabulary/words.txt
+    specialist.words.path: vocabulary/specialist-words.txt
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
@@ -17,8 +19,16 @@ settings:
     fallback.path: normalization/fallbackLexicon.yml
   acronym:
     useAlignment: false
+    expansionsModel.path: acronym/expansions.txt
     alignmentModel.path: acronym/alignment.yml
-    vectorSpace.path: acronym/vectorSpace.yml
+    model: vector
+    vector:
+      model.path: acronym/vectorSpace.yml
+      trainer:
+        expansionMap.path: /path-to
+        uniqueIdMap.path: /path-to
+        longforms.path: /path-to
+        outputDir.path: /path-to
     senseMap.path: acronym/senseMap.yml
     acronymExpansions.path: acronym/acronymExpansions.yml
     orthographicModel.path: acronym/orthographicModel.yml
@@ -38,10 +48,17 @@ settings:
   opennlp:
     parser.model.path: opennlp/en-parser-chunking.bin
     sentence.model.path: NOT_USED
+  specialist.path: SPECIALIST/LEX
+  socialhistory:
+    parser: opennlp
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
   parser.implementation: edu.umn.biomedicus.parsing.Parser
+  acronym.model: edu.umn.biomedicus.acronym.AcronymModel
+  socialhistory.parser: edu.umn.biomedicus.parsing.Parser
 # these indicate the options for the bindings above
 interfaceImplementations:
   edu.umn.biomedicus.parsing.Parser:
     opennlp: edu.umn.biomedicus.opennlp.OpenNlpParser
+  edu.umn.biomedicus.acronym.AcronymModel:
+    vector: edu.umn.biomedicus.acronym.AcronymVectorModel

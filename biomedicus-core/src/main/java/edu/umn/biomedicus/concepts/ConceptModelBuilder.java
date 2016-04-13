@@ -3,13 +3,11 @@ package edu.umn.biomedicus.concepts;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.serialization.YamlSerialization;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -210,7 +208,7 @@ public class ConceptModelBuilder {
         Path mrxnsPath = rrfs.resolve("MRXNS_ENG.RRF");
         LOGGER.info("Loading lowercase normalized strings from MRXNS_ENG: {}", mrxnsPath);
         Path normsPath = outputDir.resolve("norms.txt");
-        Map<TermVector, List<SuiCuiTui>> normMap = new HashMap<>();
+        Map<TermsBag, List<SuiCuiTui>> normMap = new HashMap<>();
         Files.lines(mrxnsPath)
                 .map(SPLITTER::split)
                 .filter(columns -> "ENG".equals(columns[0]))
@@ -227,20 +225,20 @@ public class ConceptModelBuilder {
                         return;
                     }
 
-                    TermVector termVector = normIndex.getTermVector(norms);
+                    TermsBag termsBag = normIndex.getTermVector(norms);
                     List<TUI> tuis = cuiToTUIs.get(cui);
                     if (tuis == null || tuis.size() == 0) {
-                        LOGGER.trace("Filtering \"{}\" because it has no interesting types", termVector);
+                        LOGGER.trace("Filtering \"{}\" because it has no interesting types", termsBag);
                         return;
                     }
                     for (TUI tui : tuis) {
-                        multimapPut(normMap, termVector, new SuiCuiTui(sui, cui, tui));
+                        multimapPut(normMap, termsBag, new SuiCuiTui(sui, cui, tui));
                     }
                 });
 
         LOGGER.info("Writing lowercase normalized strings: {}", normsPath);
         try (BufferedWriter normsWriter = Files.newBufferedWriter(normsPath)) {
-            for (Map.Entry<TermVector, List<SuiCuiTui>> entry : normMap.entrySet()) {
+            for (Map.Entry<TermsBag, List<SuiCuiTui>> entry : normMap.entrySet()) {
                 normsWriter.write(normIndex.getTerms(entry.getKey()).stream().collect(Collectors.joining(",")));
                 normsWriter.newLine();
                 normsWriter.write(entry.getValue().stream().map(SuiCuiTui::toString).collect(Collectors.joining(",")));
@@ -272,7 +270,7 @@ public class ConceptModelBuilder {
         Path ttyBanlistFile = Paths.get(args[3]);
 
         try {
-            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().getInstance(ConceptModelBuilder.class);
+            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().createClass(ConceptModelBuilder.class);
             conceptModelBuilder.setRRFsPath(rrfs);
             conceptModelBuilder.setOutputDir(outputDir);
             conceptModelBuilder.setTuisOfInterestFile(tuisOfInterestFile);

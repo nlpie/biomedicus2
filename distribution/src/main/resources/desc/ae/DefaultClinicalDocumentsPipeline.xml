@@ -43,8 +43,11 @@
         <delegateAnalysisEngine key="normIndexes">
             <import location="annotator/NormLabeler.xml"/>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="acronym">
-            <import location="annotator/AcronymAnnotator.xml"/>
+        <delegateAnalysisEngine key="acronymDetect">
+            <import location="annotator/AcronymDetector.xml"/>
+        </delegateAnalysisEngine>
+        <delegateAnalysisEngine key="acronymExpand">
+            <import location="annotator/AcronymExpander.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="dictionaryMapper">
             <import location="annotator/DictionaryConceptRecognizer.xml"/>
@@ -73,7 +76,8 @@
                 <node>posAnnotator</node>
                 <node>normalizer</node>
                 <node>normIndexes</node>
-                <node>acronym</node>
+                <node>acronymDetect</node>
+                <node>acronymExpand</node>
                 <node>dictionaryMapper</node>
                 <node>history</node>
                 <node>negation</node>

@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.parsing;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Sentence;
@@ -19,7 +19,7 @@ public class AllSentencesParser implements DocumentProcessor {
     private final Parser parser;
 
     @Inject
-    public AllSentencesParser(Document document, @Named("parser.implementation") Parser parser) {
+    public AllSentencesParser(Document document, @Setting("parser.implementation") Parser parser) {
         this.document = document;
         this.parser = parser;
     }

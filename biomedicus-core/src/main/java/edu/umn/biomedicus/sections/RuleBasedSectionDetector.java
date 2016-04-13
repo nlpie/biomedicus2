@@ -1,7 +1,7 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.simple.Spans;

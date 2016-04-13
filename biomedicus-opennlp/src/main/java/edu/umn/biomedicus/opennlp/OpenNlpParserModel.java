@@ -2,10 +2,9 @@ package edu.umn.biomedicus.opennlp;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import opennlp.tools.parser.Parser;
-import opennlp.tools.parser.ParserFactory;
 import opennlp.tools.parser.ParserModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +24,7 @@ class OpenNlpParserModel {
     private final ParserModel parserModel;
 
     @Inject
-    OpenNlpParserModel(@Named("opennlp.parser.model.path") Path path) throws BiomedicusException {
+    OpenNlpParserModel(@Setting("opennlp.parser.model.path") Path path) throws BiomedicusException {
         LOGGER.info("Loading OpenNLP parser model: {}", path);
         try (InputStream inputStream = Files.newInputStream(path)) {
             parserModel = new ParserModel(inputStream);

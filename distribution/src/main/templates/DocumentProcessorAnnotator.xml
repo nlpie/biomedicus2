@@ -18,7 +18,9 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
+    <!-- Do not change this -->
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator</annotatorImplementationName>
+    <!-- Biomedicus document processors are all run using the CollectionProcessorAnnotator -->
     <analysisEngineMetaData>
         <name><!-- TODO: name --></name>
         <description><!-- TODO: description --></description>
@@ -26,6 +28,11 @@
         <vendor>${organization.name}</vendor>
         <configurationParameters>
             <!-- TODO: Add any configuration parameters -->
+            <configurationParameter>
+                <name>collectionProcessor</name>
+                <type>String</type>
+                <mandatory>true</mandatory>
+            </configurationParameter>
             <configurationParameter>
                 <name>documentProcessor</name>
                 <description>The document processor class to instantiate.</description>
@@ -58,6 +65,13 @@
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
+            <!-- TODO: Add any name/value pairs for configuration parameters -->
+            <nameValuePair>
+                <name>collectionProcessor</name>
+                <value>
+                    <string>edu.umn.biomedicus.application.DocumentProcessorRunner</string>
+                </value>
+            </nameValuePair>
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>

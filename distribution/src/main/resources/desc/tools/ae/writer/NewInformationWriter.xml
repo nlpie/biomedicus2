@@ -18,7 +18,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>New Information Writer</name>
         <description>Outputs tokens, terms, and sentences for the new information detector.</description>
@@ -27,6 +27,10 @@
         <configurationParameters>
             <configurationParameter>
                 <name>outputDir</name>
+                <type>String</type>
+            </configurationParameter>
+            <configurationParameter>
+                <name>CollectionProcessor</name>
                 <type>String</type>
             </configurationParameter>
             <configurationParameter>
@@ -61,6 +65,12 @@
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
+            <nameValuePair>
+                <name>collectionProcessor</name>
+                <value>
+                    <string>edu.umn.biomedicus.application.DocumentProcessorRunner</string>
+                </value>
+            </nameValuePair>
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>

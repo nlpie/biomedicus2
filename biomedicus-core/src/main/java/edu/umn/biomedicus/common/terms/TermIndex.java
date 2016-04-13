@@ -59,8 +59,8 @@ public class TermIndex {
         return new IndexedTerm(getIdentifier(term));
     }
 
-    public TermVector getTermVector(Iterable<? extends CharSequence> terms) {
-        TermVector.Builder builder = TermVector.builder();
+    public TermsBag getTermVector(Iterable<? extends CharSequence> terms) {
+        TermsBag.Builder builder = TermsBag.builder();
         for (CharSequence term : terms) {
             IndexedTerm indexedTerm = getIndexedTerm(term);
             builder.addTerm(indexedTerm);
@@ -68,8 +68,8 @@ public class TermIndex {
         return builder.build();
     }
 
-    public List<String> getTerms(TermVector termVector) {
-        return termVector.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
+    public List<String> getTerms(TermsBag termsBag) {
+        return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
     }
 
     public Iterator<IndexedTerm> iterator() {

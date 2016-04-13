@@ -2,7 +2,7 @@ package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -17,7 +17,7 @@ class RuleBasedSectionDetectorModel {
     private final Pattern sectionHeaderPattern;
 
     @Inject
-    RuleBasedSectionDetectorModel(@Named("sections.headers") Path path) throws BiomedicusException {
+    RuleBasedSectionDetectorModel(@Setting("sections.headers") Path path) throws BiomedicusException {
         sectionHeaderPattern = Patterns.loadPatternByJoiningLines(path);
     }
 

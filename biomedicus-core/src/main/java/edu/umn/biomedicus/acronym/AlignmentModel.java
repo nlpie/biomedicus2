@@ -1,6 +1,15 @@
 package edu.umn.biomedicus.acronym;
 
+import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.serialization.YamlSerialization;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -16,8 +25,8 @@ import java.util.stream.Collectors;
  * @author Greg Finley
  * @since 1.5.0
  */
-@ProvidedBy(AlignmentModelLoader.class)
-public class AlignmentModel implements Serializable {
+@ProvidedBy(AlignmentModel.Loader.class)
+class AlignmentModel implements Serializable {
 
     private List<String> longforms;
 
@@ -26,28 +35,8 @@ public class AlignmentModel implements Serializable {
      */
     private boolean caseSensitive;
 
-    public AlignmentModel() {
-
-    }
-
-    public AlignmentModel(List<String> longforms, boolean caseSensitive) {
+    private AlignmentModel(List<String> longforms, boolean caseSensitive) {
         this.longforms = longforms;
-        this.caseSensitive = caseSensitive;
-    }
-
-    public List<String> getLongforms() {
-        return longforms;
-    }
-
-    public void setLongforms(List<String> longforms) {
-        this.longforms = longforms;
-    }
-
-    public boolean isCaseSensitive() {
-        return caseSensitive;
-    }
-
-    public void setCaseSensitive(boolean caseSensitive) {
         this.caseSensitive = caseSensitive;
     }
 
@@ -67,7 +56,7 @@ public class AlignmentModel implements Serializable {
      * @param longform the longform to align
      * @return the score of the match
      */
-    public double align(String abbr, String longform) {
+    private double align(String abbr, String longform) {
         if (!caseSensitive) {
             abbr = abbr.toLowerCase();
             longform = longform.toLowerCase();
@@ -146,7 +135,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return the last longform with the highest score
      */
-    public String findBestLongform(String abbrev) {
+    String findBestLongform(String abbrev) {
         String best = abbrev;
         double maxScore = -Double.MAX_VALUE;
         for (String longform : longforms) {
@@ -166,7 +155,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return all longforms with the highest score
      */
-    public List<String> findBestLongforms(String abbrev) {
+    List<String> findBestLongforms(String abbrev) {
         List<String> best = new ArrayList<>();
         double maxScore = -Double.MAX_VALUE;
         for (String longform : longforms) {
@@ -187,7 +176,7 @@ public class AlignmentModel implements Serializable {
      * @param abbrev the abbreviation to expand
      * @return a TreeMap of longforms to their scores, ordered by score
      */
-    public Map<String, Double> rankLongforms(String abbrev) {
+    Map<String, Double> rankLongforms(String abbrev) {
         HashMap<String, Double> longformScores = new LinkedHashMap<>();
         for (String longform : longforms) {
             longformScores.put(longform, align(abbrev, longform));
@@ -203,4 +192,31 @@ public class AlignmentModel implements Serializable {
         return sortedScores;
     }
 
+    /**
+     *
+     */
+    @Singleton
+    static class Loader extends DataLoader<AlignmentModel> {
+        private static final Logger LOGGER = LogManager.getLogger();
+
+        private final Path modelPath;
+
+        @Inject
+        public Loader(@Setting("acronym.alignmentModel.path") Path modelPath) {
+            this.modelPath = modelPath;
+        }
+
+        @Override
+        protected AlignmentModel loadModel() throws BiomedicusException {
+            LOGGER.info("Loading acronym alignment model: {}", modelPath);
+
+            Yaml yaml = YamlSerialization.createYaml();
+
+            try {
+                return (AlignmentModel) yaml.load(Files.newBufferedReader(modelPath));
+            } catch (IOException e) {
+                throw new BiomedicusException(e);
+            }
+        }
+    }
 }

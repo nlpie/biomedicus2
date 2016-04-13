@@ -7,10 +7,12 @@ import java.util.regex.Pattern;
 /**
  *
  */
-public final class AcronymUtilities {
-    private AcronymUtilities() {
+public final class Acronyms {
+    private Acronyms() {
         throw new UnsupportedOperationException();
     }
+
+    public static final String UNKNOWN = "(unknown)";
 
     private static final Pattern SINGLE_DIGIT = Pattern.compile("[0-9]");
 
@@ -21,10 +23,10 @@ public final class AcronymUtilities {
     /**
      * Gets a standardized form of a token, derived from Token.normalForm
      *
-     * @param t
-     * @return
+     * @param t the token to standardize
+     * @return the standard form of the token
      */
-    public static String standardForm(Token t) {
+    static String standardForm(Token t) {
         return standardFormString(t.getText());
     }
 
@@ -33,10 +35,10 @@ public final class AcronymUtilities {
      * Replace non-single-digit numerals (including decimals/commas) with a generic string
      * Collapse certain non-alphanumeric characters ('conjunction' symbols like /, &, +)
      *
-     * @param charSequence
-     * @return
+     * @param charSequence the character sequence
+     * @return the standardized form
      */
-    public static String standardFormString(CharSequence charSequence) {
+    static String standardFormString(CharSequence charSequence) {
         // Collapse numbers
         if (SINGLE_DIGIT.matcher(charSequence).matches()) {
             return "single_digit";

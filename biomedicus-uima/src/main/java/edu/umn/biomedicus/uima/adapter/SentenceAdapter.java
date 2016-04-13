@@ -93,6 +93,7 @@ class SentenceAdapter extends AnnotationAdapter<SentenceAnnotation> implements S
     @Override
     public void addSubstanceUsageType(SubstanceUsageType substanceUsageType) {
         StringArray substanceUsageTypes = annotation.getSubstanceUsageTypes();
+        substanceUsageTypes.removeFromIndexes();
         int size = substanceUsageTypes.size();
         StringArray newArray = new StringArray(getJCas(), size + 1);
         newArray.copyFromArray(substanceUsageTypes.toArray(), 0, 0, size);

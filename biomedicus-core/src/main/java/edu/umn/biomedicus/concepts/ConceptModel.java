@@ -18,9 +18,9 @@ package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,19 +45,19 @@ import java.util.stream.Stream;
 class ConceptModel {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final Map<TermVector, List<SuiCuiTui>> normDictionary;
+    private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
 
     private final Map<String, List<SuiCuiTui>> phrases;
 
     private final Map<String, List<SuiCuiTui>> lowercasePhrases;
 
     @Inject
-    ConceptModel(@Named("concepts.filters.sui.path") Path filteredSuisPath,
-                 @Named("concepts.filters.cui.path") Path filteredCuisPath,
-                 @Named("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-                 @Named("concepts.filters.tui.path") Path filteredTuisPath,
-                 @Named("concepts.phrases.path") Path phrasesPath,
-                 @Named("concepts.norms.path") Path normsPath,
+    ConceptModel(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
+                 @Setting("concepts.filters.cui.path") Path filteredCuisPath,
+                 @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
+                 @Setting("concepts.filters.tui.path") Path filteredTuisPath,
+                 @Setting("concepts.phrases.path") Path phrasesPath,
+                 @Setting("concepts.norms.path") Path normsPath,
                  Vocabulary vocabulary) throws IOException {
         Pattern splitter = Pattern.compile(",");
 
@@ -104,7 +104,7 @@ class ConceptModel {
                     }
                     return string;
                 });
-                TermVector termVector = normIndex.getTermVector(terms);
+                TermsBag termsBag = normIndex.getTermVector(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());
@@ -112,7 +112,7 @@ class ConceptModel {
                         || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
                         || filteredTuis.contains(sct.tui()));
                 List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-                normDictionary.put(termVector, unmodifiableList);
+                normDictionary.put(termsBag, unmodifiableList);
             }
         }
     }
@@ -128,7 +128,7 @@ class ConceptModel {
     }
 
     @Nullable
-    List<SuiCuiTui> forNorms(TermVector norms) {
+    List<SuiCuiTui> forNorms(TermsBag norms) {
         return normDictionary.get(norms);
     }
 
