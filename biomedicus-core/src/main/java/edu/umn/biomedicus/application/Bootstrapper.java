@@ -30,7 +30,7 @@ public class Bootstrapper {
 
     private String home;
 
-    public Bootstrapper(Module... additionalModules) throws BiomedicusException {
+    private Bootstrapper(Module... additionalModules) throws BiomedicusException {
         List<Module> modules = new ArrayList<>();
         // Load configuration
         home = System.getProperty("biomedicus.paths.home");
