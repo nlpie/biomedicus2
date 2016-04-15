@@ -118,7 +118,7 @@ public class Bootstrapper {
         @SuppressWarnings("unchecked")
         Map<String, Object> settingsYaml = (Map<String, Object>) biomedicusConfiguration.get("settings");
 
-        SettingsBinder settingsBinder = new SettingsBinder(settingInterfaces, dataPath);
+        SettingsBinder settingsBinder = new SettingsBinder(settingInterfaces, dataPath, configDir, homePath());
         settingsBinder.setSettingsMap(settingsYaml);
         settingsBinder.setInterfaceImplementations(interfaceImplementations);
 
