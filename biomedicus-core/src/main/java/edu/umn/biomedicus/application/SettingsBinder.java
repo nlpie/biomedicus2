@@ -16,21 +16,27 @@ class SettingsBinder {
 
     private final Path dataPath;
 
+    private final Path homePath;
+
+    private final Path confPath;
+
     private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
 
     private Map<String, Object> settingsMap;
 
     private Binder binder;
 
-    SettingsBinder(Map<String, Class<?>> settingInterfaces, Path dataPath) {
+    SettingsBinder(Map<String, Class<?>> settingInterfaces, Path dataPath, Path confPath, Path homePath) {
         this.settingInterfaces = settingInterfaces;
         this.dataPath = dataPath;
         settingsTransformer = new SettingsTransformer(settingInterfaces, dataPath);
         settingsTransformer.setAnnotationFunction(SettingImpl::new);
+        this.homePath = homePath;
+        this.confPath = confPath;
     }
 
-    static SettingsBinder create(Map<String, Class<?>> settingInterfaces, Path dataPath) {
-        return new SettingsBinder(settingInterfaces, dataPath);
+    static SettingsBinder create(Map<String, Class<?>> settingInterfaces, Path dataPath, Path confPath, Path homePath) {
+        return new SettingsBinder(settingInterfaces, dataPath, confPath, homePath);
     }
 
     void setInterfaceImplementations(Map<Class<?>, Map<String, Class<?>>> interfaceImplementations) {
@@ -53,7 +59,9 @@ class SettingsBinder {
             binder.bind(new TypeLiteral<Map<String, Class<?>>>() {
             }).annotatedWith(Names.named("settingInterfaces"))
                     .toInstance(settingInterfaces);
-            binder.bind(Path.class).annotatedWith(Names.named("dataPath")).toInstance(dataPath);
+            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.data")).toInstance(dataPath);
+            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.home")).toInstance(homePath);
+            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.conf")).toInstance(confPath);
             binder.bind(new TypeLiteral<Map<String, Object>>() {}).annotatedWith(Names.named("globalSettings")).toInstance(settingsMap);
         }
         settingsTransformer.addAll(settingsMap);

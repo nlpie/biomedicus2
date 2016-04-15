@@ -3,6 +3,7 @@ package edu.umn.biomedicus.application;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Named;
+import edu.umn.biomedicus.annotations.Setting;
 
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
@@ -25,7 +26,7 @@ class SettingsTransformer {
 
     @Inject
     public SettingsTransformer(@Named("settingInterfaces") Map<String, Class<?>> settingInterfaces,
-                               @Named("dataPath") Path dataPath) {
+                               @Setting("paths.data") Path dataPath) {
         this.settingInterfaces = settingInterfaces;
         this.dataPath = dataPath;
         settings = new HashMap<>();
