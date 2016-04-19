@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
-import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -67,12 +66,15 @@ public class CollectionProcessorRunner {
 
     }
 
-    public void processDocument(Document document) throws BiomedicusException {
+    public void processDocument(Document document, Map<Key<?>, Object> additionalSeededObjects) throws BiomedicusException {
+        Map<Key<?>, Object> allSeeds = new HashMap<>();
+        allSeeds.putAll(seededObjects);
+        allSeeds.putAll(additionalSeededObjects);
         try {
             BiomedicusScopes.runInProcessorScope(() -> {
                 collectionProcessor.processDocument(document);
                 return null;
-            }, seededObjects);
+            }, allSeeds);
         } catch (Exception e) {
             throw new BiomedicusException(e);
         }

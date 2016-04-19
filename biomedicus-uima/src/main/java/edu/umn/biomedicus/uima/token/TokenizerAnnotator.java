@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.uima.token;
 
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Tokenizer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -57,10 +57,10 @@ public class TokenizerAnnotator extends JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas aJCas) throws AnalysisEngineProcessException {
-        Document document = null;
+        Document document;
         try {
             document = UimaAdapters.documentFromInitialView(aJCas);
-        } catch (CASException e) {
+        } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
         LOGGER.info("Tokenizing document.");

@@ -16,18 +16,18 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.common.semantics.SubstanceUsage;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageBuilder;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
 import edu.umn.biomedicus.common.simple.SimpleTextSpan;
 import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import javax.annotation.Nullable;
@@ -35,6 +35,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -49,7 +50,7 @@ class JCasDocument extends AbstractDocument {
     /**
      * The system view JCas of the document.
      */
-    private final JCas systemView;
+    private final JCas view;
 
     /**
      * The clinical note annotation containing document metadata.
@@ -60,71 +61,67 @@ class JCasDocument extends AbstractDocument {
      * Default constructor. Instantiates a Document class backed up by a system view {@link JCas}, and the
      * {@link ClinicalNoteAnnotation} within that system view.
      *
-     * @param systemView the {@link JCas} system view
+     * @param view the {@link JCas} system view
      */
-    JCasDocument(JCas systemView) {
-        this.systemView = systemView;
-        AnnotationIndex<Annotation> index = systemView.getAnnotationIndex(ClinicalNoteAnnotation.type);
+    JCasDocument(JCas view) throws BiomedicusException {
+        this.view = view;
+        AnnotationIndex<Annotation> index = view.getAnnotationIndex(ClinicalNoteAnnotation.type);
         FSIterator<Annotation> it = index.iterator();
         if (it.hasNext()) {
-            Annotation annotation = it.next();
-            if (annotation instanceof ClinicalNoteAnnotation) {
-                documentAnnotation = (ClinicalNoteAnnotation) annotation;
-            } else {
-                throw new RuntimeException("DocumentAnnotation index returned non document annotation");
-            }
+            @SuppressWarnings("unchecked")
+            ClinicalNoteAnnotation annotation = (ClinicalNoteAnnotation) it.next();
+            documentAnnotation = annotation;
         } else {
-            documentAnnotation = new ClinicalNoteAnnotation(systemView, 0, systemView.getSofaDataString().length());
-            documentAnnotation.addToIndexes();
+            documentAnnotation = new ClinicalNoteAnnotation(view);
         }
     }
 
     @Override
     public Iterable<Token> getTokens() {
-        final AnnotationIndex<Annotation> tokens = systemView.getAnnotationIndex(TokenAnnotation.type);
+        final AnnotationIndex<Annotation> tokens = view.getAnnotationIndex(TokenAnnotation.type);
         return () -> new FSIteratorAdapter<>(tokens, UimaAdapters::tokenAdapter);
     }
 
     @Override
     public Iterable<Sentence> getSentences() {
-        final AnnotationIndex<Annotation> sentences = systemView.getAnnotationIndex(SentenceAnnotation.type);
+        final AnnotationIndex<Annotation> sentences = view.getAnnotationIndex(SentenceAnnotation.type);
         return () -> new FSIteratorAdapter<>(sentences, UimaAdapters::sentenceAdapter);
     }
 
     @Override
     public Sentence createSentence(int begin, int end) {
-        SentenceAnnotation sentenceAnnotation = new SentenceAnnotation(systemView, begin, end);
+        SentenceAnnotation sentenceAnnotation = new SentenceAnnotation(view, begin, end);
         sentenceAnnotation.addToIndexes();
-        return new SentenceAdapter(systemView, sentenceAnnotation);
+        return new SentenceAdapter(view, sentenceAnnotation);
     }
 
     @Override
     public Iterable<Term> getTerms() {
-        final AnnotationIndex<Annotation> terms = systemView.getAnnotationIndex(TermAnnotation.type);
+        final AnnotationIndex<Annotation> terms = view.getAnnotationIndex(TermAnnotation.type);
         return () -> new FSIteratorAdapter<>(terms, UimaAdapters::termAdapter);
     }
 
     @Override
     public void addTerm(Term term) {
-        TermAdapter.copyOf(term, systemView);
+        TermAdapter.copyOf(term, view);
     }
 
     @Override
     public Reader getReader() {
-        InputStream sofaDataStream = systemView.getSofaDataStream();
+        InputStream sofaDataStream = view.getSofaDataStream();
         return new BufferedReader(new InputStreamReader(sofaDataStream));
     }
 
     @Override
     public Token createToken(int begin, int end) {
-        TokenAnnotation tokenAnnotation = new TokenAnnotation(systemView, begin, end);
+        TokenAnnotation tokenAnnotation = new TokenAnnotation(view, begin, end);
         tokenAnnotation.addToIndexes();
         return UimaAdapters.tokenAdapter(tokenAnnotation);
     }
 
     @Override
     public String getText() {
-        return systemView.getDocumentText();
+        return view.getDocumentText();
     }
 
     @Override
@@ -134,14 +131,14 @@ class JCasDocument extends AbstractDocument {
 
         JCasDocument that = (JCasDocument) o;
 
-        if (!systemView.equals(that.systemView)) return false;
+        if (!view.equals(that.view)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return systemView.hashCode();
+        return view.hashCode();
     }
 
     @Override
@@ -171,12 +168,12 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public Stream<TextSpan> textSegments() {
-        Iterable<Annotation> textSegmentAnnotation = systemView.getAnnotationIndex(TextSegmentAnnotation.type);
+        Iterable<Annotation> textSegmentAnnotation = view.getAnnotationIndex(TextSegmentAnnotation.type);
         if (textSegmentAnnotation.iterator().hasNext()) {
             return StreamSupport.stream(textSegmentAnnotation.spliterator(), false)
-                    .map(a -> new SimpleTextSpan(Spans.spanning(a.getBegin(), a.getEnd()), systemView.getDocumentText()));
+                    .map(a -> new SimpleTextSpan(Spans.spanning(a.getBegin(), a.getEnd()), view.getDocumentText()));
         } else {
-            String documentText = systemView.getDocumentText();
+            String documentText = view.getDocumentText();
             TextSpan textSpan = Spans.textSpan(documentText);
             return Stream.of(textSpan);
         }
@@ -184,34 +181,72 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public SectionBuilder createSection(Span span) {
-        SectionAnnotation sectionAnnotation = new SectionAnnotation(systemView, span.getBegin(), span.getEnd());
-        return new SectionBuilderAdapter(systemView, sectionAnnotation);
+        SectionAnnotation sectionAnnotation = new SectionAnnotation(view, span.getBegin(), span.getEnd());
+        return new SectionBuilderAdapter(view, sectionAnnotation);
     }
 
 
     @Override
     public Iterable<Section> getSections() {
-        return () -> new FSIteratorAdapter<>(systemView.getAnnotationIndex(SectionAnnotation.type),
-                (annotation) -> new SectionAdapter(systemView, (SectionAnnotation) annotation));
+        return () -> new FSIteratorAdapter<>(view.getAnnotationIndex(SectionAnnotation.type),
+                (annotation) -> new SectionAdapter(view, (SectionAnnotation) annotation));
     }
 
     @Override
     public Iterable<Section> getSectionsAtLevel(int level) {
-        Iterable<Section> sections = () -> new FSIteratorAdapter<>(systemView.getAnnotationIndex(SectionAnnotation.type),
-                (annotation) -> new SectionAdapter(systemView, (SectionAnnotation) annotation));
+        Iterable<Section> sections = () -> new FSIteratorAdapter<>(view.getAnnotationIndex(SectionAnnotation.type),
+                (annotation) -> new SectionAdapter(view, (SectionAnnotation) annotation));
         return () -> StreamSupport.stream(sections.spliterator(), false).filter(s -> s.getLevel() == level).iterator();
     }
 
     @Override
     public SubstanceUsageBuilder createSubstanceUsage(Sentence sentence, SubstanceUsageType substanceUsageType) {
-        SubstanceUsageAnnotation substanceUsageAnnotation = new SubstanceUsageAnnotation(systemView,
+        SubstanceUsageAnnotation substanceUsageAnnotation = new SubstanceUsageAnnotation(view,
                 sentence.getBegin(), sentence.getEnd());
-        return new UimaSubstanceUsageBuilder(systemView, substanceUsageAnnotation);
+        return new UimaSubstanceUsageBuilder(view, substanceUsageAnnotation);
     }
 
     @Override
     public Iterable<SubstanceUsage> getSubstanceUsages() {
-        return () -> new FSIteratorAdapter<>(systemView.getAnnotationIndex(SubstanceUsageAnnotation.type),
-                (annotation) -> new SubstanceUsageAdapter(systemView, (SubstanceUsageAnnotation) annotation));
+        return () -> new FSIteratorAdapter<>(view.getAnnotationIndex(SubstanceUsageAnnotation.type),
+                (annotation) -> new SubstanceUsageAdapter(view, (SubstanceUsageAnnotation) annotation));
+    }
+
+    private MapEntry getMapEntry(String key) {
+        FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
+        while (metaDataIterator.hasNext()) {
+            @SuppressWarnings("unchecked")
+            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
+            if (Objects.equals(mapEntry.getKey(), key)) {
+                return mapEntry;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getMetadata(String key) {
+        MapEntry mapEntry = getMapEntry(key);
+        return mapEntry == null ? null : mapEntry.getValue();
+    }
+
+    @Override
+    public void setMetadata(String key, String value) {
+        MapEntry mapEntry = getMapEntry(key);
+        if (mapEntry != null) {
+            mapEntry.removeFromIndexes();
+        } else {
+            mapEntry = new MapEntry(view);
+        }
+        mapEntry.setValue(value);
+        mapEntry.addToIndexes();
+    }
+
+    @Override
+    public void createNewInformationAnnotation(Span span, String kind) {
+        NewInformationAnnotation newInformationAnnotation = new NewInformationAnnotation(view, span.getBegin(), span.getEnd());
+        newInformationAnnotation.setKind(kind);
+        newInformationAnnotation.addToIndexes();
     }
 }

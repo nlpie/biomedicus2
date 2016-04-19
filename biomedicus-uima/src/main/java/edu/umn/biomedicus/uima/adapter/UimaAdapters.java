@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
 import edu.umn.biomedicus.uima.Views;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -78,7 +78,7 @@ public class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the SystemView.
      * @throws CASException
      */
-    public static Document documentFromInitialView(JCas initialView) throws CASException {
+    public static Document documentFromInitialView(JCas initialView) throws BiomedicusException {
         return documentFromView(initialView, Views.SYSTEM_VIEW);
     }
 
@@ -90,7 +90,7 @@ public class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the GoldView.
      * @throws CASException
      */
-    public static Document goldDocumentFromInitialView(JCas initialView) throws CASException {
+    public static Document goldDocumentFromInitialView(JCas initialView) throws BiomedicusException {
         return documentFromView(initialView, Views.SYSTEM_VIEW);
     }
 
@@ -101,10 +101,15 @@ public class UimaAdapters {
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @param viewName    the view to create a document from
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
-     * @throws CASException
+     * @throws BiomedicusException
      */
-    public static Document documentFromView(JCas initialView, String viewName) throws CASException {
-        JCas view = CAS.NAME_DEFAULT_SOFA.equals(viewName) ? initialView : initialView.getView(viewName);
+    public static Document documentFromView(JCas initialView, String viewName) throws BiomedicusException {
+        JCas view;
+        try {
+            view = CAS.NAME_DEFAULT_SOFA.equals(viewName) ? initialView : initialView.getView(viewName);
+        } catch (CASException e) {
+            throw new BiomedicusException(e);
+        }
         return new JCasDocument(view);
     }
 

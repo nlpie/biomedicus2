@@ -20,6 +20,7 @@ import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.type.MapEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -27,9 +28,7 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import javax.annotation.Nullable;
@@ -117,7 +116,7 @@ public class Parser extends JCasAnnotator_ImplBase {
         Objects.requireNonNull(originalDocumentViewName);
         Objects.requireNonNull(targetViewName);
 
-        LOGGER.info("Parsing an rtf document into cas.");
+        LOGGER.info("Parsing an rtf document from {} into CAS", originalDocumentViewName);
 
         JCas originalDocument;
         try {
@@ -126,7 +125,9 @@ public class Parser extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        RtfSource rtfSource = new ReaderRtfSource(new StringReader(originalDocument.getDocumentText()));
+        String documentText = originalDocument.getDocumentText();
+        StringReader reader = new StringReader(documentText);
+        RtfSource rtfSource = new ReaderRtfSource(reader);
 
         try {
             casRtfParser.parseFile(aJCas, rtfSource);
@@ -141,11 +142,21 @@ public class Parser extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        AnnotationIndex<Annotation> annotationIndex = originalDocument.getAnnotationIndex(ClinicalNoteAnnotation.type);
-        FSIterator<Annotation> iterator = annotationIndex.iterator();
-        ClinicalNoteAnnotation clinicalNoteAnnotation = (ClinicalNoteAnnotation) iterator.next();
-        ClinicalNoteAnnotation newAnnotation = new ClinicalNoteAnnotation(systemView, 0, systemView.getDocumentText().length());
-        newAnnotation.setDocumentId(clinicalNoteAnnotation.getDocumentId());
-        newAnnotation.addToIndexes();
+        @SuppressWarnings("unchecked")
+        ClinicalNoteAnnotation original = (ClinicalNoteAnnotation) originalDocument.getAnnotationIndex(ClinicalNoteAnnotation.type)
+                .iterator().next();
+
+        ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(systemView, 0, documentText.length());
+        clinicalNoteAnnotation.setDocumentId(original.getDocumentId());
+        clinicalNoteAnnotation.addToIndexes();
+
+        FSIterator<MapEntry> mapEntriesIterator = originalDocument.getAllIndexedFS(MapEntry.class);
+        while (mapEntriesIterator.hasNext()) {
+            MapEntry sourceEntry = mapEntriesIterator.next();
+            MapEntry copyEntry = new MapEntry(systemView);
+            copyEntry.setKey(sourceEntry.getKey());
+            copyEntry.setValue(sourceEntry.getValue());
+            copyEntry.addToIndexes();
+        }
     }
 }

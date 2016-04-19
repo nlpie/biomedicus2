@@ -17,12 +17,12 @@
 package edu.umn.biomedicus.uima.sentence;
 
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.opennlp.OpenNlpSentenceTrainer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
@@ -83,7 +83,7 @@ public class OpenNlpSentenceTrainerAnnotator extends JCasAnnotator_ImplBase {
         Document document;
         try {
             document = UimaAdapters.documentFromInitialView(aJCas);
-        } catch (CASException e) {
+        } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
 

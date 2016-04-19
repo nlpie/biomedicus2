@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.pos;
 
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
@@ -120,12 +120,12 @@ public class PartOfSpeechEvaluator extends JCasAnnotator_ImplBase {
         assert goldView != null;
         assert totals != null;
 
-        Document systemDocument = null;
+        Document systemDocument;
         Document goldDocument;
         try {
             systemDocument = UimaAdapters.documentFromView(aJCas, testView);
             goldDocument = UimaAdapters.documentFromView(aJCas, goldView);
-        } catch (CASException e) {
+        } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
 

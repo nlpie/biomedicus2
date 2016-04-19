@@ -18,6 +18,7 @@ package edu.umn.biomedicus.uima.pos;
 
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tnt.TntModel;
 import edu.umn.biomedicus.tnt.TntModelTrainer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
@@ -26,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
@@ -133,10 +133,10 @@ public class TntPosTrainerAE extends JCasAnnotator_ImplBase {
         assert viewName != null;
         assert tntTrainer != null;
 
-        Document jCasDocument = null;
+        Document jCasDocument;
         try {
             jCasDocument = UimaAdapters.documentFromView(aJCas, viewName);
-        } catch (CASException e) {
+        } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
 

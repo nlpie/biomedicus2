@@ -15,13 +15,4 @@ fi
 
 export CLASSPATH
 
-CLASS=${1}
-shift
-
-BIOMEDICUS_OPTS="-Dbiomedicus.path.home=${BIOMEDICUS_HOME} ${BIOMEDICUS_OPTS}"
-
-if [ -n "${BIOMEDICUS_CONF}" ]; then
-    BIOMEDICUS_OPTS="-Dbiomedicus.path.conf=${BIOMEDICUS_CONF} ${BIOMEDICUS_OPTS}"
-fi
-
-$JAVA -Xmx8g $BIOMEDICUS_OPTS $CLASS "$@"
+$JAVA $@

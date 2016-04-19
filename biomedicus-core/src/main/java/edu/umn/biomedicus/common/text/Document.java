@@ -160,4 +160,21 @@ public interface Document extends Editable {
      * @return substance usages.
      */
     Iterable<SubstanceUsage> getSubstanceUsages();
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    @Nullable
+    String getMetadata(String key);
+
+    /**
+     *
+     * @param key
+     * @param value
+     */
+    void setMetadata(String key, String value);
+
+    void createNewInformationAnnotation(Span span, String kind);
 }

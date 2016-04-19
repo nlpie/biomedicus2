@@ -30,6 +30,7 @@ import org.apache.uima.util.XMLInputSource;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -43,11 +44,98 @@ import java.util.concurrent.Semaphore;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class SimpleRunCPE {
+public class SimpleRunCPE implements Callable<Void> {
     private static final Logger LOGGER = LogManager.getLogger(SimpleRunCPE.class);
 
-    private SimpleRunCPE() {
+    private final CollectionProcessingEngine collectionProcessingEngine;
 
+    private final Semaphore completionSemaphore = new Semaphore(0);
+
+    private int entityCount = 0;
+
+    private long size = 0;
+
+    public SimpleRunCPE(CpeDescription cpeDesc) throws ResourceInitializationException {
+        LOGGER.info("Instantiating CPE");
+        collectionProcessingEngine = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
+        collectionProcessingEngine.addStatusCallbackListener(new StatusCallbackListener() {
+            @Override
+            public void initializationComplete() {
+                LOGGER.info("CPM Initialization Complete");
+            }
+
+            @Override
+            public void batchProcessComplete() {
+                LOGGER.info("Completed " + entityCount + " documents");
+                if (size > 0) {
+                    LOGGER.info("; " + size + " characters");
+                }
+            }
+
+            @Override
+            public void collectionProcessComplete() {
+                LOGGER.info("Completed " + entityCount + " documents");
+                if (size > 0) {
+                    LOGGER.info("; " + size + " characters");
+                }
+                LOGGER.info("PERFORMANCE REPORT \n" + collectionProcessingEngine.getPerformanceReport().toString());
+
+                completionSemaphore.release();
+            }
+
+            @Override
+            public void paused() {
+                LOGGER.info("Paused");
+            }
+
+            @Override
+            public void resumed() {
+                LOGGER.info("Resumed");
+            }
+
+            @Override
+            public void aborted() {
+                LOGGER.error("CPE processing was aborted");
+
+                completionSemaphore.release();
+            }
+
+            @Override
+            public void entityProcessComplete(CAS aCas, EntityProcessStatus aStatus) {
+                List<Exception> exceptions = aStatus.getExceptions();
+                LOGGER.debug(aStatus.getStatusMessage());
+
+                for (Exception exception : exceptions) {
+                    LOGGER.error("Exception processing a CAS: ", exception);
+                }
+                if (exceptions.size() > 0) {
+                    throw new RuntimeException("Processing exception");
+                }
+
+
+                entityCount++;
+                String docText = aCas.getDocumentText();
+                if (docText != null) {
+                    size += docText.length();
+                }
+            }
+        });
+    }
+
+    public void runCPE() throws ResourceInitializationException {
+        LOGGER.info("Running CPE");
+        collectionProcessingEngine.process();
+    }
+
+    public void waitForCompletion() throws InterruptedException {
+        completionSemaphore.acquire();
+    }
+
+    @Override
+    public Void call() throws Exception {
+        runCPE();
+        waitForCompletion();
+        return null;
     }
 
     /**
@@ -58,191 +146,36 @@ public class SimpleRunCPE {
     public static void main(String[] args) {
         String descriptorPath = args[0];
 
-        long startTime = System.currentTimeMillis();
-
-        // check command line args
         if (args.length < 1) {
-            LOGGER.info(" Arguments to the program are as follows : \n"
+            System.out.print(" Arguments to the program are as follows : \n"
                     + "args[0] : path to CPE descriptor file");
             System.exit(1);
         }
 
-        // parse CPE descriptor
-        LOGGER.info("Parsing CPE Descriptor");
         CpeDescription cpeDesc = null;
         try {
             cpeDesc = UIMAFramework.getXMLParser().parseCpeDescription(new XMLInputSource(descriptorPath));
         } catch (InvalidXMLException | IOException e) {
-            LOGGER.error("Error parsing descriptor", e);
+            System.err.print("Error parsing descriptor");
             System.exit(1);
         }
-        // instantiate CPE
-        LOGGER.info("Instantiating CPE");
-        CollectionProcessingEngine collectionProcessingEngine = null;
+
+        SimpleRunCPE simpleRunCPE = null;
         try {
-            collectionProcessingEngine = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
+            simpleRunCPE = new SimpleRunCPE(cpeDesc);
+            simpleRunCPE.runCPE();
         } catch (ResourceInitializationException e) {
-            LOGGER.error("Error producing CPE", e);
-            System.exit(1);
-        }
-
-        // Create and register a Status Callback Listener
-        StatusCallbackListenerImpl statusCallbackListener = new StatusCallbackListenerImpl(startTime, collectionProcessingEngine);
-        collectionProcessingEngine.addStatusCallbackListener(statusCallbackListener);
-
-        // Start Processing
-        LOGGER.info("Running CPE");
-        try {
-            collectionProcessingEngine.process();
-        } catch (ResourceInitializationException e) {
-            LOGGER.error("Error processing CPE", e);
+            e.printStackTrace();
             System.exit(1);
         }
 
         try {
-            statusCallbackListener.waitForCompletion();
+            simpleRunCPE.waitForCompletion();
         } catch (InterruptedException e) {
-            LOGGER.error("Error waiting for CPE completion", e);
+            e.printStackTrace();
             System.exit(1);
         }
-
-        LOGGER.info("Completed running CPE");
 
         System.exit(0);
-    }
-
-    /**
-     * Callback Listener. Receives event notifications from CPE.
-     */
-    private static class StatusCallbackListenerImpl implements StatusCallbackListener {
-        private final long startTime;
-
-        private final CollectionProcessingEngine collectionProcessingEngine;
-
-        private final Semaphore completionSemaphore = new Semaphore(0);
-
-        private long initCompleteTime;
-
-        private int entityCount = 0;
-
-        private long size = 0;
-
-
-        public StatusCallbackListenerImpl(long startTime, CollectionProcessingEngine collectionProcessingEngine) {
-            this.startTime = startTime;
-            this.collectionProcessingEngine = collectionProcessingEngine;
-        }
-
-        /**
-         * Called when the initialization is completed.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#initializationComplete()
-         */
-        @Override
-        public void initializationComplete() {
-            LOGGER.info("CPM Initialization Complete");
-            initCompleteTime = System.currentTimeMillis();
-        }
-
-        /**
-         * Called when the batchProcessing is completed.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#batchProcessComplete()
-         */
-        @Override
-        public void batchProcessComplete() {
-            LOGGER.info("Completed " + entityCount + " documents");
-            if (size > 0) {
-                LOGGER.info("; " + size + " characters");
-            }
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            LOGGER.info("Time Elapsed : " + elapsedTime + " ms ");
-        }
-
-        /**
-         * Called when the collection processing is completed.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#collectionProcessComplete()
-         */
-        @Override
-        public void collectionProcessComplete() {
-            long time = System.currentTimeMillis();
-            LOGGER.info("Completed " + entityCount + " documents");
-            if (size > 0) {
-                LOGGER.info("; " + size + " characters");
-            }
-            long initTime = initCompleteTime - startTime;
-            long processingTime = time - initCompleteTime;
-            long elapsedTime = initTime + processingTime;
-            LOGGER.info("Total Time Elapsed: " + elapsedTime + " ms ");
-            LOGGER.info("Initialization Time: " + initTime + " ms");
-            LOGGER.info("Processing Time: " + processingTime + " ms");
-            LOGGER.info("PERFORMANCE REPORT \n" + collectionProcessingEngine.getPerformanceReport().toString());
-
-            completionSemaphore.release();
-        }
-
-        /**
-         * Called when the CPM is paused.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#paused()
-         */
-        @Override
-        public void paused() {
-            LOGGER.info("Paused");
-        }
-
-        /**
-         * Called when the CPM is resumed after a pause.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#resumed()
-         */
-        @Override
-        public void resumed() {
-            LOGGER.info("Resumed");
-        }
-
-        /**
-         * Called when the CPM is stopped abruptly due to errors.
-         *
-         * @see org.apache.uima.collection.StatusCallbackListener#aborted()
-         */
-        @Override
-        public void aborted() {
-            LOGGER.error("CPE processing was aborted");
-
-            completionSemaphore.release();
-        }
-
-        /**
-         * Called when the processing of a Document is completed. <br>
-         * The process status can be looked at and corresponding actions taken.
-         *
-         * @param aCas    CAS corresponding to the completed processing
-         * @param aStatus EntityProcessStatus that holds the status of all the events for aEntity
-         */
-        @Override
-        public void entityProcessComplete(CAS aCas, EntityProcessStatus aStatus) {
-            List<Exception> exceptions = aStatus.getExceptions();
-            LOGGER.debug(aStatus.getStatusMessage());
-
-            for (Exception exception : exceptions) {
-                LOGGER.error("Exception processing a CAS: ", exception);
-            }
-            if (exceptions.size() > 0) {
-                throw new RuntimeException("Processing exception");
-            }
-
-
-            entityCount++;
-            String docText = aCas.getDocumentText();
-            if (docText != null) {
-                size += docText.length();
-            }
-        }
-
-        public void waitForCompletion() throws InterruptedException {
-            completionSemaphore.acquire();
-        }
     }
 }

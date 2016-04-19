@@ -17,10 +17,10 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.StrictExpectations;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.testng.annotations.Test;
@@ -49,7 +49,7 @@ public class UimaAdaptersTest {
         assertNotNull(jCasDocument);
     }
 
-    @Test(expectedExceptions = CASException.class)
+    @Test(expectedExceptions = BiomedicusException.class)
     public void testDocumentFromViewException(@Mocked JCas jCas) throws Exception {
         new StrictExpectations() {{
             jCas.getView("blah");

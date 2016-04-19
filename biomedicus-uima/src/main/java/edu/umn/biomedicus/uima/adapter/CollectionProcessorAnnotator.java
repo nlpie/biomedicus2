@@ -1,14 +1,16 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
-import edu.umn.biomedicus.application.*;
-import edu.umn.biomedicus.common.text.Document;
+import com.google.inject.Key;
+import edu.umn.biomedicus.application.CollectionProcessorRunner;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
@@ -88,10 +90,28 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
         assert injector != null;
+        assert collectionProcessorRunner != null;
+        if (viewName == null) {
+            throw new IllegalStateException("view name is null");
+        }
         try {
-            Document document = UimaAdapters.documentFromView(jCas, viewName);
-            collectionProcessorRunner.processDocument(document);
-        } catch (CASException | BiomedicusException e) {
+            HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
+            additionalSeeded.put(Key.get(JCas.class), jCas);
+            additionalSeeded.put(Key.get(CAS.class), jCas.getCas());
+
+            LOGGER.debug("Processing document from view: {}", viewName);
+            JCas view = jCas.getView(viewName);
+            if (view == null) {
+                LOGGER.error("Trying to process null view");
+                throw new BiomedicusException("View was null");
+            }
+            JCasDocument jCasDocument = new JCasDocument(view);
+            collectionProcessorRunner.processDocument(jCasDocument, additionalSeeded);
+        } catch (CASException e) {
+            LOGGER.error(() -> "error loading cas from view: " + viewName, e);
+            throw new AnalysisEngineProcessException(e);
+        } catch (BiomedicusException e) {
+            LOGGER.error("error while processing document", e);
             throw new AnalysisEngineProcessException(e);
         }
     }
@@ -99,6 +119,8 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
         super.collectionProcessComplete();
+
+        assert collectionProcessorRunner != null;
 
         try {
             collectionProcessorRunner.finish();

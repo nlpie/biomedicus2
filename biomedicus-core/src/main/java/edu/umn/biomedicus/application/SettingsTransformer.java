@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.annotations.Setting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
@@ -16,6 +18,8 @@ import java.util.function.Function;
  *
  */
 class SettingsTransformer {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private final Map<String, Class<?>> settingInterfaces;
 
     private final Path dataPath;
@@ -49,6 +53,11 @@ class SettingsTransformer {
             Class<?> interfaceClass = settingInterfaces.get(key);
             if (interfaceClass != null) {
                 addSettingImplementation(interfaceClass, key, (String) value);
+            }
+
+            if (value == null) {
+                LOGGER.info("Null setting: {}", key);
+                continue;
             }
 
             if (value instanceof Map) {

@@ -1,13 +1,16 @@
 package edu.umn.biomedicus.uima.adapter;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import edu.umn.biomedicus.annotations.ProcessorScoped;
+import edu.umn.biomedicus.application.BiomedicusScopes;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.Resource_ImplBase;
-
-import java.io.IOException;
 
 /**
  * Guice injector resource implementation.
@@ -23,7 +26,13 @@ public class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            injector = Bootstrapper.create().injector();
+            injector = Bootstrapper.create(new AbstractModule() {
+                @Override
+                protected void configure() {
+                    bind(JCas.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
+                    bind(CAS.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
+                }
+            }).injector();
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }

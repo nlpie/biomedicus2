@@ -22,7 +22,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="trace">
+        <Root level="info">
             <AppenderRef ref="STDOUT"/>
         </Root>
         <logger name="edu.umn.biomedicus" level="info" additivity="false">

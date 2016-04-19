@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Test for {@link FeatureStructureCopyingQueue}.
  */
-public class FeatureStructureCopyingQueueTest {
+public class FeatureStructureUimaCopyingQueueTest {
     @Tested FeatureStructureCopyingQueue featureStructureCopyingQueue;
 
     @Injectable FsCopiers fsCopiers;

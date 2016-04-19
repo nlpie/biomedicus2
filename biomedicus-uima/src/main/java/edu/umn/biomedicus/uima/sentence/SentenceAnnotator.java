@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.uima.sentence;
 
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.sentence.SentenceDetector;
 import edu.umn.biomedicus.sentence.SentenceDetectorFactory;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
@@ -25,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -56,10 +56,10 @@ public class SentenceAnnotator extends JCasAnnotator_ImplBase {
 
     @Override
     public void process(JCas aJCas) throws AnalysisEngineProcessException {
-        Document jCasDocument = null;
+        Document jCasDocument;
         try {
             jCasDocument = UimaAdapters.documentFromInitialView(aJCas);
-        } catch (CASException e) {
+        } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
         LOGGER.info("Detecting sentences in document.");

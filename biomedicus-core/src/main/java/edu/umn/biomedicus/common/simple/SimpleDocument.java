@@ -24,9 +24,7 @@ import edu.umn.biomedicus.common.text.*;
 import javax.annotation.Nullable;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +59,8 @@ public class SimpleDocument extends AbstractDocument {
      * Terms list.
      */
     private final List<Term> terms = new ArrayList<>();
+
+    private final Map<String, String> metadata = new HashMap<>();
 
     /**
      * The category of the document.
@@ -180,6 +180,21 @@ public class SimpleDocument extends AbstractDocument {
 
     @Override
     public Iterable<SubstanceUsage> getSubstanceUsages() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getMetadata(String key) {
+        return metadata.get(key);
+    }
+
+    @Override
+    public void setMetadata(String key, String value) {
+        metadata.put(key, value);
+    }
+
+    @Override
+    public void createNewInformationAnnotation(Span span, String kind) {
         throw new UnsupportedOperationException();
     }
 
