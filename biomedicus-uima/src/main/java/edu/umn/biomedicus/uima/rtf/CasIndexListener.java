@@ -27,7 +27,7 @@ import org.apache.uima.jcas.JCas;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class CasIndexListener implements IndexListener {
+class CasIndexListener implements IndexListener {
     /**
      * The view storing the Rtf document.
      */
@@ -38,7 +38,7 @@ public class CasIndexListener implements IndexListener {
      *
      * @param originalDocumentView the view that the original rtf document is stored in.
      */
-    public CasIndexListener(JCas originalDocumentView) {
+    CasIndexListener(JCas originalDocumentView) {
         this.originalDocumentView = originalDocumentView;
     }
 

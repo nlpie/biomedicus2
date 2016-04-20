@@ -19,6 +19,7 @@ package edu.umn.biomedicus.uima.rtf;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.OutputDestination;
 import edu.umn.biomedicus.rtf.reader.State;
+import edu.umn.biomedicus.type.IllegalXmlCharacter;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -98,11 +99,24 @@ class CasOutputDestination implements OutputDestination {
         }
 
         if (state.getPropertyValue("CharacterFormatting", "Hidden") == 0) {
-            sofaBuilder.append(ch);
+            if (!isValidXml(ch)) {
+                // add zero-width space and annotate it as an illegal xml character.
+                sofaBuilder.append((char) 0x200B);
+                IllegalXmlCharacter illegalXmlCharacter = new IllegalXmlCharacter(destinationView,
+                        sofaBuilder.length() - 1, sofaBuilder.length());
+                illegalXmlCharacter.setValue((int) ch);
+                completedAnnotations.add(illegalXmlCharacter);
+            } else {
+                sofaBuilder.append(ch);
+            }
             return sofaBuilder.length() - 1;
         } else {
             return -1;
         }
+    }
+
+    private boolean isValidXml(char ch) {
+        return (ch >= 0x0020 && ch <= 0xd7ff) || ch == 0x0009 || ch == 0x000a || ch == 0x000d || (ch >= 0xe000 && ch <= 0xfffd);
     }
 
     @Override

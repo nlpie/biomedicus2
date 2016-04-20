@@ -77,7 +77,7 @@
             <nameValuePair>
                 <name>inputFileAdapterClass</name>
                 <value>
-                    <string>edu.umn.biomedicus.uima.files.XmlValidatingFileAdapter</string>
+                    <string>edu.umn.biomedicus.uima.files.RtfTextFileAdapter</string>
                 </value>
             </nameValuePair>
             <nameValuePair>

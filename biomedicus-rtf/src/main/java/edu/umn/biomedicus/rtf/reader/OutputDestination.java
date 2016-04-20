@@ -39,8 +39,7 @@ public interface OutputDestination {
 
     /**
      * Called when the rtf reader encounters a control word.
-     *  @param controlWordIndex the index of the control word in the original rtf document.
-     * @param isKnown          whether the control word is known or not.
+     *
      * @param keywordAction
      */
     void controlWordEncountered(KeywordAction keywordAction);

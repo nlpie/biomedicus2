@@ -344,6 +344,18 @@
             </destinationKeywordAction>
         </controlKeyword>
         <controlKeyword>
+            <keyword>fieldinst</keyword>
+            <destinationKeywordAction>
+                <destinationName>FieldInstructions</destinationName>
+            </destinationKeywordAction>
+        </controlKeyword>
+        <controlKeyword>
+            <keyword>fieldrslt</keyword>
+            <destinationKeywordAction>
+                <destinationName>FieldResult</destinationName>
+            </destinationKeywordAction>
+        </controlKeyword>
+        <controlKeyword>
             <keyword>upr</keyword>
             <destinationKeywordAction>
                 <destinationName>UnicodePair</destinationName>

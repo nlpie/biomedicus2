@@ -1,6 +1,7 @@
 package edu.umn.biomedicus.uima.files;
 
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.type.IllegalXmlCharacter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
@@ -12,10 +13,13 @@ import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,7 +31,7 @@ import java.util.Date;
 /**
  *
  */
-public class XmlValidatingFileAdapter implements InputFileAdapter {
+public class RtfTextFileAdapter implements InputFileAdapter {
 
     /**
      * Class logger.
@@ -38,10 +42,6 @@ public class XmlValidatingFileAdapter implements InputFileAdapter {
      * Date formatter for adding date to metadata.
      */
     private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG);
-
-    private final CharsetDecoder charsetDecoder = StandardCharsets.US_ASCII.newDecoder()
-            .onMalformedInput(CodingErrorAction.REPORT)
-            .onUnmappableCharacter(CodingErrorAction.REPORT);
 
     /**
      * View to load data into.
@@ -81,16 +81,21 @@ public class XmlValidatingFileAdapter implements InputFileAdapter {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(512);
-        try (ReadableByteChannel readableByteChannel = Files.newByteChannel(path, StandardOpenOption.READ)) {
-            byteBuffer.clear();
-            while (readableByteChannel.read(byteBuffer) > 0) {
-                CharBuffer charBuffer = charsetDecoder.decode(byteBuffer);
-                charBuffer.rewind();
-
-                stringBuilder.append(charBuffer);
+        try (Reader stringReader = Files.newBufferedReader(path, StandardCharsets.US_ASCII)) {
+            int ch;
+            while ((ch = stringReader.read()) != -1) {
+                if (isValid(ch)) {
+                    stringBuilder.append((char) ch);
+                } else {
+                    int len = stringBuilder.length();
+                    LOGGER.warn("Illegal rtf character with code point: {} at {} in {}", ch, len, path.toString());
+                    IllegalXmlCharacter illegalXmlCharacter = new IllegalXmlCharacter(targetView, len, len);
+                    illegalXmlCharacter.setValue(ch);
+                    illegalXmlCharacter.addToIndexes();
+                }
             }
         }
+
         String documentText = stringBuilder.toString();
         targetView.setDocumentText(documentText);
 
@@ -112,6 +117,6 @@ public class XmlValidatingFileAdapter implements InputFileAdapter {
     }
 
     private static boolean isValid(int ch) {
-        return (ch >= 0x20 && ch <= 0xFF) || ch == '\n' || ch == '\t' || ch == '\r';
+        return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A || ch == 0x0D;
     }
 }
