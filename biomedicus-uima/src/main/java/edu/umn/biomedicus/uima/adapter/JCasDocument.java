@@ -24,6 +24,8 @@ import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
@@ -212,7 +214,7 @@ class JCasDocument extends AbstractDocument {
                 (annotation) -> new SubstanceUsageAdapter(view, (SubstanceUsageAnnotation) annotation));
     }
 
-    private MapEntry getMapEntry(String key) {
+    private MapEntry getMapEntry(String key) throws CASException {
         FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
         while (metaDataIterator.hasNext()) {
             @SuppressWarnings("unchecked")
@@ -221,19 +223,38 @@ class JCasDocument extends AbstractDocument {
                 return mapEntry;
             }
         }
+        metaDataIterator = view.getView(CAS.NAME_DEFAULT_SOFA).getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
+        while (metaDataIterator.hasNext()) {
+            @SuppressWarnings("unchecked")
+            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
+            if (Objects.equals(mapEntry.getKey(), key)) {
+                return mapEntry;
+            }
+        }
+
         return null;
     }
 
     @Nullable
     @Override
-    public String getMetadata(String key) {
-        MapEntry mapEntry = getMapEntry(key);
+    public String getMetadata(String key) throws BiomedicusException {
+        MapEntry mapEntry;
+        try {
+            mapEntry = getMapEntry(key);
+        } catch (CASException e) {
+            throw new BiomedicusException(e);
+        }
         return mapEntry == null ? null : mapEntry.getValue();
     }
 
     @Override
-    public void setMetadata(String key, String value) {
-        MapEntry mapEntry = getMapEntry(key);
+    public void setMetadata(String key, String value) throws BiomedicusException {
+        MapEntry mapEntry;
+        try {
+            mapEntry = getMapEntry(key);
+        } catch (CASException e) {
+            throw new BiomedicusException(e);
+        }
         if (mapEntry != null) {
             mapEntry.removeFromIndexes();
         } else {
@@ -248,5 +269,17 @@ class JCasDocument extends AbstractDocument {
         NewInformationAnnotation newInformationAnnotation = new NewInformationAnnotation(view, span.getBegin(), span.getEnd());
         newInformationAnnotation.setKind(kind);
         newInformationAnnotation.addToIndexes();
+    }
+
+    @Override
+    public boolean hasNewInformationAnnotation(Span span, String kind) {
+
+        AnnotationIndex<NewInformationAnnotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.class);
+        for (NewInformationAnnotation newInfo : newInfos) {
+            if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd() && Objects.equals(newInfo.getKind(), kind)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

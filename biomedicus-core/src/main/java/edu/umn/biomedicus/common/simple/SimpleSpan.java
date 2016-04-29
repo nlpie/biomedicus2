@@ -43,7 +43,7 @@ public class SimpleSpan implements Span {
      * @param begin begin of the span, inclusive.
      * @param end end of the span, exclusive.
      */
-    SimpleSpan(int begin, int end) {
+    public SimpleSpan(int begin, int end) {
         if (begin > end || begin < 0) {
             throw new IllegalArgumentException("begin can't be greater than end or less than 0.");
         }

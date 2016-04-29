@@ -15,4 +15,4 @@ fi
 
 export CLASSPATH
 
-$JAVA $@
+${JAVA} $@

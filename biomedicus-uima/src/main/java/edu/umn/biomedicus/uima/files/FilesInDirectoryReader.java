@@ -16,13 +16,16 @@
 
 package edu.umn.biomedicus.uima.files;
 
+import edu.umn.biomedicus.uima.adapter.GuiceInjector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.collection.CollectionReader_ImplBase;
+import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.tools.jcasgen.GUI;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
 
@@ -146,10 +149,11 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
         String inputFileAdapterClassName = (String) getConfigParameterValue(PARAM_INPUT_FILE_ADAPTER_CLASS);
 
         try {
-            inputFileAdapter = Class.forName(inputFileAdapterClassName)
-                    .asSubclass(InputFileAdapter.class)
-                    .newInstance();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            GuiceInjector guiceInjector = (GuiceInjector) getUimaContext().getResourceObject("guiceInjector");
+            Class<? extends InputFileAdapter> inputFileAdapterClass = Class.forName(inputFileAdapterClassName)
+                    .asSubclass(InputFileAdapter.class);
+            inputFileAdapter = guiceInjector.getInjector().getInstance(inputFileAdapterClass);
+        } catch (ResourceAccessException | ClassNotFoundException e) {
             throw new ResourceInitializationException(e);
         }
 
@@ -177,9 +181,7 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
         Path next = filesIterator.next();
 
         LOGGER.info("Reading file: {}", next.getFileName());
-        try (FileInputStream inputStream = new FileInputStream(next.toFile())) {
-            inputFileAdapter.adaptFile(aCAS, next);
-        }
+        inputFileAdapter.adaptFile(aCAS, next);
         completed++;
         LOGGER.debug("Completed reading {} files", completed);
     }

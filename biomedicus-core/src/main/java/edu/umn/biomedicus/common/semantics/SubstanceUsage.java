@@ -4,7 +4,7 @@ import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.TextSpan;
 
 /**
- * Created by benknoll on 9/3/15.
+ *
  */
 public interface SubstanceUsage extends TextSpan {
     Sentence getSentence();

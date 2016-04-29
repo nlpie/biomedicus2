@@ -3,6 +3,7 @@ package edu.umn.biomedicus.common.text;
 import edu.umn.biomedicus.common.semantics.SubstanceUsage;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageBuilder;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
 import javax.annotation.Nullable;
 import java.io.Reader;
@@ -167,14 +168,16 @@ public interface Document extends Editable {
      * @return
      */
     @Nullable
-    String getMetadata(String key);
+    String getMetadata(String key) throws BiomedicusException;
 
     /**
      *
      * @param key
      * @param value
      */
-    void setMetadata(String key, String value);
+    void setMetadata(String key, String value) throws BiomedicusException;
 
     void createNewInformationAnnotation(Span span, String kind);
+
+    boolean hasNewInformationAnnotation(Span span, String kind);
 }

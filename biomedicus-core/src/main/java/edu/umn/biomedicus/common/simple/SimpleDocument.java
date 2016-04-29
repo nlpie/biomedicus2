@@ -199,6 +199,11 @@ public class SimpleDocument extends AbstractDocument {
     }
 
     @Override
+    public boolean hasNewInformationAnnotation(Span span, String kind) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void beginEditing() {
 
     }

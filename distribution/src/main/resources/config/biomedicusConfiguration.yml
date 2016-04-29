@@ -39,10 +39,10 @@ settings:
     phrases.path: concepts/phrases.txt
     norms.path: concepts/norms.txt
     filters:
-      sui.path: concepts/filteredSuis.txt
-      suicui.path: concepts/filteredSuiCuis.txt
-      cui.path: concepts/filteredCuis.txt
-      tui.path: concepts/filteredTuis.txt
+      sui.path: conceptFilters/filteredSuis.txt
+      suicui.path: conceptFilters/filteredSuiCuis.txt
+      cui.path: conceptFilters/filteredCuis.txt
+      tui.path: conceptFilters/filteredTuis.txt
   sections.headers: sections/headers.txt
   parser.implementation: opennlp
   opennlp:
