@@ -15,4 +15,4 @@ JAVA_OPTS="$JAVA_OPTS -Xmx12g"
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=$BIOMEDICUS_LOG4J_CONF"
 JAVA_OPTS="$JAVA_OPTS -Dorg.apache.uima.logger.class=org.apache.uima.util.impl.Log4jLogger_impl"
 
-$JAVA $JAVA_OPTS $BIOMEDICUS_JAVA_OPTS -cp "$BIOMEDICUS_CLASSPATH" $@
+"$JAVA" $JAVA_OPTS $BIOMEDICUS_JAVA_OPTS -cp "$BIOMEDICUS_CLASSPATH" $@

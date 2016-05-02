@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$( dirname "${BASH_SOURCE[0]}" )/runClass.sh org.apache.uima.tools.cpm.CpmFrame
+"$( dirname "${BASH_SOURCE[0]}" )/runClass.sh" org.apache.uima.tools.cpm.CpmFrame
