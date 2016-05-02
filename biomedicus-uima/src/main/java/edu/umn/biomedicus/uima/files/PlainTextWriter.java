@@ -16,16 +16,15 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.Views;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +36,7 @@ import java.nio.file.Paths;
  * A UIMA analysis engine that writes the sofa for the view named {@link Views#SYSTEM_VIEW} to a text file.
  */
 public class PlainTextWriter extends JCasAnnotator_ImplBase {
-    private static final Logger LOGGER = LogManager.getLogger(PlainTextWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlainTextWriter.class);
 
     private Path outputDir;
 

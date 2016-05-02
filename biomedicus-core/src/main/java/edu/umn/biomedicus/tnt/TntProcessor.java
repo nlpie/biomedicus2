@@ -5,8 +5,8 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -14,7 +14,7 @@ import javax.inject.Inject;
  *
  */
 public class TntProcessor implements DocumentProcessor {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TntProcessor.class);
 
     private final Document document;
 

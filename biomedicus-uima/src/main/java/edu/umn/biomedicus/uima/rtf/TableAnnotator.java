@@ -21,13 +21,13 @@ import edu.umn.biomedicus.type.CellAnnotation;
 import edu.umn.biomedicus.type.NestedCellAnnotation;
 import edu.umn.biomedicus.type.NestedRowAnnotation;
 import edu.umn.biomedicus.type.RowAnnotation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ public class TableAnnotator extends JCasAnnotator_ImplBase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableAnnotator.class);
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {

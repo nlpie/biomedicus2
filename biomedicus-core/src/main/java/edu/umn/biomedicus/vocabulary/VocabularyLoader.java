@@ -6,8 +6,8 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 @Singleton
 public class VocabularyLoader extends DataLoader<Vocabulary> {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyLoader.class);
 
     private final Path wordsPath;
 

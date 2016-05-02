@@ -6,8 +6,8 @@ import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  *
  */
 public class ConceptModelBuilder {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConceptModelBuilder.class);
 
     private static final Pattern SPLITTER = Pattern.compile("\\|");
 

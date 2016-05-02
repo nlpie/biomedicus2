@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.rtf.beans.properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @XmlRootElement
 @XmlType
 public class PropertiesDescription {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesDescription.class);
 
     /**
      * The descriptions of the individual property groups

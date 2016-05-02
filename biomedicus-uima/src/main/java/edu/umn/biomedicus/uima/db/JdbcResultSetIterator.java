@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.db;
 
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.Closeable;
@@ -45,7 +45,7 @@ public class JdbcResultSetIterator implements Closeable {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger(JdbcResultSetIterator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcResultSetIterator.class);
 
     /**
      * Date formatter for current date.

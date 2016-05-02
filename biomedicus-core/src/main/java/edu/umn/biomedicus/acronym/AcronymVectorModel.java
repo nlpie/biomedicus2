@@ -9,8 +9,8 @@ import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
@@ -27,6 +27,9 @@ import java.util.*;
  */
 @ProvidedBy(AcronymVectorModel.Loader.class)
 class AcronymVectorModel implements AcronymModel {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorModel.class);
+
     /**
      * A vector space with a built dictionary to use at test time
      */
@@ -191,8 +194,6 @@ class AcronymVectorModel implements AcronymModel {
      */
     @Singleton
     static class Loader extends DataLoader<AcronymVectorModel> {
-        private static final Logger LOGGER = LogManager.getLogger();
-
         private final Provider<AlignmentModel> alignmentModel;
 
         private final Path vectorSpacePath;

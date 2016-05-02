@@ -5,8 +5,8 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class SpecialistSpellingModel {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpecialistSpellingModel.class);
 
     private final Map<String, String> dictionary;
 

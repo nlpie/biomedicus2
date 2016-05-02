@@ -9,15 +9,15 @@ import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @DocumentScoped
 public class MisspellingDetector implements DocumentProcessor {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingDetector.class);
 
     private final Document document;
 

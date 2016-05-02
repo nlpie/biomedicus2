@@ -3,22 +3,19 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  */
 @DocumentScoped
 public class WordLabeler implements DocumentProcessor {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
 
     private final Document document;
 

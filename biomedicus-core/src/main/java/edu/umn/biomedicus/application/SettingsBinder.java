@@ -81,6 +81,7 @@ class SettingsBinder {
         } else {
             TypeLiteral<T> typeLiteral = key.getTypeLiteral();
             Class<? super T> rawType = typeLiteral.getRawType();
+            @SuppressWarnings("unchecked")
             T cast = (T) rawType.cast(value);
             binder.bind(key).toInstance(cast);
         }

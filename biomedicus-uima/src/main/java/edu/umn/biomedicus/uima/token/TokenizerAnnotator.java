@@ -20,14 +20,14 @@ import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Tokenizer;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * UIMA {@link org.apache.uima.analysis_component.AnalysisComponent} which uses a
@@ -35,9 +35,10 @@ import org.apache.uima.resource.ResourceInitializationException;
  * {@link TokenizerResource} to tokenize cas documents.
  */
 public class TokenizerAnnotator extends JCasAnnotator_ImplBase {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenizerAnnotator.class);
 
     private static final String RESOURCE_TOKENIZER = "tokenizerResource";
+
     private Tokenizer tokenizer;
 
     @Override

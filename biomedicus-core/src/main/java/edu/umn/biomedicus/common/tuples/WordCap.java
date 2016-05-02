@@ -90,11 +90,8 @@ public class WordCap implements Comparable<WordCap>, Serializable {
         if (isCapitalized != wordCap.isCapitalized) {
             return false;
         }
-        if (!word.equals(wordCap.word)) {
-            return false;
-        }
+        return word.equals(wordCap.word);
 
-        return true;
     }
 
     @Override

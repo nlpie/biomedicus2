@@ -17,8 +17,8 @@ package edu.umn.biomedicus.stopwords;
 
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.Set;
  * This class assigns a boolean value to tokens that are in a specified stopword file.
  */
 public class StopwordsList implements Stopwords {
-    private static final Logger LOGGER = LogManager.getLogger(StopwordsList.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StopwordsList.class);
 
     private final Set<String> stopwordsList;
 

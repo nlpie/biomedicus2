@@ -5,8 +5,6 @@ import com.google.inject.Key;
 import edu.umn.biomedicus.application.CollectionProcessorRunner;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -15,6 +13,8 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
     private static final List<String> KNOWN_PARAMETERS = Arrays.asList("collectionProcessor", "viewName", "eagerLoad", "postProcessors");
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectionProcessorAnnotator.class);
 
     @Nullable
     private Injector injector;
@@ -108,7 +108,7 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
             JCasDocument jCasDocument = new JCasDocument(view);
             collectionProcessorRunner.processDocument(jCasDocument, additionalSeeded);
         } catch (CASException e) {
-            LOGGER.error(() -> "error loading cas from view: " + viewName, e);
+            LOGGER.error("error loading cas from view: " + viewName, e);
             throw new AnalysisEngineProcessException(e);
         } catch (BiomedicusException e) {
             LOGGER.error("error while processing document", e);

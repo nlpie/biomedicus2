@@ -10,8 +10,8 @@ import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.grams.Trigram;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 @Singleton
 public class SpellingModel {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpellingModel.class);
 
     private static class SuggestionProbability {
         private final String suggestion;

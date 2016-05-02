@@ -21,14 +21,14 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.sentence.SentenceDetector;
 import edu.umn.biomedicus.sentence.SentenceDetectorFactory;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Annotates sentences using a {@link edu.umn.biomedicus.sentence.SentenceDetector}.
@@ -36,8 +36,10 @@ import org.apache.uima.resource.ResourceInitializationException;
  * @since 1.1.0
  */
 public class SentenceAnnotator extends JCasAnnotator_ImplBase {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SentenceAnnotator.class);
+
     private static final String RESOURCE_SENTENCE_DETECTOR_FACTORY = "sentenceDetector";
-    private static final Logger LOGGER = LogManager.getLogger();
+
     private SentenceDetectorFactory sentenceDetectorFactory;
 
     @Override

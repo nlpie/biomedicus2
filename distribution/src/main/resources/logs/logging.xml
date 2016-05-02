@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <File name="LogFile" fileName="logs/biomedicus.log">
+            <PatternLayout>
+                <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="edu.umn.biomedicus" level="debug"/>
+        <Logger name="org.apache.uima" level="debug"/>
+        <Root level="info">
+            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="LogFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

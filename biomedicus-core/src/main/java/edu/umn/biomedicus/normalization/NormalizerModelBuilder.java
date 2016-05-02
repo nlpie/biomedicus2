@@ -170,9 +170,8 @@ public class NormalizerModelBuilder {
             LragrPos lragrPos = (LragrPos) o;
 
             if (!agreementInflectionCode.equals(lragrPos.agreementInflectionCode)) return false;
-            if (!syntacticCategory.equals(lragrPos.syntacticCategory)) return false;
+            return syntacticCategory.equals(lragrPos.syntacticCategory);
 
-            return true;
         }
 
         @Override

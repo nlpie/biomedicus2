@@ -8,8 +8,9 @@ import edu.umn.biomedicus.common.simple.SimpleToken;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -28,7 +29,7 @@ class AcronymDetector implements DocumentProcessor {
     /**
      * class logger
      */
-    private static final Logger LOGGER = LogManager.getLogger(AcronymVectorModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorModel.class);
 
     /*
      * All part of speech tags to exclude from consideration as acronyms.

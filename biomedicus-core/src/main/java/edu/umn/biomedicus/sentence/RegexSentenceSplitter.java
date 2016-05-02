@@ -58,7 +58,7 @@ public class RegexSentenceSplitter implements SentenceSplitter {
         Matcher matcher = splitPattern.matcher(covered);
         int begin = 0;
         int end;
-        Stream.Builder<Span> builder = Stream.<Span>builder();
+        Stream.Builder<Span> builder = Stream.builder();
         while (matcher.find()) {
             end = matcher.end();
             builder.add(Spans.spanning(offset + begin, offset + end));

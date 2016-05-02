@@ -108,11 +108,8 @@ public class WordPos implements Comparable<WordPos>, Serializable {
         if (!word.equals(that.word)) {
             return false;
         }
-        if (tag != that.tag) {
-            return false;
-        }
+        return tag == that.tag;
 
-        return true;
     }
 
     @Override

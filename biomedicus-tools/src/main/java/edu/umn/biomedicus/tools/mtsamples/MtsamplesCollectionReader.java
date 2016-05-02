@@ -19,12 +19,12 @@ package edu.umn.biomedicus.tools.mtsamples;
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.jcas.JCas;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,7 +50,7 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
     /**
      * Class logger.
      */
-    private static final Logger logger = LogManager.getLogger(MtsamplesCollectionReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MtsamplesCollectionReader.class);
 
     /**
      * The name for the target view.

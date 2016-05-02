@@ -1,8 +1,6 @@
 package edu.umn.biomedicus.uima;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionProcessingEngine;
@@ -12,6 +10,8 @@ import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.InvalidXMLException;
 import org.apache.uima.util.XMLInputSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -23,7 +23,7 @@ import java.util.concurrent.Semaphore;
  *
  */
 public class TestCPERunner {
-    static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCPERunner.class);
 
     private final CollectionProcessingEngine collectionProcessingEngine;
 

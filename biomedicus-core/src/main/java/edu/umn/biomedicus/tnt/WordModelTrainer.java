@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -30,7 +30,8 @@ import java.util.function.Function;
  *
  */
 abstract class WordModelTrainer implements Function<WordPosFrequencies, Map<String, Map<PartOfSpeech, Double>>> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordModelTrainer.class);
+
     protected final Set<PartOfSpeech> tagSet;
 
     WordModelTrainer(Set<PartOfSpeech> tagSet) {

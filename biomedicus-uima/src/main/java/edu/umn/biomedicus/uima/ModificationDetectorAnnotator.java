@@ -19,8 +19,6 @@ package edu.umn.biomedicus.uima;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -28,6 +26,8 @@ import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -38,9 +38,10 @@ import java.util.*;
  * what gets detected is controlled by the descriptor file
  * TODO: this needs to be migrated to be uima-agnostic
  */
+@SuppressWarnings("unchecked")
 public class ModificationDetectorAnnotator extends CasAnnotator_ImplBase {
 
-    private static final Logger LOGGER = LogManager.getLogger(ModificationDetectorAnnotator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModificationDetectorAnnotator.class);
 
     // The character following a match candidate must be a space, symbol, or s for plural
     public static final String terminatingChars = " .,;:'[{]}|-_=+!?s";

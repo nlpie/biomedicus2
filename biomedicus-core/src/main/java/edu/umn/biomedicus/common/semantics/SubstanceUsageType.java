@@ -6,5 +6,5 @@ package edu.umn.biomedicus.common.semantics;
 public enum SubstanceUsageType {
     DRUG,
     ALCOHOL,
-    NICOTINE;
+    NICOTINE
 }

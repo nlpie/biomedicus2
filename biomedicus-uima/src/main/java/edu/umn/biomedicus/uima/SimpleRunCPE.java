@@ -16,8 +16,6 @@
 
 package edu.umn.biomedicus.uima;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionProcessingEngine;
@@ -27,6 +25,8 @@ import org.apache.uima.collection.metadata.CpeDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.InvalidXMLException;
 import org.apache.uima.util.XMLInputSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.concurrent.Semaphore;
  * @since 1.3.0
  */
 public class SimpleRunCPE implements Callable<Void> {
-    private static final Logger LOGGER = LogManager.getLogger(SimpleRunCPE.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRunCPE.class);
 
     private final CollectionProcessingEngine collectionProcessingEngine;
 

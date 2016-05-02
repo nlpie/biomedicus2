@@ -6,9 +6,8 @@ import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.spelling.SpecialistAgreementModel;
-import edu.umn.biomedicus.spelling.SpecialistSpellingModel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,7 +35,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
  * @since 1.5.0
  */
 public class AcronymExpansionsBuilder {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymExpansionsBuilder.class);
 
     private final TermIndex termIndex;
 

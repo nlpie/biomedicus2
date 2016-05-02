@@ -164,11 +164,8 @@ public class PosCap implements Comparable<PosCap>, Serializable {
         if (capitalized != that.capitalized) {
             return false;
         }
-        if (partOfSpeech != that.partOfSpeech) {
-            return false;
-        }
+        return partOfSpeech == that.partOfSpeech;
 
-        return true;
     }
 
     @Override

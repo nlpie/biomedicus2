@@ -9,8 +9,8 @@ import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class AcronymVectorModelTrainer implements CollectionProcessor {
 
     private static final Pattern DE_ID = Pattern.compile("_%#.*#%_");
 
-    private static final Logger LOGGER = LogManager.getLogger(AcronymVectorModelTrainer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorModelTrainer.class);
 
     // Number of tokens to look back/ahead when calculating word vectors
     private final static double DEFAULT_MAX_DIST = 9;

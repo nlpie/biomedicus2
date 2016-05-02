@@ -135,11 +135,8 @@ class SymbolLocation {
         if (length != that.length) {
             return false;
         }
-        if (!destination.equals(that.destination)) {
-            return false;
-        }
+        return destination.equals(that.destination);
 
-        return true;
     }
 
     @Override

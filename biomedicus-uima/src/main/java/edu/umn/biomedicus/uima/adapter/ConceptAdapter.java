@@ -112,11 +112,8 @@ class ConceptAdapter implements TextConcept {
 
         ConceptAdapter that = (ConceptAdapter) o;
 
-        if (!conceptAnnotation.equals(that.conceptAnnotation)) {
-            return false;
-        }
+        return conceptAnnotation.equals(that.conceptAnnotation);
 
-        return true;
     }
 
     @Override

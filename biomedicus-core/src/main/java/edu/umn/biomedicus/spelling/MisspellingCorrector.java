@@ -9,8 +9,8 @@ import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 @DocumentScoped
 public class MisspellingCorrector implements DocumentProcessor {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingCorrector.class);
 
     private final Document document;
 

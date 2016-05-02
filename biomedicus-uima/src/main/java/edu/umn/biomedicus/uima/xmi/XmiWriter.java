@@ -18,8 +18,6 @@ package edu.umn.biomedicus.uima.xmi;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -27,6 +25,8 @@ import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import java.io.FileOutputStream;
@@ -40,7 +40,7 @@ import java.nio.file.Paths;
  * A UIMA analysis engine that writes the contents of CASes to a files in a folder.
  */
 public class XmiWriter extends JCasAnnotator_ImplBase {
-    private static final Logger LOGGER = LogManager.getLogger(XmiWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XmiWriter.class);
 
     private TypeSystemWriterResource typeSystemWriter;
 

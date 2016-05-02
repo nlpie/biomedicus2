@@ -109,10 +109,8 @@ class SentenceAdapter extends AnnotationAdapter<SentenceAnnotation> implements S
 
         SentenceAdapter that = (SentenceAdapter) o;
 
-        if (!getAnnotation().equals(that.getAnnotation()))
-            return false;
+        return getAnnotation().equals(that.getAnnotation());
 
-        return true;
     }
 
     @Override

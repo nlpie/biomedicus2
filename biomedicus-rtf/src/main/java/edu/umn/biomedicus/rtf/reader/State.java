@@ -19,8 +19,8 @@ package edu.umn.biomedicus.rtf.reader;
 import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @since 1.3.0
  */
 public class State {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(State.class);
 
     /**
      * The map of the different output destinations.

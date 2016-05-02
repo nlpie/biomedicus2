@@ -38,7 +38,7 @@ public class WordVectorDouble implements DoubleVector {
 
     // Normalize this vector
     public void normVector() {
-        double mag = (double) magnitude();
+        double mag = magnitude();
         for (Map.Entry<Integer, Double> e : vector.entrySet()) {
             e.setValue(e.getValue() / mag);
         }

@@ -2,29 +2,21 @@ package edu.umn.biomedicus.uima.files;
 
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.IllegalXmlCharacter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CoderResult;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -36,7 +28,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RtfTextFileAdapter.class);
 
     /**
      * Date formatter for adding date to metadata.

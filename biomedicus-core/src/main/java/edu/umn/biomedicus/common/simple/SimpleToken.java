@@ -221,11 +221,8 @@ public class SimpleToken extends SimpleTextSpan implements Token {
         if (normalForm != null ? !normalForm.equals(that.normalForm) : that.normalForm != null) {
             return false;
         }
-        if (partOfSpeech != that.partOfSpeech) {
-            return false;
-        }
+        return partOfSpeech == that.partOfSpeech;
 
-        return true;
     }
 
     @Override

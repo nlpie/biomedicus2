@@ -115,11 +115,8 @@ public class WordPosCap implements Comparable<WordPosCap>, Serializable {
         if (!partOfSpeech.equals(that.partOfSpeech)) {
             return false;
         }
-        if (isCapitalized != that.isCapitalized) {
-            return false;
-        }
+        return isCapitalized == that.isCapitalized;
 
-        return true;
     }
 
     @Override

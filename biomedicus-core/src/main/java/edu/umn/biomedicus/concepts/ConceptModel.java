@@ -22,8 +22,8 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  */
 @Singleton
 class ConceptModel {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConceptModel.class);
 
     private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
 

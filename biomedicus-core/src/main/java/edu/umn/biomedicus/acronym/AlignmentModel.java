@@ -7,8 +7,8 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
  */
 @ProvidedBy(AlignmentModel.Loader.class)
 class AlignmentModel implements Serializable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlignmentModel.class);
 
     private List<String> longforms;
 
@@ -181,7 +182,7 @@ class AlignmentModel implements Serializable {
         for (String longform : longforms) {
             longformScores.put(longform, align(abbrev, longform));
         }
-        TreeMap<String, Double> sortedScores = new TreeMap<>((Comparator<String>) (o1, o2) -> {
+        TreeMap<String, Double> sortedScores = new TreeMap<>((o1, o2) -> {
             int comparison = longformScores.get(o2).compareTo(longformScores.get(o1));
             if (comparison == 0)
                 comparison = o1.compareTo(o2);
@@ -197,7 +198,6 @@ class AlignmentModel implements Serializable {
      */
     @Singleton
     static class Loader extends DataLoader<AlignmentModel> {
-        private static final Logger LOGGER = LogManager.getLogger();
 
         private final Path modelPath;
 

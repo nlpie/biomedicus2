@@ -20,14 +20,14 @@ import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.stopwords.Stopwords;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * UIMA annotator component which uses biomedicus's Stopwords class to determine whether or not Tokens are Stopwords.
@@ -36,7 +36,7 @@ import org.apache.uima.resource.ResourceInitializationException;
  */
 public class TokenStopwordsAnnotator extends JCasAnnotator_ImplBase {
 
-    private static final Logger LOGGER = LogManager.getLogger(TokenStopwordsAnnotator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenStopwordsAnnotator.class);
 
     public static final String RESOURCE_STOPWORDS = "stopwordsResource";
     private Stopwords stopwords;

@@ -16,8 +16,6 @@
 
 package edu.umn.biomedicus.tools;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -25,6 +23,8 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 
@@ -38,7 +38,7 @@ public class AnnotationVerifier extends JCasAnnotator_ImplBase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationVerifier.class);
 
     @Override
     public void process(JCas aJCas) throws AnalysisEngineProcessException {

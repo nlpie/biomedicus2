@@ -20,8 +20,8 @@ import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.WordPos;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @ProvidedBy(NormalizerModelLoader.class)
 class NormalizerModel {
-    private static final Logger LOGGER = LogManager.getLogger(NormalizerModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NormalizerModel.class);
 
     /**
      * A Table from the part of speech and entry to a base form.

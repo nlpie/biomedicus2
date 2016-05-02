@@ -1,7 +1,6 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
@@ -9,8 +8,8 @@ import edu.umn.biomedicus.common.simple.SimpleToken;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.List;
 @DocumentScoped
 class AcronymExpander implements DocumentProcessor {
 
-    private static final Logger LOGGER = LogManager.getLogger(AcronymModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymModel.class);
 
     private final AcronymModel model;
 

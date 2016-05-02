@@ -20,8 +20,8 @@ import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.WordCap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class TntModelTrainer {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TntModelTrainer.class);
 
     /**
      * The collection of frequency counters for word - part of speech pairs.

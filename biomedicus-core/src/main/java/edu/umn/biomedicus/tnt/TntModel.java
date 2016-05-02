@@ -28,8 +28,8 @@ import edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  */
 @ProvidedBy(TntModel.Loader.class)
 public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>, TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(TntModel.class);
 
 
     /**
@@ -124,8 +124,6 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>, Tran
      */
     @Singleton
     static class Loader extends DataLoader<TntModel> {
-        private static final Logger LOGGER = LogManager.getLogger();
-
         private final Path trigram;
 
         private final Path wordModels;

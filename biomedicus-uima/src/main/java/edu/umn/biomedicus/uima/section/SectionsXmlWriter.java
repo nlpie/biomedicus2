@@ -21,8 +21,6 @@ import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.type.SubSectionAnnotation;
 import edu.umn.biomedicus.uima.Views;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -32,6 +30,8 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -63,7 +63,7 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SectionsXmlWriter.class);
 
     /**
      * DOM document builder.

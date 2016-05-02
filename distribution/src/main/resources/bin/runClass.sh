@@ -3,16 +3,16 @@
 JAVA=`which java`
 [ -n "${JAVA_HOME}" ] && JAVA=${JAVA_HOME}/bin/java
 
-if [ -z "${BIOMEDICUS_HOME}" ]; then
-    BIOMEDICUS_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+BIOMEDICUS_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+BIOMEDICUS_CLASSPATH="lib/*"
+
+if [ "x$BIOMEDICUS_LOG4J_CONF" = "x" ]; then
+    BIOMEDICUS_LOG4J_CONF="logs/logging.xml"
 fi
 
-if [ -z "${CLASSPATH}" ]; then
-    CLASSPATH="${BIOMEDICUS_HOME}/lib/*"
-else
-    CLASSPATH="${BIOMEDICUS_HOME}/lib/*:${CLASSPATH}"
-fi
+JAVA_OPTS="$JAVA_OPTS -Xmx12g"
+JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=$BIOMEDICUS_LOG4J_CONF"
+JAVA_OPTS="$JAVA_OPTS -Dorg.apache.uima.logger.class=org.apache.uima.util.impl.Log4jLogger_impl"
 
-export CLASSPATH
-
-${JAVA} $@
+$JAVA $JAVA_OPTS $BIOMEDICUS_JAVA_OPTS -cp "$BIOMEDICUS_CLASSPATH" $@

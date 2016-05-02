@@ -17,14 +17,14 @@
 package edu.umn.biomedicus.uima.xmi;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.jms.*;
@@ -35,7 +35,7 @@ import java.io.IOException;
  *
  */
 public class ActiveMqXmiWriter extends JCasAnnotator_ImplBase {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActiveMqXmiWriter.class);
 
     public static final String PARAM_ACTIVE_MQ_URL = "activeMqUrl";
     public static final String PARAM_ACTIVE_MQ_QUEUE_NAME = "queueName";

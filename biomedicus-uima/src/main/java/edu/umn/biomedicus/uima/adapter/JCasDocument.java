@@ -133,9 +133,8 @@ class JCasDocument extends AbstractDocument {
 
         JCasDocument that = (JCasDocument) o;
 
-        if (!view.equals(that.view)) return false;
+        return view.equals(that.view);
 
-        return true;
     }
 
     @Override

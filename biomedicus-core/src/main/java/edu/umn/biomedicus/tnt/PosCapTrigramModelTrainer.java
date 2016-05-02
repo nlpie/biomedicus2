@@ -20,8 +20,8 @@ import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.tuples.PosCap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -32,7 +32,7 @@ import java.util.Arrays;
  * @since 1.0.0
  */
 class PosCapTrigramModelTrainer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PosCapTrigramModelTrainer.class);
     private static final PosCap BBS_POS_CAP = PosCap.create(PartOfSpeech.BBS, false);
     private static final PosCap BOS_POS_CAP = PosCap.create(PartOfSpeech.BOS, false);
     private static final PosCap EOS_POS_CAP = PosCap.create(PartOfSpeech.EOS, false);

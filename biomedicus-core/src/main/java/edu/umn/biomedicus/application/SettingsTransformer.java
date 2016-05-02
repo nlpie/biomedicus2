@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.annotations.Setting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
@@ -18,7 +18,7 @@ import java.util.function.Function;
  *
  */
 class SettingsTransformer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsTransformer.class);
 
     private final Map<String, Class<?>> settingInterfaces;
 

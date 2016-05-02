@@ -5,8 +5,8 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.tuples.WordPos;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Singleton
 public class NormalizerModelLoader extends DataLoader<NormalizerModel> {
-    private final Logger LOGGER = LogManager.getLogger();
+    private final Logger LOGGER = LoggerFactory.getLogger(NormalizerModelLoader.class);
 
     private final Path lexiconFile;
 

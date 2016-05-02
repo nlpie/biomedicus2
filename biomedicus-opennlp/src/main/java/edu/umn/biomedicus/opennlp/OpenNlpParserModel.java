@@ -6,8 +6,8 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import opennlp.tools.parser.Parser;
 import opennlp.tools.parser.ParserModel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 @Singleton
 class OpenNlpParserModel {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenNlpParserModel.class);
 
     private final ParserModel parserModel;
 

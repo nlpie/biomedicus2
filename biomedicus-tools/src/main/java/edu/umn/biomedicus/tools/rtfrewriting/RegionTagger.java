@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.tools.rtfrewriting;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Inserts tags before and after a region in an rtf document.
@@ -30,7 +31,7 @@ public class RegionTagger {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegionTagger.class);
 
     /**
      * The destination name of the document.

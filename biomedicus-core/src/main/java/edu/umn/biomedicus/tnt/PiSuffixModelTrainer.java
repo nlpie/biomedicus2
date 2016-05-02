@@ -18,8 +18,8 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.utilities.Strings;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *
  */
 class PiSuffixModelTrainer extends WordModelTrainer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(PiSuffixModelTrainer.class);
     private double[] weights;
 
     PiSuffixModelTrainer(Set<PartOfSpeech> tagSet) {

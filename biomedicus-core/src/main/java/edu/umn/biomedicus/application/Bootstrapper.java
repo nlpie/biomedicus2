@@ -1,12 +1,11 @@
 package edu.umn.biomedicus.application;
 
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
@@ -24,7 +23,7 @@ import java.util.*;
  * @since 1.5.0
  */
 public class Bootstrapper {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrapper.class);
 
     private final Injector injector;
 

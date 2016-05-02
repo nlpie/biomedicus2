@@ -31,6 +31,7 @@ import java.util.Map;
  *
  * @since 1.5.0
  */
+@SuppressWarnings("unchecked")
 public class ParserNoTagging extends AbstractBottomUpParserNoTagging {
 
     private MaxentModel buildModel;
