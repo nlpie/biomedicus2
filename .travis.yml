@@ -9,4 +9,4 @@ cache:
   directories:
   - $HOME/.m2
 notifications:
-  slack: $SLACK_TOKEN
+  slack: nlpie:$SLACK_TOKEN
