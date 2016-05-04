@@ -149,14 +149,5 @@ public class Parser extends JCasAnnotator_ImplBase {
         ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(systemView, 0, documentText.length());
         clinicalNoteAnnotation.setDocumentId(original.getDocumentId());
         clinicalNoteAnnotation.addToIndexes();
-
-        FSIterator<MapEntry> mapEntriesIterator = originalDocument.getAllIndexedFS(MapEntry.class);
-        while (mapEntriesIterator.hasNext()) {
-            MapEntry sourceEntry = mapEntriesIterator.next();
-            MapEntry copyEntry = new MapEntry(systemView);
-            copyEntry.setKey(sourceEntry.getKey());
-            copyEntry.setValue(sourceEntry.getValue());
-            copyEntry.addToIndexes();
-        }
     }
 }
