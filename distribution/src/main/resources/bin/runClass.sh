@@ -5,12 +5,13 @@ JAVA=`which java`
 
 BIOMEDICUS_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-BIOMEDICUS_CLASSPATH="lib/*"
+BIOMEDICUS_CLASSPATH="$BIOMEDICUS_HOME/lib/*"
 
 if [ "x$BIOMEDICUS_LOG4J_CONF" = "x" ]; then
-    BIOMEDICUS_LOG4J_CONF="logs/logging.xml"
+    BIOMEDICUS_LOG4J_CONF="$BIOMEDICUS_HOME/logs/logging.xml"
 fi
 
+JAVA_OPTS="$JAVA_OPTS -Dbiomedicus.paths.home=$BIOMEDICUS_HOME"
 JAVA_OPTS="$JAVA_OPTS -Xmx12g"
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=$BIOMEDICUS_LOG4J_CONF"
 JAVA_OPTS="$JAVA_OPTS -Dorg.apache.uima.logger.class=org.apache.uima.util.impl.Log4jLogger_impl"

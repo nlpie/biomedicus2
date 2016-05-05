@@ -33,25 +33,15 @@ public class Bootstrapper {
         List<Module> modules = new ArrayList<>();
         // Load configuration
         home = System.getProperty("biomedicus.paths.home");
-        if (home == null) {
-            home = System.getenv("BIOMEDICUS_HOME");
-        }
 
         String conf = System.getProperty("biomedicus.paths.conf");
         Path configDir;
-        if (conf == null) {
-            conf = System.getenv("BIOMEDICUS_CONF");
-        }
-
         if (conf != null) {
             configDir = absoluteOrResolveAgainstHome(Paths.get(conf));
         } else {
-            if (home == null) {
-                throw new IllegalStateException("BioMedICUS home directory is not configured. Use either the" +
-                        " BIOMEDICUS_HOME environment variable or the Java property -Dbiomedicus.path.home=[home dir].");
-            }
             configDir = homePath().resolve("config");
         }
+
         LOGGER.info("Using configuration directory: {}", configDir);
 
         Yaml yaml = new Yaml();
@@ -96,7 +86,7 @@ public class Bootstrapper {
         LOGGER.info("Using data directory: {}", dataPath);
 
         @SuppressWarnings("unchecked")
-        Map<String, String> settingInterfacesYaml =  (Map<String, String>) biomedicusConfiguration.get("settingInterfaces");
+        Map<String, String> settingInterfacesYaml = (Map<String, String>) biomedicusConfiguration.get("settingInterfaces");
         Map<String, Class<?>> settingInterfaces = getClassMap(settingInterfacesYaml);
 
         @SuppressWarnings("unchecked")
@@ -152,8 +142,8 @@ public class Bootstrapper {
         if (home == null) {
             throw new IllegalStateException("BioMedICUS home directory is not configured. Use the" +
                     " BIOMEDICUS_HOME environment variable, the Java property -Dbiomedicus.path.home=[home dir], or " +
-            "set it in the biomedicusConfiguration.yml file and set BIOMEDICUS_CONF environment variable or the " +
-            "-Dbiomedicus.paths.conf Java property to the directory containing biomedicusConfiguration.yml");
+                    "set it in the biomedicusConfiguration.yml file and set the -Dbiomedicus.paths.conf Java " +
+                    "property to the directory containing biomedicusConfiguration.yml");
         }
         return Paths.get(home);
     }

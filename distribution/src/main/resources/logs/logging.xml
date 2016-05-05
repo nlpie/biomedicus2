@@ -6,15 +6,15 @@
                 <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
             </PatternLayout>
         </Console>
-        <File name="LogFile" fileName="logs/biomedicus.log">
+        <File name="LogFile" fileName="${sys:biomedicus.paths.home}/logs/biomedicus.log">
             <PatternLayout>
                 <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
             </PatternLayout>
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="edu.umn.biomedicus" level="debug"/>
-        <Logger name="org.apache.uima" level="debug"/>
+        <Logger name="edu.umn.biomedicus" level="info"/>
+        <Logger name="org.apache.uima" level="warn"/>
         <Root level="info">
             <AppenderRef ref="Console" level="info"/>
             <AppenderRef ref="LogFile"/>

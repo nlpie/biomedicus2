@@ -104,9 +104,12 @@ public class UimaAdapters {
      * @throws BiomedicusException
      */
     public static Document documentFromView(JCas initialView, String viewName) throws BiomedicusException {
+        if (CAS.NAME_DEFAULT_SOFA.equals(viewName)) {
+            throw new IllegalArgumentException("Cannot create document from _initialView");
+        }
         JCas view;
         try {
-            view = CAS.NAME_DEFAULT_SOFA.equals(viewName) ? initialView : initialView.getView(viewName);
+            view = initialView.getView(viewName);
         } catch (CASException e) {
             throw new BiomedicusException(e);
         }

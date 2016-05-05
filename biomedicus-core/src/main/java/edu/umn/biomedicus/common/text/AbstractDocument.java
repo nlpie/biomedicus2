@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.common.text;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
+
 public abstract class AbstractDocument implements Document {
 
     /**
@@ -38,5 +40,15 @@ public abstract class AbstractDocument implements Document {
     @Override
     public Sentence createSentence(Span span) {
         return createSentence(span.getBegin(), span.getEnd());
+    }
+
+
+    public boolean hasNewInformationAnnotation(Span span) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Document getSiblingDocument(String identifier) throws BiomedicusException {
+        throw new UnsupportedOperationException();
     }
 }

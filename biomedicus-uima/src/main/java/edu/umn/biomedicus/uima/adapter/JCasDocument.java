@@ -213,51 +213,35 @@ class JCasDocument extends AbstractDocument {
                 (annotation) -> new SubstanceUsageAdapter(view, (SubstanceUsageAnnotation) annotation));
     }
 
-    private MapEntry getMapEntry(String key) throws CASException {
-        FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
+    private MapEntry getMapEntry(String key) {
+        FSIterator<MapEntry> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
         while (metaDataIterator.hasNext()) {
-            @SuppressWarnings("unchecked")
-            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
+            MapEntry mapEntry = metaDataIterator.next();
             if (Objects.equals(mapEntry.getKey(), key)) {
                 return mapEntry;
             }
         }
-        metaDataIterator = view.getView(CAS.NAME_DEFAULT_SOFA).getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
-        while (metaDataIterator.hasNext()) {
-            @SuppressWarnings("unchecked")
-            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
-            if (Objects.equals(mapEntry.getKey(), key)) {
-                return mapEntry;
-            }
-        }
-
         return null;
     }
 
     @Nullable
     @Override
     public String getMetadata(String key) throws BiomedicusException {
-        MapEntry mapEntry;
-        try {
-            mapEntry = getMapEntry(key);
-        } catch (CASException e) {
-            throw new BiomedicusException(e);
+        MapEntry mapEntry = getMapEntry(key);
+        if (mapEntry == null) {
+            throw new BiomedicusException("Entry for key not found: " + key);
         }
-        return mapEntry == null ? null : mapEntry.getValue();
+        return mapEntry.getValue();
     }
 
     @Override
     public void setMetadata(String key, String value) throws BiomedicusException {
-        MapEntry mapEntry;
-        try {
-            mapEntry = getMapEntry(key);
-        } catch (CASException e) {
-            throw new BiomedicusException(e);
-        }
+        MapEntry mapEntry = getMapEntry(key);
         if (mapEntry != null) {
             mapEntry.removeFromIndexes();
         } else {
             mapEntry = new MapEntry(view);
+            mapEntry.setKey(key);
         }
         mapEntry.setValue(value);
         mapEntry.addToIndexes();
@@ -280,5 +264,21 @@ class JCasDocument extends AbstractDocument {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean hasNewInformationAnnotation(Span span) {
+        AnnotationIndex<NewInformationAnnotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.class);
+        for (NewInformationAnnotation newInfo : newInfos) {
+            if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Document getSiblingDocument(String identifier) throws BiomedicusException {
+        return UimaAdapters.documentFromView(view, identifier);
     }
 }

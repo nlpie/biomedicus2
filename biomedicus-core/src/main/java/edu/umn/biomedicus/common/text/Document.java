@@ -180,4 +180,8 @@ public interface Document extends Editable {
     void createNewInformationAnnotation(Span span, String kind);
 
     boolean hasNewInformationAnnotation(Span span, String kind);
+
+    boolean hasNewInformationAnnotation(Span span);
+
+    Document getSiblingDocument(String identifier) throws BiomedicusException;
 }
