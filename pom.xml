@@ -185,6 +185,12 @@
             <version>6.8.8</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.21</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <reporting>
