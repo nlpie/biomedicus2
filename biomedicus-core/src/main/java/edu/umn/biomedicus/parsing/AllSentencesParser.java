@@ -1,6 +1,8 @@
 package edu.umn.biomedicus.parsing;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@DocumentScoped
 public class AllSentencesParser implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AllSentencesParser.class);
 
@@ -19,7 +22,7 @@ public class AllSentencesParser implements DocumentProcessor {
     private final Parser parser;
 
     @Inject
-    public AllSentencesParser(Document document, @Setting("parser.implementation") Parser parser) {
+    public AllSentencesParser(Document document, @ProcessorSetting("parser.implementation") Parser parser) {
         this.document = document;
         this.parser = parser;
     }

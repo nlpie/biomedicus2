@@ -33,8 +33,15 @@ public class Bootstrapper {
         List<Module> modules = new ArrayList<>();
         // Load configuration
         home = System.getProperty("biomedicus.paths.home");
+        if (home == null) {
+            home = System.getenv("BIOMEDICUS_HOME");
+        }
 
         String conf = System.getProperty("biomedicus.paths.conf");
+        if (conf == null) {
+            conf = System.getenv("BIOMEDICUS_CONF");
+        }
+
         Path configDir;
         if (conf != null) {
             configDir = absoluteOrResolveAgainstHome(Paths.get(conf));
@@ -141,7 +148,7 @@ public class Bootstrapper {
     private Path homePath() {
         if (home == null) {
             throw new IllegalStateException("BioMedICUS home directory is not configured. Use the" +
-                    " BIOMEDICUS_HOME environment variable, the Java property -Dbiomedicus.path.home=[home dir], or " +
+                    " the Java property -Dbiomedicus.path.home=[home dir], or " +
                     "set it in the biomedicusConfiguration.yml file and set the -Dbiomedicus.paths.conf Java " +
                     "property to the directory containing biomedicusConfiguration.yml");
         }
