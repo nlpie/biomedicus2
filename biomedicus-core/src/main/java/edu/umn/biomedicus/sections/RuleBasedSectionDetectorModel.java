@@ -17,7 +17,7 @@ class RuleBasedSectionDetectorModel {
     private final Pattern sectionHeaderPattern;
 
     @Inject
-    RuleBasedSectionDetectorModel(@Setting("sections.headers") Path path) throws BiomedicusException {
+    RuleBasedSectionDetectorModel(@Setting("sections.headers.path") Path path) throws BiomedicusException {
         sectionHeaderPattern = Patterns.loadPatternByJoiningLines(path);
     }
 
