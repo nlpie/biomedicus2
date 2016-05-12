@@ -129,24 +129,71 @@
                 <node>textSegmenter</node>
             </fixedFlow>
         </flowConstraints>
+        <capabilities>
+            <capability>
+                <outputs>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.OriginalDocumentOffsets</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.ControlWord</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.UnknownControlWord</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.PropertyValue</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.Bold</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.Italic</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.Underline</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.RowEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.CellEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.LineBreak</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.RowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.CellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedRowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedCellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.TextSegmentAnnotation</type>
+                </outputs>
+                <inputSofas>
+                    <sofaName>OriginalDocumentView</sofaName>
+                </inputSofas>
+                <outputSofas>
+                    <sofaName>SystemView</sofaName>
+                    <sofaName>RtfAuthorDestination</sofaName>
+                    <sofaName>RtfBackupTimeDestination</sofaName>
+                    <sofaName>RtfColorTableDestination</sofaName>
+                    <sofaName>RtfCommentDestination</sofaName>
+                    <sofaName>RtfCreationTimeDestination</sofaName>
+                    <sofaName>RtfDocumentCommentsDestination</sofaName>
+                    <sofaName>RtfFontTableDestination</sofaName>
+                    <sofaName>RtfFooterDestination</sofaName>
+                    <sofaName>RtfFooterFirstPageOnlyDestination</sofaName>
+                    <sofaName>RtfFooterLeftPagesOnlyDestination</sofaName>
+                    <sofaName>RtfFooterRightPagesOnlyDestination</sofaName>
+                    <sofaName>RtfFootnoteDestination</sofaName>
+                    <sofaName>RtfFootnotesContinuedNoticeDestination</sofaName>
+                    <sofaName>RtfFootnotesSeparatorDestination</sofaName>
+                    <sofaName>RtfFootnotesContinuedNoticeSeparatorDestination</sofaName>
+                    <sofaName>RtfHeaderDestination</sofaName>
+                    <sofaName>RtfHeaderFirstPageOnlyDestination</sofaName>
+                    <sofaName>RtfHeaderLeftPagesOnlyDestination</sofaName>
+                    <sofaName>RtfHeaderRightPagesOnlyDestination</sofaName>
+                    <sofaName>RtfDocumentInformationDestination</sofaName>
+                    <sofaName>RtfDocumentKeywordsDestination</sofaName>
+                    <sofaName>RtfOperatorDestination</sofaName>
+                    <sofaName>RtfPictureDestination</sofaName>
+                    <sofaName>RtfPrintTimeDestination</sofaName>
+                    <sofaName>RtfRevisionTimeDestination</sofaName>
+                    <sofaName>RtfRangeOfPageNumbersForIndexEntryDestination</sofaName>
+                    <sofaName>RtfStylesheetDestination</sofaName>
+                    <sofaName>RtfDocumentSubjectDestination</sofaName>
+                    <sofaName>RtfTableOfContentsDestination</sofaName>
+                    <sofaName>RtfTitleDestination</sofaName>
+                    <sofaName>RtfTextArgumentForIndexEntryDestination</sofaName>
+                    <sofaName>RtfIndexEntriesDestination</sofaName>
+                    <sofaName>RtfFieldsDestination</sofaName>
+                </outputSofas>
+            </capability>
+        </capabilities>
         <operationalProperties>
             <modifiesCas>true</modifiesCas>
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>true</outputsNewCASes>
+            <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
     </analysisEngineMetaData>
-    <sofaMappings>
-        <sofaMapping>
-            <componentKey>paragraph</componentKey>
-            <aggregateSofaName>SystemView</aggregateSofaName>
-        </sofaMapping>
-        <sofaMapping>
-            <componentKey>table</componentKey>
-            <aggregateSofaName>SystemView</aggregateSofaName>
-        </sofaMapping>
-        <sofaMapping>
-            <componentKey>textSegmenter</componentKey>
-            <aggregateSofaName>SystemView</aggregateSofaName>
-        </sofaMapping>
-    </sofaMappings>
 </analysisEngineDescription>

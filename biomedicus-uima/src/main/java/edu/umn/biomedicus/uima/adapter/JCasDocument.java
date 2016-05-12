@@ -214,9 +214,10 @@ class JCasDocument extends AbstractDocument {
     }
 
     private MapEntry getMapEntry(String key) {
-        FSIterator<MapEntry> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
+        FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
         while (metaDataIterator.hasNext()) {
-            MapEntry mapEntry = metaDataIterator.next();
+            @SuppressWarnings("unchecked")
+            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
             if (Objects.equals(mapEntry.getKey(), key)) {
                 return mapEntry;
             }
@@ -256,9 +257,10 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public boolean hasNewInformationAnnotation(Span span, String kind) {
-
-        AnnotationIndex<NewInformationAnnotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.class);
-        for (NewInformationAnnotation newInfo : newInfos) {
+        AnnotationIndex<Annotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.type);
+        for (Annotation annotation : newInfos) {
+            @SuppressWarnings("unchecked")
+            NewInformationAnnotation newInfo = (NewInformationAnnotation) annotation;
             if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd() && Objects.equals(newInfo.getKind(), kind)) {
                 return true;
             }
@@ -268,8 +270,10 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public boolean hasNewInformationAnnotation(Span span) {
-        AnnotationIndex<NewInformationAnnotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.class);
-        for (NewInformationAnnotation newInfo : newInfos) {
+        AnnotationIndex<Annotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.type);
+        for (Annotation annotation : newInfos) {
+            @SuppressWarnings("unchecked")
+            NewInformationAnnotation newInfo = (NewInformationAnnotation) annotation;
             if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd()) {
                 return true;
             }

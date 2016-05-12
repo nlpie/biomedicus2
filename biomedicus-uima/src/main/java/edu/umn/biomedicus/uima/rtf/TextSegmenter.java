@@ -17,8 +17,10 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.type.*;
+import edu.umn.biomedicus.uima.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +38,15 @@ public class TextSegmenter extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TextSegmenter.class);
 
     @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
+    public void process(JCas aJCas) throws AnalysisEngineProcessException {
         LOGGER.info("Segmenting rtf text.");
-        TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(jCas);
+        JCas systemView;
+        try {
+            systemView = aJCas.getView(Views.SYSTEM_VIEW);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
+        TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
 
         textSegmentsBuilder.addAnnotations(ParagraphAnnotation.type);
         textSegmentsBuilder.addAnnotations(RowAnnotation.type);

@@ -84,6 +84,16 @@
                 <node>probability</node>
             </fixedFlow>
         </flowConstraints>
+        <capabilities>
+            <capability>
+                <inputSofas>
+                    <sofaName>SystemView</sofaName>
+                </inputSofas>
+                <outputSofas>
+                    <sofaName>SystemView</sofaName>
+                </outputSofas>
+            </capability>
+        </capabilities>
         <operationalProperties>
             <modifiesCas>true</modifiesCas>
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

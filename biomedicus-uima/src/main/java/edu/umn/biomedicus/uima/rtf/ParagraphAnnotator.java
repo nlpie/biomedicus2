@@ -18,8 +18,10 @@ package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtfuima.type.NewParagraph;
 import edu.umn.biomedicus.type.ParagraphAnnotation;
+import edu.umn.biomedicus.uima.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -39,14 +41,20 @@ public class ParagraphAnnotator extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParagraphAnnotator.class);
 
     @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
+    public void process(JCas aJCas) throws AnalysisEngineProcessException {
         LOGGER.info("Annotating rtf paragraphs.");
-        AnnotationIndex<Annotation> newParagraphIndex = jCas.getAnnotationIndex(NewParagraph.type);
+        JCas systemView;
+        try {
+            systemView = aJCas.getView(Views.SYSTEM_VIEW);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
+        AnnotationIndex<Annotation> newParagraphIndex = systemView.getAnnotationIndex(NewParagraph.type);
         int start = 0;
 
         for (Annotation newParagraph : newParagraphIndex) {
             int end = newParagraph.getEnd();
-            ParagraphAnnotation paragraphAnnotation = new ParagraphAnnotation(jCas, start, end);
+            ParagraphAnnotation paragraphAnnotation = new ParagraphAnnotation(systemView, start, end);
             paragraphAnnotation.addToIndexes();
             start = end;
         }

@@ -33,10 +33,10 @@
         <capabilities>
             <capability>
                 <inputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
                 </inputs>
                 <outputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.ParagraphAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
                 </outputs>
                 <inputSofas>
                     <sofaName>SystemView</sofaName>

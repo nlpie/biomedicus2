@@ -33,14 +33,14 @@
         <capabilities>
             <capability>
                 <inputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.ParagraphAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.RowAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.CellAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.NestedRowAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.NestedCellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.RowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.CellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedRowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedCellAnnotation</type>
                 </inputs>
                 <outputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.TextSegmentAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.TextSegmentAnnotation</type>
                 </outputs>
                 <inputSofas>
                     <sofaName>SystemView</sofaName>

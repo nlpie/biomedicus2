@@ -137,4 +137,8 @@ public class RtfRewriterCursor {
     public boolean nextOffsetNonZero() {
         return symbolIndexedDocument.symbolOffsetIsNonZero(symbolIndex + 1);
     }
+
+    public String getContext() {
+        return symbolIndexedDocument.getContext(symbolIndex);
+    }
 }

@@ -49,7 +49,7 @@ public class SymbolIndexedDocument {
     /**
      * The original rtf document.
      */
-    private String document;
+    private StringBuilder document;
 
     /**
      * Internal private constructor. Initializes the indexes and document content.
@@ -63,7 +63,7 @@ public class SymbolIndexedDocument {
                                   String document) {
         this.symbolLocations = symbolLocations;
         this.destinationMap = destinationMap;
-        this.document = document;
+        this.document = new StringBuilder(document);
     }
 
     /**
@@ -132,17 +132,7 @@ public class SymbolIndexedDocument {
      * @return string edited document.
      */
     public String getDocument() {
-        return document;
-    }
-
-    /**
-     * Internal method to insert a string, does not update indexes.
-     *
-     * @param text           text to insert.
-     * @param insertionIndex index to insert at.
-     */
-    private void insert(String text, int insertionIndex) {
-        document = document.substring(0, insertionIndex) + text + document.substring(insertionIndex);
+        return document.toString();
     }
 
     /**
@@ -155,7 +145,7 @@ public class SymbolIndexedDocument {
         SymbolLocation symbolLocation = symbolLocations.get(symbolIndex);
         int insertionIndex = getOriginalDocumentIndex(symbolLocation);
 
-        insert(text, insertionIndex);
+        document.insert(insertionIndex, text);
 
         symbolLocation.addToOffset(text.length());
     }
@@ -170,7 +160,7 @@ public class SymbolIndexedDocument {
         SymbolLocation symbolLocation = symbolLocations.get(symbolIndex);
         int insertionIndex = getOriginalDocumentIndex(symbolLocation) + symbolLocation.getLength();
 
-        insert(text, insertionIndex);
+        document.insert(insertionIndex, text);
 
         if (symbolIndex + 1 < symbolLocations.size()) {
             SymbolLocation nextSymbol = symbolLocations.get(symbolIndex + 1);
@@ -215,5 +205,12 @@ public class SymbolIndexedDocument {
      */
     public boolean symbolOffsetIsNonZero(int symbolIndex) {
         return symbolLocations.get(symbolIndex).getOffset() != 0;
+    }
+
+    public String getContext(int symbolIndex) {
+        SymbolLocation symbolLocation = symbolLocations.get(symbolIndex);
+        int insertionIndex = getOriginalDocumentIndex(symbolLocation);
+
+        return document.substring(insertionIndex - 20, insertionIndex + 20);
     }
 }

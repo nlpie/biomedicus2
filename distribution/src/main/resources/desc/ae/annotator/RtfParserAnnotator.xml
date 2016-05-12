@@ -159,7 +159,7 @@
         <operationalProperties>
             <modifiesCas>true</modifiesCas>
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>true</outputsNewCASes>
+            <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
     </analysisEngineMetaData>
 </analysisEngineDescription>

@@ -65,12 +65,13 @@ public class RegionTagger {
 
     /**
      * Default constructor.
-     *  @param symbolIndexedDocument The document to tag a region in.
-     * @param destinationName The destination name of the document.
+     *
+     * @param symbolIndexedDocument The document to tag a region in.
+     * @param destinationName       The destination name of the document.
      * @param beginDestinationIndex The begin index of the region.
-     * @param endDestinationIndex The end index of the region.
-     * @param beginTag Tag to insert at begin of region.
-     * @param endTag Tag to insert at the end of the region.
+     * @param endDestinationIndex   The end index of the region.
+     * @param beginTag              Tag to insert at begin of region.
+     * @param endTag                Tag to insert at the end of the region.
      */
     public RegionTagger(SymbolIndexedDocument symbolIndexedDocument,
                         String destinationName,
@@ -83,7 +84,7 @@ public class RegionTagger {
         this.endIndex = symbolIndexedDocument.symbolIndex(endDestinationIndex - 1, destinationName);
         this.beginTag = beginTag;
         this.endTag = endTag;
-        rtfRewriterCursor = new RtfRewriterCursor(symbolIndexedDocument);
+        rtfRewriterCursor =  new RtfRewriterCursor(symbolIndexedDocument);
     }
 
     /**
@@ -95,9 +96,18 @@ public class RegionTagger {
         rtfRewriterCursor.setSymbolIndex(beginIndex);
         rtfRewriterCursor.insertBefore(beginTag);
 
-        while (rtfRewriterCursor.getSymbolIndex() != endIndex) {
+        int remaining;
+        while ((remaining = endIndex - rtfRewriterCursor.getSymbolIndex()) != 0) {
+            if (remaining < 0) {
+                String msg = String.format("Passed the end symbol in document by %d symbols, context: \"%s\"",
+                        remaining * -1, rtfRewriterCursor.getContext());
+                LOGGER.error(msg);
+                throw new IllegalStateException(msg);
+            }
+
             if (rtfRewriterCursor.nextIsOutsideDestination(destinationName)) {
                 rtfRewriterCursor.insertAfter(endTag);
+                rtfRewriterCursor.forward();
                 rtfRewriterCursor.advanceToDestination(destinationName);
                 rtfRewriterCursor.insertBefore(beginTag);
             } else if (rtfRewriterCursor.nextOffsetNonZero()) {

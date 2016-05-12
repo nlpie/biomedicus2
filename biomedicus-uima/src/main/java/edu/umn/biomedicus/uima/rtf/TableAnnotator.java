@@ -21,8 +21,10 @@ import edu.umn.biomedicus.type.CellAnnotation;
 import edu.umn.biomedicus.type.NestedCellAnnotation;
 import edu.umn.biomedicus.type.NestedRowAnnotation;
 import edu.umn.biomedicus.type.RowAnnotation;
+import edu.umn.biomedicus.uima.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -46,9 +48,15 @@ public class TableAnnotator extends JCasAnnotator_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TableAnnotator.class);
 
     @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
+    public void process(JCas aJCas) throws AnalysisEngineProcessException {
         LOGGER.info("Annotating rtf tables.");
-        AnnotationIndex<Annotation> paragraphInTableIndex = jCas.getAnnotationIndex(ParagraphInTable.type);
+        JCas systemView;
+        try {
+            systemView = aJCas.getView(Views.SYSTEM_VIEW);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
+        AnnotationIndex<Annotation> paragraphInTableIndex = systemView.getAnnotationIndex(ParagraphInTable.type);
 
         List<Integer> inTable = new ArrayList<>();
         for (Annotation annotation : paragraphInTableIndex) {
@@ -63,7 +71,7 @@ public class TableAnnotator extends JCasAnnotator_ImplBase {
         }
 
         // divide "in table" paragraphs into rows.
-        AnnotationIndex<Annotation> rowEndAnnotationIndex = jCas.getAnnotationIndex(RowEnd.type);
+        AnnotationIndex<Annotation> rowEndAnnotationIndex = systemView.getAnnotationIndex(RowEnd.type);
         for (Annotation rowEnd : rowEndAnnotationIndex) {
             int rowEndIndex = rowEnd.getBegin();
             int insert = Arrays.binarySearch(indexes, rowEndIndex);
@@ -77,10 +85,10 @@ public class TableAnnotator extends JCasAnnotator_ImplBase {
             }
             int begin = indexes[ptr];
             Arrays.fill(indexes, ptr, insert, -2);
-            new RowAnnotation(jCas, begin, end).addToIndexes();
+            new RowAnnotation(systemView, begin, end).addToIndexes();
         }
 
-        TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(jCas);
+        TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(systemView);
         tableAnnotationDivider.using(CellEnd.type)
                 .divide(RowAnnotation.type)
                 .into(CellAnnotation.type)

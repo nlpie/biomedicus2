@@ -21,7 +21,7 @@ public class SymbolIndexedDocumentTest {
 
     @Injectable Map<String, Map<Integer, Integer>> destinationMap;
 
-    @Injectable String document;
+    @Injectable String document = "／人◕ ‿‿ ◕人＼";
 
     @Mocked SymbolLocation symbolLocation;
 

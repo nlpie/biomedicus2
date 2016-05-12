@@ -33,17 +33,17 @@
         <capabilities>
             <capability>
                 <inputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.ParagraphInTable</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.RowEnd</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.CellEnd</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.NestRowEnd</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.rtfuima.type.NestCellEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.ParagraphInTable</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.RowEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.CellEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NestRowEnd</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NestCellEnd</type>
                 </inputs>
                 <outputs>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.RowAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.CellAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.NestedRowAnnotation</type>
-                    <type allAnnotatorFeatures="false">edu.umn.biomedicus.type.NestedCellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.RowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.CellAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedRowAnnotation</type>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedCellAnnotation</type>
                 </outputs>
                 <inputSofas>
                     <sofaName>SystemView</sofaName>
