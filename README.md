@@ -58,7 +58,7 @@ instructions are provided.
 
 At a command prompt, change directories to where you want to install BioMedICUS, and then enter:
 
-    git clone https://bitbucket.org/nlpie/biomedicus.git
+    git clone https://github.com/nlpie/biomedicus.git
 
 Notes: 
 
@@ -74,11 +74,11 @@ version of biomedicus you are running. You can download the data zip at
 [http://athena.ahc.umn.edu/biomedicus-downloads/](http://athena.ahc.umn.edu/biomedicus-downloads/).
 There are two options, the first is an open data set which is freely licensed UMLS data, the second zip is a umls data
 set which uses SNOMED data and requires you to log in to a NIH UTS account to verify your UMLS Metathesaurus License.
-After extracting, set the BIOMEDICUS_OPTS java parameter biomedicus.path.data to the location of the
-extracted data. If you are using a release version of BioMedICUS, you may instead set the path.data configuration
-property in config/biomedicus.properties to the location of the BioMedICUS data.
+After extracting, set the BIOMEDICUS_JAVA_OPTS java parameter biomedicus.paths.data to the location of the
+extracted data. If you are using a release version of BioMedICUS, you may instead set the paths.data configuration
+property in config/biomedicusConfiguration.yml to the location of the BioMedICUS data.
 
-    export BIOMEDICUS_OPTS=-Dbiomedicus.path.data=[location of data]
+    export BIOMEDICUS_JAVA_OPTS=-Dbiomedicus.paths.data=[location of data]
 
 
 Building BioMedICUS
@@ -168,7 +168,7 @@ files.
 
 
 
-IntelliJ IDEA Setup
+IntelliJ IDEA Setup (Recommended)
 ------------------------------------------------------------------------------------------------------------------------
 
 IntelliJ is Java IDE with a Community Edition licensed under the Apache 2.0 license developed by JetBrains S.R.O. You
@@ -218,14 +218,14 @@ Other Resources
 ### BioMedICUS
 
  *   [Demo](http://athena.ahc.umn.edu/biomedicus/)
- *   [Source Code](https://bitbucket.org/nlpie/biomedicus)
+ *   [Source Code](https://github.org/nlpie/biomedicus)
 
 ### NLP-TAB
 
  *   [Demo](http://athena.ahc.umn.edu/nlptab)
- *   [Java Source Code](http://bitbucket.org/nlpie/nlptab)
- *   [Web-app Source Code](http://bitbucket.org/nlpie/nlptab-webapp)
- *   [Corpus](http://bitbucket.org/nlpie/nlptab-corpus)
+ *   [Java Source Code](https://github.org/nlpie/nlptab)
+ *   [Web-app Source Code](https://github.org/nlpie/nlptab-webapp)
+ *   [Corpus](https://github.org/nlpie/nlptab-corpus)
 
 ### NLP/IE Group Resources
 
