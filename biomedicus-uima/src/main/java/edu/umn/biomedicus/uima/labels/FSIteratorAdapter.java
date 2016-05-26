@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.uima.adapter;
+package edu.umn.biomedicus.uima.labels;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -32,11 +32,11 @@ import java.util.function.Function;
  * @author Ben Knoll
  * @since 1.3.0
  */
-class FSIteratorAdapter<T> implements Iterator<T> {
+public final class FSIteratorAdapter<T> implements Iterator<T> {
     /**
      * The FSIterator to adapt.
      */
-    private final FSIterator<Annotation> annotationFSIterator;
+    private final FSIterator<? extends Annotation> annotationFSIterator;
 
     /**
      * The function which maps the UIMA Annotation to the BioMedICUS type.
@@ -49,7 +49,7 @@ class FSIteratorAdapter<T> implements Iterator<T> {
      * @param annotationFSIterator the FSIterator received from UIMA.
      * @param mapper               a function which maps a UIMA annotation to an adapter class.
      */
-    FSIteratorAdapter(FSIterator<Annotation> annotationFSIterator, Function<Annotation, T> mapper) {
+    public FSIteratorAdapter(FSIterator<? extends Annotation> annotationFSIterator, Function<Annotation, T> mapper) {
         this.annotationFSIterator = annotationFSIterator;
         this.mapper = mapper;
     }
@@ -60,7 +60,7 @@ class FSIteratorAdapter<T> implements Iterator<T> {
      * @param annotationIndex the annotation index
      * @param mapper          a function which maps a UIMA annotation to an adapter class.
      */
-    FSIteratorAdapter(AnnotationIndex<Annotation> annotationIndex, Function<Annotation, T> mapper) {
+    public FSIteratorAdapter(AnnotationIndex<? extends Annotation> annotationIndex, Function<Annotation, T> mapper) {
         this(annotationIndex.iterator(false), mapper);
     }
 
@@ -74,7 +74,7 @@ class FSIteratorAdapter<T> implements Iterator<T> {
      * @param <T>    the biomedicus model we are creating an iterator of
      * @return an iterator of biomedicus model classes within the UIMA annotation
      */
-    static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<Annotation> index,
+    public static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<Annotation> index,
                                                   Annotation bound,
                                                   Function<Annotation, T> mapper) {
         FSIterator<Annotation> subiterator = index.subiterator(bound);
@@ -88,6 +88,7 @@ class FSIteratorAdapter<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        return mapper.apply(annotationFSIterator.next());
+        Annotation next = annotationFSIterator.next();
+        return mapper.apply(next);
     }
 }

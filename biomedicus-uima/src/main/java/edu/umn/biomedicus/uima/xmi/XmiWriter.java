@@ -84,7 +84,7 @@ public class XmiWriter extends JCasAnnotator_ImplBase {
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }
-        String fileName = null;
+        String fileName;
         try {
             fileName = FileNameProviders.fromInitialView(aJCas, ".xmi");
         } catch (BiomedicusException e) {

@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
+import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;

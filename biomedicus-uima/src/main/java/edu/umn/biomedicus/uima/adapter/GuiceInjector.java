@@ -26,13 +26,7 @@ public class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            injector = Bootstrapper.create(new AbstractModule() {
-                @Override
-                protected void configure() {
-                    bind(JCas.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
-                    bind(CAS.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
-                }
-            }).injector();
+            injector = Bootstrapper.create(new UimaModule()).injector();
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }

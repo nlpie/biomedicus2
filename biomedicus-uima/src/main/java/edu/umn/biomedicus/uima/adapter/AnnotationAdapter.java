@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
+import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
