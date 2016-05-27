@@ -65,7 +65,7 @@ public class VectorSpaceDouble {
     /**
      *  A log-transformed version of documentsPerTerm
      */
-    private WordVectorDouble idf;
+    private DoubleVector idf;
 
     /**
      * This will be set to false when calculating the idf, and terms will no longer be added to IDF counts
@@ -124,7 +124,7 @@ public class VectorSpaceDouble {
         this.totalDocs = totalDocs;
     }
 
-    public void setIdf(WordVectorDouble idf) {
+    public void setIdf(DoubleVector idf) {
         this.idf = idf;
     }
 
@@ -152,11 +152,9 @@ public class VectorSpaceDouble {
         training = false;
     }
 
-    /** Generate a WordVectorSpaceFloat from a list of Tokens
-     * The Token of interest should also be passed so we know positions for weighting
-     */
     /**
      * Generate a WordVectorDouble from a list of Tokens
+     * The Token of interest should also be passed so we know positions for weighting
      *
      * @param context         A list of Tokens taken from the Document that the word of interest appears in
      * @param tokenOfInterest The token that we want to calculate a vector for
@@ -239,9 +237,11 @@ public class VectorSpaceDouble {
      * @return its flattened form
      */
     private String standardForm(Token t) {
-        String form = t.getNormalForm();
-        if (form == null)
-            form = t.getText();
+//        String form = t.getNormalForm();
+//        if (form == null)
+//            form = t.getText();
+        // New training corpora do not use normalForm
+        String form = t.getText();
         return Acronyms.standardFormString(form).toLowerCase();
     }
 
