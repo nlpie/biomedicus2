@@ -43,7 +43,7 @@ settings:
       suicui.path: conceptFilters/filteredSuiCuis.txt
       cui.path: conceptFilters/filteredCuis.txt
       tui.path: conceptFilters/filteredTuis.txt
-  sections.headers: sections/headers.txt
+  sections.headers.path: sections/headers.txt
   parser.implementation: opennlp
   opennlp:
     parser.model.path: opennlp/en-parser-chunking.bin

@@ -1,6 +1,7 @@
 package edu.umn.biomedicus.parsing;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@DocumentScoped
 public class SocialHistoryCandidateParser implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocialHistoryCandidateParser.class);
 
