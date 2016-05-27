@@ -29,7 +29,7 @@ settings:
         uniqueIdMap.path: /path-to
         longforms.path: /path-to
         outputDir.path: /path-to
-    senseMap.path: acronym/senseMap.yml
+    senseMap.path: acronym/senseMap.ser
     acronymExpansions.path: acronym/acronymExpansions.yml
     orthographicModel.path: acronym/orthographicModel.yml
   semanticNetwork:
