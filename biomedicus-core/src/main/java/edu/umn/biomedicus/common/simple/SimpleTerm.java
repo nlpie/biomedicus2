@@ -18,6 +18,7 @@ package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.text.Term;
+import edu.umn.biomedicus.common.text.TextSpan;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -28,7 +29,9 @@ import java.util.List;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class SimpleTerm extends SimpleSpan implements Term {
+public class SimpleTerm implements Term {
+    private final int begin;
+    private final int end;
     /**
      * The concept that the term contains
      */
@@ -48,7 +51,8 @@ public class SimpleTerm extends SimpleSpan implements Term {
      * @param alternativeConcepts the alternative concepts of the term
      */
     public SimpleTerm(int begin, int end, Concept concept, List<Concept> alternativeConcepts) {
-        super(begin, end);
+        this.begin = begin;
+        this.end = end;
         this.concept = concept;
         this.alternativeConcepts = alternativeConcepts;
     }
@@ -65,7 +69,10 @@ public class SimpleTerm extends SimpleSpan implements Term {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (!super.equals(o)) {
+        if (o == null) {
+            return false;
+        }
+        if (!getClass().equals(o.getClass())) {
             return false;
         }
         if (this == o) {
@@ -74,12 +81,13 @@ public class SimpleTerm extends SimpleSpan implements Term {
 
         SimpleTerm that = (SimpleTerm) o;
 
-        return concept.equals(that.concept) && alternativeConcepts.equals(that.alternativeConcepts);
+        return begin == that.begin && end == that.end && concept.equals(that.concept) && alternativeConcepts.equals(that.alternativeConcepts);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = Integer.hashCode(begin);
+        result = 31 * result + Integer.hashCode(end);
         result = 31 * result + concept.hashCode();
         result = 31 * result + alternativeConcepts.hashCode();
         return result;
@@ -93,5 +101,15 @@ public class SimpleTerm extends SimpleSpan implements Term {
                 + ", concept=" + concept
                 + ", alternativeConcepts=" + alternativeConcepts
                 + '}';
+    }
+
+    @Override
+    public int getBegin() {
+        return begin;
+    }
+
+    @Override
+    public int getEnd() {
+        return end;
     }
 }

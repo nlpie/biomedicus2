@@ -12,7 +12,7 @@ public class IndexedTerm implements Comparable<IndexedTerm> {
         this.termIdentifier = termIdentifier;
     }
 
-    public int termIdentifier() {
+    public int indexedTerm() {
         return termIdentifier;
     }
 

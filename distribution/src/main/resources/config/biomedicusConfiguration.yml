@@ -20,7 +20,7 @@ settings:
   acronym:
     useAlignment: false
     expansionsModel.path: acronym/expansions.txt
-    alignmentModel.path: acronym/alignment.yml
+    alignmentModel.path: acronym-alignment/alignment.yml
     model: vector
     vector:
       model.path: acronym/vectorSpace.yml
@@ -30,8 +30,7 @@ settings:
         longforms.path: /path-to
         outputDir.path: /path-to
     senseMap.path: acronym/senseMap.ser
-    acronymExpansions.path: acronym/acronymExpansions.yml
-    orthographicModel.path: acronym/orthographicModel.yml
+    orthographicModel.path: acronym-orthographic/orthographicModel.yml
   semanticNetwork:
     srdef.path: semnetwork/SRDEF
     semgroups.path: semnetwork/SemGroups.txt

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.processing.Preprocessor;
@@ -89,7 +89,7 @@ public class SentenceDetector {
         sentenceCandidateGenerator.generateSentenceSpans(text)
                 .stream()
                 .flatMap(sentenceSplitter::splitCandidate)
-                .map(candidate -> Spans.normalizeChild(textSpan, candidate))
+                .map(candidate -> Span.normalizeChild(textSpan, candidate))
                 .forEach(document::createSentence);
     }
 }

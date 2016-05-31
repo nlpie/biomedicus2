@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.type.TextSegmentAnnotation;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -84,7 +84,7 @@ class TextSegmentsBuilder {
         int prev = 0;
         for (int currentSplit : sortedSplits) {
             if (currentSplit != prev) {
-                if (Spans.textSpan(documentText, 0, currentSplit).containsNonWhitespace()) {
+                if (Span.textSpan(documentText, 0, currentSplit).containsNonWhitespace()) {
                     new TextSegmentAnnotation(jCas, prev, currentSplit).addToIndexes();
                 }
                 prev = currentSplit;

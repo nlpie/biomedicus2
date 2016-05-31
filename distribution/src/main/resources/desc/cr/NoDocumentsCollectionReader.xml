@@ -18,7 +18,7 @@
 
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <implementationName>edu.umn.biomedicus.uima.NoDocumentsCollectionReader</implementationName>
+    <implementationName>edu.umn.biomedicus.uima.util.NoDocumentsCollectionReader</implementationName>
     <processingResourceMetaData>
         <name>No Documents Collection Reader</name>
         <description>

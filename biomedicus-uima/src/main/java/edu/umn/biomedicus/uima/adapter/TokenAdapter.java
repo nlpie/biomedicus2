@@ -77,41 +77,6 @@ class TokenAdapter extends AnnotationAdapter<TokenAnnotation> implements Token {
     }
 
     @Override
-    public boolean isAcronym() {
-        return getAnnotation().getIsAcronymAbbrev();
-    }
-
-    @Override
-    public void setIsAcronym(boolean acronym) {
-        getAnnotation().setIsAcronymAbbrev(acronym);
-    }
-
-    @Nullable
-    @Override
-    public String getLongForm() {
-        return getAnnotation().getAcronymAbbrevExpansion();
-    }
-
-    @Override
-    public void setLongForm(@Nullable String longForm) {
-        getAnnotation().setAcronymAbbrevExpansion(longForm);
-    }
-
-    @Nullable
-    @Override
-    public List<String> getLongFormNorm() {
-        return Arrays.asList(getAnnotation().getAcronymLongFormNorm().toArray());
-    }
-
-    @Override
-    public void setLongFormNorm(List<String> longFormNorm) {
-        int size = longFormNorm.size();
-        StringArray stringArray = new StringArray(getJCas(), size);
-        stringArray.copyFromArray(longFormNorm.toArray(new String[size]), 0, 0, size);
-        getAnnotation().setAcronymLongFormNorm(stringArray);
-    }
-
-    @Override
     public String correctSpelling() {
         return getAnnotation().getCorrectSpelling();
     }
@@ -119,29 +84,6 @@ class TokenAdapter extends AnnotationAdapter<TokenAnnotation> implements Token {
     @Override
     public void setCorrectSpelling(String correctSpelling) {
         getAnnotation().setCorrectSpelling(correctSpelling);
-    }
-
-    @Nullable
-    @Override
-    public IndexedTerm getWordTerm() {
-        int wordTerm = getAnnotation().getWordTerm();
-        return new IndexedTerm(wordTerm);
-    }
-
-    @Override
-    public void setWordTerm(IndexedTerm wordTerm) {
-        getAnnotation().setWordTerm(wordTerm.termIdentifier());
-    }
-
-    @Nullable
-    @Override
-    public IndexedTerm getNormTerm() {
-        return new IndexedTerm(getAnnotation().getNormTerm());
-    }
-
-    @Override
-    public void setNormTerm(IndexedTerm normTerm) {
-        getAnnotation().setNormTerm(normTerm.termIdentifier());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.util;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionException;

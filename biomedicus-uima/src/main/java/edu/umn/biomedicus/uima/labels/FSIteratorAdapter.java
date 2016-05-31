@@ -74,10 +74,10 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
      * @param <T>    the biomedicus model we are creating an iterator of
      * @return an iterator of biomedicus model classes within the UIMA annotation
      */
-    public static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<Annotation> index,
-                                                  Annotation bound,
-                                                  Function<Annotation, T> mapper) {
-        FSIterator<Annotation> subiterator = index.subiterator(bound);
+    public static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<? extends Annotation> index,
+                                                         AnnotationFS bound,
+                                                         Function<Annotation, T> mapper) {
+        FSIterator<? extends Annotation> subiterator = index.subiterator(bound);
         return new FSIteratorAdapter<>(subiterator, mapper);
     }
 

@@ -17,12 +17,11 @@
 package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * A simple token implementation.
@@ -67,18 +66,18 @@ public class SimpleToken extends SimpleTextSpan implements Token {
      * @param end          the index the token ends at in the document text.
      */
     public SimpleToken(String documentText, int begin, int end) {
-        super(new SimpleSpan(begin, end), documentText);
+        super(new Span(begin, end), documentText);
     }
 
     /**
      * Creates a simple token from a span and document text.
      *
-     * @param span the span of the token.
+     * @param spanLike the span of the token.
      * @param documentText the overall document text.
      * @return newly created simple token.
      */
-    public static Token fromSpan(Span span, String documentText) {
-        return new SimpleToken(documentText, span.getBegin(), span.getEnd());
+    public static Token fromSpan(SpanLike spanLike, String documentText) {
+        return new SimpleToken(documentText, spanLike.getBegin(), spanLike.getEnd());
     }
 
     @Nullable
@@ -123,38 +122,6 @@ public class SimpleToken extends SimpleTextSpan implements Token {
         isMisspelled = misspelled;
     }
 
-    @Override
-    public boolean isAcronym() {
-        return false;
-    }
-
-    @Override
-    public void setIsAcronym(boolean acronym) {
-
-    }
-
-    @Nullable
-    @Override
-    public String getLongForm() {
-        return null;
-    }
-
-    @Override
-    public void setLongForm(@Nullable String longForm) {
-
-    }
-
-    @Nullable
-    @Override
-    public List<String> getLongFormNorm() {
-        return null;
-    }
-
-    @Override
-    public void setLongFormNorm(List<String> longFormNorm) {
-
-    }
-
     @Nullable
     @Override
     public String correctSpelling() {
@@ -164,28 +131,6 @@ public class SimpleToken extends SimpleTextSpan implements Token {
     @Override
     public void setCorrectSpelling(String correctSpelling) {
         correctedSpelling = correctSpelling;
-    }
-
-    @Nullable
-    @Override
-    public IndexedTerm getWordTerm() {
-        return null;
-    }
-
-    @Override
-    public void setWordTerm(IndexedTerm wordTerm) {
-
-    }
-
-    @Nullable
-    @Override
-    public IndexedTerm getNormTerm() {
-        return null;
-    }
-
-    @Override
-    public void setNormTerm(IndexedTerm normTerm) {
-
     }
 
     @Override

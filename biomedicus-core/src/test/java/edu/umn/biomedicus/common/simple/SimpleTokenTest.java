@@ -1,6 +1,7 @@
 package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Token;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -53,7 +54,7 @@ public class SimpleTokenTest {
 
     @Test
     public void testFromSpan() throws Exception {
-        Token token = SimpleToken.fromSpan(new SimpleSpan(0, 8), "document text.");
+        Token token = SimpleToken.fromSpan(new Span(0, 8), "document text.");
         assertEquals(token, simpleToken, "From span should create equivalent span.");
     }
 

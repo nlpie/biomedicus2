@@ -1,8 +1,8 @@
 package edu.umn.biomedicus.uima.labels;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -49,7 +49,7 @@ public final class DefaultLabelAdapter<T, U extends Annotation> implements Label
     public void createLabel(JCas jCas, Label<T> label) throws BiomedicusException {
         try {
             U annotation = constructor.newInstance(jCas, label.span().getBegin(), label.span().getEnd());
-            forwardAdapter.accept(label.label(), annotation);
+            forwardAdapter.accept(label.value(), annotation);
             annotation.addToIndexes();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new BiomedicusException("Could not create annotation for label", e);
@@ -61,8 +61,7 @@ public final class DefaultLabelAdapter<T, U extends Annotation> implements Label
         if (!jCasClass.isInstance(annotation)) {
             throw new IllegalArgumentException("Annotation is invalid type");
         }
-        Span span = Spans.spanning(annotation.getBegin(), annotation.getEnd());
         T label = reverseAdapter.apply(jCasClass.cast(annotation));
-        return new Label<>(span, label);
+        return new Label<>(new Span(annotation.getBegin(), annotation.getEnd()), label);
     }
 }

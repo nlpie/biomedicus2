@@ -1,22 +1,22 @@
 package edu.umn.biomedicus.common.semantics;
 
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 
 /**
  * Created by benknoll on 9/9/15.
  */
 public interface SubstanceUsageBuilder {
-    void addAmount(Span span);
+    void addAmount(SpanLike spanLike);
 
-    void addFrequency(Span span);
+    void addFrequency(SpanLike spanLike);
 
-    void addType(Span span);
+    void addType(SpanLike spanLike);
 
-    void addStatus(Span span);
+    void addStatus(SpanLike spanLike);
 
-    void addTemporal(Span span);
+    void addTemporal(SpanLike spanLike);
 
-    void addMethod(Span span);
+    void addMethod(SpanLike spanLike);
 
     void build();
 }

@@ -15,12 +15,14 @@
  */
 
 /**
+ * Package containing classes for rtf parsing within UIMA.
  *
+ * @since 1.3.0
  */
 @ParametersAreNonnullByDefault
 @FieldsAreNonnullByDefault
 @ReturnTypesAreNonnullByDefault
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.modification;
 
 import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
 import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;

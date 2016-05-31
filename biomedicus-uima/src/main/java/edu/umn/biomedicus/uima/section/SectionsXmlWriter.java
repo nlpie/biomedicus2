@@ -19,7 +19,7 @@ package edu.umn.biomedicus.uima.section;
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.type.SubSectionAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;

@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.tools.mtsamples;
 
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;

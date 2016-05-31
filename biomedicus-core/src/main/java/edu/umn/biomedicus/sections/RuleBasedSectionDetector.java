@@ -1,10 +1,9 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -50,7 +49,7 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
         while (matcher.find()) {
             int begin = matcher.start();
             if (!text.substring(prevBegin, begin).isEmpty()) {
-                document.createSection(Spans.spanning(prevBegin, begin))
+                document.createSection(Span.spanning(prevBegin, begin))
                         .withContentStart(prevEnd)
                         .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
                         .withHasSubsections(false)
@@ -64,7 +63,7 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
         int textEnd = text.length();
         if (!text.substring(prevBegin, textEnd).isEmpty()) {
-            document.createSection(Spans.spanning(prevBegin, textEnd))
+            document.createSection(Span.spanning(prevBegin, textEnd))
                     .withContentStart(prevEnd)
                     .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
                     .withHasSubsections(false)

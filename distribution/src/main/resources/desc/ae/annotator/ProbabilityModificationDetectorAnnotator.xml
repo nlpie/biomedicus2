@@ -18,7 +18,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.ModificationDetectorAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.modification.ModificationDetectorAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>Probability Modification Detector Annotator</name>
         <description/>

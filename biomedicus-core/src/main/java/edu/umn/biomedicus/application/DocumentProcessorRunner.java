@@ -43,7 +43,7 @@ class DocumentProcessorRunner implements CollectionProcessor {
                 return null;
             }, seededObjects);
         } catch (Exception e) {
-            LOGGER.error("Error during processing", e);
+            LOGGER.error("Error during processing");
             throw new BiomedicusException(e);
         }
     }

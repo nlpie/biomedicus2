@@ -3,8 +3,11 @@ package edu.umn.biomedicus.acronym;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleToken;
+import edu.umn.biomedicus.common.text.Acronym;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -66,6 +69,8 @@ class AcronymDetector implements DocumentProcessor {
 
     private final Document document;
 
+    private final ValueLabeler acronymLabeler;
+
     /**
      * Constructor to initialize the acronym detector
      *
@@ -75,10 +80,12 @@ class AcronymDetector implements DocumentProcessor {
     @Inject
     public AcronymDetector(@Setting("acronym.model") AcronymModel model,
                            OrthographicAcronymModel orthographicModel,
-                           Document document) {
+                           Document document,
+                           Labeler<Acronym> acronymLabeler) {
         this.orthographicModel = orthographicModel;
         this.model = model;
         this.document = document;
+        this.acronymLabeler = acronymLabeler.value(Acronym.ACRONYM);
     }
 
     @Override
@@ -86,7 +93,9 @@ class AcronymDetector implements DocumentProcessor {
         LOGGER.info("Detecting acronyms in a document.");
         // Look one and two tokens back for multi-token abbreviations (could make more?)
         Token prevToken = null;
+        boolean prevIsAcr = false;
         Token prevPrevToken = null;
+        boolean prevPrevIsAcr = false;
 
         for (Token token : document.getTokens()) {
             // Determine if this is an abbreviation or acronym.
@@ -99,27 +108,38 @@ class AcronymDetector implements DocumentProcessor {
                 Token twoWordToken = new SimpleToken(document.getText(), prevToken.getBegin(), token.getEnd());
                 if (model.hasAcronym(twoWordToken)) {
                     isAcr = true;
-                    prevToken.setIsAcronym(true);
+                    if (!prevIsAcr) {
+                        acronymLabeler.label(prevToken);
+                    }
                 }
                 // ...and if still not, try making a three-word 'token' and seeing if that's an abbreviation
                 else if (prevPrevToken != null) {
                     Token threeWordToken = new SimpleToken(document.getText(), prevPrevToken.getBegin(), token.getEnd());
                     if (model.hasAcronym(threeWordToken)) {
                         isAcr = true;
-                        prevToken.setIsAcronym(true);
-                        prevPrevToken.setIsAcronym(true);
+                        if (!prevIsAcr) {
+                            acronymLabeler.label(prevToken);
+                        }
+                        if (!prevPrevIsAcr) {
+                            acronymLabeler.label(prevPrevToken);
+                        }
                     }
                 }
             }
 
             PartOfSpeech partOfSpeech = token.getPartOfSpeech();
-            if (partOfSpeech != null && EXCLUDE_POS.contains(partOfSpeech.toString()))
+            if (partOfSpeech != null && EXCLUDE_POS.contains(partOfSpeech.toString())) {
                 isAcr = false;
+            }
 
-            token.setIsAcronym(isAcr);
+            if (isAcr) {
+                acronymLabeler.label(token);
+            }
 
             prevPrevToken = prevToken;
+            prevPrevIsAcr = prevIsAcr;
             prevToken = token;
+            prevIsAcr = isAcr;
         }
     }
 }

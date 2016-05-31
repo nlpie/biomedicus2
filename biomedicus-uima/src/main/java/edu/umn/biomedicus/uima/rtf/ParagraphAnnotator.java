@@ -18,7 +18,7 @@ package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtfuima.type.NewParagraph;
 import edu.umn.biomedicus.type.ParagraphAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;

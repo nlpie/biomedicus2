@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 
 import java.util.List;
 
@@ -27,10 +27,10 @@ import java.util.List;
  */
 public interface SentenceCandidateGenerator {
     /**
-     * Generate a list of candidate {@link Span} objects given the text
+     * Generate a list of candidate {@link SpanLike} objects given the text
      *
      * @param text text to break down in to sentence candidates
      * @return an ordered list of the sentence spans
      */
-    List<Span> generateSentenceSpans(String text);
+    List<SpanLike> generateSentenceSpans(String text);
 }

@@ -192,13 +192,14 @@ class AcronymVectorModel implements AcronymModel {
     /**
      * Binary serialization for the senseMap, which gets too big for yaml (and isn't very human readable anyway)
      * Serializes built-in java classes
+     *
      * @param outFile output file to serialize to
      * @throws IOException
      */
     private void serializeSenseMap(Path outFile) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outFile.toFile()));
         oos.writeObject(senseMap.size());
-        for(Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
+        for (Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
             oos.writeObject(e.getKey());
             oos.writeObject(e.getValue().getVector());
         }
@@ -211,13 +212,15 @@ class AcronymVectorModel implements AcronymModel {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(senseMapPath.toFile()));
             int size = (int) ois.readObject();
-            for(int i=0; i<size; i++) {
+            for (int i = 0; i < size; i++) {
                 String word = (String) ois.readObject();
                 DoubleVector vector = new WordVectorDouble();
-                vector.setVector((Map<Integer, Double>) ois.readObject());
+                @SuppressWarnings("unchecked")
+                Map<Integer, Double> readVector = (Map<Integer, Double>) ois.readObject();
+                vector.setVector(readVector);
                 map.put(word, vector);
             }
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new IOException();
         }
         return map;

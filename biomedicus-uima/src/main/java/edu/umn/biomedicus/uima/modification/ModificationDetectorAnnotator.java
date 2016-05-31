@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.modification;
 
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
+import edu.umn.biomedicus.uima.common.AnnotationUtils;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

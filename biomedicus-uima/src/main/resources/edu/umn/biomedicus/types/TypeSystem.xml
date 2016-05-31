@@ -545,6 +545,14 @@
             </features>
         </typeDescription>
         <typeDescription>
+            <name>edu.umn.biomedicus.type.TermTokenAnnotation</name>
+            <description>
+                A semantically relevant token, consisting of merged syntactic tokens. Example of merging would be
+                hyphenated words and acronyms with periods between letters.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
             <name>edu.umn.biomedicus.type.TokenAnnotation</name>
             <description/>
             <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -574,27 +582,46 @@
                     <description>The correct spelling for the token if it is misspelled, otherwise null.</description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.WordIndexAnnotation</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
                 <featureDescription>
-                    <name>isAcronymAbbrev</name>
-                    <description>Whether or not the token is an acronym or an abbreviation.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                    <name>index</name>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
                 </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.NormIndexAnnotation</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
                 <featureDescription>
-                    <name>acronymAbbrevExpansion</name>
-                    <description>If the token is an acronym or abbreviation, this is its expanded form.</description>
+                    <name>index</name>
+                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.AcronymAnnotation</name>
+            <description>
+                A token that was detected as an acronym.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.AcronymExpansionAnnotation</name>
+            <description>
+                An acronym's longform expansion.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>longform</name>
+                    <description>The longform expansion of the acronym.</description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>acronymLongFormNorm</name>
-                    <rangeTypeName>uima.cas.StringArray</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>wordTerm</name>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>normTerm</name>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
                 </featureDescription>
             </features>
         </typeDescription>

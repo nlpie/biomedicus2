@@ -17,10 +17,8 @@
 package edu.umn.biomedicus.common.text;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Biomedicus basic unit for a single token in a document.
@@ -30,7 +28,7 @@ import java.util.List;
  *
  * @since 1.0.0
  */
-public interface Token extends Span, Editable {
+public interface Token extends SpanLike, Editable {
     /**
      * Gets the text of this Token as it appears in the document, whether or not it is correct.
      *
@@ -131,14 +129,4 @@ public interface Token extends Span, Editable {
     default boolean isCapitalized() {
         return Character.isUpperCase(getText().charAt(0));
     }
-
-    @Nullable
-    IndexedTerm getWordTerm();
-
-    void setWordTerm(IndexedTerm wordTerm);
-
-    @Nullable
-    IndexedTerm getNormTerm();
-
-    void setNormTerm(IndexedTerm normTerm);
 }

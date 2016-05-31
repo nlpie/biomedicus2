@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.common;
 
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;

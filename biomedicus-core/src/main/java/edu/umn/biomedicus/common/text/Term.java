@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Biomedicus base class for terms within text. A term is an identified concept.
  */
-public interface Term extends Span {
+public interface Term extends SpanLike {
     /**
      * Get the primary concept of this term.
      * @return Get a secondary concept for the term

@@ -1,4 +1,4 @@
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.common;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.UIMAFramework;

@@ -110,14 +110,13 @@ public class SimpleDocument extends AbstractDocument {
         return sentence;
     }
 
-    @Override
-    public Iterable<Term> getTerms() {
+    public Iterable<Term> getSimpleTerms() {
         return terms;
     }
 
     @Override
-    public void addTerm(Term term) {
-        terms.add(term);
+    public void addTerm(Term simpleTerm) {
+        terms.add(simpleTerm);
     }
 
     @Override
@@ -155,11 +154,11 @@ public class SimpleDocument extends AbstractDocument {
 
     @Override
     public Stream<TextSpan> textSegments() {
-        return Stream.of(new SimpleTextSpan(new SimpleSpan(0, documentText.length()), documentText));
+        return Stream.of(new SimpleTextSpan(new Span(0, documentText.length()), documentText));
     }
 
     @Override
-    public SectionBuilder createSection(Span span) {
+    public SectionBuilder createSection(SpanLike spanLike) {
         throw new UnsupportedOperationException();
     }
 
@@ -194,12 +193,12 @@ public class SimpleDocument extends AbstractDocument {
     }
 
     @Override
-    public void createNewInformationAnnotation(Span span, String kind) {
+    public void createNewInformationAnnotation(SpanLike spanLike, String kind) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean hasNewInformationAnnotation(Span span, String kind) {
+    public boolean hasNewInformationAnnotation(SpanLike spanLike, String kind) {
         throw new UnsupportedOperationException();
     }
 

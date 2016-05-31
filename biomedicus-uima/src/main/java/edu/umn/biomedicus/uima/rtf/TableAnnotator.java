@@ -21,7 +21,7 @@ import edu.umn.biomedicus.type.CellAnnotation;
 import edu.umn.biomedicus.type.NestedCellAnnotation;
 import edu.umn.biomedicus.type.NestedRowAnnotation;
 import edu.umn.biomedicus.type.RowAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;

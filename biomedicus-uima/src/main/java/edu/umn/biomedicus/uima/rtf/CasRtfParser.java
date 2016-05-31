@@ -20,7 +20,7 @@ import edu.umn.biomedicus.rtf.beans.keywords.ControlKeywordsDescription;
 import edu.umn.biomedicus.rtf.beans.properties.PropertiesDescription;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.*;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;

@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
  * @author Ben Knoll
  * @since 1.3.0
  */
-abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpan<T> {
+class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpan<T> {
     /**
      * The {@code JCas} in which the annotation is stored.
      */
@@ -44,7 +44,7 @@ abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpa
      * @param jCas       the {@link JCas} document the annotation is stored in.
      * @param annotation the {@link Annotation} itself.
      */
-    protected AnnotationAdapter(JCas jCas, T annotation) {
+    AnnotationAdapter(JCas jCas, T annotation) {
         super(annotation);
         this.jCas = jCas;
     }
@@ -67,7 +67,7 @@ abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpa
      * @param <U>     the biomedicus type that the annotations
      * @return stream of annotations that are within the bounds of this annotation
      */
-    protected <U> Stream<U> getCoveredStream(int type, Function<Annotation, U> adapter) {
+    <U> Stream<U> getCoveredStream(int type, Function<Annotation, U> adapter) {
         AnnotationIndex<Annotation> index = jCas.getAnnotationIndex(type);
         Iterable<U> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(index, annotation, adapter);
         return StreamSupport.stream(iterable.spliterator(), false);

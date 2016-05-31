@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tools.rtfrewriting;
 
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;

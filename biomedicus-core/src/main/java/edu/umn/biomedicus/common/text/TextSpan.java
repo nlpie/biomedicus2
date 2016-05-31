@@ -23,7 +23,7 @@ import edu.umn.biomedicus.common.utilities.Patterns;
  *
  * @since 1.3.0
  */
-public interface TextSpan extends Span {
+public interface TextSpan extends SpanLike {
     /**
      * Returns the text covered by the span.
      *

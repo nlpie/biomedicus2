@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.common.tokensets;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
@@ -150,11 +150,11 @@ public abstract class TextOrderedTokenSet implements OrderedTokenSet {
     }
 
     @Override
-    public Span getSpan() {
+    public SpanLike getSpan() {
         List<Token> tokens = getTokens();
         int begin = tokens.get(0).getBegin();
         int end = tokens.get(tokens.size() - 1).getEnd();
-        return Spans.spanning(begin, end);
+        return Span.spanning(begin, end);
     }
 
     /**

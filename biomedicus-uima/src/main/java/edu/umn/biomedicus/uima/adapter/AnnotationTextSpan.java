@@ -9,7 +9,7 @@ import org.apache.uima.jcas.tcas.Annotation;
  * @author Ben Knoll
  * @since 1.4
  */
-abstract class AnnotationTextSpan<T extends Annotation> implements TextSpan {
+class AnnotationTextSpan<T extends Annotation> implements TextSpan {
     /**
      * The annotation itself.
      */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.util;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;

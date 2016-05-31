@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.beans.keywords;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
@@ -33,7 +33,7 @@ public class UnicodeKeywordAction extends AbstractKeywordAction {
 
     @Override
     public void executeKeyword(State state) throws RtfReaderException {
-        state.directWriteCharacter((char) getParameter(), Spans.spanning(getBegin(), getEnd()));
+        state.directWriteCharacter((char) getParameter(), Span.spanning(getBegin(), getEnd()));
         int propertyValue = state.getPropertyValue("DocumentFormatting", "UnicodeByteCount");
         state.setIgnoreNextChars(propertyValue);
     }

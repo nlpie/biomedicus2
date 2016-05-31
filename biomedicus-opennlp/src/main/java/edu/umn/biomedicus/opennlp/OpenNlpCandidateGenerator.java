@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.opennlp;
 
 import edu.umn.biomedicus.common.simple.SimpleTextSpan;
-import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.sentence.SentenceCandidateGenerator;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 
@@ -49,15 +49,15 @@ public class OpenNlpCandidateGenerator implements SentenceCandidateGenerator {
     }
 
     @Override
-    public List<Span> generateSentenceSpans(String text) {
+    public List<SpanLike> generateSentenceSpans(String text) {
         opennlp.tools.util.Span[] spans = sentenceDetectorME.sentPosDetect(text);
-        List<Span> sentenceSpans = new ArrayList<>(spans.length);
+        List<SpanLike> sentenceSpanLikes = new ArrayList<>(spans.length);
         for (opennlp.tools.util.Span span : spans) {
-            Span sentSpan = Spans.spanning(span.getStart(), span.getEnd());
-            if (new SimpleTextSpan(sentSpan, text).containsNonWhitespace()) {
-                sentenceSpans.add(sentSpan);
+            SpanLike sentSpanLike = Span.spanning(span.getStart(), span.getEnd());
+            if (new SimpleTextSpan(sentSpanLike, text).containsNonWhitespace()) {
+                sentenceSpanLikes.add(sentSpanLike);
             }
         }
-        return sentenceSpans;
+        return sentenceSpanLikes;
     }
 }

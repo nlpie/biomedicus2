@@ -16,92 +16,128 @@
 
 package edu.umn.biomedicus.common.text;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
+import edu.umn.biomedicus.common.simple.SimpleTextSpan;
+
+import javax.annotation.Nullable;
 
 import static java.lang.Math.abs;
 
 /**
- * A span within text, with indexes of characters in standard java form.
+ * A simple, immutable implementation of the {@link SpanLike} interface.
  *
- * @since 1.0.0
+ * @author Ben Knoll
+ * @since 1.3.0
  */
-public interface Span extends Comparable<Span> {
+public final class Span implements SpanLike, Comparable<Span> {
     /**
-     * The begin offset of the text.
-     *
-     * @return the index of the begin character
+     * The begin of the span, inclusive.
      */
-    int getBegin();
+    private final int begin;
 
     /**
-     * The end offset of the text
-     *
-     * @return the index after the last character
+     * The end index of the span, exclusive.
      */
-    int getEnd();
+    private final int end;
 
     /**
-     * Returns true if this span contains the specified span, i.e. that the other span's begin is after or the same as
-     * this span's begin, and the other span's end is before or the same as this span's end.
+     * Creates a new span from the begin index to the end index (exclusive).
      *
-     * @param other span to test if
-     * @return true if this span contains the other, false otherwise.
+     * @param begin begin of the span, inclusive.
+     * @param end end of the span, exclusive.
      */
-    default boolean contains(Span other) {
-        return getBegin() <= other.getBegin() && getEnd() >= other.getEnd();
-    }
-
-    /**
-     * The length of the text covered by this span.
-     *
-     * @return the length covered by this span
-     */
-    default int length() {
-        return getEnd() - getBegin();
-    }
-
-    /**
-     * Takes the document text and returns the substring covered by this span
-     *
-     * @param documentText document text
-     * @return the text that this span covers of the document text
-     */
-    default String getCovered(String documentText) {
-        return documentText.substring(getBegin(), getEnd());
-    }
-
-    /**
-     * Returns a stream of all indices in the span.
-     *
-     * @return stream containing all indices in the span.
-     */
-    default IntStream indices() {
-        return IntStream.range(getBegin(), getEnd());
-    }
-
-    /**
-     * Determines whether all of the indexes in this span are in the specified sorted array of indexes. Used for
-     * exclusion / ignore lists.
-     *
-     * @param sortedIndexes a list of sorted indexes.
-     * @return true if all of the indexes in this span are in the specified array.
-     */
-    default boolean allIndicesAreIn(int[] sortedIndexes) {
-        int firstInsert = Arrays.binarySearch(sortedIndexes, getBegin());
-        int lastInsert = Arrays.binarySearch(sortedIndexes, getEnd() - 1);
-        // firstInsert will be negative if the first character is not in the array.
-        // if every character is in the array than the distance between firstInsert and lastInsert will be equal to the
-        // annotation length - 1, otherwise less.
-        return firstInsert >= 0 && abs(lastInsert) - abs(firstInsert) == length() - 1;
+    public Span(int begin, int end) {
+        if (begin > end || begin < 0) {
+            throw new IllegalArgumentException("begin can't be greater than end or less than 0.");
+        }
+        this.begin = begin;
+        this.end = end;
     }
 
     @Override
-    default int compareTo(Span o) {
-        int value = Integer.compare(getBegin(), o.getBegin());
-        if (value != 0) {
-            return value;
-        }
-        return Integer.compare(getEnd(), o.getEnd());
+    public int getBegin() {
+        return begin;
     }
+
+    @Override
+    public int getEnd() {
+        return end;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Span that = (Span) o;
+        return begin == that.begin && end == that.end;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(begin) * 31 + Integer.hashCode(end);
+    }
+
+    @Override
+    public int compareTo(Span o) {
+        return compare(this, o);
+    }
+    @Override
+    public String toString() {
+        return "Span(" + begin + ", " + end + ")";
+    }
+
+    /**
+     * Takes a child span that is relative to the parent span and puts it in the same coordinate space as the parent
+     * span.
+     *
+     * @param parent parent span containing the child
+     * @param child  child span whose begin and end indexes are relative to the parents.
+     * @return the child span in the same coordinate space as the parent.
+     */
+    public static Span normalizeChild(SpanLike parent, SpanLike child) {
+        return new Span(parent.getBegin() + child.getBegin(), parent.getBegin() + child.getEnd());
+    }
+
+    /**
+     * Creates a new span between the begin and end.
+     *
+     * @param begin the begin of the span.
+     * @param end   the end of the span.
+     * @return newly initialized span.
+     */
+    public static Span spanning(int begin, int end) {
+        return new Span(begin, end);
+    }
+
+    /**
+     * Creates a text span given the document text and a region in the document.
+     *
+     * @param documentText the document text.
+     * @param begin the begin of the region.
+     * @param end the end of a region.
+     * @return newly created TextSpan object.
+     */
+    public static TextSpan textSpan(String documentText, int begin, int end) {
+        return new SimpleTextSpan(spanning(begin, end), documentText);
+    }
+
+    /**
+     * Creates a text span covering the entire contents of a document.
+     *
+     * @param documentText the document text.
+     * @return a text span containing the entire document.
+     */
+    public static TextSpan textSpan(String documentText) {
+        return textSpan(documentText, 0, documentText.length());
+    }
+
+    public static int compare(SpanLike first, SpanLike second) {
+        int compare = Integer.compare(first.getBegin(), second.getBegin());
+        if (compare != 0) return compare;
+        return Integer.compare(first.getEnd(), second.getEnd());
+    }
+
 }

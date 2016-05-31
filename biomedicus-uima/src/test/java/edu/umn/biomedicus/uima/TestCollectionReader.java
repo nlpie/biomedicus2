@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.uima;
 
 import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;

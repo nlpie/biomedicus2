@@ -21,7 +21,7 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.type.TokenAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;

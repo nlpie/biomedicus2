@@ -43,16 +43,16 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testAddSentence(@Injectable Span span, @Mocked Token token, @Mocked SimpleSentence sentence) throws Exception {
+    public void testAddSentence(@Injectable SpanLike spanLike, @Mocked Token token, @Mocked SimpleSentence sentence) throws Exception {
         new Expectations() {{
-            span.getBegin(); result = 10;
-            span.getEnd(); result = 15;
+            spanLike.getBegin(); result = 10;
+            spanLike.getEnd(); result = 15;
             tokenList.stream(); result = Stream.of(token, token, token);
             token.getBegin(); returns(5, 6, 10);
             token.getEnd(); returns(6, 10, 15);
         }};
 
-        simpleDocument.createSentence(span);
+        simpleDocument.createSentence(spanLike);
 
         new Verifications() {{
             List<Token> tokens;
@@ -63,20 +63,20 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testGetTerms(@Injectable List<Term> terms) throws Exception {
-        Deencapsulation.setField(simpleDocument, "terms", terms);
+    public void testGetTerms(@Injectable List<SimpleTerm> simpleTerms) throws Exception {
+        Deencapsulation.setField(simpleDocument, "terms", simpleTerms);
 
-        assertEquals(simpleDocument.getTerms(), terms);
+        assertEquals(simpleDocument.getSimpleTerms(), simpleTerms);
     }
 
     @Test
-    public void testAddTerm(@Injectable List<Term> terms, @Injectable Term term) throws Exception {
-        Deencapsulation.setField(simpleDocument, "terms", terms);
+    public void testAddTerm(@Injectable List<SimpleTerm> simpleTerms, @Injectable SimpleTerm simpleTerm) throws Exception {
+        Deencapsulation.setField(simpleDocument, "terms", simpleTerms);
 
-        simpleDocument.addTerm(term);
+        simpleDocument.addTerm(simpleTerm);
 
         new Verifications() {{
-            terms.add(term);
+            simpleTerms.add(simpleTerm);
         }};
     }
 
@@ -93,13 +93,13 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testAddToken(@Injectable Span span) throws Exception {
+    public void testAddToken(@Injectable SpanLike spanLike) throws Exception {
         new Expectations() {{
-            span.getBegin(); result = 0;
-            span.getEnd(); result = 8;
+            spanLike.getBegin(); result = 0;
+            spanLike.getEnd(); result = 8;
         }};
 
-        simpleDocument.createToken(span);
+        simpleDocument.createToken(spanLike);
 
         new Verifications() {{
             Token token;

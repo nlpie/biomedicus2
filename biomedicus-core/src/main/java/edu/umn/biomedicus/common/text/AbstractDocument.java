@@ -24,26 +24,26 @@ public abstract class AbstractDocument implements Document {
      * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
      * whitespace.
      *
-     * @param span to create a token from
+     * @param spanLike to create a token from
      * @return the newly created token.
      */
     @Override
-    public Token createToken(Span span) {
-        return createToken(span.getBegin(), span.getEnd());
+    public Token createToken(SpanLike spanLike) {
+        return createToken(spanLike.getBegin(), spanLike.getEnd());
     }
 
     /**
      * Add a sentence occurring over the span to this document.
      *
-     * @param span a {@link Span} indicating where the sentence occurs.
+     * @param spanLike a {@link SpanLike} indicating where the sentence occurs.
      */
     @Override
-    public Sentence createSentence(Span span) {
-        return createSentence(span.getBegin(), span.getEnd());
+    public Sentence createSentence(SpanLike spanLike) {
+        return createSentence(spanLike.getBegin(), spanLike.getEnd());
     }
 
 
-    public boolean hasNewInformationAnnotation(Span span) {
+    public boolean hasNewInformationAnnotation(SpanLike spanLike) {
         throw new UnsupportedOperationException();
     }
 

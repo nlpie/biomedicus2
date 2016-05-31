@@ -19,9 +19,12 @@ package edu.umn.biomedicus.concepts;
 import edu.umn.biomedicus.acronym.Acronyms;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.semantics.Concept;
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.common.tokensets.OrderedTokenSet;
@@ -33,10 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
@@ -126,6 +126,9 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         PREPOSITIONS = Collections.unmodifiableSet(builder);
     }
 
+    private final Labels<AcronymExpansion> acronymExpansions;
+    private final Labels<NormIndex> normIndexes;
+
     /**
      * Returns true if this OrderedTokenSet potentially will match concepts. The case is sets of size 1
      * that are parts of speech that won't match concepts, or auxiliary verbs.
@@ -165,17 +168,22 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * @param document     document to add new terms to.
      */
     @Inject
-    DictionaryConceptRecognizer(ConceptModel conceptModel, Document document) {
+    DictionaryConceptRecognizer(ConceptModel conceptModel,
+                                Document document,
+                                Labels<AcronymExpansion> acronymExpansions,
+                                Labels<NormIndex> normIndexes) {
         this.document = document;
         this.conceptModel = conceptModel;
+        this.acronymExpansions = acronymExpansions;
+        this.normIndexes = normIndexes;
     }
 
-    private boolean checkPhrase(TextOrderedTokenSet tokenSet) {
-        Span span = tokenSet.getSpan();
+    private boolean checkPhrase(TextOrderedTokenSet tokenSet) throws BiomedicusException {
+        SpanLike spanLike = tokenSet.getSpan();
 
         List<Token> tokens = tokenSet.getTokens();
-        int spanBegin = span.getBegin();
-        String phrase = document.getText().substring(spanBegin, span.getEnd());
+        int spanBegin = spanLike.getBegin();
+        String phrase = document.getText().substring(spanBegin, spanLike.getEnd());
         List<SuiCuiTui> phraseSUI = conceptModel.forPhrase(phrase);
         if (phraseSUI == null) {
             StringBuilder phraseEdited = new StringBuilder(phrase);
@@ -183,8 +191,9 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             int offset = 0;
             for (Token token : tokens) {
                 String replacement = null;
-                if (token.isAcronym()) {
-                    replacement = token.getLongForm();
+                Optional<Label<AcronymExpansion>> acronymExpansion = acronymExpansions.withSpan(token).getOptionally();
+                if (acronymExpansion.isPresent()) {
+                    replacement = acronymExpansion.get().value().longform();
                 } else if (token.isMisspelled()) {
                     replacement = token.correctSpelling();
                 }
@@ -203,7 +212,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         phraseSUI = conceptModel.forPhrase(phrase);
 
         if (phraseSUI != null) {
-            makeTerm(span, phraseSUI, 1);
+            makeTerm(spanLike, phraseSUI, 1);
             return true;
         }
 
@@ -214,7 +223,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase());
 
         if (phraseSUI != null) {
-            makeTerm(span, phraseSUI, 0.6);
+            makeTerm(spanLike, phraseSUI, 0.6);
             return true;
         }
         return false;
@@ -225,20 +234,25 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             return;
         }
 
-        Span span = tokenSet.getSpan();
-        TermsBag normVector = tokenSet.getNormVector();
+        SpanLike spanLike = tokenSet.getSpan();
+        TermsBag.Builder builder = TermsBag.builder();
+
+        for (Label<NormIndex> normIndexLabel : normIndexes.insideSpan(spanLike)) {
+            builder.addTerm(normIndexLabel.value().term());
+        }
+        TermsBag normVector = builder.build();
 
         List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
         if (normsCUI != null) {
-            makeTerm(span, normsCUI, .3);
+            makeTerm(spanLike, normsCUI, .3);
         }
     }
 
-    private void makeTerm(Span span, List<SuiCuiTui> cuis, double confidence) {
+    private void makeTerm(SpanLike spanLike, List<SuiCuiTui> cuis, double confidence) {
         List<Concept> concepts = cuis.stream()
                 .map(suiCuiTui -> suiCuiTui.toConcept(confidence)).collect(Collectors.toList());
 
-        Term term = new SimpleTerm(span.getBegin(), span.getEnd(), concepts.get(0),
+        Term term = new SimpleTerm(spanLike.getBegin(), spanLike.getEnd(), concepts.get(0),
                 concepts.subList(1, concepts.size()));
         document.addTerm(term);
     }
@@ -251,21 +265,28 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
             TextOrderedTokenSet sentenceOrderedTokenSet = new SentenceTextOrderedTokenSet(sentence);
 
-            sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE).forEach(textOrderedTokenSet -> {
-                boolean phraseFound = checkPhrase(textOrderedTokenSet);
-                if (!phraseFound) {
-                    if (matchesConcepts(textOrderedTokenSet.firstToken()) && matchesConcepts(textOrderedTokenSet.lastToken())) {
-                        checkTokenSet(textOrderedTokenSet.filter(this::matchesConcepts));
+            Iterator<TextOrderedTokenSet> iterator = sentenceOrderedTokenSet.orderedSubsetsSmallerThan(SPAN_SIZE)
+                    .iterator();
+
+            while (iterator.hasNext()) {
+                TextOrderedTokenSet textOrderedTokenSet = iterator.next();
+                if (matchesConcepts(textOrderedTokenSet)) {
+                    boolean phraseFound = checkPhrase(textOrderedTokenSet);
+                    if (!phraseFound) {
+                        if (matchesConcepts(textOrderedTokenSet.firstToken()) && matchesConcepts(textOrderedTokenSet.lastToken())) {
+                            checkTokenSet(textOrderedTokenSet.filter(this::matchesConcepts));
+                        }
                     }
                 }
-            });
+            }
         }
     }
 
     boolean matchesConcepts(Token token) {
         String text = token.getText();
+        Label<NormIndex> normIndexLabel = normIndexes.withSpan(token).get();
         return !PREPOSITIONS.contains(text) && !AUXILIARY_VERBS.contains(text)
-                && !TRIVIAL_POS.contains(token.getPartOfSpeech()) && !token.getNormTerm().isUnknown()
+                && !TRIVIAL_POS.contains(token.getPartOfSpeech()) && !normIndexLabel.value().term().isUnknown()
                 && Patterns.A_LETTER_OR_NUMBER.matcher(text).find();
     }
 }

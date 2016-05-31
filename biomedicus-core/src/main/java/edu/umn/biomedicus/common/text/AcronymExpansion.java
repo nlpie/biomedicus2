@@ -3,14 +3,14 @@ package edu.umn.biomedicus.common.text;
 import edu.umn.biomedicus.common.serialization.ProxySerializable;
 import edu.umn.biomedicus.common.serialization.SerializationProxy;
 
-public class AcronymExpansion implements ProxySerializable {
+public final  class AcronymExpansion implements ProxySerializable {
     private final String longform;
 
     public AcronymExpansion(String longform) {
         this.longform = longform;
     }
 
-    public String getLongform() {
+    public String longform() {
         return longform;
     }
 

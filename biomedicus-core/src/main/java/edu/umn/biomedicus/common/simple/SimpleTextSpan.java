@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.simple;
 
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.TextSpan;
 
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ public class SimpleTextSpan implements TextSpan {
     /**
      * The span the text covers.
      */
-    private final Span span;
+    private final SpanLike spanLike;
 
     /**
      * The overall text.
@@ -42,11 +42,11 @@ public class SimpleTextSpan implements TextSpan {
     /**
      * Default constructor, sets fields to their final values.
      *
-     * @param span The span the text covers.
+     * @param spanLike The span the text covers.
      * @param text The overall text.
      */
-    public SimpleTextSpan(Span span, String text) {
-        this.span = span;
+    public SimpleTextSpan(SpanLike spanLike, String text) {
+        this.spanLike = spanLike;
         this.text = text;
     }
 
@@ -57,12 +57,12 @@ public class SimpleTextSpan implements TextSpan {
 
     @Override
     public int getBegin() {
-        return span.getBegin();
+        return spanLike.getBegin();
     }
 
     @Override
     public int getEnd() {
-        return span.getEnd();
+        return spanLike.getEnd();
     }
 
     @Override
@@ -74,19 +74,19 @@ public class SimpleTextSpan implements TextSpan {
             return false;
         }
         SimpleTextSpan that = (SimpleTextSpan) o;
-        return Objects.equals(span, that.span) &&
+        return Objects.equals(spanLike, that.spanLike) &&
                 Objects.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(span, text);
+        return Objects.hash(spanLike, text);
     }
 
     @Override
     public String toString() {
         return "SimpleTextSpan{"
-                + "span=" + span
+                + "span=" + spanLike
                 + ", text='" + text
                 + "'}";
     }

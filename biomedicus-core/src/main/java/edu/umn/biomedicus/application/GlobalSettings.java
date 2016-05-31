@@ -11,11 +11,11 @@ import java.nio.file.Path;
 /**
  *
  */
-public class Settings {
+public class GlobalSettings {
     private final Injector injector;
 
     @Inject
-    public Settings(Injector injector) {
+    public GlobalSettings(Injector injector) {
         this.injector = injector;
     }
 

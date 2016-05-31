@@ -95,9 +95,6 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
             throw new IllegalStateException("view name is null");
         }
         try {
-            HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
-            additionalSeeded.put(Key.get(JCas.class), jCas);
-            additionalSeeded.put(Key.get(CAS.class), jCas.getCas());
 
             LOGGER.debug("Processing document from view: {}", viewName);
             JCas view = jCas.getView(viewName);
@@ -105,13 +102,18 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
                 LOGGER.error("Trying to process null view");
                 throw new BiomedicusException("View was null");
             }
+
+            HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
+            additionalSeeded.put(Key.get(JCas.class), view);
+            additionalSeeded.put(Key.get(CAS.class), view.getCas());
+
             JCasDocument jCasDocument = new JCasDocument(view);
             collectionProcessorRunner.processDocument(jCasDocument, additionalSeeded);
         } catch (CASException e) {
             LOGGER.error("error loading cas from view: " + viewName, e);
             throw new AnalysisEngineProcessException(e);
         } catch (BiomedicusException e) {
-            LOGGER.error("error while processing document", e);
+            LOGGER.error("error while processing document");
             throw new AnalysisEngineProcessException(e);
         }
     }

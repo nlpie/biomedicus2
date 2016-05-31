@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.uima;
+package edu.umn.biomedicus.uima.common;
 
 import mockit.*;
 import org.apache.uima.cas.CAS;

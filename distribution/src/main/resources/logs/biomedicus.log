@@ -1,0 +1,1300 @@
+2016-05-31 14:12:18,957 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:12:18,965 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:12:19,007 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:12:19,510 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:12:20,502 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:12:29,255 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:12:33,126 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:12:33,556 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:12:34,643 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:12:51,885 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:12:52,238 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:12:52,427 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:12:52,611 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:12:53,208 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:13:01,686 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:13:07,123 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:13:12,013 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:13:16,603 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:13:19,053 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:13:20,788 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:16:12,031 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:16:12,039 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:16:12,084 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:16:12,626 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:16:13,628 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:16:22,596 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:16:24,274 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:16:25,924 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:16:26,820 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:16:44,178 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:16:44,808 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:16:44,993 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:16:45,167 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:16:45,783 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:16:52,729 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:16:58,458 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:17:04,369 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:17:09,405 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:17:11,665 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:17:13,657 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:17:13,708 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:260) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 14:17:15,084 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:264) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 14:21:25,663 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 14:21:42,256 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 14:22:21,779 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:22:21,781 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:22:21,782 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:22:21,805 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 14:22:21,818 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 14:23:38,564 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:23:38,581 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:23:38,629 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:23:39,168 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:23:40,302 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:23:49,320 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:23:50,760 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:23:52,314 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:23:52,993 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:24:09,380 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:24:09,714 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:24:09,889 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:24:10,057 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:24:10,672 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:24:17,655 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:24:23,267 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:24:29,145 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:24:33,325 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:24:35,764 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:24:37,478 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:24:37,533 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:260) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 14:24:39,089 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:264) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 14:28:34,248 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 14:28:50,402 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 14:29:27,288 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:29:27,293 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:29:27,295 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:29:27,335 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 14:29:27,344 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 14:29:27,382 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 14:29:27,473 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 14:29:27,473 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:29:27,597 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 14:29:27,597 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:29:27,600 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 14:29:27,600 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:29:27,608 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 14:29:27,630 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 14:29:27,646 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 14:29:27,665 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 14:29:27,671 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 14:29:27,676 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 14:29:27,737 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 14:29:27,744 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 14:29:27,753 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 14:29:27,774 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 14:29:27,798 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 14:29:27,800 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:288) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 14:29:27,805 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:288) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 14:33:32,852 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:33:32,867 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:33:32,924 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:33:33,544 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:33:34,549 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:33:42,740 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:33:44,321 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:33:46,082 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:33:46,866 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:34:05,743 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:34:06,122 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:34:06,315 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:34:06,562 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:34:07,047 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:34:13,122 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:34:18,659 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:34:24,604 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:34:29,412 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:34:32,071 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:34:35,581 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:34:35,648 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:260) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 14:34:37,165 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:264) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 14:38:56,480 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 14:39:05,238 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 14:39:53,044 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:39:53,046 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:39:53,047 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:39:53,081 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 14:39:53,091 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 14:39:53,112 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 14:39:53,224 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 14:39:53,224 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:39:53,403 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 14:39:53,403 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:39:53,407 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 14:39:53,407 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:39:53,418 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 14:39:53,448 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 14:39:53,474 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 14:39:53,531 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 14:39:53,541 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 14:39:53,548 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 14:39:53,639 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 14:39:53,652 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 14:39:53,666 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 14:39:53,694 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 14:39:53,844 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 14:41:34,651 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 14:41:34,658 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 14:44:32,715 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:44:32,731 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:44:32,783 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:44:33,430 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:44:34,487 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:44:43,018 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:44:46,195 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:44:46,673 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:44:47,742 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:45:05,513 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:45:05,874 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:45:06,059 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:45:06,414 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:45:06,928 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:45:13,264 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:45:19,168 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:45:26,321 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:45:31,114 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:45:33,831 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:45:35,703 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:45:35,767 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 14:45:37,513 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 14:49:47,980 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 14:50:12,075 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 14:50:49,067 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:50:49,069 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:50:49,070 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:50:49,093 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 14:50:49,101 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 14:50:49,116 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 14:50:49,228 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 14:50:49,229 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:50:49,365 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 14:50:49,365 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:50:49,369 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 14:50:49,369 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:50:49,383 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 14:50:49,416 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 14:50:49,443 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 14:50:49,464 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 14:50:49,471 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 14:50:56,056 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 14:51:03,343 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 14:51:03,351 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 14:51:03,365 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 14:51:03,389 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 14:51:34,328 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 14:51:40,699 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 14:51:40,704 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 14:53:02,683 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 14:53:02,701 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 14:53:02,757 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 14:53:03,387 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 14:53:05,232 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 14:53:14,110 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 14:53:16,010 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 14:53:16,857 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 14:53:18,020 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 14:53:36,604 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 14:53:37,216 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 14:53:37,407 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 14:53:38,668 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 14:53:39,182 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 14:53:45,709 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 14:53:51,998 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 14:53:57,915 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 14:54:02,826 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 14:54:05,381 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 14:54:07,288 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 14:54:07,346 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 14:54:08,905 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 14:58:32,393 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 14:59:02,335 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 14:59:25,773 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:59:25,775 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:59:25,776 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 14:59:25,799 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 14:59:25,808 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 14:59:25,822 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 14:59:25,917 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 14:59:25,917 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:59:26,066 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 14:59:26,067 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:59:26,069 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 14:59:26,069 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 14:59:26,082 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 14:59:26,110 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 15:00:06,258 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 15:00:06,285 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 15:00:06,295 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 15:00:06,302 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 15:00:06,381 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 15:00:06,390 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 15:00:06,402 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 15:00:06,426 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 15:00:06,465 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 15:00:15,483 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 15:00:15,688 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 15:02:13,404 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 15:02:13,423 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 15:02:13,485 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 15:02:14,115 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 15:02:15,204 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 15:02:23,333 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 15:02:26,554 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 15:02:27,063 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 15:02:28,067 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 15:02:42,572 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 15:02:42,945 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 15:02:43,309 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 15:02:43,479 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 15:02:43,942 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 15:02:50,947 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 15:02:56,750 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 15:03:02,657 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 15:03:08,947 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 15:03:11,305 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 15:03:13,243 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 15:03:13,312 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 15:03:14,777 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 15:07:22,247 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 15:07:45,152 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 15:08:09,664 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:08:09,665 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:08:09,667 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:08:09,688 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 15:08:09,696 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 15:08:09,709 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 15:08:10,342 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 15:08:10,342 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:08:10,467 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 15:08:10,467 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:08:10,470 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 15:08:10,471 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:08:10,481 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 15:08:10,509 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 15:08:19,644 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 15:08:19,664 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 15:08:19,672 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 15:08:33,303 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 15:08:33,375 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 15:08:33,383 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 15:08:33,393 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 15:08:33,429 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 15:08:33,469 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 15:22:49,156 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 15:22:49,161 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:188) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.LabelsUtilities$FilteredLabels$1.next(LabelsUtilities.java:160) ~[classes/:?]
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:46) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 15:24:20,004 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 15:24:20,022 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 15:24:20,078 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 15:24:20,716 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 15:24:22,522 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 15:24:30,864 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 15:24:32,671 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 15:24:33,435 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 15:24:34,796 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 15:24:52,994 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 15:24:53,529 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 15:24:53,713 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 15:24:54,086 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 15:24:54,740 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 15:25:02,353 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 15:25:09,092 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 15:25:16,542 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 15:25:21,692 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 15:25:24,596 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 15:25:26,370 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 15:25:26,433 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 15:25:28,398 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 15:29:36,152 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 15:30:04,733 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 15:30:29,476 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:30:29,478 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:30:29,479 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:30:29,502 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 15:30:29,510 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 15:30:29,526 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 15:30:29,617 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 15:30:29,617 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:30:29,764 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 15:30:29,764 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:30:29,771 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 15:30:29,771 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:30:29,789 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 15:30:29,819 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 15:30:29,838 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 15:30:29,861 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 15:30:29,869 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 15:30:29,875 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 15:30:29,940 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 15:30:29,946 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 15:30:29,956 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 15:30:29,979 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 15:30:30,033 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 15:35:49,664 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 15:35:49,671 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:114) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:109) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 15:35:58,597 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 15:35:58,613 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 15:35:58,666 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 15:35:59,344 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 15:36:00,462 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 15:36:08,895 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 15:36:11,860 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 15:36:12,306 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 15:36:13,303 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 15:36:29,218 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 15:36:29,580 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 15:36:29,766 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 15:36:30,150 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 15:36:30,632 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 15:36:38,321 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 15:36:43,728 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 15:36:49,124 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 15:36:53,602 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 15:36:56,150 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 15:36:57,910 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 15:36:57,972 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 15:36:59,520 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 15:41:09,452 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 15:41:31,938 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 15:42:08,298 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:42:08,301 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:42:08,302 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 15:42:08,330 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 15:42:08,339 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 15:42:08,355 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 15:42:08,455 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 15:42:08,456 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:42:08,614 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 15:42:08,615 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:42:08,624 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 15:42:08,624 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 15:42:08,646 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 15:42:08,694 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 15:42:08,721 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 15:42:08,744 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 15:42:08,752 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 15:42:08,758 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 15:42:08,827 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 15:42:08,835 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 15:42:08,845 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 15:42:08,874 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 15:42:08,927 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:11:53,805 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:111) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 16:11:53,811 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:116) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:111) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 16:12:12,953 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 16:12:12,969 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 16:12:13,024 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 16:12:13,682 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 16:12:15,543 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 16:12:24,961 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 16:12:27,171 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 16:12:27,852 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 16:12:28,930 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 16:12:45,905 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 16:12:46,453 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 16:12:46,872 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 16:12:47,061 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 16:12:47,723 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 16:12:55,925 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 16:13:03,887 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 16:13:11,201 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 16:13:17,756 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 16:13:20,359 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 16:13:22,239 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 16:13:22,304 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 16:13:23,934 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 16:17:37,284 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 16:18:03,582 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 16:18:28,853 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:18:28,854 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:18:28,856 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:18:28,877 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 16:18:28,885 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 16:18:28,902 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 16:18:28,997 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 16:18:28,997 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:18:29,130 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 16:18:29,130 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:18:29,134 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 16:18:29,134 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:18:29,145 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:18:29,174 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:18:29,194 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:18:29,215 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:18:29,223 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:18:29,229 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:18:29,300 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:18:29,307 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:18:29,317 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:18:29,340 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:18:29,377 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:18:56,600 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) [classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) [classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) [classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:111) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+2016-05-31 16:18:56,606 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:116) - error while processing document
+edu.umn.biomedicus.exc.BiomedicusException: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:79) ~[classes/:?]
+	at edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator.process(CollectionProcessorAnnotator.java:111) [classes/:?]
+	at org.apache.uima.analysis_component.JCasAnnotator_ImplBase.process(JCasAnnotator_ImplBase.java:48) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.callAnalysisComponentProcess(PrimitiveAnalysisEngine_impl.java:385) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.processAndOutputNewCASes(PrimitiveAnalysisEngine_impl.java:308) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.processUntilNextOutputCas(ASB_impl.java:570) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl$AggregateCasIterator.<init>(ASB_impl.java:412) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.asb.impl.ASB_impl.process(ASB_impl.java:344) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AggregateAnalysisEngine_impl.processAndOutputNewCASes(AggregateAnalysisEngine_impl.java:265) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.analysis_engine.impl.AnalysisEngineImplBase.process(AnalysisEngineImplBase.java:269) [uimaj-core-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.processNext(ProcessingUnit.java:893) [uimaj-cpe-2.8.1.jar:2.8.1]
+	at org.apache.uima.collection.impl.cpm.engine.ProcessingUnit.run(ProcessingUnit.java:575) [uimaj-cpe-2.8.1.jar:2.8.1]
+Caused by: edu.umn.biomedicus.exc.BiomedicusException: java.util.NoSuchElementException
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+Caused by: java.util.NoSuchElementException
+	at edu.umn.biomedicus.common.labels.Labels.get(Labels.java:47) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.matchesConcepts(DictionaryConceptRecognizer.java:287) ~[classes/:?]
+	at edu.umn.biomedicus.concepts.DictionaryConceptRecognizer.process(DictionaryConceptRecognizer.java:276) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.lambda$processDocument$0(DocumentProcessorRunner.java:42) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.call(BiomedicusScopes.java:128) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$DocumentContext.access$500(BiomedicusScopes.java:115) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInDocumentScope(BiomedicusScopes.java:86) ~[classes/:?]
+	at edu.umn.biomedicus.application.DocumentProcessorRunner.processDocument(DocumentProcessorRunner.java:39) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.lambda$processDocument$1(CollectionProcessorRunner.java:75) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.call(BiomedicusScopes.java:108) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes$ProcessorContext.access$400(BiomedicusScopes.java:95) ~[classes/:?]
+	at edu.umn.biomedicus.application.BiomedicusScopes.runInProcessorScope(BiomedicusScopes.java:81) ~[classes/:?]
+	at edu.umn.biomedicus.application.CollectionProcessorRunner.processDocument(CollectionProcessorRunner.java:74) ~[classes/:?]
+	... 11 more
+2016-05-31 16:22:27,995 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 16:22:28,012 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 16:22:28,073 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 16:22:28,706 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 16:22:29,720 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 16:22:38,784 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 16:22:40,388 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 16:22:41,028 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 16:22:41,847 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 16:22:58,391 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 16:22:58,770 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 16:22:58,958 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 16:22:59,139 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 16:22:59,809 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 16:23:07,615 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 16:23:13,213 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 16:23:18,777 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 16:23:23,465 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 16:23:26,089 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 16:23:27,862 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 16:23:27,930 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 16:23:29,635 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 16:27:40,557 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 16:28:00,779 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 16:28:39,973 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:28:39,974 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:28:39,976 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:28:40,001 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 16:28:40,012 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 16:28:40,031 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 16:28:40,140 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 16:28:40,140 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:28:40,288 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 16:28:40,288 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:28:40,294 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 16:28:40,294 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:28:40,305 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:28:40,342 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:28:40,362 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:28:40,382 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:28:40,390 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:28:40,396 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:28:40,467 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:28:40,474 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:28:40,483 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:28:40,506 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:28:40,547 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:38:19,190 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+2016-05-31 16:38:19,191 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:116) - error while processing document
+2016-05-31 16:38:27,621 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 16:38:27,639 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 16:38:27,693 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 16:38:28,338 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 16:38:29,615 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 16:38:37,987 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 16:38:40,999 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 16:38:41,660 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 16:38:42,618 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 16:38:59,851 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 16:39:00,211 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 16:39:00,565 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 16:39:00,737 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 16:39:01,224 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 16:39:07,636 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 16:39:15,635 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 16:39:21,613 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 16:39:26,017 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 16:39:28,585 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 16:39:30,459 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 16:39:30,521 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 16:39:32,147 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 16:43:39,305 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 16:43:56,819 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 16:44:41,153 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:44:41,155 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:44:41,156 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:44:41,182 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 16:44:41,191 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 16:44:41,205 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 16:44:41,298 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 16:44:41,299 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:44:41,429 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 16:44:41,430 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:44:41,433 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 16:44:41,434 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:44:41,451 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:44:41,479 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:44:41,500 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:44:41,529 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:44:41,536 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:44:41,542 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:44:41,620 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:44:41,628 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:44:41,641 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:44:41,668 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:52:51,173 ERROR [[Procesing Pipeline#1 Thread]::] DocumentProcessorRunner (DocumentProcessorRunner.java:46) - Error during processing
+2016-05-31 16:52:51,174 ERROR [[Procesing Pipeline#1 Thread]::] CollectionProcessorAnnotator (CollectionProcessorAnnotator.java:116) - error while processing document
+2016-05-31 16:53:18,223 INFO  [Thread-4] GuiceInjector (GuiceInjector.java:32) - Initializing Guice Injector Resource
+2016-05-31 16:53:18,241 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:54) - Using configuration directory: /Users/benknoll/Documents/biomedicus/distribution/src/main/resources/config
+2016-05-31 16:53:18,295 INFO  [Thread-4] Bootstrapper (Bootstrapper.java:110) - Using data directory: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT
+2016-05-31 16:53:18,923 INFO  [Thread-4] VocabularyLoader (VocabularyLoader.java:34) - Loading words into term index from path: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/vocabulary/words.txt
+2016-05-31 16:53:20,890 INFO  [Thread-4] SpellingModel (SpellingModel.java:58) - Building BK tree for spelling model using 1491258 words.
+2016-05-31 16:53:29,258 INFO  [Thread-4] SpellingModel (SpellingModel.java:63) - Loading Spelling n-grams from ARPA file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/spell/UPMC.arpa
+2016-05-31 16:53:31,345 INFO  [Thread-4] TntModel$Loader (TntModel.java:142) - Loading TnT trigram model: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/trigram.yml
+2016-05-31 16:53:31,956 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #1: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/1.yml
+2016-05-31 16:53:33,128 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #2: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/10.yml
+2016-05-31 16:53:51,065 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #3: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/2.yml
+2016-05-31 16:53:51,427 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #4: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/3.yml
+2016-05-31 16:53:51,857 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #5: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/4.yml
+2016-05-31 16:53:52,054 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #6: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/5.yml
+2016-05-31 16:53:52,765 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #7: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/6.yml
+2016-05-31 16:54:00,853 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #8: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/7.yml
+2016-05-31 16:54:07,813 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #9: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/8.yml
+2016-05-31 16:54:15,155 INFO  [Thread-4] TntModel$Loader$1 (TntModel.java:152) - Loading TnT word model #10: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/tnt/words/9.yml
+2016-05-31 16:54:21,027 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:39) - Loading normalization lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/lexicon.yml
+2016-05-31 16:54:25,787 INFO  [Thread-4] NormalizerModelLoader (NormalizerModelLoader.java:43) - Loading normalization fallback lexicon file: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/normalization/fallbackLexicon.yml
+2016-05-31 16:54:27,603 INFO  [Thread-4] AcronymExpansionsModel$Loader (AcronymExpansionsModel.java:56) - Loading acronym expansions: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/expansions.txt
+2016-05-31 16:54:27,663 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:263) - Loading acronym vector space: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/vectorSpace.yml
+2016-05-31 16:54:29,216 INFO  [Thread-4] AcronymVectorModel$Loader (AcronymVectorModel.java:267) - Loading acronym sense map: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/acronym/senseMap.ser
+2016-05-31 16:58:45,982 INFO  [Thread-4] ConceptModel (ConceptModel.java:75) - Loading concepts phrases: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/phrases.txt
+2016-05-31 16:59:07,123 INFO  [Thread-4] ConceptModel (ConceptModel.java:93) - Loading concept norm vectors: /Users/benknoll/Documents/biomedicus-data/biomedicus-umls-data-1.5.0-SNAPSHOT/concepts/norms.txt
+2016-05-31 16:59:31,502 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:59:31,503 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:59:31,505 INFO  [Thread-4] ModificationDetectorAnnotator (ModificationDetectorAnnotator.java:89) - Initializing Modification Detector Annotator
+2016-05-31 16:59:31,526 INFO  [Thread-4] XmiWriter (XmiWriter.java:58) - Initializing XMI writer AE
+2016-05-31 16:59:31,536 INFO  [Thread-4] FilesInDirectoryReader (FilesInDirectoryReader.java:120) - Initializing reader directory stream
+2016-05-31 16:59:31,551 INFO  [Thread-4] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:76) - Initializing plain text input file adapter.
+2016-05-31 16:59:31,654 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_100.txt
+2016-05-31 16:59:31,655 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:31,798 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_101.txt
+2016-05-31 16:59:31,798 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:31,802 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_102.txt
+2016-05-31 16:59:31,802 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:31,815 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:31,842 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:31,862 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:31,889 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:31,895 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:31,902 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:31,969 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:31,976 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:31,985 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:32,005 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:32,135 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:52,324 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_100.xmi
+2016-05-31 16:59:52,402 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1040.txt
+2016-05-31 16:59:52,403 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:52,403 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:52,404 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:52,404 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:52,405 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:52,405 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:52,405 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:52,406 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:52,406 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:52,407 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:52,407 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:52,407 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:52,408 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_101.xmi
+2016-05-31 16:59:52,412 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1057.txt
+2016-05-31 16:59:52,412 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:52,413 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:52,418 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:52,422 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:52,430 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:52,433 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:52,433 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:52,455 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:52,457 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:52,461 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:52,471 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:52,611 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:52,894 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_102.xmi
+2016-05-31 16:59:52,949 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1064.txt
+2016-05-31 16:59:52,950 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:52,950 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:52,951 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:52,951 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:52,953 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:52,953 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:52,954 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:52,956 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:52,957 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:52,958 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:52,959 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:52,968 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:52,999 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1040.xmi
+2016-05-31 16:59:53,011 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1070.txt
+2016-05-31 16:59:53,011 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,011 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,012 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,012 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,012 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,012 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,013 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,013 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,013 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,014 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,014 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,014 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,015 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1057.xmi
+2016-05-31 16:59:53,017 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1074.txt
+2016-05-31 16:59:53,017 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,017 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,019 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,020 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,022 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,023 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,023 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,034 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,035 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,036 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,040 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,071 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,179 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1064.xmi
+2016-05-31 16:59:53,190 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1075.txt
+2016-05-31 16:59:53,190 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,191 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,191 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,192 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,195 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,196 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,196 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,203 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,204 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,205 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,209 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,226 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,302 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1070.xmi
+2016-05-31 16:59:53,316 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1133.txt
+2016-05-31 16:59:53,316 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,316 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,318 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,319 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,322 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,323 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,323 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,328 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,329 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,330 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,333 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,334 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,384 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1074.xmi
+2016-05-31 16:59:53,394 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1137.txt
+2016-05-31 16:59:53,394 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,394 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,395 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,396 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,398 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,399 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,399 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,404 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,406 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,408 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,411 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,445 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,485 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1075.xmi
+2016-05-31 16:59:53,493 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1138.txt
+2016-05-31 16:59:53,493 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,494 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,495 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,496 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,498 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,499 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,499 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 16:59:53,504 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 16:59:53,505 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 16:59:53,505 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 16:59:53,507 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 16:59:53,550 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 16:59:53,609 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1133.xmi
+2016-05-31 16:59:53,619 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1139.txt
+2016-05-31 16:59:53,619 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 16:59:53,619 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 16:59:53,621 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 16:59:53,622 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 16:59:53,624 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 16:59:53,625 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 16:59:53,626 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:03,661 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:03,664 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:03,666 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:03,671 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:03,704 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:03,820 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1137.xmi
+2016-05-31 17:00:03,832 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1140.txt
+2016-05-31 17:00:03,832 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 17:00:03,832 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 17:00:03,834 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 17:00:03,836 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 17:00:03,839 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 17:00:03,841 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 17:00:03,842 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:03,857 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:03,859 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:03,862 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:03,867 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:04,094 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:04,413 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1138.xmi
+2016-05-31 17:00:04,436 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1141.txt
+2016-05-31 17:00:04,436 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 17:00:04,436 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 17:00:04,437 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 17:00:04,437 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 17:00:04,438 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 17:00:04,440 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 17:00:04,440 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:04,445 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:04,446 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:04,447 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:04,449 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:04,450 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:04,486 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1139.xmi
+2016-05-31 17:00:04,491 INFO  [[CollectionReader Thread]::] FilesInDirectoryReader (FilesInDirectoryReader.java:181) - Reading file: 97_1144.txt
+2016-05-31 17:00:04,491 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 17:00:04,491 INFO  [[CollectionReader Thread]::] PlainTextInputFileAdapter (PlainTextInputFileAdapter.java:84) - Reading text into a CAS view.
+2016-05-31 17:00:04,492 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 17:00:04,493 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 17:00:04,495 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 17:00:04,495 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 17:00:04,495 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:04,504 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:04,505 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:04,506 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:04,511 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:04,624 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:04,725 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1140.xmi
+2016-05-31 17:00:04,736 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 17:00:04,738 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 17:00:04,741 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 17:00:04,744 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 17:00:04,745 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 17:00:04,746 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:04,751 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:04,752 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:04,753 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:04,755 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:04,778 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:04,840 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1141.xmi
+2016-05-31 17:00:04,851 INFO  [[Procesing Pipeline#1 Thread]::] TokenizerAnnotator (TokenizerAnnotator.java:67) - Tokenizing document.
+2016-05-31 17:00:04,853 INFO  [[Procesing Pipeline#1 Thread]::] WordLabeler (WordLabeler.java:39) - Labeling word term index identifiers in a document.
+2016-05-31 17:00:04,853 INFO  [[Procesing Pipeline#1 Thread]::] SentenceAnnotator (SentenceAnnotator.java:67) - Detecting sentences in document.
+2016-05-31 17:00:04,856 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingDetector (MisspellingDetector.java:34) - Finding any misspelled words in a document.
+2016-05-31 17:00:04,859 INFO  [[Procesing Pipeline#1 Thread]::] MisspellingCorrector (MisspellingCorrector.java:35) - Correcting any misspelled words in a document.
+2016-05-31 17:00:04,859 INFO  [[Procesing Pipeline#1 Thread]::] TntProcessor (TntProcessor.java:31) - Tagging tokens in document.
+2016-05-31 17:00:04,863 INFO  [[Procesing Pipeline#1 Thread]::] Normalizer (Normalizer.java:30) - Normalizing tokens in a document.
+2016-05-31 17:00:04,864 INFO  [[Procesing Pipeline#1 Thread]::] NormLabeler (NormLabeler.java:38) - Labeling norm term index identifiers in a document.
+2016-05-31 17:00:04,865 INFO  [[Procesing Pipeline#1 Thread]::] AcronymDetector (AcronymDetector.java:93) - Detecting acronyms in a document.
+2016-05-31 17:00:04,866 INFO  [[Procesing Pipeline#1 Thread]::] AcronymExpander (AcronymExpander.java:57) - Expanding acronyms and abbreviations
+2016-05-31 17:00:04,868 INFO  [[Procesing Pipeline#1 Thread]::] DictionaryConceptRecognizer (DictionaryConceptRecognizer.java:262) - Finding concepts in document.
+2016-05-31 17:00:04,901 INFO  [[Procesing Pipeline#1 Thread]::] XmiWriter (XmiWriter.java:96) - Writing XMI CAS to location: examples/plaintext/output/97_1144.xmi

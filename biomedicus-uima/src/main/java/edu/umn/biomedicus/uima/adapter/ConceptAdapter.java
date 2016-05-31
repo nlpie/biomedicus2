@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.semantics.Concept;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.TextConcept;
 import edu.umn.biomedicus.type.ConceptAnnotation;
 import org.apache.uima.jcas.JCas;
@@ -49,12 +49,12 @@ class ConceptAdapter implements TextConcept {
      * Creates a concept as a copy of an existing concept.
      *
      * @param concept        the concept
-     * @param span           the span that the concept covers.
+     * @param spanLike           the span that the concept covers.
      * @param destinationCas the cas to save the new annotation in
      * @return the concept
      */
-    static ConceptAdapter copyOf(Concept concept, Span span, JCas destinationCas) {
-        ConceptAnnotation copyConceptAnnotation = new ConceptAnnotation(destinationCas, span.getBegin(), span.getEnd());
+    static ConceptAdapter copyOf(Concept concept, SpanLike spanLike, JCas destinationCas) {
+        ConceptAnnotation copyConceptAnnotation = new ConceptAnnotation(destinationCas, spanLike.getBegin(), spanLike.getEnd());
         copyConceptAnnotation.setSemanticType(concept.getType());
         copyConceptAnnotation.setConfidence((float) concept.getConfidence());
         copyConceptAnnotation.setSource(concept.getSource());

@@ -21,5 +21,5 @@ import edu.umn.biomedicus.common.semantics.Concept;
 /**
  * Represents the tagged location of a concept reference in text.
  */
-public interface TextConcept extends Concept, Span, Editable {
+public interface TextConcept extends Concept, SpanLike, Editable {
 }

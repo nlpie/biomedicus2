@@ -2,6 +2,7 @@ package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 
 import java.util.ArrayList;
 
@@ -20,12 +21,12 @@ public class DocumentBuilder {
     /**
      * Builder for tokens.
      */
-    private final ArrayList<Span> tokens = new ArrayList<>();
+    private final ArrayList<SpanLike> tokens = new ArrayList<>();
 
     /**
      * Builder for sentences.
      */
-    private final ArrayList<Span> sentences = new ArrayList<>();
+    private final ArrayList<SpanLike> sentences = new ArrayList<>();
 
     /**
      * The marker for a beginning of a sentence.
@@ -42,7 +43,7 @@ public class DocumentBuilder {
         int begin = documentText.length();
         documentText.append(token);
         int end = documentText.length();
-        tokens.add(Spans.spanning(begin, end));
+        tokens.add(Span.spanning(begin, end));
         return this;
     }
 
@@ -71,7 +72,7 @@ public class DocumentBuilder {
      * @return this builder.
      */
     public DocumentBuilder endSentence() {
-        sentences.add(Spans.spanning(sentenceMarker, documentText.length()));
+        sentences.add(Span.spanning(sentenceMarker, documentText.length()));
         return this;
     }
 

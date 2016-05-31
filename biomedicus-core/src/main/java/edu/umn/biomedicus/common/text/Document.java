@@ -27,10 +27,10 @@ public interface Document extends Editable {
      * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
      * whitespace.
      *
-     * @param span to create a token from
+     * @param spanLike to create a token from
      * @return the newly created token.
      */
-    Token createToken(Span span);
+    Token createToken(SpanLike spanLike);
 
     /**
      * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
@@ -52,9 +52,9 @@ public interface Document extends Editable {
     /**
      * Add a sentence occurring over the span to this document.
      *
-     * @param span a {@link Span} indicating where the sentence occurs.
+     * @param spanLike a {@link SpanLike} indicating where the sentence occurs.
      */
-    Sentence createSentence(Span span);
+    Sentence createSentence(SpanLike spanLike);
 
     /**
      * Add a sentence occurring between begin and end to this document.
@@ -70,7 +70,7 @@ public interface Document extends Editable {
      *
      * @return iterable of the terms in this document
      */
-    Iterable<Term> getTerms();
+    Iterable<Term> getSimpleTerms();
 
     /**
      * Adds a copy of the {@link Term} to the document.
@@ -126,10 +126,10 @@ public interface Document extends Editable {
     /**
      * Creates a section builder for a section covering the span.
      *
-     * @param span span the section covers.
+     * @param spanLike span the section covers.
      * @return section builder for a new section.
      */
-    SectionBuilder createSection(Span span);
+    SectionBuilder createSection(SpanLike spanLike);
 
     /**
      * Gets an iterable of all the sections in the document.
@@ -177,11 +177,11 @@ public interface Document extends Editable {
      */
     void setMetadata(String key, String value) throws BiomedicusException;
 
-    void createNewInformationAnnotation(Span span, String kind);
+    void createNewInformationAnnotation(SpanLike spanLike, String kind);
 
-    boolean hasNewInformationAnnotation(Span span, String kind);
+    boolean hasNewInformationAnnotation(SpanLike spanLike, String kind);
 
-    boolean hasNewInformationAnnotation(Span span);
+    boolean hasNewInformationAnnotation(SpanLike spanLike);
 
     Document getSiblingDocument(String identifier) throws BiomedicusException;
 }

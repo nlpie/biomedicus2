@@ -52,7 +52,7 @@ public class TermIndex {
         if (indexedTerm.isUnknown()) {
             return null;
         }
-        return getTerm(indexedTerm.termIdentifier());
+        return getTerm(indexedTerm.indexedTerm());
     }
 
     public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {

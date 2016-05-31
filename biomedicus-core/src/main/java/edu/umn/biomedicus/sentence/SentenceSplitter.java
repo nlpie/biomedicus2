@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 
 import java.util.stream.Stream;
 
@@ -43,5 +43,5 @@ public interface SentenceSplitter {
      * @param candidate the candidate to split
      * @return a stream of split candidates
      */
-    Stream<Span> splitCandidate(Span candidate);
+    Stream<SpanLike> splitCandidate(SpanLike candidate);
 }

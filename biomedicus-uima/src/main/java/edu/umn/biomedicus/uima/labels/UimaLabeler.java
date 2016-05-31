@@ -1,10 +1,11 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.jcas.JCas;
 
@@ -21,12 +22,17 @@ public final class UimaLabeler<T> implements Labeler<T> {
     }
 
     @Override
-    public void addLabel(Span span, T label) throws BiomedicusException {
-        addLabel(new Label<>(span, label));
-    }
+    public ValueLabeler value(T value) {
+        return new ValueLabeler() {
+            @Override
+            public void label(int begin, int end) throws BiomedicusException {
+                label(Span.spanning(begin, end));
+            }
 
-    @Override
-    public void addLabel(Label<T> label) throws BiomedicusException {
-        labelAdapter.createLabel(jCas, label);
+            @Override
+            public void label(SpanLike spanLike) throws BiomedicusException {
+                labelAdapter.createLabel(jCas, new Label<>(spanLike.span(), value));
+            }
+        };
     }
 }

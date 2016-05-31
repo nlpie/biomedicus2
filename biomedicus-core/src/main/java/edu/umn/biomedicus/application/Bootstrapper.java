@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 /**
  * Class which loads all biomedicus configuration and creates a Guice injector. Should only be used once per application
@@ -64,6 +66,21 @@ public class Bootstrapper {
         } catch (IOException e) {
             throw new BiomedicusException("Failed to load configuration.", e);
         }
+
+        /*
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> settings = (Map<String, Object>) biomedicusConfiguration.get("settings");
+            BiPredicate<Path, BasicFileAttributes> isSettingsFile = (path, attr) -> path.getFileName().toString()
+                    .endsWith("Settings.yml");
+            Iterator<Path> settingsFilesIterator = Files.find(configDir, 1, isSettingsFile).iterator();
+            while (settingsFilesIterator.hasNext()) {
+                Path settingsFile = settingsFilesIterator.next();
+
+            }
+        } catch (IOException e) {
+            throw new BiomedicusException("Failed to load settings files.", e);
+        } */
 
         // resolve paths
 

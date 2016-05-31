@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class RtfReader {
                 case 0:
                     break;
                 default:
-                    currentState.writeCharacter(ch, Spans.spanning(index, rtfSource.getIndex()));
+                    currentState.writeCharacter(ch, Span.spanning(index, rtfSource.getIndex()));
                     break;
             }
         }

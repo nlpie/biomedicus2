@@ -20,9 +20,9 @@ package edu.umn.biomedicus.icu;
 import com.ibm.icu.text.BreakIterator;
 import com.ibm.icu.text.RuleBasedBreakIterator;
 import edu.umn.biomedicus.common.simple.SimpleTextSpan;
-import edu.umn.biomedicus.common.simple.Spans;
-import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.processing.Tokenizer;
 
@@ -95,10 +95,10 @@ public class BreakIteratorTokenizer implements Tokenizer {
         int begin = breakIterator.first();
         int end = breakIterator.next();
         while (end != BreakIterator.DONE) {
-            Span span = Spans.spanning(begin, end);
-            TextSpan textSpan = new SimpleTextSpan(span, documentText);
+            SpanLike spanLike = Span.spanning(begin, end);
+            TextSpan textSpan = new SimpleTextSpan(spanLike, documentText);
             if (textSpan.containsNonWhitespace()) {
-                document.createToken(span);
+                document.createToken(spanLike);
             }
             begin = end;
             end = breakIterator.next();

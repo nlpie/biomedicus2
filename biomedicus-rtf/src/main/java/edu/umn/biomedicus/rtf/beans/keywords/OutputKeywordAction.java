@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.beans.keywords;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
@@ -45,7 +45,7 @@ public class OutputKeywordAction extends AbstractKeywordAction {
     @Override
     public void executeKeyword(State state) throws RtfReaderException {
         char c = outputString.charAt(0);
-        state.directWriteCharacter(c, Spans.spanning(getBegin(), getEnd()));
+        state.directWriteCharacter(c, Span.spanning(getBegin(), getEnd()));
     }
 
     @Override

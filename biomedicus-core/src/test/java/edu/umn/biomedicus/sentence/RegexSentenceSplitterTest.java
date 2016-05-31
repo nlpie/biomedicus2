@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import mockit.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -54,10 +54,10 @@ public class RegexSentenceSplitterTest {
             matcher.find(); result = false;
         }};
 
-        Stream<Span> spanStream = regexSentenceSplitter.splitCandidate(Spans.spanning(5, 33));
-        List<Span> collect = spanStream.collect(Collectors.toList());
+        Stream<SpanLike> spanStream = regexSentenceSplitter.splitCandidate(Span.spanning(5, 33));
+        List<SpanLike> collect = spanStream.collect(Collectors.toList());
         Assert.assertEquals(2, collect.size());
-        Assert.assertEquals(Spans.spanning(5, 27), collect.get(0));
-        Assert.assertEquals(Spans.spanning(27, 33), collect.get(1));
+        Assert.assertEquals(Span.spanning(5, 27), collect.get(0));
+        Assert.assertEquals(Span.spanning(27, 33), collect.get(1));
     }
 }
