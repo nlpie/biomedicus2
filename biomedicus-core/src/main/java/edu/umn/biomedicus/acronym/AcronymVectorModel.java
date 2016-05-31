@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -186,7 +186,41 @@ class AcronymVectorModel implements AcronymModel {
 
         yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
         yaml.dump(vectorSpaceDouble, Files.newBufferedWriter(outputDir.resolve("vectorSpace.yml")));
-        yaml.dump(senseMap, Files.newBufferedWriter(outputDir.resolve("senseMap.yml")));
+        serializeSenseMap(outputDir.resolve("senseMap.ser"));
+    }
+
+    /**
+     * Binary serialization for the senseMap, which gets too big for yaml (and isn't very human readable anyway)
+     * Serializes built-in java classes
+     * @param outFile output file to serialize to
+     * @throws IOException
+     */
+    private void serializeSenseMap(Path outFile) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outFile.toFile()));
+        oos.writeObject(senseMap.size());
+        for(Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
+            oos.writeObject(e.getKey());
+            oos.writeObject(e.getValue().getVector());
+        }
+        oos.flush();
+        oos.close();
+    }
+
+    private static Map<String, DoubleVector> deserializeSenseMap(Path senseMapPath) throws IOException {
+        Map<String, DoubleVector> map = new HashMap<>();
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(senseMapPath.toFile()));
+            int size = (int) ois.readObject();
+            for(int i=0; i<size; i++) {
+                String word = (String) ois.readObject();
+                DoubleVector vector = new WordVectorDouble();
+                vector.setVector((Map<Integer, Double>) ois.readObject());
+                map.put(word, vector);
+            }
+        } catch(ClassNotFoundException e) {
+            throw new IOException();
+        }
+        return map;
     }
 
     /**
@@ -229,7 +263,7 @@ class AcronymVectorModel implements AcronymModel {
 
                 LOGGER.info("Loading acronym sense map: {}", senseMapPath);
                 @SuppressWarnings("unchecked")
-                Map<String, DoubleVector> senseMap = (Map<String, DoubleVector>) yaml.load(Files.newBufferedReader(senseMapPath));
+                Map<String, DoubleVector> senseMap = deserializeSenseMap(senseMapPath);
 
                 return new AcronymVectorModel(vectorSpaceDouble, senseMap, expansionsModel, useAlignment ? alignmentModel.get() : null);
             } catch (IOException e) {

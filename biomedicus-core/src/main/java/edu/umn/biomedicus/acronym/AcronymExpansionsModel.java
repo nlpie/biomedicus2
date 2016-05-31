@@ -13,10 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -34,6 +31,10 @@ class AcronymExpansionsModel {
 
     Collection<String> getExpansions(String acronym) {
         return expansions.get(acronym);
+    }
+
+    Set<String> getAcronyms() {
+        return expansions.keySet();
     }
 
     boolean hasExpansions(String acronym) {

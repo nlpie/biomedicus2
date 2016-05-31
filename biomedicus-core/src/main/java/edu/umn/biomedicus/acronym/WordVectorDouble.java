@@ -53,11 +53,13 @@ public class WordVectorDouble implements DoubleVector {
 
     // sets this vector to the Hadamard/elementwise product with the argument vector
     public void multiply(DoubleVector v) {
-        for (int k : getKeySet()) {
-            if (v.get(k) == 0) {
-                vector.remove(k);
-            } else {
-                vector.put(k, vector.get(k) * v.get(k));
+        for (int k : v.getKeySet()) {
+            if(vector.containsKey(k)) {
+                if (v.get(k) == 0) {
+                    vector.remove(k);
+                } else {
+                    vector.put(k, vector.get(k) * v.get(k));
+                }
             }
         }
     }
@@ -97,6 +99,11 @@ public class WordVectorDouble implements DoubleVector {
             return vector.get(i);
         else
             return 0;
+    }
+
+    @Override
+    public String toString() {
+        return vector.toString();
     }
 
 }
