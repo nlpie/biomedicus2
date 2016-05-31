@@ -130,6 +130,16 @@ public class AcronymExpansionsBuilder {
                         } else {
                             senses.clear();
                         }
+                        // Many senses in CASI, for some reason, are many redundant sense joined by semicolons
+                        if(sense.contains(";")) {
+                            String[] senseVersions = sense.split(";");
+                            // Sometimes the first sense restates or simply is the abbreviation
+                            if(senseVersions[0].startsWith(abbreviation)) {
+                                sense = senseVersions[1];
+                            } else {
+                                sense = senseVersions[0];
+                            }
+                        }
                         senses.add(sense);
                     }
                 });

@@ -48,6 +48,7 @@ class AcronymDetector implements DocumentProcessor {
                 "WP",   // wh-pronoun
                 "WP$",  // wh-pronoun, poss
                 "WDT",  // wh-determiner
+                "POS",  // possessive 's
                 "MD"    // modal
         );
     }
