@@ -70,7 +70,7 @@ public interface Document extends Editable {
      *
      * @return iterable of the terms in this document
      */
-    Iterable<Term> getSimpleTerms();
+    Iterable<Term> getTerms();
 
     /**
      * Adds a copy of the {@link Term} to the document.

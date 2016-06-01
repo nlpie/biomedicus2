@@ -97,7 +97,7 @@ class JCasDocument extends AbstractDocument {
         return new SentenceAdapter(view, sentenceAnnotation);
     }
 
-    public Iterable<Term> getSimpleTerms() {
+    public Iterable<Term> getTerms() {
         final AnnotationIndex<Annotation> terms = view.getAnnotationIndex(TermAnnotation.type);
         return () -> new FSIteratorAdapter<>(terms, UimaAdapters::termAdapter);
     }

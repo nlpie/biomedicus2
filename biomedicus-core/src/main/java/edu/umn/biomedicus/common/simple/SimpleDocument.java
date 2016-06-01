@@ -110,7 +110,7 @@ public class SimpleDocument extends AbstractDocument {
         return sentence;
     }
 
-    public Iterable<Term> getSimpleTerms() {
+    public Iterable<Term> getTerms() {
         return terms;
     }
 

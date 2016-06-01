@@ -66,7 +66,7 @@ public class SimpleDocumentTest {
     public void testGetTerms(@Injectable List<SimpleTerm> simpleTerms) throws Exception {
         Deencapsulation.setField(simpleDocument, "terms", simpleTerms);
 
-        assertEquals(simpleDocument.getSimpleTerms(), simpleTerms);
+        assertEquals(simpleDocument.getTerms(), simpleTerms);
     }
 
     @Test
