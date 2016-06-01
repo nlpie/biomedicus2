@@ -19,14 +19,14 @@
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>false</primitive>
     <delegateAnalysisEngineSpecifiers>
+        <delegateAnalysisEngine key="sentence">
+            <import location="annotator/SentenceAnnotator.xml"/>
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="token">
-            <import location="annotator/TokenizerAnnotator.xml"/>
+            <import location="annotator/PennLikeTokenizer.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="words">
             <import location="annotator/WordLabeler.xml"/>
-        </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="sentence">
-            <import location="annotator/SentenceAnnotator.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="misspellings">
             <import location="annotator/MisspellingDetector.xml"/>
@@ -68,9 +68,9 @@
         <vendor>${organization.name}</vendor>
         <flowConstraints>
             <fixedFlow>
+                <node>sentence</node>
                 <node>token</node>
                 <node>words</node>
-                <node>sentence</node>
                 <node>misspellings</node>
                 <node>spellCorrect</node>
                 <node>posAnnotator</node>

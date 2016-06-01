@@ -63,6 +63,10 @@ public final class Span implements SpanLike, Comparable<Span> {
         return end;
     }
 
+    public Span relativize(Span child) {
+        return new Span(begin + child.begin, begin + child.end);
+    }
+
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) {
@@ -139,5 +143,4 @@ public final class Span implements SpanLike, Comparable<Span> {
         if (compare != 0) return compare;
         return Integer.compare(first.getEnd(), second.getEnd());
     }
-
 }

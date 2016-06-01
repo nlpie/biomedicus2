@@ -35,7 +35,7 @@ public final class UimaLabels<T> implements Labels<T> {
     @Override
     public Labels<T> insideSpan(SpanLike spanLike) {
         AnnotationIndex<? extends Annotation> annotationIndex = jCas.getAnnotationIndex(labelAdapter.getjCasClass());
-        Annotation bound = new Annotation(jCas, spanLike.getBegin(), spanLike.getEnd() + 1);
+        Annotation bound = new Annotation(jCas, spanLike.getBegin() - 1, spanLike.getEnd() + 1);
         Iterable<Label<T>> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(annotationIndex, bound,
                 labelAdapter::adaptAnnotation);
         return new UimaLabels<>(jCas, labelAdapter, iterable).filter(spanLike::contains);
