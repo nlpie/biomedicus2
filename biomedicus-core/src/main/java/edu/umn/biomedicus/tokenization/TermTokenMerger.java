@@ -40,7 +40,7 @@ public class TermTokenMerger implements DocumentProcessor {
         while (iterator.hasNext()) {
             Token token = iterator.next();
             if (prev.length() == 0) {
-                prev = token.span();
+                prev = token.toSpan();
                 continue;
             }
             char last = text.charAt(prev.getEnd() - 1);
@@ -53,7 +53,7 @@ public class TermTokenMerger implements DocumentProcessor {
                 prev = new Span(prev.getBegin(), token.getEnd());
             } else {
                 termTokenLabeler.label(prev);
-                prev = token.span();
+                prev = token.toSpan();
             }
         }
         termTokenLabeler.label(prev);

@@ -2,7 +2,6 @@ package edu.umn.biomedicus.uima.labels;
 
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -48,7 +47,7 @@ public final class DefaultLabelAdapter<T, U extends Annotation> implements Label
     @Override
     public void createLabel(JCas jCas, Label<T> label) throws BiomedicusException {
         try {
-            U annotation = constructor.newInstance(jCas, label.span().getBegin(), label.span().getEnd());
+            U annotation = constructor.newInstance(jCas, label.toSpan().getBegin(), label.toSpan().getEnd());
             forwardAdapter.accept(label.value(), annotation);
             annotation.addToIndexes();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

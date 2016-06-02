@@ -6,6 +6,8 @@ import edu.umn.biomedicus.common.text.SpanLike;
 import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public final class Label<T> implements SpanLike {
     private final Span span;
@@ -23,6 +25,14 @@ public final class Label<T> implements SpanLike {
     @SuppressWarnings("unchecked")
     public Class<T> labelClass() {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
+
+    public void call(BiConsumer<Span, T> biConsumer) {
+        biConsumer.accept(span, value);
+    }
+
+    public <U> Label<U> map(Function<T, U> function) {
+        return new Label<>(span, function.apply(value));
     }
 
     @Override

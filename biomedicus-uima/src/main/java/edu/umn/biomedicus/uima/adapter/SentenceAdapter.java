@@ -22,7 +22,7 @@ import edu.umn.biomedicus.common.text.Term;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
-import edu.umn.biomedicus.type.TokenAnnotation;
+import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.StringArray;
 
@@ -45,7 +45,7 @@ class SentenceAdapter extends AnnotationAdapter<SentenceAnnotation> implements S
 
     @Override
     public Stream<Token> tokens() {
-        return getCoveredStream(TokenAnnotation.type, UimaAdapters::tokenAdapter);
+        return getCoveredStream(ParseToken.type, UimaAdapters::tokenAdapter);
     }
 
     @Override

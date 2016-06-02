@@ -31,7 +31,7 @@ public final class UimaLabeler<T> implements Labeler<T> {
 
             @Override
             public void label(SpanLike spanLike) throws BiomedicusException {
-                labelAdapter.createLabel(jCas, new Label<>(spanLike.span(), value));
+                labelAdapter.createLabel(jCas, new Label<>(spanLike.toSpan(), value));
             }
         };
     }

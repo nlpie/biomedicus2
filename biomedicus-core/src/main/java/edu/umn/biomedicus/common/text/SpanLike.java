@@ -29,7 +29,7 @@ public interface SpanLike {
         return getBegin() == other.getBegin() && getEnd() == other.getEnd();
     }
 
-    default Span span() {
+    default Span toSpan() {
         return new Span(getBegin(), getEnd());
     }
 

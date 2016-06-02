@@ -8,9 +8,7 @@ import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,7 +149,7 @@ public class PennLikeTokenizer implements DocumentProcessor {
                 if (span.length() == 0) {
                     continue;
                 }
-                document.createToken(sentence.span().relativize(span));
+                document.createToken(sentence.toSpan().relativize(span));
             }
         }
     }

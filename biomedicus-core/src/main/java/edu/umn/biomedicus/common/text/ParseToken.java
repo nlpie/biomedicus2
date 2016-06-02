@@ -1,5 +1,4 @@
 package edu.umn.biomedicus.common.text;
 
-public final class Acronym {
-
+public final class ParseToken {
 }

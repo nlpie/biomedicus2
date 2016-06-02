@@ -1,7 +1,6 @@
 package edu.umn.biomedicus.uima.labels;
 
-import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.common.labels.AbstractLabels;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.text.SpanLike;
@@ -11,21 +10,18 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.Iterator;
 
-
-@DocumentScoped
-public final class UimaLabels<T> implements Labels<T> {
+final class UimaLabels<T> extends AbstractLabels<T> {
     private final JCas jCas;
     private final LabelAdapter<T> labelAdapter;
     private final Iterable<Label<T>> iterable;
 
-    public UimaLabels(JCas jCas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
+    private UimaLabels(JCas jCas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
         this.jCas = jCas;
         this.labelAdapter = labelAdapter;
         this.iterable = iterable;
     }
 
-    @Inject
-    public UimaLabels(JCas jCas, LabelAdapter<T> labelAdapter) {
+    UimaLabels(JCas jCas, LabelAdapter<T> labelAdapter) {
         this.jCas = jCas;
         this.labelAdapter = labelAdapter;
         AnnotationIndex<? extends Annotation> annotationIndex = jCas.getAnnotationIndex(labelAdapter.getjCasClass());
@@ -39,11 +35,6 @@ public final class UimaLabels<T> implements Labels<T> {
         Iterable<Label<T>> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(annotationIndex, bound,
                 labelAdapter::adaptAnnotation);
         return new UimaLabels<>(jCas, labelAdapter, iterable).filter(spanLike::contains);
-    }
-
-    @Override
-    public Labels<T> withSpan(SpanLike spanLike) {
-        return insideSpan(spanLike).filter(spanLike::spanEquals);
     }
 
     @Override

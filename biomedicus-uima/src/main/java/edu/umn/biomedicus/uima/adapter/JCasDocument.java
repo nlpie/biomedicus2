@@ -26,6 +26,7 @@ import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
 import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
+import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
@@ -80,7 +81,7 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public Iterable<Token> getTokens() {
-        final AnnotationIndex<Annotation> tokens = view.getAnnotationIndex(TokenAnnotation.type);
+        final AnnotationIndex<Annotation> tokens = view.getAnnotationIndex(ParseToken.type);
         return () -> new FSIteratorAdapter<>(tokens, UimaAdapters::tokenAdapter);
     }
 
@@ -115,7 +116,7 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public Token createToken(int begin, int end) {
-        TokenAnnotation tokenAnnotation = new TokenAnnotation(view, begin, end);
+        ParseToken tokenAnnotation = new ParseToken(view, begin, end);
         tokenAnnotation.addToIndexes();
         return UimaAdapters.tokenAdapter(tokenAnnotation);
     }
