@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +17,8 @@
 package edu.umn.biomedicus.common.text;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Biomedicus basic unit for a single token in a document.
@@ -30,7 +28,7 @@ import java.util.List;
  *
  * @since 1.0.0
  */
-public interface Token extends Span, Editable {
+public interface Token extends SpanLike, Editable {
     /**
      * Gets the text of this Token as it appears in the document, whether or not it is correct.
      *
@@ -109,40 +107,6 @@ public interface Token extends Span, Editable {
     void setIsMisspelled(boolean misspelled);
 
     /**
-     * Returns whether or not this token is an acronym/abbreviation
-     *
-     * @return true if the token has been identified as an acronym/abbreviation, false otherwise
-     */
-    boolean isAcronym();
-
-    /**
-     * Sets whether or not this token is misspelled
-     *
-     * @param acronym true if the token is misspelled, false otherwise
-     */
-    void setIsAcronym(boolean acronym);
-
-    /**
-     * Accesses the long form of this abbreviation token
-     *
-     * @return the long form
-     */
-    @Nullable
-    String getLongForm();
-
-    /**
-     * Sets the long form of this abbreviation token
-     *
-     * @param longForm the long form to set
-     */
-    void setLongForm(@Nullable String longForm);
-
-    @Nullable
-    List<String> getLongFormNorm();
-
-    void setLongFormNorm(List<String> longFormNorm);
-
-    /**
      * Returns the corrected spelling of the token
      *
      * @return the correct spelling of the token, if it has been corrected, or null otherwise
@@ -165,14 +129,4 @@ public interface Token extends Span, Editable {
     default boolean isCapitalized() {
         return Character.isUpperCase(getText().charAt(0));
     }
-
-    @Nullable
-    IndexedTerm getWordTerm();
-
-    void setWordTerm(IndexedTerm wordTerm);
-
-    @Nullable
-    IndexedTerm getNormTerm();
-
-    void setNormTerm(IndexedTerm normTerm);
 }

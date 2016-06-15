@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
@@ -95,9 +111,6 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
             throw new IllegalStateException("view name is null");
         }
         try {
-            HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
-            additionalSeeded.put(Key.get(JCas.class), jCas);
-            additionalSeeded.put(Key.get(CAS.class), jCas.getCas());
 
             LOGGER.debug("Processing document from view: {}", viewName);
             JCas view = jCas.getView(viewName);
@@ -105,13 +118,18 @@ public class CollectionProcessorAnnotator extends JCasAnnotator_ImplBase {
                 LOGGER.error("Trying to process null view");
                 throw new BiomedicusException("View was null");
             }
+
+            HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
+            additionalSeeded.put(Key.get(JCas.class), view);
+            additionalSeeded.put(Key.get(CAS.class), view.getCas());
+
             JCasDocument jCasDocument = new JCasDocument(view);
             collectionProcessorRunner.processDocument(jCasDocument, additionalSeeded);
         } catch (CASException e) {
             LOGGER.error("error loading cas from view: " + viewName, e);
             throw new AnalysisEngineProcessException(e);
         } catch (BiomedicusException e) {
-            LOGGER.error("error while processing document", e);
+            LOGGER.error("error while processing document");
             throw new AnalysisEngineProcessException(e);
         }
     }

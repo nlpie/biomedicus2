@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.utilities.Strings;
 
@@ -39,7 +40,7 @@ import java.util.Set;
  * @since 1.0.0
  */
 public class SuffixWordProbabilityModel implements WordProbabilityModel {
-    static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartOfSpeech.REAL_TAGS;
+    static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartsOfSpeech.REAL_TAGS;
 
     private Map<String, Map<PartOfSpeech, Double>> probabilities;
     private int maxSuffixLength;

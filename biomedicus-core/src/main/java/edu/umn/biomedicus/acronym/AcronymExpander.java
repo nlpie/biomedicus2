@@ -1,18 +1,36 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.simple.SimpleToken;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Will normalize/expand/disambiguate any acronyms or abbreviations that have been tagged by AcronymDetector.
@@ -23,80 +41,38 @@ import java.util.List;
  */
 @DocumentScoped
 class AcronymExpander implements DocumentProcessor {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymModel.class);
-
     private final AcronymModel model;
-
-    private final Document document;
+    private final Labeler<AcronymExpansion> acronymExpansionLabeler;
+    private final Labels<Acronym> acronymLabels;
+    private final Labels<TermToken> termTokenLabels;
 
     @Inject
-    public AcronymExpander(@Setting("acronym.model") AcronymModel model, Document document) {
+    public AcronymExpander(@Setting("acronym.model") AcronymModel model,
+                           Labels<TermToken> termTokenLabels,
+                           Labels<Acronym> acronymLabels,
+                           Labeler<AcronymExpansion> acronymExpansionLabeler) {
         this.model = model;
-        this.document = document;
-    }
-
-    /**
-     * @param token a Token to check
-     * @return true if the token has any letters
-     */
-    private boolean hasLetters(Token token) {
-        return !token.getText().toLowerCase().matches("[^a-z]*");
+        this.termTokenLabels = termTokenLabels;
+        this.acronymLabels = acronymLabels;
+        this.acronymExpansionLabeler = acronymExpansionLabeler;
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Expanding acronyms and abbreviations");
 
-        List<Token> allTokens = new ArrayList<>();
-        for (Token token : document.getTokens()) {
-            allTokens.add(token);
-        }
+        List<TokenLike> allTokens = termTokenLabels.stream().map(Label::value).collect(Collectors.toList());
 
-        Token prevToken = null;
-        Token prevPrevToken = null;
-
-        for (Token token : document.getTokens()) {
-
-            if (token.isAcronym() && hasLetters(token)) {
-                boolean solved = false;
-
-                // First see if these two or three tokens form an obvious abbreviation
-                if (prevToken != null && prevToken.isAcronym()) {
-                    if (prevPrevToken != null && prevPrevToken.isAcronym()) {
-                        Token threeWordToken = new SimpleToken(document.getText(), prevPrevToken.getBegin(), token.getEnd());
-                        if (model.hasAcronym(threeWordToken)) {
-                            String sense = model.findBestSense(allTokens, threeWordToken);
-                            token.setLongForm(sense);
-                            prevToken.setLongForm(sense);
-                            prevPrevToken.setLongForm(sense);
-                            solved = true;
-                        }
-                    }
-                    if (!solved) {
-                        Token twoWordToken = new SimpleToken(document.getText(), prevToken.getBegin(), token.getEnd());
-                        if (model.hasAcronym(twoWordToken)) {
-                            String sense = model.findBestSense(allTokens, twoWordToken);
-                            token.setLongForm(sense);
-                            prevToken.setLongForm(sense);
-                            solved = true;
-                        }
-                    }
-                }
-
-                if (!solved) {
-                    token.setLongForm(model.findBestSense(allTokens, token));
-                }
-
-                // If the sense of the 'acronym' is really just an English word, revoke its acronym status
-                String longForm = token.getLongForm();
-                if (longForm != null && longForm.toLowerCase().equals(token.getText().toLowerCase())) {
-                    token.setIsAcronym(false);
-                    token.setLongForm(null);
-                }
+        for (Label<Acronym> acronymLabel : acronymLabels) {
+            Label<TermToken> termTokenLabel = termTokenLabels.withSpan(acronymLabel).get();
+            TermToken termToken = termTokenLabel.value();
+            String sense = model.findBestSense(allTokens, termToken);
+            if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.getText())) {
+                acronymExpansionLabeler.value(new AcronymExpansion(sense, termToken.getTrailingText()))
+                        .label(acronymLabel);
             }
-            prevPrevToken = prevToken;
-            prevToken = token;
         }
+
     }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.text;
 
 import edu.umn.biomedicus.common.semantics.SubstanceUsage;
@@ -24,25 +40,6 @@ public interface Document extends Editable {
     Iterable<Token> getTokens();
 
     /**
-     * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
-     * whitespace.
-     *
-     * @param span to create a token from
-     * @return the newly created token.
-     */
-    Token createToken(Span span);
-
-    /**
-     * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
-     * whitespace.
-     *
-     * @param begin the begin of the token
-     * @param end   the end of the token
-     * @return the newly created token
-     */
-    Token createToken(int begin, int end);
-
-    /**
      * Get an {@link Iterable} over all the {@link Sentence} in a document.
      *
      * @return iterable of the sentences in a document.
@@ -52,9 +49,9 @@ public interface Document extends Editable {
     /**
      * Add a sentence occurring over the span to this document.
      *
-     * @param span a {@link Span} indicating where the sentence occurs.
+     * @param spanLike a {@link SpanLike} indicating where the sentence occurs.
      */
-    Sentence createSentence(Span span);
+    Sentence createSentence(SpanLike spanLike);
 
     /**
      * Add a sentence occurring between begin and end to this document.
@@ -126,10 +123,10 @@ public interface Document extends Editable {
     /**
      * Creates a section builder for a section covering the span.
      *
-     * @param span span the section covers.
+     * @param spanLike span the section covers.
      * @return section builder for a new section.
      */
-    SectionBuilder createSection(Span span);
+    SectionBuilder createSection(SpanLike spanLike);
 
     /**
      * Gets an iterable of all the sections in the document.
@@ -177,11 +174,11 @@ public interface Document extends Editable {
      */
     void setMetadata(String key, String value) throws BiomedicusException;
 
-    void createNewInformationAnnotation(Span span, String kind);
+    void createNewInformationAnnotation(SpanLike spanLike, String kind);
 
-    boolean hasNewInformationAnnotation(Span span, String kind);
+    boolean hasNewInformationAnnotation(SpanLike spanLike, String kind);
 
-    boolean hasNewInformationAnnotation(Span span);
+    boolean hasNewInformationAnnotation(SpanLike spanLike);
 
     Document getSiblingDocument(String identifier) throws BiomedicusException;
 }

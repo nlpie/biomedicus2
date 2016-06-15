@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
@@ -6,7 +22,9 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.slf4j.Logger;
@@ -67,7 +85,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public Collection<String> getExpansions(Token token) {
+    public Collection<String> getExpansions(TokenLike token) {
         String acronym = Acronyms.standardForm(token);
         Collection<String> expansions = acronymExpansionsModel.getExpansions(acronym);
         if (expansions != null) {
@@ -82,7 +100,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token
      * @return
      */
-    public boolean hasAcronym(Token token) {
+    public boolean hasAcronym(TokenLike token) {
         String acronym = Acronyms.standardForm(token);
         return acronymExpansionsModel.hasExpansions(acronym);
     }
@@ -95,7 +113,7 @@ class AcronymVectorModel implements AcronymModel {
      * @return
      */
     @Override
-    public String findBestSense(List<Token> context, Token token) {
+    public String findBestSense(List<TokenLike> context, TokenLike token) {
 
         // String to assign to unknown acronyms
 
@@ -192,13 +210,14 @@ class AcronymVectorModel implements AcronymModel {
     /**
      * Binary serialization for the senseMap, which gets too big for yaml (and isn't very human readable anyway)
      * Serializes built-in java classes
+     *
      * @param outFile output file to serialize to
      * @throws IOException
      */
     private void serializeSenseMap(Path outFile) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outFile.toFile()));
         oos.writeObject(senseMap.size());
-        for(Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
+        for (Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
             oos.writeObject(e.getKey());
             oos.writeObject(e.getValue().getVector());
         }
@@ -211,13 +230,15 @@ class AcronymVectorModel implements AcronymModel {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(senseMapPath.toFile()));
             int size = (int) ois.readObject();
-            for(int i=0; i<size; i++) {
+            for (int i = 0; i < size; i++) {
                 String word = (String) ois.readObject();
                 DoubleVector vector = new WordVectorDouble();
-                vector.setVector((Map<Integer, Double>) ois.readObject());
+                @SuppressWarnings("unchecked")
+                Map<Integer, Double> readVector = (Map<Integer, Double>) ois.readObject();
+                vector.setVector(readVector);
                 map.put(word, vector);
             }
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new IOException();
         }
         return map;

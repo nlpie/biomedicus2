@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,10 @@
 package edu.umn.biomedicus.tools.mtsamples;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.type.*;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
+import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
@@ -84,7 +86,7 @@ public class MtsamplesViewMigrator implements ViewMigrator {
 
         AnnotationIndex<Annotation> tokenIndex = source.getAnnotationIndex(tokenType);
         for (Annotation annotation : tokenIndex) {
-            TokenAnnotation tokenAnnotation = new TokenAnnotation(target, annotation.getBegin(), annotation.getEnd());
+            ParseToken tokenAnnotation = new ParseToken(target, annotation.getBegin(), annotation.getEnd());
             String tokenPOS = annotation.getStringValue(posFeature).toUpperCase().trim();
             if (tokenPOS.equals(";")) {
                 tokenPOS = ":";
@@ -92,9 +94,9 @@ public class MtsamplesViewMigrator implements ViewMigrator {
             if (tokenPOS.equals("?")) {
                 tokenPOS = ".";
             }
-            PartOfSpeech partOfSpeech = PartOfSpeech.MAP.get(tokenPOS);
+            PartOfSpeech partOfSpeech = PartsOfSpeech.MAP.get(tokenPOS);
             if (partOfSpeech == null) {
-                partOfSpeech = PartOfSpeech.FALLBACK_MAP.get(tokenPOS);
+                partOfSpeech = PartsOfSpeech.FALLBACK_MAP.get(tokenPOS);
                 if (partOfSpeech == null) {
                     LOGGER.error("Unrecognized part of speech {}", tokenPOS);
                     throw new RuntimeException();

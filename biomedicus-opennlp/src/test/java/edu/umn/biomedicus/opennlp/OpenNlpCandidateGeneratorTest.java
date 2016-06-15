@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.opennlp;
 
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.TextSpan;
 import mockit.Injectable;
 import mockit.NonStrictExpectations;
@@ -32,7 +32,8 @@ public class OpenNlpCandidateGeneratorTest {
     @Tested
     OpenNlpCandidateGenerator openNlpCandidateGenerator;
     @Injectable SentenceDetectorME sentenceDetectorME;
-    @Injectable TextSpan textSpan;
+    @Injectable
+    TextSpan textSpan;
 
     @Test
     public void testGenerateSentenceSpans() throws Exception {
@@ -43,9 +44,9 @@ public class OpenNlpCandidateGeneratorTest {
             textSpan.containsNonWhitespace(); result = true;
             textSpan.containsNonWhitespace(); result = false;
         }};
-        List<edu.umn.biomedicus.common.text.Span> spans = openNlpCandidateGenerator.generateSentenceSpans(text);
-        Assert.assertEquals(2, spans.size());
-        Assert.assertEquals(spans.get(0), Spans.spanning(0, 38));
-        Assert.assertEquals(spans.get(1), Spans.spanning(40, 42));
+        List<SpanLike> spanLikes = openNlpCandidateGenerator.generateSentenceSpans(text);
+        Assert.assertEquals(2, spanLikes.size());
+        Assert.assertEquals(spanLikes.get(0), edu.umn.biomedicus.common.text.Span.create(0, 38));
+        Assert.assertEquals(spanLikes.get(1), edu.umn.biomedicus.common.text.Span.create(40, 42));
     }
 }

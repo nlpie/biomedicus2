@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.text.*;
@@ -43,16 +59,16 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testAddSentence(@Injectable Span span, @Mocked Token token, @Mocked SimpleSentence sentence) throws Exception {
+    public void testAddSentence(@Injectable SpanLike spanLike, @Mocked Token token, @Mocked SimpleSentence sentence) throws Exception {
         new Expectations() {{
-            span.getBegin(); result = 10;
-            span.getEnd(); result = 15;
+            spanLike.getBegin(); result = 10;
+            spanLike.getEnd(); result = 15;
             tokenList.stream(); result = Stream.of(token, token, token);
             token.getBegin(); returns(5, 6, 10);
             token.getEnd(); returns(6, 10, 15);
         }};
 
-        simpleDocument.createSentence(span);
+        simpleDocument.createSentence(spanLike);
 
         new Verifications() {{
             List<Token> tokens;
@@ -63,20 +79,20 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testGetTerms(@Injectable List<Term> terms) throws Exception {
-        Deencapsulation.setField(simpleDocument, "terms", terms);
+    public void testGetTerms(@Injectable List<SimpleTerm> simpleTerms) throws Exception {
+        Deencapsulation.setField(simpleDocument, "terms", simpleTerms);
 
-        assertEquals(simpleDocument.getTerms(), terms);
+        assertEquals(simpleDocument.getTerms(), simpleTerms);
     }
 
     @Test
-    public void testAddTerm(@Injectable List<Term> terms, @Injectable Term term) throws Exception {
-        Deencapsulation.setField(simpleDocument, "terms", terms);
+    public void testAddTerm(@Injectable List<SimpleTerm> simpleTerms, @Injectable SimpleTerm simpleTerm) throws Exception {
+        Deencapsulation.setField(simpleDocument, "terms", simpleTerms);
 
-        simpleDocument.addTerm(term);
+        simpleDocument.addTerm(simpleTerm);
 
         new Verifications() {{
-            terms.add(term);
+            simpleTerms.add(simpleTerm);
         }};
     }
 
@@ -90,24 +106,6 @@ public class SimpleDocumentTest {
         }
 
         assertEquals(stringBuilder.toString(), "document text");
-    }
-
-    @Test
-    public void testAddToken(@Injectable Span span) throws Exception {
-        new Expectations() {{
-            span.getBegin(); result = 0;
-            span.getEnd(); result = 8;
-        }};
-
-        simpleDocument.createToken(span);
-
-        new Verifications() {{
-            Token token;
-            tokenList.add(token = withCapture());
-            assertEquals(token.getText(), "document");
-            assertEquals(token.getBegin(), 0);
-            assertEquals(token.getEnd(), 8);
-        }};
     }
 
     @Test

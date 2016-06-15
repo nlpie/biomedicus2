@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,13 @@ import edu.umn.biomedicus.common.semantics.SubstanceUsage;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageBuilder;
 import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
 import edu.umn.biomedicus.common.simple.SimpleTextSpan;
-import edu.umn.biomedicus.common.simple.Spans;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
+import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
+import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
@@ -80,7 +81,7 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public Iterable<Token> getTokens() {
-        final AnnotationIndex<Annotation> tokens = view.getAnnotationIndex(TokenAnnotation.type);
+        final AnnotationIndex<Annotation> tokens = view.getAnnotationIndex(ParseToken.type);
         return () -> new FSIteratorAdapter<>(tokens, UimaAdapters::tokenAdapter);
     }
 
@@ -97,7 +98,6 @@ class JCasDocument extends AbstractDocument {
         return new SentenceAdapter(view, sentenceAnnotation);
     }
 
-    @Override
     public Iterable<Term> getTerms() {
         final AnnotationIndex<Annotation> terms = view.getAnnotationIndex(TermAnnotation.type);
         return () -> new FSIteratorAdapter<>(terms, UimaAdapters::termAdapter);
@@ -112,13 +112,6 @@ class JCasDocument extends AbstractDocument {
     public Reader getReader() {
         InputStream sofaDataStream = view.getSofaDataStream();
         return new BufferedReader(new InputStreamReader(sofaDataStream));
-    }
-
-    @Override
-    public Token createToken(int begin, int end) {
-        TokenAnnotation tokenAnnotation = new TokenAnnotation(view, begin, end);
-        tokenAnnotation.addToIndexes();
-        return UimaAdapters.tokenAdapter(tokenAnnotation);
     }
 
     @Override
@@ -172,17 +165,17 @@ class JCasDocument extends AbstractDocument {
         Iterable<Annotation> textSegmentAnnotation = view.getAnnotationIndex(TextSegmentAnnotation.type);
         if (textSegmentAnnotation.iterator().hasNext()) {
             return StreamSupport.stream(textSegmentAnnotation.spliterator(), false)
-                    .map(a -> new SimpleTextSpan(Spans.spanning(a.getBegin(), a.getEnd()), view.getDocumentText()));
+                    .map(a -> new SimpleTextSpan(Span.create(a.getBegin(), a.getEnd()), view.getDocumentText()));
         } else {
             String documentText = view.getDocumentText();
-            TextSpan textSpan = Spans.textSpan(documentText);
+            TextSpan textSpan = new SimpleTextSpan(documentText);
             return Stream.of(textSpan);
         }
     }
 
     @Override
-    public SectionBuilder createSection(Span span) {
-        SectionAnnotation sectionAnnotation = new SectionAnnotation(view, span.getBegin(), span.getEnd());
+    public SectionBuilder createSection(SpanLike spanLike) {
+        SectionAnnotation sectionAnnotation = new SectionAnnotation(view, spanLike.getBegin(), spanLike.getEnd());
         return new SectionBuilderAdapter(view, sectionAnnotation);
     }
 
@@ -249,19 +242,19 @@ class JCasDocument extends AbstractDocument {
     }
 
     @Override
-    public void createNewInformationAnnotation(Span span, String kind) {
-        NewInformationAnnotation newInformationAnnotation = new NewInformationAnnotation(view, span.getBegin(), span.getEnd());
+    public void createNewInformationAnnotation(SpanLike spanLike, String kind) {
+        NewInformationAnnotation newInformationAnnotation = new NewInformationAnnotation(view, spanLike.getBegin(), spanLike.getEnd());
         newInformationAnnotation.setKind(kind);
         newInformationAnnotation.addToIndexes();
     }
 
     @Override
-    public boolean hasNewInformationAnnotation(Span span, String kind) {
+    public boolean hasNewInformationAnnotation(SpanLike spanLike, String kind) {
         AnnotationIndex<Annotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.type);
         for (Annotation annotation : newInfos) {
             @SuppressWarnings("unchecked")
             NewInformationAnnotation newInfo = (NewInformationAnnotation) annotation;
-            if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd() && Objects.equals(newInfo.getKind(), kind)) {
+            if (newInfo.getBegin() == spanLike.getBegin() && newInfo.getEnd() == spanLike.getEnd() && Objects.equals(newInfo.getKind(), kind)) {
                 return true;
             }
         }
@@ -269,12 +262,12 @@ class JCasDocument extends AbstractDocument {
     }
 
     @Override
-    public boolean hasNewInformationAnnotation(Span span) {
+    public boolean hasNewInformationAnnotation(SpanLike spanLike) {
         AnnotationIndex<Annotation> newInfos = view.getAnnotationIndex(NewInformationAnnotation.type);
         for (Annotation annotation : newInfos) {
             @SuppressWarnings("unchecked")
             NewInformationAnnotation newInfo = (NewInformationAnnotation) annotation;
-            if (newInfo.getBegin() == span.getBegin() && newInfo.getEnd() == span.getEnd()) {
+            if (newInfo.getBegin() == spanLike.getBegin() && newInfo.getEnd() == spanLike.getEnd()) {
                 return true;
             }
         }

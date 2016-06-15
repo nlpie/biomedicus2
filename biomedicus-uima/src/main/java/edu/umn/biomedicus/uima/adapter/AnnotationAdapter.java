@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
+import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
@@ -31,7 +32,7 @@ import java.util.stream.StreamSupport;
  * @author Ben Knoll
  * @since 1.3.0
  */
-abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpan<T> {
+class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpan<T> {
     /**
      * The {@code JCas} in which the annotation is stored.
      */
@@ -43,7 +44,7 @@ abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpa
      * @param jCas       the {@link JCas} document the annotation is stored in.
      * @param annotation the {@link Annotation} itself.
      */
-    protected AnnotationAdapter(JCas jCas, T annotation) {
+    AnnotationAdapter(JCas jCas, T annotation) {
         super(annotation);
         this.jCas = jCas;
     }
@@ -66,7 +67,7 @@ abstract class AnnotationAdapter<T extends Annotation> extends AnnotationTextSpa
      * @param <U>     the biomedicus type that the annotations
      * @return stream of annotations that are within the bounds of this annotation
      */
-    protected <U> Stream<U> getCoveredStream(int type, Function<Annotation, U> adapter) {
+    <U> Stream<U> getCoveredStream(int type, Function<Annotation, U> adapter) {
         AnnotationIndex<Annotation> index = jCas.getAnnotationIndex(type);
         Iterable<U> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(index, annotation, adapter);
         return StreamSupport.stream(iterable.spliterator(), false);

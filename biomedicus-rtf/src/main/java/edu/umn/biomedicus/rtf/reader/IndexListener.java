@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.SpanLike;
 
 /**
  * @since 1.3.0
@@ -27,7 +27,7 @@ public interface IndexListener {
      *
      * @param destinationName  destination the character was written to.
      * @param destinationIndex the index in the destination.
-     * @param originalDocumentSpan
+     * @param originalDocumentSpanLike
      */
-    void wroteToDestination(String destinationName, int destinationIndex, Span originalDocumentSpan);
+    void wroteToDestination(String destinationName, int destinationIndex, SpanLike originalDocumentSpanLike);
 }

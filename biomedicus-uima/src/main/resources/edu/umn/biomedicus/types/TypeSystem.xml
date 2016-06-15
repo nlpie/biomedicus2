@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~ Copyright (c) 2016 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -302,7 +302,6 @@
                 </featureDescription>
             </features>
         </typeDescription>
-
         <typeDescription>
             <name>edu.umn.biomedicus.type.SubstanceUsageAnnotation</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -347,7 +346,6 @@
                 </featureDescription>
             </features>
         </typeDescription>
-
         <typeDescription>
             <name>edu.umn.biomedicus.type.SubstanceUsageAmount</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -545,8 +543,43 @@
             </features>
         </typeDescription>
         <typeDescription>
-            <name>edu.umn.biomedicus.type.TokenAnnotation</name>
-            <description/>
+            <name>edu.umn.biomedicus.uima.type1_5.TermToken</name>
+            <description>
+                A semantically relevant token, consisting of merged syntactic tokens. Example of merging would be
+                hyphenated words and acronyms with periods between letters.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>text</name>
+                    <description>The text of the term token.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>trailingText</name>
+                    <description>The text immediately following the term token before the next token.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.Negated</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.Historical</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.Probable</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.ParseToken</name>
+            <description>
+                A token in the form standard to PTB-style annotated corpora. Examples include splitting possessives and
+                contractions e.g. "annotation's" to "annotation" "'s" and "we'll" to "we 'll".
+            </description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
@@ -575,26 +608,60 @@
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
                 <featureDescription>
-                    <name>isAcronymAbbrev</name>
-                    <description>Whether or not the token is an acronym or an abbreviation.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>acronymAbbrevExpansion</name>
-                    <description>If the token is an acronym or abbreviation, this is its expanded form.</description>
+                    <name>text</name>
+                    <description>The text of the token.</description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
                 <featureDescription>
-                    <name>acronymLongFormNorm</name>
-                    <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+                    <name>trailingText</name>
+                    <description>The text immediately following the token before the next string.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.WordIndex</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
                 <featureDescription>
-                    <name>wordTerm</name>
+                    <name>index</name>
                     <rangeTypeName>uima.cas.Integer</rangeTypeName>
                 </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.NormIndex</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
                 <featureDescription>
-                    <name>normTerm</name>
+                    <name>index</name>
                     <rangeTypeName>uima.cas.Integer</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.Acronym</name>
+            <description>
+                A token that was detected as an acronym.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_5.AcronymExpansion</name>
+            <description>
+                An acronym's longform expansion.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>longform</name>
+                    <description>The longform expansion of the acronym.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>trailingText</name>
+                    <description>The text immediately following the acronym before the next token.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
             </features>
         </typeDescription>

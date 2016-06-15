@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.simple.Spans;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.TextSpan;
 import edu.umn.biomedicus.processing.Preprocessor;
@@ -72,7 +71,7 @@ public class SentenceDetector {
      * @param document document
      */
     public void processDocument(Document document) {
-        document.textSegments().forEach(textSpan -> processTextSpan(document, textSpan));
+        document.textSegments().forEach(textSpan -> processTextSegment(document, textSpan));
     }
 
     /**
@@ -81,7 +80,7 @@ public class SentenceDetector {
      * @param document document
      * @param textSpan the text span to tag sentences in.
      */
-    public void processTextSpan(Document document, TextSpan textSpan) {
+    public void processTextSegment(Document document, TextSpan textSpan) {
         String text = sentencePreprocessor.processText(textSpan.getText());
 
         sentenceSplitter.setDocumentText(text);
@@ -89,7 +88,7 @@ public class SentenceDetector {
         sentenceCandidateGenerator.generateSentenceSpans(text)
                 .stream()
                 .flatMap(sentenceSplitter::splitCandidate)
-                .map(candidate -> Spans.normalizeChild(textSpan, candidate))
+                .map(textSpan::derelativize)
                 .forEach(document::createSentence);
     }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2015 Regents of the University of Minnesota.
+  ~ Copyright (c) 2016 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,9 +24,26 @@
     <priorityLists>
         <priorityList>
             <type>edu.umn.biomedicus.type.ClinicalNoteAnnotation</type>
+            <type>edu.umn.biomedicus.type.TextSegmentAnnotation</type>
+            <type>edu.umn.biomedicus.type.RowAnnotation</type>
+            <type>edu.umn.biomedicus.type.CellAnnotation</type>
+            <type>edu.umn.biomedicus.type.NestedRowAnnotation</type>
+            <type>edu.umn.biomedicus.type.NestedCellAnnotation</type>
+            <type>edu.umn.biomedicus.type.ParagraphAnnotation</type>
             <type>edu.umn.biomedicus.type.SectionAnnotation</type>
+            <type>edu.umn.biomedicus.type.SubSectionAnnotation</type>
             <type>edu.umn.biomedicus.type.SentenceAnnotation</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageAnnotation</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageAmount</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageFrequency</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageType</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageStatus</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageTemporal</type>
+            <type>edu.umn.biomedicus.type.SubstanceUsageMethod</type>
             <type>edu.umn.biomedicus.type.TermAnnotation</type>
+            <type>edu.umn.biomedicus.uima.type1_5.Acronym</type>
+            <type>edu.umn.biomedicus.uima.type1_5.AcronymExpansion</type>
+            <type>edu.umn.biomedicus.type.NewInformationAnnotation</type>
             <type>edu.umn.biomedicus.type.ConceptAnnotation</type>
             <type>edu.umn.biomedicus.type.ChunkAnnotation</type>
             <type>edu.umn.biomedicus.type.DateAnnotation</type>
@@ -35,7 +52,13 @@
             <type>edu.umn.biomedicus.type.TimeAnnotation</type>
             <type>edu.umn.biomedicus.type.QuantityAnnotation</type>
             <type>edu.umn.biomedicus.type.NamedEntityAnnotation</type>
-            <type>edu.umn.biomedicus.type.TokenAnnotation</type>
+            <type>edu.umn.biomedicus.uima.type1_5.TermToken</type>
+            <type>edu.umn.biomedicus.uima.type1_5.Negated</type>
+            <type>edu.umn.biomedicus.uima.type1_5.Historical</type>
+            <type>edu.umn.biomedicus.uima.type1_5.Probable</type>
+            <type>edu.umn.biomedicus.uima.type1_5.ParseToken</type>
+            <type>edu.umn.biomedicus.uima.type1_5.WordIndex</type>
+            <type>edu.umn.biomedicus.uima.type1_5.NormIndex</type>
         </priorityList>
     </priorityLists>
 </typePriorities>

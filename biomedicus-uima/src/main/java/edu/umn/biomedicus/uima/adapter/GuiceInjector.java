@@ -1,16 +1,39 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.uima.adapter;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import edu.umn.biomedicus.annotations.ProcessorScoped;
-import edu.umn.biomedicus.application.BiomedicusScopes;
+import com.google.inject.Module;
+import edu.umn.biomedicus.application.BiomedicusFiles;
 import edu.umn.biomedicus.application.Bootstrapper;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.jcas.JCas;
+import edu.umn.biomedicus.plugins.AbstractPlugin;
 import org.apache.uima.resource.Resource_ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Guice injector resource implementation.
@@ -26,14 +49,29 @@ public class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            injector = Bootstrapper.create(new AbstractModule() {
-                @Override
-                protected void configure() {
-                    bind(JCas.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
-                    bind(CAS.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(ProcessorScoped.class);
+            Injector injector = Bootstrapper.create().injector();
+            BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
+            Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
+            List<String> pluginClassNames = Files.lines(uimaPluginsFile).collect(Collectors.toList());
+            List<AbstractPlugin> plugins = new ArrayList<>();
+            List<Module> modules = new ArrayList<>();
+            for (String pluginClassName : pluginClassNames) {
+                Class<? extends AbstractPlugin> pluginClass = Class.forName(pluginClassName)
+                        .asSubclass(AbstractPlugin.class);
+                AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
+                plugins.add(abstractPlugin);
+                modules.addAll(abstractPlugin.modules());
+            }
+
+            this.injector = injector.createChildInjector(modules.toArray(new Module[modules.size()]));
+
+            for (AbstractPlugin plugin : plugins) {
+                for (Class<DataLoader> loaderClass : plugin.dataLoaders()) {
+                    DataLoader dataLoader = injector.getInstance(loaderClass);
+                    dataLoader.eagerLoad();
                 }
-            }).injector();
-        } catch (BiomedicusException e) {
+            }
+        } catch (BiomedicusException | IOException | ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }
     }

@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import edu.umn.biomedicus.rtf.beans.keywords.ControlKeywordsDescription;
 import edu.umn.biomedicus.rtf.beans.properties.PropertiesDescription;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.*;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;

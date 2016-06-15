@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,12 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.SentenceAnnotation;
 import edu.umn.biomedicus.type.TermAnnotation;
-import edu.umn.biomedicus.type.TokenAnnotation;
-import edu.umn.biomedicus.uima.Views;
+import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.type1_5.*;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -51,9 +52,9 @@ public class UimaAdapters {
     }
 
     public static Token tokenAdapter(Annotation token) {
-        if (token instanceof TokenAnnotation) {
+        if (token instanceof edu.umn.biomedicus.uima.type1_5.ParseToken) {
             try {
-                return new TokenAdapter(token.getCAS().getJCas(), (TokenAnnotation) token);
+                return new TokenAdapter(token.getCAS().getJCas(), ((edu.umn.biomedicus.uima.type1_5.ParseToken) token));
             } catch (CASException e) {
                 throw new IllegalArgumentException(e);
             }
