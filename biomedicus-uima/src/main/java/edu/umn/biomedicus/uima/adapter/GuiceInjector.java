@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,21 +52,18 @@ public class GuiceInjector extends Resource_ImplBase {
             Injector injector = Bootstrapper.create().injector();
             BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
             Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
-            List<AbstractPlugin> plugins = Files.lines(uimaPluginsFile)
-                    .<Class<? extends AbstractPlugin>>map(s -> {
-                        try {
-                            return Class.forName(s).asSubclass(AbstractPlugin.class);
-                        } catch (ClassNotFoundException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    })
-                    .map(injector::getInstance)
-                    .collect(Collectors.toList());
+            List<String> pluginClassNames = Files.lines(uimaPluginsFile).collect(Collectors.toList());
+            List<AbstractPlugin> plugins = new ArrayList<>();
+            List<Module> modules = new ArrayList<>();
+            for (String pluginClassName : pluginClassNames) {
+                Class<? extends AbstractPlugin> pluginClass = Class.forName(pluginClassName)
+                        .asSubclass(AbstractPlugin.class);
+                AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
+                plugins.add(abstractPlugin);
+                modules.addAll(abstractPlugin.modules());
+            }
 
-            this.injector = injector.createChildInjector(plugins.stream()
-                    .map(AbstractPlugin::modules)
-                    .flatMap(Collection::stream)
-                    .toArray(Module[]::new));
+            this.injector = injector.createChildInjector(modules.toArray(new Module[modules.size()]));
 
             for (AbstractPlugin plugin : plugins) {
                 for (Class<DataLoader> loaderClass : plugin.dataLoaders()) {
@@ -73,7 +71,7 @@ public class GuiceInjector extends Resource_ImplBase {
                     dataLoader.eagerLoad();
                 }
             }
-        } catch (BiomedicusException | IOException e) {
+        } catch (BiomedicusException | IOException | ClassNotFoundException e) {
             throw new IllegalStateException(e);
         }
     }

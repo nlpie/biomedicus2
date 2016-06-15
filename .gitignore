@@ -8,3 +8,4 @@ target/
 *.zip
 *.orig
 ./distribution/src/main/resources/logs/biomedicus.log
+distribution/src/main/resources/logs/biomedicus.log
