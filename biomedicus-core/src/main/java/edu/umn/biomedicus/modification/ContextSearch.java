@@ -77,7 +77,7 @@ final class ContextSearch {
             if (scopeDelimitersTxt.contains(tokenText.toLowerCase())) {
                 break;
             }
-            if (partOfSpeechLabels.insideSpan(leftContextToken).stream().anyMatch(scopeDelimitersPos::contains)) {
+            if (partOfSpeechLabels.insideSpan(leftContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
                 break;
             }
             if (leftContextCues.contains(tokenText.toLowerCase())) {
@@ -91,7 +91,7 @@ final class ContextSearch {
             if (scopeDelimitersTxt.contains(tokenText.toLowerCase())) {
                 break;
             }
-            if (partOfSpeechLabels.insideSpan(rightContextToken).stream().anyMatch(scopeDelimitersPos::contains)) {
+            if (partOfSpeechLabels.insideSpan(rightContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
                 break;
             }
             if (rightContextCues.contains(tokenText.toLowerCase())) {
