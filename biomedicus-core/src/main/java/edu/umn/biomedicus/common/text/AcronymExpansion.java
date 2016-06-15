@@ -1,62 +1,43 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.text;
 
-import edu.umn.biomedicus.common.serialization.ProxySerializable;
-import edu.umn.biomedicus.common.serialization.SerializationProxy;
+public final class AcronymExpansion implements TokenLike {
+    private final String text;
 
-public final  class AcronymExpansion implements ProxySerializable {
-    private final String longform;
+    private final String trailingText;
 
-    public AcronymExpansion(String longform) {
-        this.longform = longform;
-    }
-
-    public String longform() {
-        return longform;
+    public AcronymExpansion(String text, String trailingText) {
+        this.text = text;
+        this.trailingText = trailingText;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AcronymExpansion that = (AcronymExpansion) o;
-
-        return longform.equals(that.longform);
-
+    public String getText() {
+        return text;
     }
 
     @Override
-    public int hashCode() {
-        return longform.hashCode();
+    public String getTrailingText() {
+        return trailingText;
     }
 
     @Override
     public String toString() {
-        return "AcronymExpansion(" + longform + ")";
-    }
-
-    @Override
-    public SerializationProxy proxy() {
-        Proxy proxy = new Proxy();
-        proxy.setLongform(longform);
-        return proxy;
-    }
-
-    public static class Proxy implements SerializationProxy {
-        private String longform;
-
-        public String getLongform() {
-            return longform;
-        }
-
-        public Proxy setLongform(String longform) {
-            this.longform = longform;
-            return this;
-        }
-
-        @Override
-        public Object deproxy() {
-            return new AcronymExpansion(longform);
-        }
+        return "AcronymExpansion(\"" + text + "\")";
     }
 }

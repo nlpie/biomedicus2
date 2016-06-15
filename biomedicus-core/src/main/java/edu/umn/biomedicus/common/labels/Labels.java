@@ -1,5 +1,22 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.labels;
 
+import edu.umn.biomedicus.common.collect.SlidingWindow;
 import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.tuples.Pair;
 
@@ -15,11 +32,24 @@ import static java.util.Spliterator.*;
  * A collection of {@link Label} objects. By default, a typed injectable of labels should map to the collection of all
  * such labels for a document. Labels are unique per span, meaning that for each unique span at most one instance of T
  * will be labeled.
+ * <br />
+ * Most transformations, functions which return another instance of Labels, should be performed lazily, meaning that the
+ * computation involved isn't performed until the labels are iterated, and in many cases, their limits can be combined,
+ * for example {@link #insideSpan(SpanLike)} and {@link #rightwardsFrom(SpanLike)} chained should only cost as much as
+ * one insideSpan call.
  *
  * @param <T> the type that is labeled
  * @since 1.5.0
  */
 public interface Labels<T> extends Iterable<Label<T>> {
+    /**
+     * Returns a collection of all the labels that contain the specified span parameter.
+     *
+     * @param spanLike
+     * @return
+     */
+    Labels<T> containing(SpanLike spanLike);
+
     /**
      * Returns a collection of these labels only inside the span parameter. All labels in the returned objects will have
      * a begin greater than or equal to the argument's begin and an end less than or equal to the arguments end.
@@ -54,6 +84,9 @@ public interface Labels<T> extends Iterable<Label<T>> {
     Labels<T> reverse();
 
     /**
+     * Limits the the number of labels returned to a specific count. Should be used as close as possible to the
+     * consumption of the stream, since limiting forces segmentation between transformation calls.
+     *
      * @param max
      * @return
      */
@@ -75,40 +108,8 @@ public interface Labels<T> extends Iterable<Label<T>> {
         return Optional.empty();
     }
 
-    default Iterator<List<Label<T>>> slidingWindowsOfSize(int size) {
-        return new Iterator<List<Label<T>>>() {
-            private final Iterator<Label<T>> iterator = iterator();
-            private final LinkedList<Label<T>> window = new LinkedList<>();
-            private boolean done = false;
-
-            {
-                for (int i = 0; i < size; i++) {
-                    if (iterator.hasNext()) {
-                        window.addLast(iterator.next());
-                    }
-                }
-            }
-
-            @Override
-            public boolean hasNext() {
-                return !done;
-            }
-
-            @Override
-            public List<Label<T>> next() {
-                if (done) {
-                    throw new NoSuchElementException();
-                }
-                ArrayList<Label<T>> labels = new ArrayList<>(window);
-                window.removeFirst();
-                if (iterator.hasNext()) {
-                    window.addLast(iterator.next());
-                } else {
-                    done = true;
-                }
-                return labels;
-            }
-        };
+    default Iterable<List<Label<T>>> slidingWindowsOfSize(int size) {
+        return new SlidingWindow<>(this, size);
     }
 
 

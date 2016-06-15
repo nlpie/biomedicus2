@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.common.simple;
 
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.TextSpan;
 
@@ -32,7 +33,7 @@ public class SimpleTextSpan implements TextSpan {
     /**
      * The span the text covers.
      */
-    private final SpanLike spanLike;
+    private final Span span;
 
     /**
      * The overall text.
@@ -42,12 +43,16 @@ public class SimpleTextSpan implements TextSpan {
     /**
      * Default constructor, sets fields to their final values.
      *
-     * @param spanLike The span the text covers.
+     * @param span The span the text covers.
      * @param text The overall text.
      */
-    public SimpleTextSpan(SpanLike spanLike, String text) {
-        this.spanLike = spanLike;
+    public SimpleTextSpan(Span span, String text) {
+        this.span = span;
         this.text = text;
+    }
+
+    public SimpleTextSpan(String text) {
+        this(new Span(0, text.length()), text);
     }
 
     @Override
@@ -57,12 +62,12 @@ public class SimpleTextSpan implements TextSpan {
 
     @Override
     public int getBegin() {
-        return spanLike.getBegin();
+        return span.getBegin();
     }
 
     @Override
     public int getEnd() {
-        return spanLike.getEnd();
+        return span.getEnd();
     }
 
     @Override
@@ -74,19 +79,19 @@ public class SimpleTextSpan implements TextSpan {
             return false;
         }
         SimpleTextSpan that = (SimpleTextSpan) o;
-        return Objects.equals(spanLike, that.spanLike) &&
+        return Objects.equals(span, that.span) &&
                 Objects.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(spanLike, text);
+        return Objects.hash(span, text);
     }
 
     @Override
     public String toString() {
         return "SimpleTextSpan{"
-                + "span=" + spanLike
+                + "span=" + span
                 + ", text='" + text
                 + "'}";
     }

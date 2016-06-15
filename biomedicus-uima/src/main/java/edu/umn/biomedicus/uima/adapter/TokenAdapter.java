@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,28 +17,23 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.type.TokenAnnotation;
+import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.StringArray;
-
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * Adapter from the annotation type {@link edu.umn.biomedicus.type.TokenAnnotation} to the biomedicus model interface
+ * Adapter from the annotation type {@link ParseToken} to the biomedicus model interface
  * {@link Token}.
  */
-class TokenAdapter extends AnnotationAdapter<TokenAnnotation> implements Token {
-    TokenAdapter(JCas jCas, TokenAnnotation tokenAnnotation) {
+class TokenAdapter extends AnnotationAdapter<ParseToken> implements Token {
+    TokenAdapter(JCas jCas, ParseToken tokenAnnotation) {
         super(jCas, tokenAnnotation);
     }
 
     @Override
     public PartOfSpeech getPartOfSpeech() {
-        return PartOfSpeech.MAP.get(getAnnotation().getPartOfSpeech());
+        return PartsOfSpeech.MAP.get(getAnnotation().getPartOfSpeech());
     }
 
     @Override

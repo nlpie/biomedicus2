@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,13 +51,13 @@ public class OpenNlpCandidateGenerator implements SentenceCandidateGenerator {
     @Override
     public List<SpanLike> generateSentenceSpans(String text) {
         opennlp.tools.util.Span[] spans = sentenceDetectorME.sentPosDetect(text);
-        List<SpanLike> sentenceSpanLikes = new ArrayList<>(spans.length);
+        List<SpanLike> sentenceSpans = new ArrayList<>(spans.length);
         for (opennlp.tools.util.Span span : spans) {
-            SpanLike sentSpanLike = Span.spanning(span.getStart(), span.getEnd());
-            if (new SimpleTextSpan(sentSpanLike, text).containsNonWhitespace()) {
-                sentenceSpanLikes.add(sentSpanLike);
+            Span sentenceSpan = Span.create(span.getStart(), span.getEnd());
+            if (new SimpleTextSpan(sentenceSpan, text).containsNonWhitespace()) {
+                sentenceSpans.add(sentenceSpan);
             }
         }
-        return sentenceSpanLikes;
+        return sentenceSpans;
     }
 }

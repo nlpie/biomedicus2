@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.text;
 
 import edu.umn.biomedicus.common.semantics.SubstanceUsage;
@@ -22,25 +38,6 @@ public interface Document extends Editable {
      * @return iterable of the tokens in a document.
      */
     Iterable<Token> getTokens();
-
-    /**
-     * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
-     * whitespace.
-     *
-     * @param spanLike to create a token from
-     * @return the newly created token.
-     */
-    Token createToken(SpanLike spanLike);
-
-    /**
-     * Creates a new token and adds to index. The implementation should check to make sure that the span is not just
-     * whitespace.
-     *
-     * @param begin the begin of the token
-     * @param end   the end of the token
-     * @return the newly created token
-     */
-    Token createToken(int begin, int end);
 
     /**
      * Get an {@link Iterable} over all the {@link Sentence} in a document.

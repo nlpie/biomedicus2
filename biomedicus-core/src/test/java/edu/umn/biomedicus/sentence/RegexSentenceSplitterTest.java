@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,10 +54,10 @@ public class RegexSentenceSplitterTest {
             matcher.find(); result = false;
         }};
 
-        Stream<SpanLike> spanStream = regexSentenceSplitter.splitCandidate(Span.spanning(5, 33));
+        Stream<SpanLike> spanStream = regexSentenceSplitter.splitCandidate(Span.create(5, 33));
         List<SpanLike> collect = spanStream.collect(Collectors.toList());
         Assert.assertEquals(2, collect.size());
-        Assert.assertEquals(Span.spanning(5, 27), collect.get(0));
-        Assert.assertEquals(Span.spanning(27, 33), collect.get(1));
+        Assert.assertEquals(Span.create(5, 27), collect.get(0));
+        Assert.assertEquals(Span.create(27, 33), collect.get(1));
     }
 }

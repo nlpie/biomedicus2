@@ -1,6 +1,23 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.text.TokenLike;
 
 import java.io.Serializable;
 import java.util.*;
@@ -160,7 +177,7 @@ public class VectorSpaceDouble {
      * @param tokenOfInterest The token that we want to calculate a vector for
      * @return The calculated vector
      */
-    public WordVectorDouble vectorize(List<Token> context, Token tokenOfInterest) {
+    public WordVectorDouble vectorize(List<TokenLike> context, TokenLike tokenOfInterest) {
 
         assert context.contains(tokenOfInterest);
 
@@ -177,7 +194,7 @@ public class VectorSpaceDouble {
         // To determine our position in the word list. Useful when calculating distance from center
         int i = 0;
 
-        for (Token token : context) {
+        for (TokenLike token : context) {
 
             // Determine if we've hit the token of interest yet
             if (centerWord == 0 && token == tokenOfInterest) {
@@ -236,11 +253,7 @@ public class VectorSpaceDouble {
      * @param t a token
      * @return its flattened form
      */
-    private String standardForm(Token t) {
-//        String form = t.getNormalForm();
-//        if (form == null)
-//            form = t.getText();
-        // New training corpora do not use normalForm
+    private String standardForm(TokenLike t) {
         String form = t.getText();
         return Acronyms.standardFormString(form).toLowerCase();
     }

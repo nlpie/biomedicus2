@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -115,13 +115,6 @@ class JCasDocument extends AbstractDocument {
     }
 
     @Override
-    public Token createToken(int begin, int end) {
-        ParseToken tokenAnnotation = new ParseToken(view, begin, end);
-        tokenAnnotation.addToIndexes();
-        return UimaAdapters.tokenAdapter(tokenAnnotation);
-    }
-
-    @Override
     public String getText() {
         return view.getDocumentText();
     }
@@ -172,10 +165,10 @@ class JCasDocument extends AbstractDocument {
         Iterable<Annotation> textSegmentAnnotation = view.getAnnotationIndex(TextSegmentAnnotation.type);
         if (textSegmentAnnotation.iterator().hasNext()) {
             return StreamSupport.stream(textSegmentAnnotation.spliterator(), false)
-                    .map(a -> new SimpleTextSpan(Span.spanning(a.getBegin(), a.getEnd()), view.getDocumentText()));
+                    .map(a -> new SimpleTextSpan(Span.create(a.getBegin(), a.getEnd()), view.getDocumentText()));
         } else {
             String documentText = view.getDocumentText();
-            TextSpan textSpan = Span.textSpan(documentText);
+            TextSpan textSpan = new SimpleTextSpan(documentText);
             return Stream.of(textSpan);
         }
     }

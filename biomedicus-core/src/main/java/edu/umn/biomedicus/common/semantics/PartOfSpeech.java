@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -322,129 +322,5 @@ public enum PartOfSpeech {
     @Override
     public String toString() {
         return pos;
-    }
-
-    /**
-     * A map from the Penn treebank tag to the Biomedicus PartOfSpeech enumerated object value
-     */
-    public static final Map<String, PartOfSpeech> MAP = buildMap();
-
-    public static final Map<String, PartOfSpeech> FALLBACK_MAP = buildFallbackMap();
-
-    private static Map<String, PartOfSpeech> buildFallbackMap() {
-
-        Map<String, PartOfSpeech> builder = new HashMap<>();
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.values()) {
-            builder.put(partOfSpeech.pos, partOfSpeech);
-        }
-        builder.put("N", NN);
-        builder.put("NP", NNP);
-        builder.put("NPS", NNPS);
-        builder.put("PP", PRP);
-        builder.put("PP$", PRP$);
-        builder.put("-", HYPH);
-        builder.put("--", COLON_PUNCTUATION);
-        builder.put(null, XX);
-        builder.put("null", XX);
-        builder.put("", XX);
-        builder.put("X", XX);
-        builder.put("“", OPENING_QUOTATION);
-        builder.put("”", CLOSING_QUOTATION);
-        builder.put("‘", OPENING_SINGLE_QUOTE);
-        builder.put("’", CLOSING_SINGLE_QUOTE);
-        builder.put("″", STRAIGHT_DOUBLE_QUOTE);
-
-        return Collections.unmodifiableMap(builder);
-    }
-
-    private static Map<String, PartOfSpeech> buildMap() {
-        Map<String, PartOfSpeech> builder = new HashMap<>();
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.values()) {
-            builder.put(partOfSpeech.pos, partOfSpeech);
-        }
-
-        return Collections.unmodifiableMap(builder);
-    }
-
-    /**
-     * Verb-like parts of speech
-     */
-    public static final Set<PartOfSpeech> VERB_CLASS;
-
-    static {
-        EnumSet<PartOfSpeech> verbs = EnumSet.of(
-                VB,
-                VBD,
-                VBG,
-                VBN,
-                VBP,
-                VBZ
-        );
-        VERB_CLASS = Collections.unmodifiableSet(verbs);
-    }
-
-    /**
-     * Parts of speech that represent punctuation in text
-     */
-    public static final Set<PartOfSpeech> PUNCTUATION_CLASS;
-
-    static {
-        EnumSet<PartOfSpeech> punc = EnumSet.of(
-                SENTENCE_CLOSER_PUNCTUATION,
-                COMMA_PUNCTUATION,
-                COLON_PUNCTUATION,
-                LEFT_PAREN,
-                RIGHT_PAREN,
-                OPENING_QUOTATION,
-                CLOSING_QUOTATION,
-                OPENING_SINGLE_QUOTE,
-                CLOSING_SINGLE_QUOTE,
-                STRAIGHT_DOUBLE_QUOTE,
-                HYPH,
-                POUND_SIGN,
-                DOLLAR_SIGN
-        );
-        PUNCTUATION_CLASS = Collections.unmodifiableSet(punc);
-    }
-
-    /**
-     * Parts of speech that are part of the open class, i.e. most commonly accept the addition of new words to a
-     * language.
-     */
-    public static final Set<PartOfSpeech> OPEN_CLASS;
-
-    static {
-        EnumSet<PartOfSpeech> open = EnumSet.of(
-                JJ,
-                JJR,
-                JJS,
-                NN,
-                NNP,
-                NNPS,
-                RB,
-                RBR,
-                RBS,
-                VB,
-                VBD,
-                VBG,
-                VBN,
-                VBP,
-                VBZ
-        );
-        OPEN_CLASS = Collections.unmodifiableSet(open);
-    }
-
-    /**
-     * Parts of speech that are real, i.e. correctly
-     */
-    public static final Set<PartOfSpeech> REAL_TAGS;
-
-    static {
-        EnumSet<PartOfSpeech> reals = EnumSet.allOf(PartOfSpeech.class);
-        reals.remove(XX);
-        reals.remove(BBS);
-        reals.remove(BOS);
-        reals.remove(EOS);
-        REAL_TAGS = Collections.unmodifiableSet(reals);
     }
 }

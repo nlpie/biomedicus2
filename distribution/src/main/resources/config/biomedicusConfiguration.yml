@@ -50,6 +50,10 @@ settings:
   specialist.path: SPECIALIST/LEX
   socialhistory:
     parser: opennlp
+  modification:
+    history.path: modification/history.yml
+    negation.path: modification/negation.yml
+    probability.path: modification/probability.yml
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
   parser.implementation: edu.umn.biomedicus.parsing.Parser

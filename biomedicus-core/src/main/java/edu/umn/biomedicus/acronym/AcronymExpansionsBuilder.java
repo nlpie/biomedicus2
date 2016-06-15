@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
@@ -37,8 +53,6 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 public class AcronymExpansionsBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymExpansionsBuilder.class);
 
-    private final TermIndex termIndex;
-
     private Path masterFile;
 
     private SpecialistAgreementModel specialistAgreementModel;
@@ -51,27 +65,25 @@ public class AcronymExpansionsBuilder {
     private Map<String, Set<String>> expansions;
 
     @Inject
-    public AcronymExpansionsBuilder(TermIndex termIndex,
-                                    SpecialistAgreementModel specialistAgreementModel,
+    public AcronymExpansionsBuilder(SpecialistAgreementModel specialistAgreementModel,
                                     @Setting("specialist.path") Path specialistPath) {
-        this.termIndex = termIndex;
         this.specialistAgreementModel = specialistAgreementModel;
         specialistLrabrPath = specialistPath.resolve("LRABR");
     }
 
-    public void setMasterFile(Path masterFile) {
+    private void setMasterFile(Path masterFile) {
         this.masterFile = masterFile;
     }
 
-    public void setDataSet(Path dataSet) {
+    private void setDataSet(Path dataSet) {
         this.dataSet = dataSet;
     }
 
-    public void setOutPath(Path outPath) {
+    private void setOutPath(Path outPath) {
         this.outPath = outPath;
     }
 
-    public void buildAcronymExpansions() throws IOException {
+    private void buildAcronymExpansions() throws IOException {
         expansions = new HashMap<>();
         Pattern splitter = Pattern.compile("\\|");
 
@@ -131,10 +143,10 @@ public class AcronymExpansionsBuilder {
                             senses.clear();
                         }
                         // Many senses in CASI, for some reason, are many redundant sense joined by semicolons
-                        if(sense.contains(";")) {
+                        if (sense.contains(";")) {
                             String[] senseVersions = sense.split(";");
                             // Sometimes the first sense restates or simply is the abbreviation
-                            if(senseVersions[0].startsWith(abbreviation)) {
+                            if (senseVersions[0].startsWith(abbreviation)) {
                                 sense = senseVersions[1];
                             } else {
                                 sense = senseVersions[0];

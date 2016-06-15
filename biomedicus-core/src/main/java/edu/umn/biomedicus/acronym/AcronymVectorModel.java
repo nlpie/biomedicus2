@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
@@ -6,7 +22,9 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.slf4j.Logger;
@@ -67,7 +85,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public Collection<String> getExpansions(Token token) {
+    public Collection<String> getExpansions(TokenLike token) {
         String acronym = Acronyms.standardForm(token);
         Collection<String> expansions = acronymExpansionsModel.getExpansions(acronym);
         if (expansions != null) {
@@ -82,7 +100,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token
      * @return
      */
-    public boolean hasAcronym(Token token) {
+    public boolean hasAcronym(TokenLike token) {
         String acronym = Acronyms.standardForm(token);
         return acronymExpansionsModel.hasExpansions(acronym);
     }
@@ -95,7 +113,7 @@ class AcronymVectorModel implements AcronymModel {
      * @return
      */
     @Override
-    public String findBestSense(List<Token> context, Token token) {
+    public String findBestSense(List<TokenLike> context, TokenLike token) {
 
         // String to assign to unknown acronyms
 

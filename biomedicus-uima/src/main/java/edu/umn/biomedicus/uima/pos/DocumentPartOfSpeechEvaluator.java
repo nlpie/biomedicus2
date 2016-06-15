@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.uima.pos;
 
 import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Token;
 
@@ -99,7 +100,7 @@ public class DocumentPartOfSpeechEvaluator {
             PartOfSpeech evalueePartOfSpeech = evalueeToken.getPartOfSpeech();
             PartOfSpeech goldPartOfSpeech = goldToken.getPartOfSpeech();
 
-            if (goldPartOfSpeech == null || !PartOfSpeech.REAL_TAGS.contains(goldPartOfSpeech)) {
+            if (goldPartOfSpeech == null || !PartsOfSpeech.REAL_TAGS.contains(goldPartOfSpeech)) {
                 continue;
             }
             if (goldPartOfSpeech.equals(evalueePartOfSpeech)) {
@@ -122,7 +123,7 @@ public class DocumentPartOfSpeechEvaluator {
 
     public void write(Writer writer) throws IOException {
         writer.write(documentId + "," + correct + "," + total + ",");
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.REAL_TAGS) {
+        for (PartOfSpeech partOfSpeech : PartsOfSpeech.REAL_TAGS) {
             ConfusionMatrix confusionMatrix = counts.getOrDefault(partOfSpeech, EMPTY);
             confusionMatrix.write(writer, total);
         }
@@ -130,7 +131,7 @@ public class DocumentPartOfSpeechEvaluator {
     }
 
     public void writeMisses(Writer writer) throws IOException{
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.REAL_TAGS) {
+        for (PartOfSpeech partOfSpeech : PartsOfSpeech.REAL_TAGS) {
             writer.write(partOfSpeech.toString() + ": ");
             List<Map.Entry<String, Integer>> collect = misses.get(partOfSpeech)
                     .entrySet()
@@ -147,7 +148,7 @@ public class DocumentPartOfSpeechEvaluator {
 
     public static void writeHeader(Writer writer) throws IOException {
         writer.write("DocumentID,Correct,Total,");
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.REAL_TAGS) {
+        for (PartOfSpeech partOfSpeech : PartsOfSpeech.REAL_TAGS) {
             String tag = partOfSpeech.name();
             writer.write(tag + "-Hit," + tag + "-Total,");
         }
@@ -158,7 +159,7 @@ public class DocumentPartOfSpeechEvaluator {
         correct += other.correct;
         total += other.total;
 
-        for (PartOfSpeech partOfSpeech : PartOfSpeech.REAL_TAGS) {
+        for (PartOfSpeech partOfSpeech : PartsOfSpeech.REAL_TAGS) {
             counts.get(partOfSpeech).add(other.counts.get(partOfSpeech));
             for (Map.Entry<String, Integer> stringIntegerEntry : other.misses.get(partOfSpeech).entrySet()) {
                 misses.get(partOfSpeech).merge(stringIntegerEntry.getKey(), stringIntegerEntry.getValue(), Integer::sum);

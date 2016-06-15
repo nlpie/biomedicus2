@@ -7,3 +7,4 @@ target/
 *.iml
 *.zip
 *.orig
+./distribution/src/main/resources/logs/biomedicus.log

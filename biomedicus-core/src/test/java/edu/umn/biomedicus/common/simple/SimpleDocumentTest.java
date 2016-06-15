@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.common.simple;
 
 import edu.umn.biomedicus.common.text.*;
@@ -90,24 +106,6 @@ public class SimpleDocumentTest {
         }
 
         assertEquals(stringBuilder.toString(), "document text");
-    }
-
-    @Test
-    public void testAddToken(@Injectable SpanLike spanLike) throws Exception {
-        new Expectations() {{
-            spanLike.getBegin(); result = 0;
-            spanLike.getEnd(); result = 8;
-        }};
-
-        simpleDocument.createToken(spanLike);
-
-        new Verifications() {{
-            Token token;
-            tokenList.add(token = withCapture());
-            assertEquals(token.getText(), "document");
-            assertEquals(token.getBegin(), 0);
-            assertEquals(token.getEnd(), 8);
-        }};
     }
 
     @Test

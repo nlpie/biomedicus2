@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2015 Regents of the University of Minnesota.
+ * Copyright (c) 2016 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -213,7 +213,7 @@ public class State {
                     String hexString = hexStringBuilder.toString();
                     Byte charByte = (byte) (Integer.parseInt(hexString, 16) & 0xff);
                     code = charset.decode(ByteBuffer.wrap(new byte[]{charByte})).get(0);
-                    directWriteCharacter((char) code, Span.spanning(hexStart, originalDocumentSpanLike.getEnd()));
+                    directWriteCharacter((char) code, Span.create(hexStart, originalDocumentSpanLike.getEnd()));
                     inputType = InputType.NORMAL;
                 }
                 break;

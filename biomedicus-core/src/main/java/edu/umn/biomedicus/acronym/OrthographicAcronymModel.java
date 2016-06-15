@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
@@ -8,6 +24,7 @@ import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -80,16 +97,15 @@ public class OrthographicAcronymModel implements Serializable {
      * @param token the Token to check
      * @return true if it seems to be an abbreviation, false otherwise
      */
-    boolean seemsLikeAbbreviation(Token token) {
+    boolean seemsLikeAbbreviation(TokenLike token) {
 
         String wordRaw = token.getText();
         String wordLower = wordRaw.toLowerCase();
-        String normalForm = token.getNormalForm();
 
         // Check to see if it's a long form first
         // This is case-insensitive to curb overzealous tagging of abbreviations
         // Also check the normal form, if it exists, as affixed forms may not appear in the list of long forms
-        if (longformsLower != null && (longformsLower.contains(wordLower) || (normalForm != null && longformsLower.contains(normalForm.toLowerCase())))) {
+        if (longformsLower != null && (longformsLower.contains(wordLower))) {
             return false;
         }
 
