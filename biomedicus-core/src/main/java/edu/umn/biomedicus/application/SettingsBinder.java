@@ -18,71 +18,77 @@ package edu.umn.biomedicus.application;
 
 import com.google.inject.*;
 import com.google.inject.name.Names;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  *
  */
 class SettingsBinder {
-    private final SettingsTransformer settingsTransformer;
-
-    private final Map<String, Class<?>> settingInterfaces;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettingsBinder.class);
     private final Path dataPath;
-
     private final Path homePath;
-
     private final Path confPath;
-
-    private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
-
-    private Map<String, Object> settingsMap;
+    private final Map<String, Class<?>> settingInterfaces = new HashMap<>();
+    private final Map<String, Object> settings = new HashMap<>();
+    private final Map<Class<?>, Map<String, Class<?>>> interfaceImplementations = new HashMap<>();
 
     private Binder binder;
 
-    SettingsBinder(Map<String, Class<?>> settingInterfaces, Path dataPath, Path confPath, Path homePath) {
-        this.settingInterfaces = settingInterfaces;
+    private SettingsBinder(Path dataPath, Path confPath, Path homePath) {
         this.dataPath = dataPath;
-        settingsTransformer = new SettingsTransformer(settingInterfaces, dataPath);
-        settingsTransformer.setAnnotationFunction(SettingImpl::new);
         this.homePath = homePath;
         this.confPath = confPath;
     }
 
-    static SettingsBinder create(Map<String, Class<?>> settingInterfaces, Path dataPath, Path confPath, Path homePath) {
-        return new SettingsBinder(settingInterfaces, dataPath, confPath, homePath);
+    static SettingsBinder create(Path dataPath, Path confPath, Path homePath) {
+        return new SettingsBinder(dataPath, confPath, homePath);
     }
 
-    void setInterfaceImplementations(Map<Class<?>, Map<String, Class<?>>> interfaceImplementations) {
-        this.interfaceImplementations = interfaceImplementations;
+    void addSettingsInterfaces(Map<String, Class<?>> settingInterfaces) {
+        this.settingInterfaces.putAll(settingInterfaces);
     }
 
-    void setSettingsMap(Map<String, Object> settingsMap) {
-        this.settingsMap = settingsMap;
+    void addInterfaceImplementations(@Nonnull Map<Class<?>, Map<String, Class<?>>> interfaceImplementations) {
+        for (Map.Entry<Class<?>, Map<String, Class<?>>> entry : interfaceImplementations.entrySet()) {
+            interfaceImplementations.compute(entry.getKey(), (k, v) -> {
+                if (v == null) {
+                    v = new HashMap<>();
+                }
+                v.putAll(entry.getValue());
+                return v;
+            });
+        }
+    }
+
+    void addSettings(Map<String, Object> settings) {
+        this.settings.putAll(settings);
     }
 
     private void performBindings(Binder binder) {
         this.binder = binder;
-        if (interfaceImplementations != null) {
-            interfaceImplementations.forEach((interfaceClass, implementations) -> {
-                implementations.forEach((key, implementation) -> {
-                    bindInterfaceImplementation(interfaceClass, key, implementation);
-                });
+        interfaceImplementations.forEach((interfaceClass, implementations) -> {
+            implementations.forEach((key, implementation) -> {
+                bindInterfaceImplementation(interfaceClass, key, implementation);
             });
+        });
+        binder.bind(new TypeLiteral<Map<String, Class<?>>>() {}).annotatedWith(Names.named("settingInterfaces"))
+                .toInstance(settingInterfaces);
+        binder.bind(new TypeLiteral<Map<String, Object>>() {}).annotatedWith(Names.named("globalSettings"))
+                .toInstance(settings);
+        binder.bind(Path.class).annotatedWith(new SettingImpl("paths.data")).toInstance(dataPath);
+        binder.bind(Path.class).annotatedWith(new SettingImpl("paths.home")).toInstance(homePath);
+        binder.bind(Path.class).annotatedWith(new SettingImpl("paths.conf")).toInstance(confPath);
 
-            binder.bind(new TypeLiteral<Map<String, Class<?>>>() {
-            }).annotatedWith(Names.named("settingInterfaces"))
-                    .toInstance(settingInterfaces);
-            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.data")).toInstance(dataPath);
-            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.home")).toInstance(homePath);
-            binder.bind(Path.class).annotatedWith(new SettingImpl("paths.conf")).toInstance(confPath);
-            binder.bind(new TypeLiteral<Map<String, Object>>() {}).annotatedWith(Names.named("globalSettings")).toInstance(settingsMap);
-        }
-        settingsTransformer.addAll(settingsMap);
-        Map<Key<?>, Object> settings = settingsTransformer.getSettings();
-        settings.forEach(this::bindSetting);
+        SettingsTransformer settingsTransformer = new SettingsTransformer(settingInterfaces, dataPath);
+        settingsTransformer.setAnnotationFunction(SettingImpl::new);
+        settingsTransformer.addAll(settings);
+        settingsTransformer.getSettings().forEach(this::bindSetting);
     }
 
     private <T> void bindInterfaceImplementation(Class<T> interfaceClass, String key, Class<?> implementation) {

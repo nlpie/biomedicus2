@@ -35,29 +35,29 @@ import java.util.function.Function;
  */
 class SettingsTransformer {
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsTransformer.class);
-
     private final Map<String, Class<?>> settingInterfaces;
-
     private final Path dataPath;
-
     private final Map<Key<?>, Object> settings;
-
     private Function<String, Annotation> annotationFunction;
 
     @Inject
-    public SettingsTransformer(@Named("settingInterfaces") Map<String, Class<?>> settingInterfaces,
-                               @Setting("paths.data") Path dataPath) {
+    SettingsTransformer(@Named("settingInterfaces") Map<String, Class<?>> settingInterfaces,
+                        @Setting("paths.data") Path dataPath) {
         this.settingInterfaces = settingInterfaces;
         this.dataPath = dataPath;
         settings = new HashMap<>();
     }
 
-    public void setAnnotationFunction(Function<String, Annotation> annotationFunction) {
+    void setAnnotationFunction(Function<String, Annotation> annotationFunction) {
         this.annotationFunction = annotationFunction;
     }
 
-    public void addAll(Map<String, Object> settingsMap) {
+    void addAll(Map<String, Object> settingsMap) {
         recursiveAddSettings(settingsMap, null);
+    }
+
+    Map<Key<?>, Object> getSettings() {
+        return settings;
     }
 
     private void recursiveAddSettings(Map<String, Object> settingsMap, String prevKey) {
@@ -104,9 +104,5 @@ class SettingsTransformer {
             return path;
         }
         return dataPath.resolve(path);
-    }
-
-    public Map<Key<?>, Object> getSettings() {
-        return settings;
     }
 }

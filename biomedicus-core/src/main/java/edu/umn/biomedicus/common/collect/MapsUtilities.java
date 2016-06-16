@@ -26,7 +26,7 @@ public final class MapsUtilities {
         throw new UnsupportedOperationException();
     }
 
-    public static BiFunction<?, Integer, Integer> computeIncrementFunction() {
+    public static <T> BiFunction<T, Integer, Integer> computeIncrementFunction() {
         return (key, value) -> {
             if (value == null) {
                 value = 0;
