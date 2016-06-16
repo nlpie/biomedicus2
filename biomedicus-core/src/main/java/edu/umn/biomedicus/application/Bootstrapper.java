@@ -29,9 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.function.BiPredicate;
 
 /**
  * Class which loads all biomedicus configuration and creates a Guice injector. Should only be used once per application
@@ -72,7 +70,6 @@ public class Bootstrapper {
         Yaml yaml = new Yaml();
 
         // load configuration
-
         Path configurationFilePath = configDir.resolve("biomedicusConfiguration.yml");
         Map<String, Object> biomedicusConfiguration;
         try (BufferedReader bufferedReader = Files.newBufferedReader(configurationFilePath)) {
@@ -82,21 +79,6 @@ public class Bootstrapper {
         } catch (IOException e) {
             throw new BiomedicusException("Failed to load configuration.", e);
         }
-
-        /*
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> settings = (Map<String, Object>) biomedicusConfiguration.get("settings");
-            BiPredicate<Path, BasicFileAttributes> isSettingsFile = (path, attr) -> path.getFileName().toString()
-                    .endsWith("Settings.yml");
-            Iterator<Path> settingsFilesIterator = Files.find(configDir, 1, isSettingsFile).iterator();
-            while (settingsFilesIterator.hasNext()) {
-                Path settingsFile = settingsFilesIterator.next();
-
-            }
-        } catch (IOException e) {
-            throw new BiomedicusException("Failed to load settings files.", e);
-        } */
 
         // resolve paths
 
@@ -123,52 +105,33 @@ public class Bootstrapper {
                 dataPath = homePath().resolve("data");
             }
         }
+
         LOGGER.info("Using data directory: {}", dataPath);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> settingInterfacesYaml = (Map<String, String>) biomedicusConfiguration.get("settingInterfaces");
-        Map<String, Class<?>> settingInterfaces = getClassMap(settingInterfacesYaml);
-
-        @SuppressWarnings("unchecked")
-        Map<String, Map<String, String>> interfaceImplementationsYaml = (Map<String, Map<String, String>>) biomedicusConfiguration.get("interfaceImplementations");
-        Map<Class<?>, Map<String, Class<?>>> interfaceImplementations = new HashMap<>();
-        for (Map.Entry<String, Map<String, String>> interfaceEntry : interfaceImplementationsYaml.entrySet()) {
-            try {
-                Class<?> interfaceClass = Class.forName(interfaceEntry.getKey());
-                Map<String, String> interfaceMapYaml = interfaceEntry.getValue();
-                Map<String, Class<?>> interfaceMap = getClassMap(interfaceMapYaml);
-                interfaceImplementations.put(interfaceClass, interfaceMap);
-            } catch (ClassNotFoundException e) {
-                throw new BiomedicusException(e);
-            }
-        }
-
         // collapse settings maps
-        @SuppressWarnings("unchecked")
-        Map<String, Object> settingsYaml = (Map<String, Object>) biomedicusConfiguration.get("settings");
-
-        SettingsBinder settingsBinder = new SettingsBinder(settingInterfaces, dataPath, configDir, homePath());
-        settingsBinder.setSettingsMap(settingsYaml);
-        settingsBinder.setInterfaceImplementations(interfaceImplementations);
+        SettingsBinder settingsBinder = SettingsBinder.create(dataPath, configDir, homePath());
+        SettingsLoader configurationSettingsLoader = SettingsLoader.createSettingsLoader(configurationFilePath);
+        configurationSettingsLoader.loadSettings();
+        configurationSettingsLoader.addToBinder(settingsBinder);
+        try {
+            Iterator<Path> settingsFilesItr = Files.walk(configDir)
+                    .filter(path -> path.getFileName().toString().endsWith("Settings.yml"))
+                    .iterator();
+            while (settingsFilesItr.hasNext()) {
+                Path settingsFilePath = settingsFilesItr.next();
+                SettingsLoader settingsLoader = SettingsLoader.createSettingsLoader(settingsFilePath);
+                settingsLoader.loadSettings();
+                settingsLoader.addToBinder(settingsBinder);
+            }
+        } catch (IOException e) {
+            throw new BiomedicusException(e);
+        }
 
         modules.add(new BiomedicusModule());
         modules.add(settingsBinder.createModule());
         modules.addAll(Arrays.asList(additionalModules));
 
         injector = Guice.createInjector(modules.toArray(new Module[modules.size()]));
-    }
-
-    private Map<String, Class<?>> getClassMap(Map<String, String> settingInterfacesYaml) throws BiomedicusException {
-        Map<String, Class<?>> settingInterfaces = new HashMap<>();
-        for (Map.Entry<String, String> entry : settingInterfacesYaml.entrySet()) {
-            try {
-                Class<?> aClass = Class.forName(entry.getValue());
-                settingInterfaces.put(entry.getKey(), aClass);
-            } catch (ClassNotFoundException e) {
-                throw new BiomedicusException(e);
-            }
-        }
-        return settingInterfaces;
     }
 
     private Path absoluteOrResolveAgainstHome(Path path) {
