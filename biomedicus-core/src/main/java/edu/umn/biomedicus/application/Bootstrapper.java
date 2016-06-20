@@ -45,7 +45,7 @@ public class Bootstrapper {
 
     private String home;
 
-    private Bootstrapper(Module... additionalModules) throws BiomedicusException {
+    private Bootstrapper(Map<String, Object> overloadedSettings, Module... additionalModules) throws BiomedicusException {
         List<Module> modules = new ArrayList<>();
         // Load configuration
         home = System.getProperty("biomedicus.paths.home");
@@ -127,6 +127,10 @@ public class Bootstrapper {
             throw new BiomedicusException(e);
         }
 
+        if (overloadedSettings != null) {
+            settingsBinder.addSettings(overloadedSettings);
+        }
+
         modules.add(new BiomedicusModule());
         modules.add(settingsBinder.createModule());
         modules.addAll(Arrays.asList(additionalModules));
@@ -159,7 +163,12 @@ public class Bootstrapper {
         return injector;
     }
 
+
+    public static Bootstrapper create(Map<String, Object> overloadedSettings, Module... additionalModules) throws BiomedicusException {
+        return new Bootstrapper(overloadedSettings, additionalModules);
+    }
+
     public static Bootstrapper create(Module... additionalModules) throws BiomedicusException {
-        return new Bootstrapper(additionalModules);
+        return new Bootstrapper(Collections.emptyMap(), additionalModules);
     }
 }

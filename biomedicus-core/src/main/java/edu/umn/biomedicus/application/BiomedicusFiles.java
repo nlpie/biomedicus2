@@ -25,13 +25,20 @@ import java.nio.file.Path;
 @Singleton
 public class BiomedicusFiles {
     private final Path confFolder;
+    private final Path dataFolder;
 
     @Inject
-    public BiomedicusFiles(@Setting("paths.conf") Path confFolder) {
+    public BiomedicusFiles(@Setting("paths.conf") Path confFolder,
+                           @Setting("paths.data") Path dataFolder) {
         this.confFolder = confFolder;
+        this.dataFolder = dataFolder;
     }
 
     public Path confFolder() {
         return confFolder;
+    }
+
+    public Path dataFolder() {
+        return dataFolder;
     }
 }
