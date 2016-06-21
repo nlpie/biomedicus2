@@ -56,7 +56,7 @@ class SettingsBinder {
 
     void addInterfaceImplementations(@Nonnull Map<Class<?>, Map<String, Class<?>>> interfaceImplementations) {
         for (Map.Entry<Class<?>, Map<String, Class<?>>> entry : interfaceImplementations.entrySet()) {
-            interfaceImplementations.compute(entry.getKey(), (k, v) -> {
+            this.interfaceImplementations.compute(entry.getKey(), (k, v) -> {
                 if (v == null) {
                     v = new HashMap<>();
                 }

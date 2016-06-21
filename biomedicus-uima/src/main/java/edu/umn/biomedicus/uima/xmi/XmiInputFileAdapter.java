@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -36,7 +36,7 @@ import java.nio.file.Path;
 
 /**
  * A simple {@link InputFileAdapter} that reads CASes in XMI format from a directory in the filesystem and initializes
- * the {@link ClinicalNoteAnnotation} object on the document.
+ * the {@link edu.umn.biomedicus.uima.type1_5.DocumentId} object on the document.
  *
  * @author Ben Knoll
  * @since 1.3.0
@@ -93,7 +93,7 @@ public class XmiInputFileAdapter implements InputFileAdapter {
                 throw new CollectionException(e);
             }
 
-            ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(defaultView, 0, defaultView.getSofaDataString().length());
+            DocumentId clinicalNoteAnnotation = new DocumentId(defaultView);
             clinicalNoteAnnotation.setDocumentId(path.getFileName().toString());
             clinicalNoteAnnotation.addToIndexes();
         }

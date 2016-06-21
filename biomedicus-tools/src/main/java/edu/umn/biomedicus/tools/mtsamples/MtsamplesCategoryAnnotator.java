@@ -16,14 +16,14 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.common.Views;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,18 +47,14 @@ public class MtsamplesCategoryAnnotator extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        AnnotationIndex<Annotation> clinicalNoteIndex = systemView.getAnnotationIndex(ClinicalNoteAnnotation.type);
-        for (Annotation annotation : clinicalNoteIndex) {
-            @SuppressWarnings("unchecked")
-            ClinicalNoteAnnotation clinicalNoteAnnotation = (ClinicalNoteAnnotation) annotation;
-            clinicalNoteAnnotation.removeFromIndexes();
-
-            String documentId = clinicalNoteAnnotation.getDocumentId();
+        try {
+            Document document = UimaAdapters.documentFromView(systemView);
+            String documentId = document.getDocumentId();
             int underscore = documentId.indexOf("_");
             String category = documentId.substring(0, underscore);
-            clinicalNoteAnnotation.setCategory(category);
-            clinicalNoteAnnotation.addToIndexes();
-            LOGGER.debug("Categorizing document {} as {}", documentId, category);
+            document.setMetadata("category", category);
+        } catch (BiomedicusException e) {
+            throw new AnalysisEngineProcessException(e);
         }
 
     }

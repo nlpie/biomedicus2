@@ -52,7 +52,7 @@ public class DocumentPartOfSpeechEvaluator {
         this.misses = misses;
         this.correct = correct;
         this.total = total;
-        documentId = evaluee.getIdentifier();
+        documentId = evaluee.getDocumentId();
     }
 
     public DocumentPartOfSpeechEvaluator(String documentId) {

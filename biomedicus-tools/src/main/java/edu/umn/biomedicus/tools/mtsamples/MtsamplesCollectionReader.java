@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.SectionAnnotation;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -144,14 +145,17 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
         String text = documentStringBuilder.toString();
         systemView.setDocumentText(text);
 
-        ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(systemJCas, 0,
-                documentStringBuilder.length());
-        clinicalNoteAnnotation.setDocumentId(path.getFileName().toString());
-        clinicalNoteAnnotation.setEncounter_dept(docTypeId);
-        clinicalNoteAnnotation.setEncounter_dept_specialty(docType);
-        clinicalNoteAnnotation.setEncounter_id(sampleId);
-        clinicalNoteAnnotation.setCategory(sampleName);
-        clinicalNoteAnnotation.addToIndexes();
+        try {
+            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemJCas);
+            document.setDocumentId(path.getFileName().toString());
+            document.setMetadata("docTypeId", docTypeId);
+            document.setMetadata("docType", docType);
+            document.setMetadata("sampleId", sampleId);
+            document.setMetadata("sampleName", sampleName);
+            document.setMetadata("category", sampleName);
+        } catch (BiomedicusException e) {
+            throw new CollectionException(e);
+        }
     }
 
     @Override

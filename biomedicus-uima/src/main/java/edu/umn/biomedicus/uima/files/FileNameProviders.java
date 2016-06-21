@@ -18,13 +18,12 @@ package edu.umn.biomedicus.uima.files;
 
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
-import org.apache.uima.jcas.cas.TOP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,12 +73,12 @@ public final class FileNameProviders {
         String documentIdentifier = null;
         JFSIndexRepository jfsIndexRepository = systemView.getJFSIndexRepository();
         if (jfsIndexRepository != null) {
-            FSIterator<TOP> clinicalNotes = jfsIndexRepository.getAllIndexedFS(ClinicalNoteAnnotation.type);
+            FSIterator<DocumentId> clinicalNotes = jfsIndexRepository.getAllIndexedFS(DocumentId.type);
             if (clinicalNotes.hasNext()) {
                 @SuppressWarnings("unchecked")
-                ClinicalNoteAnnotation clinicalNoteAnnotation = (ClinicalNoteAnnotation) clinicalNotes.next();
-                if (clinicalNoteAnnotation != null) {
-                    documentIdentifier = clinicalNoteAnnotation.getDocumentId();
+                DocumentId documentId = clinicalNotes.next();
+                if (documentId != null) {
+                    documentIdentifier = documentId.getDocumentId();
                 } else {
                     LOGGER.warn("Clinical note annotation was null.");
                 }
@@ -114,7 +113,7 @@ public final class FileNameProviders {
      * @return the file name provider which gives the file name.
      */
     public static String fromDocument(Document document, String extension) {
-        String documentIdentifier = document.getIdentifier();
+        String documentIdentifier = document.getDocumentId();
         return FileNameProviders.withPotentiallyNullIdentifier(documentIdentifier, extension);
     }
 }

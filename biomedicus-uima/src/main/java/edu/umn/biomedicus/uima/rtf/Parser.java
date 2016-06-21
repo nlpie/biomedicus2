@@ -19,14 +19,15 @@ package edu.umn.biomedicus.uima.rtf;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
-import edu.umn.biomedicus.type.MapEntry;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,12 +143,19 @@ public class Parser extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        @SuppressWarnings("unchecked")
-        ClinicalNoteAnnotation original = (ClinicalNoteAnnotation) originalDocument.getAnnotationIndex(ClinicalNoteAnnotation.type)
-                .iterator().next();
+        JFSIndexRepository jfsIndexRepository = originalDocument.getJFSIndexRepository();
 
-        ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(systemView, 0, documentText.length());
-        clinicalNoteAnnotation.setDocumentId(original.getDocumentId());
-        clinicalNoteAnnotation.addToIndexes();
+        DocumentId originalDocId = (DocumentId) jfsIndexRepository.getAllIndexedFS(DocumentId.type).next();
+        DocumentId copyDocId = new DocumentId(systemView);
+        copyDocId.setDocumentId(originalDocId.getDocumentId());
+        copyDocId.addToIndexes();
+
+        FSIterator<DocumentMetadata> documentMetadataIt = jfsIndexRepository.getAllIndexedFS(DocumentMetadata.type);
+        while (documentMetadataIt.hasNext()) {
+            DocumentMetadata origDocMeta = documentMetadataIt.next();
+            DocumentMetadata copyDocMeta = new DocumentMetadata(systemView);
+            copyDocMeta.setKey(origDocMeta.getKey());
+            copyDocMeta.setValue(origDocMeta.getValue());
+        }
     }
 }

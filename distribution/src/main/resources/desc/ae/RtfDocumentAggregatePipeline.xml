@@ -20,16 +20,16 @@
     <primitive>false</primitive>
     <delegateAnalysisEngineSpecifiers>
         <delegateAnalysisEngine key="parser">
-            <import location="annotator/RtfParserAnnotator.xml"/>
+            <import location="annotator/rtf/RtfParserAnnotator.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="paragraph">
-            <import location="annotator/RtfParagraphAnnotator.xml"/>
+            <import location="annotator/rtf/RtfParagraphAnnotator.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="table">
-            <import location="annotator/RtfTableAnnotator.xml"/>
+            <import location="annotator/rtf/RtfTableAnnotator.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="textSegmenter">
-            <import location="annotator/RtfTextSegmenter.xml"/>
+            <import location="annotator/rtf/RtfTextSegmenter.xml"/>
         </delegateAnalysisEngine>
     </delegateAnalysisEngineSpecifiers>
     <analysisEngineMetaData>

@@ -26,6 +26,8 @@ import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.type.*;
 import edu.umn.biomedicus.uima.labels.FSIteratorAdapter;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
 import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationIndex;
@@ -43,8 +45,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * UIMA implementation of the {@link AbstractDocument} model in the BIOMEDicus type system. Uses a
- * combination of {@link JCas} and {@link ClinicalNoteAnnotation} as a backing data store.
+ * UIMA implementation of the {@link AbstractDocument} model in the BioMedICUS type system. Uses a
+ * combination of {@link JCas} and {@link edu.umn.biomedicus.uima.type1_5.DocumentId}.
  *
  * @author Ben Knoll
  * @since 1.3.0
@@ -58,24 +60,23 @@ class JCasDocument extends AbstractDocument {
     /**
      * The clinical note annotation containing document metadata.
      */
-    private final ClinicalNoteAnnotation documentAnnotation;
+    private final DocumentId documentId;
 
     /**
      * Default constructor. Instantiates a Document class backed up by a system view {@link JCas}, and the
-     * {@link ClinicalNoteAnnotation} within that system view.
+     * {@link DocumentId} within that system view.
      *
      * @param view the {@link JCas} system view
      */
     JCasDocument(JCas view) throws BiomedicusException {
         this.view = view;
-        AnnotationIndex<Annotation> index = view.getAnnotationIndex(ClinicalNoteAnnotation.type);
-        FSIterator<Annotation> it = index.iterator();
+        FSIterator<DocumentId> it = view.getJFSIndexRepository().getAllIndexedFS(DocumentId.type);
         if (it.hasNext()) {
             @SuppressWarnings("unchecked")
-            ClinicalNoteAnnotation annotation = (ClinicalNoteAnnotation) it.next();
-            documentAnnotation = annotation;
+            DocumentId annotation = it.next();
+            documentId = annotation;
         } else {
-            documentAnnotation = new ClinicalNoteAnnotation(view);
+            documentId = new DocumentId(view);
         }
     }
 
@@ -136,31 +137,6 @@ class JCasDocument extends AbstractDocument {
     }
 
     @Override
-    public void setCategory(String category) {
-        documentAnnotation.setCategory(category);
-    }
-
-    @Override
-    public String getCategory() {
-        return documentAnnotation.getCategory();
-    }
-
-    @Override
-    public void beginEditing() {
-        documentAnnotation.removeFromIndexes();
-    }
-
-    @Override
-    public void endEditing() {
-        documentAnnotation.addToIndexes();
-    }
-
-    @Override
-    public String getIdentifier() {
-        return documentAnnotation.getDocumentId();
-    }
-
-    @Override
     public Stream<TextSpan> textSegments() {
         Iterable<Annotation> textSegmentAnnotation = view.getAnnotationIndex(TextSegmentAnnotation.type);
         if (textSegmentAnnotation.iterator().hasNext()) {
@@ -206,11 +182,24 @@ class JCasDocument extends AbstractDocument {
                 (annotation) -> new SubstanceUsageAdapter(view, (SubstanceUsageAnnotation) annotation));
     }
 
-    private MapEntry getMapEntry(String key) {
-        FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(MapEntry.type);
+    @Nullable
+    @Override
+    public String getDocumentId() {
+        return documentId.getDocumentId();
+    }
+
+    @Override
+    public void setDocumentId(String documentId) {
+        this.documentId.removeFromIndexes();
+        this.documentId.setDocumentId(documentId);
+        this.documentId.addToIndexes();
+    }
+
+    private DocumentMetadata getMapEntry(String key) {
+        FSIterator<TOP> metaDataIterator = view.getJFSIndexRepository().getAllIndexedFS(DocumentMetadata.type);
         while (metaDataIterator.hasNext()) {
             @SuppressWarnings("unchecked")
-            MapEntry mapEntry = (MapEntry) metaDataIterator.next();
+            DocumentMetadata mapEntry = (DocumentMetadata) metaDataIterator.next();
             if (Objects.equals(mapEntry.getKey(), key)) {
                 return mapEntry;
             }
@@ -221,7 +210,7 @@ class JCasDocument extends AbstractDocument {
     @Nullable
     @Override
     public String getMetadata(String key) throws BiomedicusException {
-        MapEntry mapEntry = getMapEntry(key);
+        DocumentMetadata mapEntry = getMapEntry(key);
         if (mapEntry == null) {
             throw new BiomedicusException("Entry for key not found: " + key);
         }
@@ -230,11 +219,11 @@ class JCasDocument extends AbstractDocument {
 
     @Override
     public void setMetadata(String key, String value) throws BiomedicusException {
-        MapEntry mapEntry = getMapEntry(key);
+        DocumentMetadata mapEntry = getMapEntry(key);
         if (mapEntry != null) {
             mapEntry.removeFromIndexes();
         } else {
-            mapEntry = new MapEntry(view);
+            mapEntry = new DocumentMetadata(view);
             mapEntry.setKey(key);
         }
         mapEntry.setValue(value);

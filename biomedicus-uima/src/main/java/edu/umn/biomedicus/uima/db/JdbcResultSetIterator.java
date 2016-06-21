@@ -16,7 +16,8 @@
 
 package edu.umn.biomedicus.uima.db;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.jcas.JCas;
@@ -63,7 +64,7 @@ public class JdbcResultSetIterator implements Closeable {
     private final String analyzerVersion;
 
     /**
-     * The features that exist on the {@link ClinicalNoteAnnotation} object and as columns in the query.
+     * The columns to create as metadata.
      */
     @Nullable
     private Set<String> metaDataFeatureShortNames;
@@ -99,18 +100,13 @@ public class JdbcResultSetIterator implements Closeable {
     public void populateNextSystemView(JCas systemView) throws SQLException {
         LOGGER.trace("populating a system view with cas");
         if (metaDataFeatureShortNames == null) {
-            Type type = systemView.getTypeSystem().getType(ClinicalNoteAnnotation.class.getCanonicalName());
-            Set<String> featureShortNames = type.getFeatures().stream()
-                    .map(Feature::getShortName)
-                    .collect(Collectors.toSet());
-
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
 
             metaDataFeatureShortNames = new HashSet<>();
             for (int column = 1; column <= columnCount; column++) {
                 String columnName = metaData.getColumnName(column);
-                if (featureShortNames.contains(columnName)) {
+                if (!"note_text".equals(columnName) && !"documentId".equals(columnName)) {
                     metaDataFeatureShortNames.add(columnName);
                 }
             }
@@ -124,15 +120,16 @@ public class JdbcResultSetIterator implements Closeable {
         }
         systemView.setDocumentText(documentText);
 
-        ClinicalNoteAnnotation documentAnnotation = new ClinicalNoteAnnotation(systemView);
-        Type type = documentAnnotation.getType();
+        DocumentId documentId = new DocumentId(systemView);
+        documentId.setDocumentId(resultSet.getString("documentId"));
+        documentId.addToIndexes();
+
         for (String featureShortName : metaDataFeatureShortNames) {
-            Feature feature = type.getFeatureByBaseName(featureShortName);
-            documentAnnotation.setStringValue(feature, resultSet.getString(featureShortName));
+            DocumentMetadata documentMetadata = new DocumentMetadata(systemView);
+            documentMetadata.setKey(featureShortName);
+            documentMetadata.setValue(resultSet.getString(featureShortName));
+            documentMetadata.addToIndexes();
         }
-        documentAnnotation.setRetrievalTime(dateFormatter.format(new Date()));
-        documentAnnotation.setAnalyzerVersion(analyzerVersion);
-        documentAnnotation.addToIndexes();
     }
 
     /**

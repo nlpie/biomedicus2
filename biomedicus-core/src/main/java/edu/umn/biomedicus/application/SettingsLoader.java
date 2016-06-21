@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,8 +33,8 @@ class SettingsLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsLoader.class);
     private final Path settingsFilePath;
     private final Yaml yaml;
-    private Map<String, Class<?>> settingInterfaces;
-    private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
+    @Nullable private Map<String, Class<?>> settingInterfaces;
+    @Nullable private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
     private Map<String, Object> settings;
 
     private SettingsLoader(Path settingsFilePath, Yaml yaml) {
@@ -76,6 +77,9 @@ class SettingsLoader {
         }
 
         settings = ((Map<String, Object>) settingsFileYaml.get("settings"));
+        if (settings == null) {
+            throw new BiomedicusException("Null settings from file: " + settingsFilePath);
+        }
     }
 
     private Map<String, Class<?>> getClassMap(Map<String, String> settingInterfacesYaml) throws BiomedicusException {
@@ -92,8 +96,12 @@ class SettingsLoader {
     }
 
     void addToBinder(SettingsBinder settingsBinder) {
-        settingsBinder.addSettingsInterfaces(settingInterfaces);
-        settingsBinder.addInterfaceImplementations(interfaceImplementations);
+        if (settingInterfaces != null) {
+            settingsBinder.addSettingsInterfaces(settingInterfaces);
+        }
+        if (interfaceImplementations != null) {
+            settingsBinder.addInterfaceImplementations(interfaceImplementations);
+        }
         settingsBinder.addSettings(settings);
     }
 }

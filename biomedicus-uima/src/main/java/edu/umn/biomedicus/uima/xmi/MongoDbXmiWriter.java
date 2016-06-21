@@ -20,8 +20,8 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSInputFile;
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -92,9 +92,9 @@ public class MongoDbXmiWriter extends JCasAnnotator_ImplBase {
         String documentId = null;
         JFSIndexRepository jfsIndexRepository = systemView.getJFSIndexRepository();
         if (jfsIndexRepository != null) {
-            FSIterator it = jfsIndexRepository.getAllIndexedFS(ClinicalNoteAnnotation.type);
+            FSIterator<DocumentId> it = jfsIndexRepository.getAllIndexedFS(DocumentId.type);
             if (it.hasNext()) {
-                ClinicalNoteAnnotation documentAnnotation = (ClinicalNoteAnnotation) it.next();
+                DocumentId documentAnnotation = it.next();
                 documentId = documentAnnotation.getDocumentId();
             }
         }

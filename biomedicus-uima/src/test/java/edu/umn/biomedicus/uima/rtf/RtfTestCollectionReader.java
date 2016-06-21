@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
@@ -62,9 +62,9 @@ public class RtfTestCollectionReader extends CollectionReader_ImplBase {
             throw new CollectionException(e);
         }
 
-        ClinicalNoteAnnotation documentAnnotation = new ClinicalNoteAnnotation(jCas, 0, rtfDoc.length());
-        documentAnnotation.setDocumentId("97_100");
-        documentAnnotation.addToIndexes();
+        DocumentId documentId = new DocumentId(jCas);
+        documentId.setDocumentId("97_100");
+        documentId.addToIndexes();
         returned = true;
     }
 

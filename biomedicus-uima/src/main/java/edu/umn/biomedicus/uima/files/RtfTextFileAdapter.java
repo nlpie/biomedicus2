@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.IllegalXmlCharacter;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -107,15 +107,13 @@ public class RtfTextFileAdapter implements InputFileAdapter {
         String documentText = stringBuilder.toString();
         targetView.setDocumentText(documentText);
 
-        ClinicalNoteAnnotation documentAnnotation = new ClinicalNoteAnnotation(targetView, 0, documentText.length());
+        DocumentId documentAnnotation = new DocumentId(targetView);
         String fileName = path.getFileName().toString();
         int period = fileName.lastIndexOf('.');
         if (period == -1) {
             period = fileName.length();
         }
         documentAnnotation.setDocumentId(fileName.substring(0, period));
-        documentAnnotation.setAnalyzerVersion(version);
-        documentAnnotation.setRetrievalTime(dateFormatter.format(new Date()));
         documentAnnotation.addToIndexes();
     }
 

@@ -58,7 +58,7 @@ public class PtbTagsWriter implements DocumentProcessor {
         }
 
         try {
-            Path fileName = outputDir.resolve(document.getIdentifier());
+            Path fileName = outputDir.resolve(document.getDocumentId());
             Files.write(fileName, rewriter.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new BiomedicusException(e);

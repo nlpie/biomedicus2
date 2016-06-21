@@ -16,20 +16,14 @@
 
 package edu.umn.biomedicus.uima.db;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import mockit.*;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.Type;
-import org.apache.uima.cas.TypeSystem;
-import org.apache.uima.jcas.JCas;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,7 +38,7 @@ public class JdbcResultSetIteratorTest {
     private String analyzerVersion;
 
     @Mocked
-    private ClinicalNoteAnnotation clinicalNoteAnnotation;
+    private DocumentId documentId;
 
     @Test
     public void testHasNext() throws Exception {
@@ -64,106 +58,11 @@ public class JdbcResultSetIteratorTest {
         Assert.assertEquals(false, jdbcResultSetIterator.hasNext());
     }
 
-    @Test
-    public void testPopulateNextSystemViewPopulatesMetadata(@Mocked final JCas systemView,
-                                                            @Mocked final TypeSystem typeSystem,
-                                                            @Mocked final Type type,
-                                                            @Mocked final Feature feature,
-                                                            @Mocked final ResultSetMetaData resultSetMetaData) throws Exception {
-        Deencapsulation.setField(jdbcResultSetIterator, "metaDataFeatureShortNames", null);
-
-        new NonStrictExpectations() {{
-            typeSystem.getType(anyString); result = type;
-            type.getFeatures(); result = Arrays.asList(feature, feature, feature);
-            feature.getShortName(); returns("a", "b", "c");
-            resultSet.getMetaData(); result = resultSetMetaData;
-            resultSetMetaData.getColumnCount(); result = 3;
-            resultSetMetaData.getColumnName(1); result = "a";
-            resultSetMetaData.getColumnName(2); result = "b";
-            resultSetMetaData.getColumnName(3); result = "d";
-            new HashSet<>();
-        }};
-
-        jdbcResultSetIterator.populateNextSystemView(systemView);
-
-        Set<String> metadataFeatureShortNames = Deencapsulation.getField(jdbcResultSetIterator, "metaDataFeatureShortNames");
-        Assert.assertEquals(2, metadataFeatureShortNames.size());
-        Assert.assertTrue(metadataFeatureShortNames.contains("a"));
-        Assert.assertTrue(metadataFeatureShortNames.contains("b"));
-
-        new Verifications() {{
-            resultSetMetaData.getColumnName(anyInt); times = 3;
-        }};
-    }
-
-    @Test
-    public void testPopulateNextSystemViewSkipMetadata(@Mocked final JCas systemView) throws Exception {
-        setFeatureNames();
-
-        jdbcResultSetIterator.populateNextSystemView(systemView);
-
-        new Verifications() {{
-            resultSet.getMetaData();
-            times = 0;
-        }};
-    }
-
     public void setFeatureNames() {
         Set<String> featureNames = new HashSet<>();
         featureNames.add("a");
         featureNames.add("b");
         Deencapsulation.setField(jdbcResultSetIterator, featureNames);
-    }
-
-    @Test
-    public void testPopulateNextSystemViewNoteText(@Mocked final JCas systemView) throws Exception {
-        setFeatureNames();
-
-        new NonStrictExpectations() {{
-            resultSet.getString("note_text"); result = "blah";
-            systemView.setDocumentText("blah");
-        }};
-
-        jdbcResultSetIterator.populateNextSystemView(systemView);
-    }
-
-    @Test
-    public void testPopulateNextSystemViewNoteTextTrimmed(@Mocked final JCas systemView) throws Exception {
-        setFeatureNames();
-
-        new NonStrictExpectations() {{
-            resultSet.getString("note_text"); result = "blah ";
-            systemView.setDocumentText("blah");
-        }};
-
-        jdbcResultSetIterator.populateNextSystemView(systemView);
-    }
-
-    @Test
-    public void testPopulateNextSystemViewClinicalNoteAnnotation(@Mocked final JCas systemView,
-                                                                 @Mocked final Type type,
-                                                                 @Mocked final Feature feature) throws Exception {
-        setFeatureNames();
-
-        new NonStrictExpectations() {{
-            resultSet.getString("a"); result = "a_val";
-            resultSet.getString("b"); result = "b_val";
-        }};
-
-        jdbcResultSetIterator.populateNextSystemView(systemView);
-
-        new VerificationsInOrder() {{
-            type.getFeatureByBaseName("a");
-            clinicalNoteAnnotation.setStringValue(feature, "a_val");
-            type.getFeatureByBaseName("b");
-            clinicalNoteAnnotation.setStringValue(feature, "b_val");
-        }};
-
-        new Verifications() {{
-            clinicalNoteAnnotation.setRetrievalTime(anyString);
-            clinicalNoteAnnotation.setAnalyzerVersion(anyString);
-            clinicalNoteAnnotation.addToIndexes();
-        }};
     }
 
     @Test

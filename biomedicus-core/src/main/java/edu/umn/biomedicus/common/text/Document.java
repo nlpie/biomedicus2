@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  * <p>This class will be implemented for each backend, so the biomedicus pipeline is designed to be agnostic
  * about how the data is stored. The UIMA example is edu.umn.biomedicus.adapter.JCasDocument</p>
  */
-public interface Document extends Editable {
+public interface Document {
     /**
      * Get an {@link Iterable} over all the {@link Token} in a document in no
      * specific order.
@@ -91,28 +91,6 @@ public interface Document extends Editable {
     String getText();
 
     /**
-     * Sets the category of the document.
-     *
-     * @param category string identifier for a category
-     */
-    void setCategory(String category);
-
-    /**
-     * Returns the category of the document.
-     *
-     * @return string identifier for a category.
-     */
-    @Nullable
-    String getCategory();
-
-    /**
-     * Returns an identifier specific to the document.
-     *
-     * @return identifier
-     */
-    String getIdentifier();
-
-    /**
      * Gets a stream of the discrete text segments within the document. These are defined as spans which sentences and
      * smaller segments will not bridge the gap between.
      *
@@ -158,6 +136,11 @@ public interface Document extends Editable {
      * @return substance usages.
      */
     Iterable<SubstanceUsage> getSubstanceUsages();
+
+    @Nullable
+    String getDocumentId();
+
+    void setDocumentId(String documentId);
 
     /**
      *

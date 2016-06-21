@@ -23,7 +23,6 @@
 
     <priorityLists>
         <priorityList>
-            <type>edu.umn.biomedicus.type.ClinicalNoteAnnotation</type>
             <type>edu.umn.biomedicus.type.TextSegmentAnnotation</type>
             <type>edu.umn.biomedicus.type.RowAnnotation</type>
             <type>edu.umn.biomedicus.type.CellAnnotation</type>

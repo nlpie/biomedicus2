@@ -51,11 +51,6 @@ public class SimpleDocument extends AbstractDocument {
     private final List<Sentence> sentenceList;
 
     /**
-     * A document identifier.
-     */
-    private final String identifier = UUID.randomUUID().toString();
-
-    /**
      * Terms list.
      */
     private final List<Term> terms = new ArrayList<>();
@@ -63,10 +58,9 @@ public class SimpleDocument extends AbstractDocument {
     private final Map<String, String> metadata = new HashMap<>();
 
     /**
-     * The category of the document.
+     * A document identifier.
      */
-    @Nullable
-    private String category;
+    private String identifier = UUID.randomUUID().toString();
 
     /**
      * Creates a document with the given data.
@@ -130,22 +124,6 @@ public class SimpleDocument extends AbstractDocument {
     }
 
     @Override
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    @Nullable
-    @Override
-    public String getCategory() {
-        return category;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
     public Stream<TextSpan> textSegments() {
         return Stream.of(new SimpleTextSpan(new Span(0, documentText.length()), documentText));
     }
@@ -175,6 +153,17 @@ public class SimpleDocument extends AbstractDocument {
         throw new UnsupportedOperationException();
     }
 
+    @Nullable
+    @Override
+    public String getDocumentId() {
+        return identifier;
+    }
+
+    @Override
+    public void setDocumentId(String documentId) {
+        this.identifier = documentId;
+    }
+
     @Override
     public String getMetadata(String key) {
         return metadata.get(key);
@@ -193,16 +182,6 @@ public class SimpleDocument extends AbstractDocument {
     @Override
     public boolean hasNewInformationAnnotation(SpanLike spanLike, String kind) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void beginEditing() {
-
-    }
-
-    @Override
-    public void endEditing() {
-
     }
 
 

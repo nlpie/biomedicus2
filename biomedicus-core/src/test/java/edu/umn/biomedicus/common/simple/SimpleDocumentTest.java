@@ -114,42 +114,10 @@ public class SimpleDocumentTest {
     }
 
     @Test
-    public void testSetCategory() throws Exception {
-        simpleDocument.setCategory("a category");
-
-        assertEquals(Deencapsulation.getField(simpleDocument, "category"), "a category");
-    }
-
-    @Test
-    public void testGetCategory() throws Exception {
-        Deencapsulation.setField(simpleDocument, "category", "a category");
-
-        assertEquals(simpleDocument.getCategory(), "a category");
-    }
-
-    @Test
-    public void testGetIdentifier() throws Exception {
-        String identifier = simpleDocument.getIdentifier();
-
-        UUID uuid = UUID.fromString(identifier);
-        assertNotNull(uuid);
-    }
-
-    @Test
     public void testTextSegments() throws Exception {
         List<TextSpan> collect = simpleDocument.textSegments().collect(Collectors.toList());
 
         assertEquals(collect.size(), 1);
         assertEquals(collect.get(0).getText(), "document text");
-    }
-
-    @Test
-    public void testBeginEditing() throws Exception {
-        simpleDocument.beginEditing();
-    }
-
-    @Test
-    public void testEndEditing() throws Exception {
-        simpleDocument.endEditing();
     }
 }

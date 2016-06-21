@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
@@ -78,9 +78,9 @@ public class TestCollectionReader extends CollectionReader_ImplBase {
 
         systemView.setDocumentText(document);
 
-        ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(systemView, 0, document.length());
-        clinicalNoteAnnotation.setDocumentId("1");
-        clinicalNoteAnnotation.addToIndexes();
+        DocumentId documentId = new DocumentId(systemView);
+        documentId.setDocumentId("1");
+        documentId.addToIndexes();
 
         returned++;
     }

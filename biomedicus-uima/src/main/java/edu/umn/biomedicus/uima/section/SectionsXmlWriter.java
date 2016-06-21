@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.uima.section;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
 import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.type.SubSectionAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -206,7 +206,7 @@ public class SectionsXmlWriter extends JCasAnnotator_ImplBase {
         Path path = outputDir.resolve("malformedDocuments.txt");
 
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-            ClinicalNoteAnnotation note = (ClinicalNoteAnnotation) systemView.getAnnotationIndex(ClinicalNoteAnnotation.type).iterator().next();
+            DocumentId note = (DocumentId) systemView.getJFSIndexRepository().getAllIndexedFS(DocumentId.type).next();
             String documentId = note.getDocumentId();
             LOGGER.warn("Failed document: {}", documentId);
             bufferedWriter.write(documentId + "\t" + reason + "\n");

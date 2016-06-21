@@ -89,7 +89,7 @@ public class UimaAdapters {
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @return newly instantiated {@code Document} object from the data stored in the GoldView.
-     * @throws CASException
+     * @throws BiomedicusException
      */
     public static Document goldDocumentFromInitialView(JCas initialView) throws BiomedicusException {
         return documentFromView(initialView, Views.SYSTEM_VIEW);
@@ -114,6 +114,18 @@ public class UimaAdapters {
         } catch (CASException e) {
             throw new BiomedicusException(e);
         }
+        return new JCasDocument(view);
+    }
+
+    /**
+     * Creates a Biomedicus {@link Document} implementation using the data stored in the
+     * an arbitrary UIMA view.
+     *
+     * @param view the view to create a document from
+     * @return newly instantiated {@code Document} object from the data stored in the specified view.
+     * @throws BiomedicusException
+     */
+    public static Document documentFromView(JCas view) throws BiomedicusException {
         return new JCasDocument(view);
     }
 

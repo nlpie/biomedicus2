@@ -20,6 +20,8 @@ import edu.umn.biomedicus.common.semantics.PartOfSpeech;
 import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.type.*;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
 import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
@@ -63,11 +65,14 @@ public class MtsamplesViewMigrator implements ViewMigrator {
         Feature documentSampleIdFeature = oldDocumentType.getFeatureByBaseName("sampleId");
         Feature documentSampleNameFeature = oldDocumentType.getFeatureByBaseName("sampleName");
         for (Annotation annotation : documentIndex) {
-            ClinicalNoteAnnotation clinicalNoteAnnotation = new ClinicalNoteAnnotation(target,
-                    annotation.getBegin(), annotation.getEnd());
+            DocumentId clinicalNoteAnnotation = new DocumentId(target);
             clinicalNoteAnnotation.setDocumentId(annotation.getStringValue(documentTypeIdFeature) + "_" + annotation.getStringValue(documentSampleIdFeature));
-            clinicalNoteAnnotation.setCategory(annotation.getStringValue(documentSampleNameFeature));
             clinicalNoteAnnotation.addToIndexes();
+
+            DocumentMetadata documentMetadata = new DocumentMetadata(target);
+            documentMetadata.setKey("category");
+            documentMetadata.setValue(annotation.getStringValue(documentSampleNameFeature));
+            documentMetadata.addToIndexes();
         }
 
         Type sectionType = oldTypeSystem.getType("edu.umn.biomedicus.mtsamples.types.Section");

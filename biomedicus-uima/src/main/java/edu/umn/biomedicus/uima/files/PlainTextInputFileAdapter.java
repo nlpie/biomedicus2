@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.type.ClinicalNoteAnnotation;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -26,11 +26,12 @@ import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.util.Date;
+import java.util.Objects;
 
 /**
  * A simple collections reader that reads documents from a directory in the filesystem. Uses a documents text to
@@ -52,31 +53,19 @@ public class PlainTextInputFileAdapter implements InputFileAdapter {
     public static final String PARAM_ENCODING = "encoding";
 
     /**
-     * Date formatter for adding date to metadata.
-     */
-    private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG);
-
-    /**
      * File encoding
      */
-    private String encoding;
-
-    /**
-     * Analyzer version.
-     */
-    private String version;
+    @Nullable private String encoding;
 
     /**
      * View to load data into.
      */
-    private String viewName;
+    @Nullable private String viewName;
 
     @Override
     public void initialize(UimaContext uimaContext, ProcessingResourceMetaData processingResourceMetaData) {
         LOGGER.info("Initializing plain text input file adapter.");
         encoding = (String) uimaContext.getConfigParameterValue(PARAM_ENCODING);
-
-        version = processingResourceMetaData.getVersion();
     }
 
     @Override
@@ -97,18 +86,16 @@ public class PlainTextInputFileAdapter implements InputFileAdapter {
         }
 
         byte[] bytes = Files.readAllBytes(path);
-        String documentText = new String(bytes, encoding);
+        String documentText = new String(bytes, Objects.requireNonNull(encoding, "Encoding must not be null"));
         targetView.setDocumentText(documentText);
 
-        ClinicalNoteAnnotation documentAnnotation = new ClinicalNoteAnnotation(targetView, 0, documentText.length());
+        DocumentId documentAnnotation = new DocumentId(targetView);
         String fileName = path.getFileName().toString();
         int period = fileName.lastIndexOf('.');
         if (period == -1) {
             period = fileName.length();
         }
         documentAnnotation.setDocumentId(fileName.substring(0, period));
-        documentAnnotation.setAnalyzerVersion(version);
-        documentAnnotation.setRetrievalTime(dateFormatter.format(new Date()));
         documentAnnotation.addToIndexes();
     }
 
