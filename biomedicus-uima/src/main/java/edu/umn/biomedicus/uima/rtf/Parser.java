@@ -156,6 +156,7 @@ public class Parser extends JCasAnnotator_ImplBase {
             DocumentMetadata copyDocMeta = new DocumentMetadata(systemView);
             copyDocMeta.setKey(origDocMeta.getKey());
             copyDocMeta.setValue(origDocMeta.getValue());
+            copyDocMeta.addToIndexes();
         }
     }
 }
