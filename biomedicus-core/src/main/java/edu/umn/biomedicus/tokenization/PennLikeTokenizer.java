@@ -79,12 +79,21 @@ public class PennLikeTokenizer implements DocumentProcessor {
         for (Sentence sentence : document.getSentences()) {
             String text = sentence.getText();
 
+            // phase 1, split by whitespace
+
             LinkedList<Span> splitByWhitespace = new LinkedList<>();
 
             Matcher words = WORDS.matcher(text);
             while (words.find()) {
                 splitByWhitespace.addLast(new Span(words.start(), words.end()));
             }
+
+            if (splitByWhitespace.size() == 0) {
+                return;
+            }
+
+            // phase 1.1 split a trailing period
+
             Span lastTokenByWhiteSpace = splitByWhitespace.pollLast();
             Matcher matcher = TRAILING_PERIOD.matcher(lastTokenByWhiteSpace.getCovered(text));
             if (matcher.find()) {
@@ -93,6 +102,8 @@ public class PennLikeTokenizer implements DocumentProcessor {
             } else {
                 splitByWhitespace.addLast(lastTokenByWhiteSpace);
             }
+
+            // phase 2 split by middle breaking characters
 
             LinkedList<Span> splitByWhitespaceAndMid = new LinkedList<>();
 
@@ -128,6 +139,8 @@ public class PennLikeTokenizer implements DocumentProcessor {
                 }
             }
 
+            // phase 3 split off begin-breaking sequences
+
             LinkedList<Span> splitByWhitespaceBeginAndMid = new LinkedList<>();
 
             while (!splitByWhitespaceAndMid.isEmpty()) {
@@ -148,6 +161,8 @@ public class PennLikeTokenizer implements DocumentProcessor {
                 }
             }
 
+            // phase 4 split off end-breaking sequences
+
             LinkedList<Span> allSplit = new LinkedList<>();
 
             while (!splitByWhitespaceBeginAndMid.isEmpty()) {
@@ -164,6 +179,8 @@ public class PennLikeTokenizer implements DocumentProcessor {
                     allSplit.addFirst(poll);
                 }
             }
+
+            // phase 5 label the splits created through the previous phases
 
             Span last = null;
             while (!allSplit.isEmpty()) {
