@@ -34,7 +34,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
     @Override
     public Collection<? extends Module> modules() {
         return Arrays.asList(
-                new LabelableModule<Sentence2, SentenceAnnotation>() {
+                new LabelableModule<Sentence2, SentenceAnnotation>(Sentence2.class) {
                     @Override
                     protected LabelAdapter<Sentence2, SentenceAnnotation> getLabelAdapter() {
                         return LabelAdapter.builder(Sentence2.class)
@@ -44,7 +44,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(sentenceAnnotation -> new Sentence2());
                     }
                 },
-                new LabelableModule<DictionaryTerm, TermAnnotation>() {
+                new LabelableModule<DictionaryTerm, TermAnnotation>(DictionaryTerm.class) {
                     @Override
                     protected LabelAdapter<DictionaryTerm, TermAnnotation> getLabelAdapter() {
                         return LabelAdapter.builder(DictionaryTerm.class)
@@ -77,7 +77,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 });
                     }
                 },
-                new LabelableModule<ParseToken, edu.umn.biomedicus.uima.type1_5.ParseToken>() {
+                new LabelableModule<ParseToken, edu.umn.biomedicus.uima.type1_5.ParseToken>(ParseToken.class) {
                     @Override
                     public LabelAdapter<ParseToken, edu.umn.biomedicus.uima.type1_5.ParseToken> getLabelAdapter() {
                         return LabelAdapter.builder(ParseToken.class)
@@ -89,7 +89,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new ParseToken(annotation.getText(), annotation.getTrailingText()));
                     }
                 },
-                new LabelableModule<PartOfSpeech, edu.umn.biomedicus.uima.type1_5.ParseToken>() {
+                new LabelableModule<PartOfSpeech, edu.umn.biomedicus.uima.type1_5.ParseToken>(PartOfSpeech.class) {
                     @Override
                     public LabelAdapter<PartOfSpeech, edu.umn.biomedicus.uima.type1_5.ParseToken> getLabelAdapter() {
                         return LabelAdapter.builder(PartOfSpeech.class)
@@ -100,7 +100,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> PartsOfSpeech.forTag(annotation.getPartOfSpeech()));
                     }
                 },
-                new LabelableModule<TermToken, edu.umn.biomedicus.uima.type1_5.TermToken>() {
+                new LabelableModule<TermToken, edu.umn.biomedicus.uima.type1_5.TermToken>(TermToken.class) {
                     @Override
                     public LabelAdapter<TermToken, edu.umn.biomedicus.uima.type1_5.TermToken> getLabelAdapter() {
                         return LabelAdapter.builder(TermToken.class)
@@ -112,7 +112,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new TermToken(annotation.getText(), annotation.getTrailingText()));
                     }
                 },
-                new LabelableModule<Acronym, edu.umn.biomedicus.uima.type1_5.Acronym>() {
+                new LabelableModule<Acronym, edu.umn.biomedicus.uima.type1_5.Acronym>(Acronym.class) {
                     @Override
                     protected LabelAdapter<Acronym, edu.umn.biomedicus.uima.type1_5.Acronym> getLabelAdapter() {
                         return LabelAdapter.builder(Acronym.class)
@@ -123,7 +123,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(acronym -> new Acronym());
                     }
                 },
-                new LabelableModule<AcronymExpansion, edu.umn.biomedicus.uima.type1_5.AcronymExpansion>() {
+                new LabelableModule<AcronymExpansion, edu.umn.biomedicus.uima.type1_5.AcronymExpansion>(AcronymExpansion.class) {
                     @Override
                     protected LabelAdapter<AcronymExpansion, edu.umn.biomedicus.uima.type1_5.AcronymExpansion> getLabelAdapter() {
                         return LabelAdapter.builder(AcronymExpansion.class)
@@ -135,7 +135,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new AcronymExpansion(annotation.getLongform(), annotation.getTrailingText()));
                     }
                 },
-                new LabelableModule<WordIndex, edu.umn.biomedicus.uima.type1_5.WordIndex>() {
+                new LabelableModule<WordIndex, edu.umn.biomedicus.uima.type1_5.WordIndex>(WordIndex.class) {
                     @Override
                     protected LabelAdapter<WordIndex, edu.umn.biomedicus.uima.type1_5.WordIndex> getLabelAdapter() {
                         return LabelAdapter.builder(WordIndex.class)
@@ -146,7 +146,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new WordIndex(new IndexedTerm(annotation.getIndex())));
                     }
                 },
-                new LabelableModule<NormIndex, edu.umn.biomedicus.uima.type1_5.NormIndex>() {
+                new LabelableModule<NormIndex, edu.umn.biomedicus.uima.type1_5.NormIndex>(NormIndex.class) {
                     @Override
                     protected LabelAdapter<NormIndex, edu.umn.biomedicus.uima.type1_5.NormIndex> getLabelAdapter() {
                         return LabelAdapter.builder(NormIndex.class)
@@ -157,7 +157,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new NormIndex(new IndexedTerm(annotation.getIndex())));
                     }
                 },
-                new LabelableModule<Historical, edu.umn.biomedicus.uima.type1_5.Historical>() {
+                new LabelableModule<Historical, edu.umn.biomedicus.uima.type1_5.Historical>(Historical.class) {
                     @Override
                     protected LabelAdapter<Historical, edu.umn.biomedicus.uima.type1_5.Historical> getLabelAdapter() {
                         return LabelAdapter.builder(Historical.class)
@@ -166,7 +166,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(annotation -> new Historical());
                     }
                 },
-                new LabelableModule<Negated, edu.umn.biomedicus.uima.type1_5.Negated>() {
+                new LabelableModule<Negated, edu.umn.biomedicus.uima.type1_5.Negated>(Negated.class) {
                     @Override
                     protected LabelAdapter<Negated, edu.umn.biomedicus.uima.type1_5.Negated> getLabelAdapter() {
                         return LabelAdapter.builder(Negated.class)
@@ -175,7 +175,7 @@ public class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                                 .withAnnotationAdapter(negated -> new Negated());
                     }
                 },
-                new LabelableModule<Probable, edu.umn.biomedicus.uima.type1_5.Probable>() {
+                new LabelableModule<Probable, edu.umn.biomedicus.uima.type1_5.Probable>(Probable.class) {
                     @Override
                     protected LabelAdapter<Probable, edu.umn.biomedicus.uima.type1_5.Probable> getLabelAdapter() {
                         return LabelAdapter.builder(Probable.class)

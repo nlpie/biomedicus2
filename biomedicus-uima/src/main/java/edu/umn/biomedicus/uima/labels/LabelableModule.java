@@ -19,6 +19,8 @@ package edu.umn.biomedicus.uima.labels;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.multibindings.MapBinder;
+import com.google.inject.multibindings.Multibinder;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
@@ -34,28 +36,36 @@ import org.apache.uima.jcas.tcas.Annotation;
 public abstract class LabelableModule<T, U extends Annotation> extends AbstractModule {
 
 
+    private final LabelAdapter<T, U> labelAdapter = getLabelAdapter();
+    private final Class<T> tClass;
+
     protected abstract LabelAdapter<T, U> getLabelAdapter();
+
+    protected LabelableModule(Class<T> tClass) {
+        this.tClass = tClass;
+    }
 
     @Override
     protected void configure() {
-
+        MapBinder<Class, LabelAdapter> labelAdapters = MapBinder.newMapBinder(binder(), Class.class, LabelAdapter.class);
+        labelAdapters.addBinding(tClass).toInstance(labelAdapter);
     }
 
     @Provides
     @Singleton
     LabelAdapter<T, U> provideLabelAdapter() {
-        return getLabelAdapter();
+        return labelAdapter;
     }
 
     @Provides
     @DocumentScoped
-    Labels<T> provideLabels(JCas jCas, LabelAdapter<T, U> labelAdapter) {
+    Labels<T> provideLabels(JCas jCas) {
         return new UimaLabels<>(jCas, labelAdapter);
     }
 
     @Provides
     @DocumentScoped
-    Labeler<T> provideLabeler(JCas jCas, LabelAdapter<T, U> labelAdapter) {
+    Labeler<T> provideLabeler(JCas jCas) {
         return new UimaLabeler<>(jCas, labelAdapter);
     }
 }

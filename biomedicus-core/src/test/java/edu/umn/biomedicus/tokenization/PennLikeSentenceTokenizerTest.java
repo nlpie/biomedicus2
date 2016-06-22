@@ -65,8 +65,8 @@ public class PennLikeSentenceTokenizerTest {
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 2);
-        assertEquals(list.get(0).toSpan(), new Span(5, 9));
-        assertEquals(list.get(1).toSpan(), new Span(9, 11));
+        assertEquals(list.get(0).toSpan(), new Span(5, 9)); // test
+        assertEquals(list.get(1).toSpan(), new Span(9, 11)); // 's
     }
 
     @Test
@@ -121,7 +121,7 @@ public class PennLikeSentenceTokenizerTest {
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 1);
-        assertEquals(list.get(0).toSpan(), new Span(51, 57));
+        assertEquals(list.get(0).toSpan(), new Span(51, 57)); // P.T.B.
     }
 
 

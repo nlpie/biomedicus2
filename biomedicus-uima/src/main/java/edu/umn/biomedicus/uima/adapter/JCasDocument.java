@@ -51,7 +51,7 @@ import java.util.stream.StreamSupport;
  * @author Ben Knoll
  * @since 1.3.0
  */
-class JCasDocument extends AbstractDocument {
+public class JCasDocument extends AbstractDocument {
     /**
      * The system view JCas of the document.
      */
@@ -266,5 +266,9 @@ class JCasDocument extends AbstractDocument {
     @Override
     public Document getSiblingDocument(String identifier) throws BiomedicusException {
         return UimaAdapters.documentFromView(view, identifier);
+    }
+
+    public JCas getView() {
+        return view;
     }
 }

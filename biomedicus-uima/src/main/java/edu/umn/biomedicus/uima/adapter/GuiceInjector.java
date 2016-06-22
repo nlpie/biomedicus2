@@ -49,29 +49,16 @@ public class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            Injector injector = Bootstrapper.create().injector();
-            BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
-            Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
-            List<String> pluginClassNames = Files.lines(uimaPluginsFile).collect(Collectors.toList());
-            List<AbstractPlugin> plugins = new ArrayList<>();
-            List<Module> modules = new ArrayList<>();
-            for (String pluginClassName : pluginClassNames) {
-                Class<? extends AbstractPlugin> pluginClass = Class.forName(pluginClassName)
-                        .asSubclass(AbstractPlugin.class);
-                AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
-                plugins.add(abstractPlugin);
-                modules.addAll(abstractPlugin.modules());
-            }
+            UimaBootstrapper uimaBootstrapper = UimaBootstrapper.create();
+            injector = uimaBootstrapper.getInjector();
 
-            this.injector = injector.createChildInjector(modules.toArray(new Module[modules.size()]));
-
-            for (AbstractPlugin plugin : plugins) {
+            for (AbstractPlugin plugin : uimaBootstrapper.getPlugins()) {
                 for (Class<DataLoader> loaderClass : plugin.dataLoaders()) {
                     DataLoader dataLoader = injector.getInstance(loaderClass);
                     dataLoader.eagerLoad();
                 }
             }
-        } catch (BiomedicusException | IOException | ClassNotFoundException e) {
+        } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }
     }
