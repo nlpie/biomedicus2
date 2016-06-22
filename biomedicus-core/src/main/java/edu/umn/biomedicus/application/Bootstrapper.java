@@ -98,8 +98,8 @@ public class Bootstrapper {
         if (dataEnv != null) {
             dataPath = Paths.get(dataEnv);
         } else {
-            String dataDir = (String) biomedicusPaths.get("data");
-            if (dataDir != null) {
+            if (biomedicusPaths != null && biomedicusPaths.containsKey("data")) {
+                String dataDir = (String) biomedicusPaths.get("data");
                 dataPath = absoluteOrResolveAgainstHome(Paths.get(dataDir));
             } else {
                 dataPath = homePath().resolve("data");
