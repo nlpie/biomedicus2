@@ -20,7 +20,7 @@
     <parent>
         <artifactId>biomedicus</artifactId>
         <groupId>edu.umn.biomedicus</groupId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-core</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-rtf</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-opennlp</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
