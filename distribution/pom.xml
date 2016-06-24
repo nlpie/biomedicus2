@@ -124,39 +124,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <move todir="../release">
-                                    <fileset dir="target/${project.build.finalName}/"/>
-                                </move>
-                                <!-- <chmod dir="../resources/scripts" perm="ugo+rx" includes="**/*.sh" /> -->
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>clean-resources</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <delete dir="../release"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>

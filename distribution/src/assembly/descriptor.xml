@@ -20,7 +20,7 @@
     <id>release</id>
     <formats>
         <format>dir</format>
-	<format>zip</format>
+        <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
@@ -33,8 +33,6 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directoryMode>0755</directoryMode>
-            <fileMode>0755</fileMode>
             <directory>src/main/resources</directory>
             <outputDirectory/>
             <includes>
