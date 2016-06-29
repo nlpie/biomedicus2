@@ -118,6 +118,10 @@ public class AcronymExpansionsBuilder {
                     if (specialistSenses != null) {
                         Set<String> senses = getOrAdd(abbreviation);
                         specialistSenses.stream().filter(sense -> !senses.contains(sense)).forEach(senses::add);
+                    } else if (splits[3].equals("")) {
+                        // some expansions don't have EUIs (or appear in LRAGR), so deal with them here
+                        Set<String> senses = getOrAdd(abbreviation);
+                        senses.add(longform);
                     }
                 });
 
