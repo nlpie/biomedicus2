@@ -93,8 +93,8 @@ After cloning completes, run the following to build BioMedICUS
 Running BioMedICUS
 ------------------------------------------------------------------------------------------------------------------------
 
-Then maven install phase will create a "release" folder in the root directory of BioMedICUS. This root directory
-contains all resources necessary to run biomedicus.
+Then maven install phase will create a release product in the distribution module. This directory contains all resources
+necessary to run biomedicus.
 
 *   config: configuration files such as .properties
 
@@ -129,9 +129,9 @@ first, you will need to create a local directory containing only the files to be
 recommend creating an output directory in a nearby location that will contain the output of the pipeline
 (e.g., ./examples/plaintext/output).
 
-Next, navigate to the "bin" directory under the BioMedICUS installation directory:
+Next, navigate to the "bin" directory under the BioMedICUS release product:
 
-    cd ./release/bin
+    cd ./distribution/target/biomedicus-1.6.0-SNAPSHOT/bin
 
 Next, run the CPM.sh shell script:
 
@@ -197,11 +197,12 @@ Prerequisites: Install m2e. [link](http://eclipse.org/m2e/). Recent versions of 
 Changing settings
 ------------------------------------------------------------------------------------------------------------------------
 
-UIMA defines an annotator's settings in an XML descriptor file. These files are located in the
-release/desc folder. To change the behavior of any of the annotators,
-the available settings can be changed in the files within that folder.
+The config/biomedicusConfiguration.yml contains most of the configuration parameters for the BioMedICUS system,
+including runtime settings for processing and the location of model files.
 
-The config/biomedicus.properties contains some system-wide per-launch constants such as the location of data models.
+UIMA defines an annotator's settings in an XML descriptor file. These files are located in the "desc" folder. To change
+the behavior of any of the annotators, the available settings can be changed in the files within that folder.
+
 
 About Us
 ========================================================================================================================
