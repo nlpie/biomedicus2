@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Optional;
 
 /**
  *
@@ -99,6 +100,9 @@ public class SimpleJdbcReader extends CollectionReader_ImplBase {
     @Nullable
     private JdbcResultSetIterator jdbcResultSetIterator;
 
+    @Nullable
+    private String targetViewName;
+
     @Override
     public void initialize() throws ResourceInitializationException {
         LOGGER.debug("initializing jdbc collection reader");
@@ -118,6 +122,8 @@ public class SimpleJdbcReader extends CollectionReader_ImplBase {
         String databaseQueryFile = (String) getConfigParameterValue(PARAM_QUERY_FILE);
 
         totalResults = (Integer) getConfigParameterValue(PARAM_TOTAL_RESULTS);
+
+        targetViewName = Optional.of((String) getConfigParameterValue("targetView")).orElse(Views.SYSTEM_VIEW);
 
         String databaseQuery;
         try {
@@ -146,21 +152,16 @@ public class SimpleJdbcReader extends CollectionReader_ImplBase {
     public void getNext(CAS aCAS) throws IOException, CollectionException {
         assert jdbcResultSetIterator != null;
         LOGGER.trace("getting next document from result set");
-        JCas systemView;
         try {
-            CAS aCASView = aCAS.createView(Views.SYSTEM_VIEW);
-            systemView = aCASView.getJCas();
-        } catch (CASException e) {
-            throw new CollectionException(e);
-        }
+            CAS targetCAS = aCAS.createView(targetViewName);
+            JCas targetView = targetCAS.getJCas();
 
-        try {
-            jdbcResultSetIterator.populateNextSystemView(systemView);
+            jdbcResultSetIterator.populateNextSystemView(targetView);
             currentRow++;
             if (currentRow % 1000 == 0) {
                 LOGGER.debug("Documents read: {}", currentRow);
             }
-        } catch (SQLException e) {
+        } catch (CASException | SQLException e) {
             throw new CollectionException(e);
         }
     }

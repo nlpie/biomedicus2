@@ -1,0 +1,145 @@
+<!--
+  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+    <implementationName>edu.umn.biomedicus.uima.db.JdbcCollectionReader</implementationName>
+    <processingResourceMetaData>
+        <name>JDBC Collection Reader</name>
+        <description>
+            A collection reader which executes a sql statement against a Database and then creates CAS documents based
+            on the ResultSet.
+        </description>
+        <version>${project.version}</version>
+        <vendor>${project.organization.name}</vendor>
+
+        <configurationParameters>
+            <configurationParameter>
+                <name>jdbcDriver</name>
+                <description>The canonical name of the DB driver. Ex: oracle.jdbc.driver.OracleDriver</description>
+                <type>String</type>
+                <multiValued>false</multiValued>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>jdbcUrl</name>
+                <description>
+                    The full JDBC url for connecting to the database.
+                    Ex: jdbc:oracle:thin:@//[HOST][:PORT]/SERVICE
+                </description>
+                <type>String</type>
+                <multiValued>false</multiValued>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>jdbcUser</name>
+                <description>The username used by JDBC to connect to the database</description>
+                <type>String</type>
+                <multiValued>false</multiValued>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>jdbcPassword</name>
+                <description>The password used by JDBC to connect to the database</description>
+                <type>String</type>
+                <multiValued>false</multiValued>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>queryFile</name>
+                <description>
+                    The file containing the SQL statement to use. It should select notes and alias the values as
+                    the features on the MetaData type. It should be ordered. It should return a column named
+                    "documentText" for the document text. It should have two parameters, the first is for the from
+                    value for pagination and the second is for the to value for pagination.
+                </description>
+                <type>String</type>
+                <multiValued>false</multiValued>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>totalResults</name>
+                <description>The total number of results this should fetch</description>
+                <type>Integer</type>
+                <mandatory>true</mandatory>
+            </configurationParameter>
+            <configurationParameter>
+                <name>targetView</name>
+                <description>Name of the target view where data should be placed.</description>
+                <type>String</type>
+                <mandatory>false</mandatory>
+            </configurationParameter>
+        </configurationParameters>
+
+
+        <typeSystemDescription>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystem"/>
+            </imports>
+        </typeSystemDescription>
+        <typePriorities>
+            <imports>
+                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+            </imports>
+        </typePriorities>
+
+        <capabilities>
+            <capability>
+                <outputs>
+                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
+                </outputs>
+                <inputSofas>
+                    <sofaName>_initialView</sofaName>
+                    <sofaName>SystemView</sofaName>
+                </inputSofas>
+                <outputSofas>
+                    <sofaName>SystemView</sofaName>
+                </outputSofas>
+            </capability>
+        </capabilities>
+
+        <operationalProperties>
+            <modifiesCas>true</modifiesCas>
+            <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
+            <outputsNewCASes>true</outputsNewCASes>
+        </operationalProperties>
+    </processingResourceMetaData>
+
+    <externalResourceDependencies>
+        <externalResourceDependency>
+            <key>guiceInjector</key>
+            <description>The guice injector resource.</description>
+        </externalResourceDependency>
+    </externalResourceDependencies>
+
+    <resourceManagerConfiguration>
+        <externalResources>
+            <externalResource>
+                <name>guiceInjector</name>
+                <description>The guice resource.</description>
+                <customResourceSpecifier>
+                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+                </customResourceSpecifier>
+            </externalResource>
+        </externalResources>
+        <externalResourceBindings>
+            <externalResourceBinding>
+                <key>guiceInjector</key>
+                <resourceName>guiceInjector</resourceName>
+            </externalResourceBinding>
+        </externalResourceBindings>
+    </resourceManagerConfiguration>
+</collectionReaderDescription>
