@@ -17,57 +17,58 @@
 package edu.umn.biomedicus.tokenization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.acronym.Acronyms;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.collect.DistinctSpansMap;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.text.*;
-import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @DocumentScoped
 public class TermTokenMerger implements DocumentProcessor {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\''));
     private final Labels<ParseToken> parseTokens;
     private final Labeler<TermToken> termTokenLabeler;
+    private final Labels<Sentence2> sentence2Labels;
 
     @Inject
     public TermTokenMerger(Labels<ParseToken> parseTokens,
-                           Labeler<TermToken> termTokenLabeler) {
+                           Labeler<TermToken> termTokenLabeler,
+                           Labels<Sentence2> sentence2Labels) {
         this.parseTokens = parseTokens;
         this.termTokenLabeler = termTokenLabeler;
+        this.sentence2Labels = sentence2Labels;
     }
 
     @Override
     public void process() throws BiomedicusException {
         List<Label<ParseToken>> running = new ArrayList<>();
-        for (Label<ParseToken> parseToken : parseTokens) {
-            if (running.size() == 0) {
-                running.add(parseToken);
-                continue;
-            }
+        for (Label<Sentence2> sentence2Label : sentence2Labels) {
+            for (Label<ParseToken> parseToken : parseTokens.insideSpan(sentence2Label)) {
+                if (running.size() == 0) {
+                    running.add(parseToken);
+                    continue;
+                }
 
-            Label<ParseToken> lastLabel = running.get(running.size() - 1);
-            ParseToken lastToken = lastLabel.value();
-            String lastText = lastToken.getText();
-            char last = lastText.charAt(lastText.length() - 1);
-            String text = parseToken.value().getText();
-            char first = text.charAt(0);
-            boolean noTrailing = lastToken.getTrailingText().length() > 0;
-            if (noTrailing || !shouldMerge(last, first)) {
-                makeTermToken(running);
-                running.clear();
+                Label<ParseToken> lastLabel = running.get(running.size() - 1);
+                ParseToken lastToken = lastLabel.value();
+                String lastText = lastToken.getText();
+                char last = lastText.charAt(lastText.length() - 1);
+                String text = parseToken.value().getText();
+                char first = text.charAt(0);
+                boolean hasTrailing = lastToken.getTrailingText().length() > 0;
+                if (hasTrailing || !shouldMerge(last, first)) {
+                    makeTermToken(running);
+                    running.clear();
+                }
+                running.add(parseToken);
             }
-            running.add(parseToken);
+            makeTermToken(running);
+            running.clear();
         }
-        makeTermToken(running);
     }
 
     private boolean shouldMerge(char last, char first) {

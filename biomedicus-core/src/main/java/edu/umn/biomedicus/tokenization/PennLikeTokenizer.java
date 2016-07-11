@@ -57,17 +57,17 @@ public class PennLikeTokenizer implements DocumentProcessor {
             Span last = null;
             while (iterator.hasNext()) {
                 PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = iterator.next();
-                Span span = tokenCandidate.toSpan();
-                if (span.length() == 0) {
+                Span current = tokenCandidate.toSpan();
+                if (current.length() == 0) {
                     continue;
                 }
                 if (last != null) {
                     String tokenText = text.substring(last.getBegin(), last.getEnd());
-                    String trailingText = text.substring(last.getEnd(), span.getBegin());
+                    String trailingText = text.substring(last.getEnd(), current.getBegin());
                     ParseToken parseToken = new ParseToken(tokenText, trailingText);
                     parseTokenLabeler.value(parseToken).label(sentence.derelativize(last));
                 }
-                last = span;
+                last = current;
             }
             if (last != null) {
                 Span derelativized = sentence.derelativize(last);
