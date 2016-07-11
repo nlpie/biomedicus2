@@ -129,6 +129,9 @@ class ConceptModel {
 
     @Nullable
     List<SuiCuiTui> forNorms(TermsBag norms) {
+        if (norms.size() == 0) {
+            return null;
+        }
         return normDictionary.get(norms);
     }
 

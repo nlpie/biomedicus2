@@ -68,6 +68,10 @@ public class TermsBag implements Comparable<TermsBag> {
         return counts[index];
     }
 
+    public int size() {
+        return identifiers.length;
+    }
+
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;

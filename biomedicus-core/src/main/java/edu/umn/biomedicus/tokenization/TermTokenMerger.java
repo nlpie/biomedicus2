@@ -29,7 +29,7 @@ import java.util.*;
 
 @DocumentScoped
 public class TermTokenMerger implements DocumentProcessor {
-    private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\''));
+    private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
     private final Labels<ParseToken> parseTokens;
     private final Labeler<TermToken> termTokenLabeler;
     private final Labels<Sentence2> sentence2Labels;
