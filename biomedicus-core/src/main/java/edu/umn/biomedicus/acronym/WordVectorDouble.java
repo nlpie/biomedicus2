@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -62,22 +63,23 @@ public class WordVectorDouble implements DoubleVector {
 
     // will add another vector onto this one
     public void add(DoubleVector v) {
-        for (int i : v.getKeySet()) {
-            vector.put(i, this.get(i) + v.get(i));
-        }
+        v.getVector().entrySet().stream().forEach(e -> {
+            vector.compute(e.getKey(), (key, val) -> {
+                if (val == null) {
+                    return e.getValue();
+                } else {
+                    return val + e.getValue();
+                }
+            });
+        });
     }
 
     // sets this vector to the Hadamard/elementwise product with the argument vector
     public void multiply(DoubleVector v) {
-        for (int k : v.getKeySet()) {
-            if(vector.containsKey(k)) {
-                if (v.get(k) == 0) {
-                    vector.remove(k);
-                } else {
-                    vector.put(k, vector.get(k) * v.get(k));
-                }
-            }
-        }
+        v.getVector().entrySet().stream()
+                .forEach(e -> {
+                    vector.computeIfPresent(e.getKey(), (key, value) -> value * e.getValue());
+                });
     }
 
     // Applies an operation to every element of this vector
@@ -100,14 +102,6 @@ public class WordVectorDouble implements DoubleVector {
             sum += vector.get(i) * v.get(i);
         }
         return sum;
-    }
-
-    /**
-     * Getters: get the key set, or get an element
-     */
-
-    public Set<Integer> getKeySet() {
-        return new HashSet<>(vector.keySet());
     }
 
     public double get(int i) {

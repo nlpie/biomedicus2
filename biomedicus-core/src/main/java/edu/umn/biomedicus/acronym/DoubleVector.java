@@ -79,12 +79,4 @@ public interface DoubleVector {
      * @return the dot product
      */
     double dot(DoubleVector v);
-
-    /**
-     * Get all non-zero keys of this vector
-     *
-     * @return a set of integer keys
-     */
-    Set<Integer> getKeySet();
-
 }
