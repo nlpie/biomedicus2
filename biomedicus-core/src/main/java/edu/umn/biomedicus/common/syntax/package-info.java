@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.semantics;
-
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
-
 /**
- * Unit test for {@link PartOfSpeech}.
+ *
  */
-public class PartOfSpeechTest {
-    @Test
-    public void testToString() throws Exception {
-        assertEquals(".", PartOfSpeech.SENTENCE_CLOSER_PUNCTUATION.toString());
-    }
-}
+@ParametersAreNonnullByDefault
+@ReturnTypesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+package edu.umn.biomedicus.common.syntax;
+
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

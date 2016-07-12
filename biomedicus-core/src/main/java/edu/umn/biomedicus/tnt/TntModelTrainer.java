@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.WordCap;
@@ -131,7 +131,7 @@ public class TntModelTrainer {
     public TntModel createModel() {
         PosCapTrigramModel posCapTrigramModel = posCapTrigramModelTrainer.build();
 
-        Set<PartOfSpeech> tagSet = restrictToOpenClass ? PartsOfSpeech.OPEN_CLASS : PartsOfSpeech.REAL_TAGS;
+        Set<PartOfSpeech> tagSet = restrictToOpenClass ? PartsOfSpeech.getOpenClass() : PartsOfSpeech.getRealTags();
 
         final List<FilteredAdaptedWordProbabilityModel> knownWordModels = new ArrayList<>();
         final List<FilteredAdaptedWordProbabilityModel> suffixModels = new ArrayList<>();

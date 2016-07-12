@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 
 /**
  *
@@ -26,7 +26,7 @@ class KnownWordModelTrainer extends WordModelTrainer {
     private static final KnownWordModelTrainer INSTANCE = new KnownWordModelTrainer();
 
     private KnownWordModelTrainer() {
-        super(PartsOfSpeech.REAL_TAGS);
+        super(PartsOfSpeech.getRealTags());
     }
 
     public static KnownWordModelTrainer get() {

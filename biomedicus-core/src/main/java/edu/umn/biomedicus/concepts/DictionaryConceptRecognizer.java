@@ -18,19 +18,14 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.collect.DistinctSpansMap;
-import edu.umn.biomedicus.common.collect.SlidingWindow;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.semantics.Concept;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
 import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.text.*;
-import edu.umn.biomedicus.common.texttools.PhraseEditor;
-import edu.umn.biomedicus.common.tuples.Pair;
-import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +34,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static edu.umn.biomedicus.common.semantics.PartOfSpeech.*;
+import static edu.umn.biomedicus.common.syntax.PartOfSpeech.*;
 
 /**
  * Uses a {@link edu.umn.biomedicus.concepts.ConceptModel} to recognize concepts in text. First, it will
@@ -80,8 +75,10 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                 EX,
                 IN,
                 XX);
-        Collections.addAll(builder,
-                PartsOfSpeech.PUNCTUATION_CLASS.toArray(new PartOfSpeech[PartsOfSpeech.PUNCTUATION_CLASS.size()]));
+
+        Set<PartOfSpeech> punctuationClass = PartsOfSpeech.getPunctuationClass();
+        builder.addAll(punctuationClass);
+
         TRIVIAL_POS = Collections.unmodifiableSet(builder);
     }
 

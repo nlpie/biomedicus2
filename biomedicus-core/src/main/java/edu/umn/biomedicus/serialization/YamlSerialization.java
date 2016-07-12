@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.serialization;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
@@ -65,7 +65,7 @@ public final class YamlSerialization {
                     public Object construct(Node node) {
                         String value = (String) constructScalar((ScalarNode) node);
                         boolean isCapitalized = value.charAt(0) == 'C';
-                        PartOfSpeech partOfSpeech = PartsOfSpeech.MAP.get(value.substring(1));
+                        PartOfSpeech partOfSpeech = PartsOfSpeech.forTag(value.substring(1));
                         return PosCap.create(partOfSpeech, isCapitalized);
                     }
                 });
@@ -73,7 +73,7 @@ public final class YamlSerialization {
                     @Override
                     public Object construct(Node node) {
                         String value = (String) constructScalar((ScalarNode) node);
-                        return PartsOfSpeech.MAP.get(value);
+                        return PartsOfSpeech.forTag(value);
                     }
                 });
                 yamlConstructors.put(new Tag("!cui"), new AbstractConstruct() {

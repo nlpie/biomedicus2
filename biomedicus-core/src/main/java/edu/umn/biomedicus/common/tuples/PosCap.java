@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;

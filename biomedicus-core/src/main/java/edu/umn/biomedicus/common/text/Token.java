@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.text;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 
 import javax.annotation.Nullable;
 

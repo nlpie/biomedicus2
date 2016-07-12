@@ -18,6 +18,8 @@ package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Module;
 import edu.umn.biomedicus.common.semantics.*;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.plugins.AbstractPlugin;

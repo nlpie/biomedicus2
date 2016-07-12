@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.modification;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 
 import java.io.IOException;
@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.Map;
 
 public final class ContextCues {
     private List<String> leftContextCues;

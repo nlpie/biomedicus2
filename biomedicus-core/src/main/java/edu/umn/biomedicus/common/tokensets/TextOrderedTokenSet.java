@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.tokensets;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.SpanLike;
 import edu.umn.biomedicus.common.text.Token;

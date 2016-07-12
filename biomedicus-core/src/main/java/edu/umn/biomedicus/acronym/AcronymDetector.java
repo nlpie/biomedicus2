@@ -23,14 +23,18 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Acronym;
+import edu.umn.biomedicus.common.text.TermToken;
+import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Will tag tokens as acronym/abbreviations or not

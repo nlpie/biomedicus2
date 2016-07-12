@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.uima.type1_5.ParseToken;
 import org.apache.uima.jcas.JCas;
@@ -33,7 +33,7 @@ class TokenAdapter extends AnnotationAdapter<ParseToken> implements Token {
 
     @Override
     public PartOfSpeech getPartOfSpeech() {
-        return PartsOfSpeech.MAP.get(getAnnotation().getPartOfSpeech());
+        return PartsOfSpeech.forTag(getAnnotation().getPartOfSpeech());
     }
 
     @Override

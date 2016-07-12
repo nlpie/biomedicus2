@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.Sentence2;
 

@@ -16,9 +16,12 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
-import edu.umn.biomedicus.type.*;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.type.ConceptAnnotation;
+import edu.umn.biomedicus.type.SectionAnnotation;
+import edu.umn.biomedicus.type.SentenceAnnotation;
+import edu.umn.biomedicus.type.TermAnnotation;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
 import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
@@ -34,6 +37,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -99,15 +103,12 @@ public class MtsamplesViewMigrator implements ViewMigrator {
             if (tokenPOS.equals("?")) {
                 tokenPOS = ".";
             }
-            PartOfSpeech partOfSpeech = PartsOfSpeech.MAP.get(tokenPOS);
-            if (partOfSpeech == null) {
-                partOfSpeech = PartsOfSpeech.FALLBACK_MAP.get(tokenPOS);
-                if (partOfSpeech == null) {
-                    LOGGER.error("Unrecognized part of speech {}", tokenPOS);
-                    throw new RuntimeException();
-                }
+            Optional<PartOfSpeech> partOfSpeech = PartsOfSpeech.forTagWithFallback(tokenPOS);
+            if (!partOfSpeech.isPresent()) {
+                LOGGER.error("Unrecognized part of speech {}", tokenPOS);
+                throw new RuntimeException();
             }
-            tokenAnnotation.setPartOfSpeech(partOfSpeech.toString());
+            tokenAnnotation.setPartOfSpeech(partOfSpeech.get().toString());
             tokenAnnotation.setNormalForm(annotation.getStringValue(normFormFeature));
             tokenAnnotation.addToIndexes();
         }

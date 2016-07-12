@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.PosCap;
