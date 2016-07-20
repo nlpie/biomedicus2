@@ -17,12 +17,15 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.semantics.Misspelling;
+import edu.umn.biomedicus.common.semantics.SpellCorrection;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
@@ -31,42 +34,49 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-@DocumentScoped
-public class MisspellingCorrector implements DocumentProcessor {
-
+public final class MisspellingCorrector implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingCorrector.class);
-
-    private final Document document;
-
     private final SpellingModel spellingModel;
+    private final Labels<Sentence> sentence2Labels;
+    private final Labels<ParseToken> parseTokenLabels;
+    private final Labels<Misspelling> misspellingLabels;
+    private final Labeler<SpellCorrection> spellCorrectionLabeler;
 
     @Inject
-    public MisspellingCorrector(Document document, SpellingModel spellingModel) {
-        this.document = document;
+    public MisspellingCorrector(SpellingModel spellingModel,
+                                Labels<Sentence> sentence2Labels,
+                                Labels<ParseToken> parseTokenLabels,
+                                Labels<Misspelling> misspellingLabels,
+                                Labeler<SpellCorrection> spellCorrectionLabeler) {
         this.spellingModel = spellingModel;
+        this.sentence2Labels = sentence2Labels;
+        this.parseTokenLabels = parseTokenLabels;
+        this.misspellingLabels = misspellingLabels;
+        this.spellCorrectionLabeler = spellCorrectionLabeler;
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Correcting any misspelled words in a document.");
-        for (Sentence sentence : document.getSentences()) {
+        for (Label<Sentence> sentence : sentence2Labels) {
             String first = "<NONE>";
             String prev = "<NONE>";
-            for (Token token : sentence.getTokens()) {
-                String text = token.getText();
+            for (Label<ParseToken> tokenLabel : parseTokenLabels.insideSpan(sentence)) {
+                ParseToken token = tokenLabel.value();
+                String text = token.text();
                 if (Patterns.ALPHABETIC_WORD.matcher(text).matches()) {
                     return;
                 }
-                String word = text.toLowerCase();
-                if (token.isMisspelled()) {
-                    String suggested = spellingModel.suggestCorrection(word, Ngram.create(first, prev));
+                if (misspellingLabels.withSpan(tokenLabel).isPresent()) {
+                    String suggested = spellingModel.suggestCorrection(text, Ngram.create(first, prev));
                     if (suggested != null) {
-                        LOGGER.debug("Correcting word: {} with {}", word, suggested);
-                        token.setCorrectSpelling(suggested);
+                        LOGGER.debug("Correcting word: {} with {}", text, suggested);
+                        SpellCorrection spellCorrection = new SpellCorrection(suggested, token.hasSpaceAfter());
+                        spellCorrectionLabeler.value(spellCorrection).label(tokenLabel);
                     }
                 }
                 first = prev;
-                prev = word;
+                prev = text;
             }
         }
     }

@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
@@ -26,7 +25,7 @@ import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Acronym;
 import edu.umn.biomedicus.common.text.TermToken;
-import edu.umn.biomedicus.common.text.TokenLike;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,6 @@ import java.util.Set;
  * @author Greg Finley
  * @since 1.5.0
  */
-@DocumentScoped
 class AcronymDetector implements DocumentProcessor {
     /**
      * class logger
@@ -118,8 +116,8 @@ class AcronymDetector implements DocumentProcessor {
         }
     }
 
-    private boolean orthographicSaysAcronym(TokenLike tokenLike) {
-        return orthographicModel != null && orthographicModel.seemsLikeAbbreviation(tokenLike);
+    private boolean orthographicSaysAcronym(Token token) {
+        return orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token);
     }
 }
 

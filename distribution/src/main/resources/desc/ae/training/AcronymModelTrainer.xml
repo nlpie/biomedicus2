@@ -18,7 +18,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorRunnerAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>Acronym Model Trainer</name>
         <description>Training for the acronym model.</description>
@@ -35,10 +35,6 @@
             </configurationParameter>
             <configurationParameter>
                 <name>acronym.vector.trainer.outputDir.path</name>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>collectionProcessor</name>
                 <type>String</type>
             </configurationParameter>
             <configurationParameter>
@@ -67,12 +63,6 @@
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
-            <nameValuePair>
-                <name>collectionProcessor</name>
-                <value>
-                    <string>edu.umn.biomedicus.acronym.AcronymVectorModelTrainer</string>
-                </value>
-            </nameValuePair>
             <nameValuePair>
                 <name>viewName</name>
                 <value>

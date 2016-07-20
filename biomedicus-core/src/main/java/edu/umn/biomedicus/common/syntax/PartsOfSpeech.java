@@ -63,6 +63,8 @@ public final class PartsOfSpeech {
         builder.put("‘", PartOfSpeech.OPENING_SINGLE_QUOTE);
         builder.put("’", PartOfSpeech.CLOSING_SINGLE_QUOTE);
         builder.put("″", PartOfSpeech.STRAIGHT_DOUBLE_QUOTE);
+        builder.put("-LRB-", PartOfSpeech.LEFT_PAREN);
+        builder.put("-RRB-", PartOfSpeech.RIGHT_PAREN);
 
         return Collections.unmodifiableMap(builder);
     }

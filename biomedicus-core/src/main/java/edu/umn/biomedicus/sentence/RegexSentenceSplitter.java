@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.sentence;
 
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * @author Ben Knoll
  * @since 1.1.0
  */
-public class RegexSentenceSplitter implements SentenceSplitter {
+public final class RegexSentenceSplitter implements SentenceSplitter {
 
     private final Pattern splitPattern;
 
@@ -52,13 +52,13 @@ public class RegexSentenceSplitter implements SentenceSplitter {
     }
 
     @Override
-    public Stream<SpanLike> splitCandidate(SpanLike candidate) {
+    public Stream<TextLocation> splitCandidate(TextLocation candidate) {
         CharSequence covered = candidate.getCovered(documentText);
         int offset = candidate.getBegin();
         Matcher matcher = splitPattern.matcher(covered);
         int begin = 0;
         int end;
-        Stream.Builder<SpanLike> builder = Stream.builder();
+        Stream.Builder<TextLocation> builder = Stream.builder();
         while (matcher.find()) {
             end = matcher.end();
             builder.add(Span.create(offset + begin, offset + end));

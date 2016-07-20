@@ -17,14 +17,14 @@
 package edu.umn.biomedicus.tokenization;
 
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-class PennLikeSentenceTokenizer {
+final class PennLikeSentenceTokenizer {
     /**
      * Any sequence of 1 or more character that are not unicode whitespace.
      */
@@ -43,7 +43,7 @@ class PennLikeSentenceTokenizer {
      * Break the unicode currency symbols Sc.
      */
     private static final Pattern BEGIN_BREAKS = Pattern.compile("^((\\p{Ps})|(\\p{Pi})|" +
-            "(\\p{Sc}))");
+            "(\\p{Sc})|(#))");
 
     /**
      * Break possessives and contractions ', 's, n't, 'll, 've, 're in both uppercase and lowercase forms.
@@ -58,9 +58,9 @@ class PennLikeSentenceTokenizer {
                     "(\\p{Sc}))$"
     );
 
-    private final String sentenceText;
+    private final CharSequence sentenceText;
 
-    PennLikeSentenceTokenizer(String sentenceText) {
+    PennLikeSentenceTokenizer(CharSequence sentenceText) {
         this.sentenceText = sentenceText;
     }
 
@@ -172,7 +172,7 @@ class PennLikeSentenceTokenizer {
         }
     }
 
-    class TokenCandidate implements SpanLike {
+    class TokenCandidate implements TextLocation {
         private final int begin;
         private final int end;
         private final boolean isLast;

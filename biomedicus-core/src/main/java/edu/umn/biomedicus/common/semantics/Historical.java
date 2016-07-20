@@ -16,5 +16,5 @@
 
 package edu.umn.biomedicus.common.semantics;
 
-public class Historical {
+public final class Historical {
 }

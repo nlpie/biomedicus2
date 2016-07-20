@@ -18,17 +18,13 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.CollectionProcessorAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorRunnerAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>Acronym Detector</name>
         <description>Annotates which tokens are likely acronyms.</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
-            <configurationParameter>
-                <name>collectionProcessor</name>
-                <type>String</type>
-            </configurationParameter>
             <configurationParameter>
                 <name>documentProcessor</name>
                 <description>The document processor class to instantiate.</description>
@@ -52,12 +48,6 @@
             </configurationParameter>
         </configurationParameters>
         <configurationParameterSettings>
-            <nameValuePair>
-                <name>collectionProcessor</name>
-                <value>
-                    <string>edu.umn.biomedicus.application.DocumentProcessorRunner</string>
-                </value>
-            </nameValuePair>
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>

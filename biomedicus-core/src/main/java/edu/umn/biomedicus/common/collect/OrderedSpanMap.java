@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.collect;
 
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 import edu.umn.biomedicus.common.tuples.Pair;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
     }
 
     public boolean containsKey(Object key) {
-        if (!(key instanceof SpanLike)) {
+        if (!(key instanceof TextLocation)) {
             return false;
         }
         return false;
@@ -65,63 +65,63 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
     }
 
     public T get(Object key) {
-        if (!(key instanceof SpanLike)) {
+        if (!(key instanceof TextLocation)) {
             return null;
         }
 
-        SpanLike spanLike = (SpanLike) key;
+        TextLocation textLocation = (TextLocation) key;
 
-        if (spanLike.getEnd() < endMin || spanLike.getEnd() > endMax) {
+        if (textLocation.getEnd() < endMin || textLocation.getEnd() > endMax) {
             return null;
         }
 
-        NavigableMap<Integer, T> endMap = backingTree.get(spanLike.getBegin());
+        NavigableMap<Integer, T> endMap = backingTree.get(textLocation.getBegin());
         if (endMap == null) {
             return null;
         }
 
-        return endMap.get(spanLike.getEnd());
+        return endMap.get(textLocation.getEnd());
     }
 
-    public T put(SpanLike spanLike, T object) {
-        int begin = spanLike.getBegin();
+    public T put(TextLocation textLocation, T object) {
+        int begin = textLocation.getBegin();
         NavigableMap<Integer, T> endMap = backingTree.get(begin);
         if (endMap == null) {
             endMap = new TreeMap<>();
             backingTree.put(begin, endMap);
         }
-        return endMap.put(spanLike.getEnd(), object);
+        return endMap.put(textLocation.getEnd(), object);
     }
 
     public T remove(Object key) {
-        if (!(key instanceof SpanLike)) {
+        if (!(key instanceof TextLocation)) {
             return null;
         }
-        SpanLike spanLike = (SpanLike) key;
-        NavigableMap<Integer, T> endMap = backingTree.get(spanLike.getBegin());
+        TextLocation textLocation = (TextLocation) key;
+        NavigableMap<Integer, T> endMap = backingTree.get(textLocation.getBegin());
         if (endMap == null) {
             throw new IllegalArgumentException("Tree does not contain span");
         }
-        return endMap.remove(spanLike.getEnd());
+        return endMap.remove(textLocation.getEnd());
     }
 
-    public void putAll(Map<? extends SpanLike, ? extends T> m) {
+    public void putAll(Map<? extends TextLocation, ? extends T> m) {
         m.entrySet().forEach(e -> {
             put(e.getKey(), e.getValue());
         });
     }
 
     @Override
-    public OrderedSpanMap<T> toTheLeftOf(SpanLike spanLike) {
-        NavigableMap<Integer, NavigableMap<Integer, T>> headMap = backingTree.headMap(spanLike.getBegin(), true);
-        int newEndMax = Math.min(spanLike.getEnd(), endMax);
+    public OrderedSpanMap<T> toTheLeftOf(TextLocation textLocation) {
+        NavigableMap<Integer, NavigableMap<Integer, T>> headMap = backingTree.headMap(textLocation.getBegin(), true);
+        int newEndMax = Math.min(textLocation.getEnd(), endMax);
         return new OrderedSpanMap<>(headMap, endMin, newEndMax);
     }
 
     @Override
-    public OrderedSpanMap<T> toTheRightOf(SpanLike spanLike) {
-        NavigableMap<Integer, NavigableMap<Integer, T>> tailMap = backingTree.tailMap(spanLike.getEnd(), true);
-        int newEndMin = Math.max(spanLike.getEnd(), endMin);
+    public OrderedSpanMap<T> toTheRightOf(TextLocation textLocation) {
+        NavigableMap<Integer, NavigableMap<Integer, T>> tailMap = backingTree.tailMap(textLocation.getEnd(), true);
+        int newEndMin = Math.max(textLocation.getEnd(), endMin);
         return new OrderedSpanMap<>(tailMap, newEndMin, endMax);
     }
 
@@ -147,25 +147,25 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
     }
 
     @Override
-    public OrderedSpanMap<T> insideSpan(SpanLike spanLike) {
-        int newEndMax = Math.min(endMax, spanLike.getEnd());
-        return new OrderedSpanMap<>(backingTree.tailMap(spanLike.getBegin(), true), endMin, newEndMax);
+    public OrderedSpanMap<T> insideSpan(TextLocation textLocation) {
+        int newEndMax = Math.min(endMax, textLocation.getEnd());
+        return new OrderedSpanMap<>(backingTree.tailMap(textLocation.getBegin(), true), endMin, newEndMax);
     }
 
     @Override
-    public OrderedSpanMap<T> containing(SpanLike spanLike) {
-        int newEndMin = Math.max(endMin, spanLike.getEnd());
-        return new OrderedSpanMap<>(backingTree.headMap(spanLike.getBegin(), true), newEndMin, endMax);
+    public OrderedSpanMap<T> containing(TextLocation textLocation) {
+        int newEndMin = Math.max(endMin, textLocation.getEnd());
+        return new OrderedSpanMap<>(backingTree.headMap(textLocation.getBegin(), true), newEndMin, endMax);
     }
 
     @Override
-    public Stream<SpanLike> spansStream() {
+    public Stream<TextLocation> spansStream() {
         return backingTree.entrySet().stream()
                 .flatMap(e -> e.getValue().entrySet().stream().map(e2 -> new Span(e.getKey(), e2.getKey())));
     }
 
     @Override
-    public Stream<Pair<SpanLike, T>> pairStream() {
+    public Stream<Pair<TextLocation, T>> pairStream() {
         return backingTree.entrySet().stream()
                 .flatMap(e -> e.getValue().entrySet().stream().map(e2 -> new Pair<>(new Span(e.getKey(), e2.getKey()), e2.getValue())));
     }

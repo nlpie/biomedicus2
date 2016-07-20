@@ -24,7 +24,6 @@ import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -97,9 +96,9 @@ public class OrthographicAcronymModel implements Serializable {
      * @param token the Token to check
      * @return true if it seems to be an abbreviation, false otherwise
      */
-    boolean seemsLikeAbbreviation(TokenLike token) {
+    boolean seemsLikeAbbreviation(Token token) {
 
-        String wordRaw = token.getText();
+        String wordRaw = token.text();
         String wordLower = wordRaw.toLowerCase();
 
         // Check to see if it's a long form first

@@ -16,9 +16,20 @@
 
 package edu.umn.biomedicus.sentence;
 
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.TextSpan;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.text.TextSegment;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Preprocessor;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Detects the sentences in a document.
@@ -32,7 +43,7 @@ import edu.umn.biomedicus.processing.Preprocessor;
  * @author Ben Knoll
  * @since 1.1.0
  */
-public class SentenceDetector {
+public final class SentenceDetector {
     /**
      * Transforms the text, replacing problematic stings or characters, must not change the indexes of characters.
      */
@@ -65,30 +76,39 @@ public class SentenceDetector {
     }
 
     /**
-     * Adds all sentences in the {@link Document} to the document using
-     * {@link Document#createSentence}.
+     * Adds all sentences in the {@link Document}.
      *
-     * @param document document
+     * @param documentText      the entire text of the document
+     * @param sentence2Labeler  labeler to use
+     * @param textSegmentLabels the labels for the text segments
      */
-    public void processDocument(Document document) {
-        document.textSegments().forEach(textSpan -> processTextSegment(document, textSpan));
-    }
+    public void processDocument(String documentText,
+                                Labels<TextSegment> textSegmentLabels,
+                                Labeler<Sentence> sentence2Labeler) throws BiomedicusException {
+        List<Label<TextSegment>> textSegments = textSegmentLabels.all();
+        if (textSegments.isEmpty()) {
+            textSegments = new ArrayList<>();
+            textSegments.add(new Label<>(new Span(0, documentText.length()), new TextSegment()));
+        }
 
-    /**
-     * Processes a text span in a document, tagging all of the sentences in that span of text.
-     *
-     * @param document document
-     * @param textSpan the text span to tag sentences in.
-     */
-    public void processTextSegment(Document document, TextSpan textSpan) {
-        String text = sentencePreprocessor.processText(textSpan.getText());
+        ValueLabeler valueLabeler = sentence2Labeler.value(new Sentence());
 
-        sentenceSplitter.setDocumentText(text);
+        for (Label<TextSegment> textSegment : textSegments) {
 
-        sentenceCandidateGenerator.generateSentenceSpans(text)
-                .stream()
-                .flatMap(sentenceSplitter::splitCandidate)
-                .map(textSpan::derelativize)
-                .forEach(document::createSentence);
+            String textSegmentText = sentencePreprocessor.processText(textSegment.getCovered(documentText));
+
+            sentenceSplitter.setDocumentText(textSegmentText);
+
+            Iterator<Span> iterator = sentenceCandidateGenerator.generateSentenceSpans(textSegmentText)
+                    .stream()
+                    .flatMap(sentenceSplitter::splitCandidate)
+                    .map(textSegment::derelativize)
+                    .iterator();
+
+            while (iterator.hasNext()) {
+                Span next = iterator.next();
+                valueLabeler.label(next);
+            }
+        }
     }
 }

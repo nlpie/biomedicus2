@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.simple.SimpleTextSpan;
 import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.type.TextSegmentAnnotation;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -85,7 +85,9 @@ class TextSegmentsBuilder {
         int prev = 0;
         for (int currentSplit : sortedSplits) {
             if (currentSplit != prev) {
-                if (new SimpleTextSpan(new Span(0, currentSplit), documentText).containsNonWhitespace()) {
+                Span span = new Span(0, currentSplit);
+                CharSequence segmentText = span.getCovered(documentText);
+                if (Patterns.NON_WHITESPACE.matcher(segmentText).find()) {
                     new TextSegmentAnnotation(jCas, prev, currentSplit).addToIndexes();
                 }
                 prev = currentSplit;

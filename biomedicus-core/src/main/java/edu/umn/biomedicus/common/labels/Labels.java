@@ -17,8 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.collect.SlidingWindow;
-import edu.umn.biomedicus.common.text.SpanLike;
-import edu.umn.biomedicus.common.tuples.Pair;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -35,7 +34,7 @@ import static java.util.Spliterator.*;
  * <br />
  * Most transformations, functions which return another instance of Labels, should be performed lazily, meaning that the
  * computation involved isn't performed until the labels are iterated, and in many cases, their limits can be combined,
- * for example {@link #insideSpan(SpanLike)} and {@link #rightwardsFrom(SpanLike)} chained should only cost as much as
+ * for example {@link #insideSpan(TextLocation)} and {@link #rightwardsFrom(TextLocation)} chained should only cost as much as
  * one insideSpan call.
  *
  * @param <T> the type that is labeled
@@ -45,19 +44,19 @@ public interface Labels<T> extends Iterable<Label<T>> {
     /**
      * Returns a collection of all the labels that contain the specified span parameter.
      *
-     * @param spanLike
+     * @param textLocation
      * @return
      */
-    Labels<T> containing(SpanLike spanLike);
+    Labels<T> containing(TextLocation textLocation);
 
     /**
      * Returns a collection of these labels only inside the span parameter. All labels in the returned objects will have
      * a begin greater than or equal to the argument's begin and an end less than or equal to the arguments end.
      *
-     * @param spanLike the boundaries.
+     * @param textLocation the boundaries.
      * @return Labels object filtered down so that all labels meet the requirement
      */
-    Labels<T> insideSpan(SpanLike spanLike);
+    Labels<T> insideSpan(TextLocation textLocation);
 
     /**
      * The collection of labels where the begin and end are less than or equal to the begin of the span argument.
@@ -66,7 +65,7 @@ public interface Labels<T> extends Iterable<Label<T>> {
      * @param span span to work leftwards from
      * @return labels leftwards from the specified span.
      */
-    Labels<T> leftwardsFrom(SpanLike span);
+    Labels<T> leftwardsFrom(TextLocation span);
 
     /**
      * The collection of labels where the begin and end are greater than or equal to the end of the span argument.
@@ -74,7 +73,7 @@ public interface Labels<T> extends Iterable<Label<T>> {
      * @param span span to work rightwards from
      * @return labels rightwards after the specified span.
      */
-    Labels<T> rightwardsFrom(SpanLike span);
+    Labels<T> rightwardsFrom(TextLocation span);
 
     /**
      * Reverses the iteration order of this collection of labels. By default labels iterate in order from left to right.
@@ -100,8 +99,8 @@ public interface Labels<T> extends Iterable<Label<T>> {
      */
     Labels<T> filter(Predicate<Label<T>> predicate);
 
-    default Optional<Label<T>> withSpan(SpanLike spanLike) {
-        Iterator<Label<T>> it = insideSpan(spanLike).filter(spanLike::spanEquals).iterator();
+    default Optional<Label<T>> withSpan(TextLocation textLocation) {
+        Iterator<Label<T>> it = insideSpan(textLocation).filter(textLocation::spanEquals).iterator();
         if (it.hasNext()) {
             return Optional.of(it.next());
         }
@@ -125,5 +124,9 @@ public interface Labels<T> extends Iterable<Label<T>> {
         Spliterator<Label<T>> spliterator = Spliterators.spliteratorUnknownSize(iterator,
                 ORDERED | DISTINCT | IMMUTABLE | NONNULL | SORTED);
         return StreamSupport.stream(spliterator, false);
+    }
+
+    default List<T> values() {
+        return stream().map(Label::value).collect(Collectors.toList());
     }
 }

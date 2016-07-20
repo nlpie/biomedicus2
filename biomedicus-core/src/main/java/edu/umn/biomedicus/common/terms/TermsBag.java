@@ -25,7 +25,7 @@ import java.util.*;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public class TermsBag implements Comparable<TermsBag> {
+public final class TermsBag implements Comparable<TermsBag> {
     /**
      * The term identifiers, sorted increasing.
      */

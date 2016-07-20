@@ -22,9 +22,9 @@ import com.google.inject.Key;
 import java.util.Collection;
 
 /**
- *
+ * Module w
  */
-public class ProcessorSettingsModule extends AbstractModule {
+public final class ProcessorSettingsModule extends AbstractModule {
     private final Collection<Key<?>> processorSettings;
 
     public ProcessorSettingsModule(Collection<Key<?>> processorSettings) {

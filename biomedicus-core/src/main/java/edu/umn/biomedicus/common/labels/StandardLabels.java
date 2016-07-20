@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.collect.OrderedSpanMap;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -47,27 +47,27 @@ public class StandardLabels<T> extends AbstractLabels<T> {
     }
 
     @Override
-    public Labels<T> containing(SpanLike spanLike) {
-        return new StandardLabels<>(tree.containing(spanLike), filter, ascending);
+    public Labels<T> containing(TextLocation textLocation) {
+        return new StandardLabels<>(tree.containing(textLocation), filter, ascending);
     }
 
     @Override
-    public Labels<T> insideSpan(SpanLike spanLike) {
-        return new StandardLabels<>(tree.insideSpan(spanLike), filter, ascending);
+    public Labels<T> insideSpan(TextLocation textLocation) {
+        return new StandardLabels<>(tree.insideSpan(textLocation), filter, ascending);
     }
 
     @Override
-    public Optional<Label<T>> withSpan(SpanLike spanLike) {
-        return Optional.ofNullable(tree.get(spanLike));
+    public Optional<Label<T>> withSpan(TextLocation textLocation) {
+        return Optional.ofNullable(tree.get(textLocation));
     }
 
     @Override
-    public Labels<T> leftwardsFrom(SpanLike span) {
+    public Labels<T> leftwardsFrom(TextLocation span) {
         return new StandardLabels<>(tree.toTheLeftOf(span), filter, false);
     }
 
     @Override
-    public Labels<T> rightwardsFrom(SpanLike span) {
+    public Labels<T> rightwardsFrom(TextLocation span) {
         return new StandardLabels<>(tree.toTheRightOf(span), filter, true);
     }
 

@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.common.tuples;
 
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Token;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -85,20 +84,6 @@ public class PosCap implements Comparable<PosCap>, Serializable {
      */
     public static PosCap create(PartOfSpeech partOfSpeech, boolean capitalized) {
         return new PosCap(partOfSpeech, capitalized);
-    }
-
-    /**
-     * Gets the part of speech and capitalization of a token object.
-     *
-     * @param token the token object to return part of speech capitalization for.
-     * @return part fo speech capitalization.
-     */
-    public static PosCap create(Token token) {
-        PartOfSpeech partOfSpeech = token.getPartOfSpeech();
-        if (partOfSpeech == null) {
-            throw new IllegalArgumentException("Tokens in document have not been tagged with part of speech");
-        }
-        return PosCap.create(partOfSpeech, token.isCapitalized());
     }
 
     /**

@@ -17,19 +17,20 @@
 package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.text.Acronym;
+import edu.umn.biomedicus.common.text.AcronymExpansion;
+import edu.umn.biomedicus.common.text.TermToken;
+import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,6 @@ import java.util.stream.Collectors;
  * @author Greg Finley
  * @since 1.5.0
  */
-@DocumentScoped
 class AcronymExpander implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymModel.class);
     private final AcronymModel model;
@@ -62,14 +62,15 @@ class AcronymExpander implements DocumentProcessor {
     public void process() throws BiomedicusException {
         LOGGER.info("Expanding acronyms and abbreviations");
 
-        List<TokenLike> allTokens = termTokenLabels.stream().map(Label::value).collect(Collectors.toList());
+        List<Token> allTokens = termTokenLabels.stream().map(Label::value).collect(Collectors.toList());
 
         for (Label<Acronym> acronymLabel : acronymLabels) {
-            Label<TermToken> termTokenLabel = termTokenLabels.withSpan(acronymLabel).get();
+            Label<TermToken> termTokenLabel = termTokenLabels.withSpan(acronymLabel)
+                    .orElseThrow(() -> new BiomedicusException("Acronym is not a term token"));
             TermToken termToken = termTokenLabel.value();
             String sense = model.findBestSense(allTokens, termToken);
-            if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.getText())) {
-                acronymExpansionLabeler.value(new AcronymExpansion(sense, termToken.getTrailingText()))
+            if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.text())) {
+                acronymExpansionLabeler.value(new AcronymExpansion(sense, termToken.hasSpaceAfter()))
                         .label(acronymLabel);
             }
         }

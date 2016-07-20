@@ -17,80 +17,13 @@
 package edu.umn.biomedicus.uima.labels;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+public interface LabelAdapter<T> {
+    Type getType();
 
-class LabelAdapter<T, U extends Annotation> {
-    private final Class<U> jCasClass;
-    private final BiConsumer<T, U> forwardAdapter;
-    private final Function<U, T> reverseAdapter;
-    private final Constructor<U> constructor;
+    AnnotationFS labelToAnnotation(Label<T> label);
 
-    LabelAdapter(Class<U> jCasClass,
-                 BiConsumer<T, U> forwardAdapter,
-                 Function<U, T> reverseAdapter) {
-        this.jCasClass = jCasClass;
-        this.forwardAdapter = forwardAdapter;
-        this.reverseAdapter = reverseAdapter;
-        try {
-            constructor = jCasClass.getConstructor(JCas.class, Integer.TYPE, Integer.TYPE);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("This method should always be there for a JCas cover class");
-        }
-    }
-
-    Class<? extends Annotation> getjCasClass() {
-        return jCasClass;
-    }
-
-    void createLabel(JCas jCas, Label<T> label) throws BiomedicusException {
-        try {
-            U annotation = constructor.newInstance(jCas, label.toSpan().getBegin(), label.toSpan().getEnd());
-            forwardAdapter.accept(label.value(), annotation);
-            annotation.addToIndexes();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new BiomedicusException("Could not create annotation for label", e);
-        }
-    }
-
-    Label<T> adaptAnnotation(Annotation annotation) {
-        if (!jCasClass.isInstance(annotation)) {
-            throw new IllegalArgumentException("Annotation is invalid type");
-        }
-        T label = reverseAdapter.apply(jCasClass.cast(annotation));
-        return new Label<>(new Span(annotation.getBegin(), annotation.getEnd()), label);
-    }
-
-    static <T> BuilderNeedsAnnotationClass<T> builder() {
-        return new BuilderNeedsAnnotationClass<T>() {
-            @Override
-            public <U extends Annotation> BuilderNeedsLabelableAdapter<T, U> withAnnotationClass(Class<U> annotationClass) {
-                return labelableAdapter -> annotationAdapter -> new LabelAdapter<>(annotationClass, labelableAdapter, annotationAdapter);
-            }
-        };
-    }
-
-    static <T> BuilderNeedsAnnotationClass<T> builder(Class<T> forClass) {
-        return builder();
-    }
-
-    interface BuilderNeedsAnnotationClass<T> {
-        <U extends Annotation> BuilderNeedsLabelableAdapter<T, U> withAnnotationClass(Class<U> annotationClass);
-    }
-
-    interface BuilderNeedsLabelableAdapter<T, U extends Annotation> {
-        BuilderNeedsAnnotationAdapter<T, U> withLabelableAdapter(BiConsumer<T, U> labelableAdapter);
-
-    }
-
-    interface BuilderNeedsAnnotationAdapter<T, U extends Annotation> {
-        LabelAdapter<T, U> withAnnotationAdapter(Function<U, T> annotationAdapter);
-    }
+    Label<T> annotationToLabel(AnnotationFS annotationFS);
 }

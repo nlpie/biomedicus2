@@ -24,7 +24,7 @@ import edu.umn.biomedicus.common.text.Document;
 /**
  *
  */
-class BiomedicusModule extends AbstractModule {
+final class BiomedicusModule extends AbstractModule {
     @Override
     protected void configure() {
         bindScope(DocumentScoped.class, BiomedicusScopes.DOCUMENT_SCOPE);

@@ -16,24 +16,24 @@
 
 package edu.umn.biomedicus.common.text;
 
-public final class AcronymExpansion implements TokenLike {
+public final class AcronymExpansion implements Token {
     private final String text;
 
-    private final String trailingText;
+    private final boolean hasSpaceAfter;
 
-    public AcronymExpansion(String text, String trailingText) {
+    public AcronymExpansion(String text, boolean hasSpaceAfter) {
         this.text = text;
-        this.trailingText = trailingText;
+        this.hasSpaceAfter = hasSpaceAfter;
     }
 
     @Override
-    public String getText() {
+    public String text() {
         return text;
     }
 
     @Override
-    public String getTrailingText() {
-        return trailingText;
+    public boolean hasSpaceAfter() {
+        return hasSpaceAfter;
     }
 
     @Override

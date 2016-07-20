@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
 
 import java.io.Serializable;
 import java.util.*;
@@ -177,7 +176,7 @@ public class VectorSpaceDouble {
      * @param tokenOfInterest The token that we want to calculate a vector for
      * @return The calculated vector
      */
-    public WordVectorDouble vectorize(List<TokenLike> context, TokenLike tokenOfInterest) {
+    public WordVectorDouble vectorize(List<Token> context, Token tokenOfInterest) {
 
         assert context.contains(tokenOfInterest);
 
@@ -194,7 +193,7 @@ public class VectorSpaceDouble {
         // To determine our position in the word list. Useful when calculating distance from center
         int i = 0;
 
-        for (TokenLike token : context) {
+        for (Token token : context) {
 
             // Determine if we've hit the token of interest yet
             if (centerWord == 0 && token == tokenOfInterest) {
@@ -253,8 +252,8 @@ public class VectorSpaceDouble {
      * @param t a token
      * @return its flattened form
      */
-    private String standardForm(TokenLike t) {
-        String form = t.getText();
+    private String standardForm(Token t) {
+        String form = t.text();
         return Acronyms.standardFormString(form).toLowerCase();
     }
 

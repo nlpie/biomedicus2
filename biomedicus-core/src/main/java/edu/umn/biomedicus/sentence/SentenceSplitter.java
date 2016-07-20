@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.stream.Stream;
 
@@ -43,5 +43,5 @@ public interface SentenceSplitter {
      * @param candidate the candidate to split
      * @return a stream of split candidates
      */
-    Stream<SpanLike> splitCandidate(SpanLike candidate);
+    Stream<TextLocation> splitCandidate(TextLocation candidate);
 }

@@ -17,9 +17,10 @@
 package edu.umn.biomedicus.tokenization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Sentence;
@@ -27,23 +28,26 @@ import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.Iterator;
+import java.util.Locale;
 
-@DocumentScoped
-public class PennLikeTokenizer implements DocumentProcessor {
+public final class PennLikeTokenizer implements DocumentProcessor {
     private final Document document;
+    private final Labels<Sentence> sentenceLabels;
     private final Labeler<ParseToken> parseTokenLabeler;
 
     @Inject
     public PennLikeTokenizer(Document document,
+                             Labels<Sentence> sentenceLabels,
                              Labeler<ParseToken> parseTokenLabeler) {
         this.document = document;
+        this.sentenceLabels = sentenceLabels;
         this.parseTokenLabeler = parseTokenLabeler;
     }
 
     @Override
     public void process() throws BiomedicusException {
-        for (Sentence sentence : document.getSentences()) {
-            String text = sentence.getText();
+        for (Label<Sentence> sentence : sentenceLabels) {
+            CharSequence text = sentence.getCovered(document.getText());
 
             PennLikeSentenceTokenizer sentenceTokenizer = new PennLikeSentenceTokenizer(text);
 
@@ -62,17 +66,17 @@ public class PennLikeTokenizer implements DocumentProcessor {
                     continue;
                 }
                 if (last != null) {
-                    String tokenText = text.substring(last.getBegin(), last.getEnd());
-                    String trailingText = text.substring(last.getEnd(), current.getBegin());
-                    ParseToken parseToken = new ParseToken(tokenText, trailingText);
+                    String tokenText = text.subSequence(last.getBegin(), last.getEnd()).toString();
+                    boolean hasSpaceAfter = last.getEnd() != current.getBegin();
+                    ParseToken parseToken = new ParseToken(tokenText, hasSpaceAfter);
                     parseTokenLabeler.value(parseToken).label(sentence.derelativize(last));
                 }
                 last = current;
             }
             if (last != null) {
                 Span derelativized = sentence.derelativize(last);
-                parseTokenLabeler.value(new ParseToken(text.substring(last.getBegin(), last.getEnd()), ""))
-                        .label(derelativized);
+                String tokenText = text.subSequence(last.getBegin(), last.getEnd()).toString();
+                parseTokenLabeler.value(new ParseToken(tokenText, false)).label(derelativized);
             }
         }
     }

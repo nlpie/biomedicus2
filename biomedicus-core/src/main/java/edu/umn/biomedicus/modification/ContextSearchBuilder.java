@@ -19,12 +19,12 @@ package edu.umn.biomedicus.modification;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence2;
+import edu.umn.biomedicus.common.text.Sentence;
 
 final class ContextSearchBuilder {
     private ContextCues contextCues;
     private Document document;
-    private Labels<Sentence2> sentences;
+    private Labels<Sentence> sentences;
     private Labels<?> modifiableTerms;
     private Labels<?> tokens;
     private Labels<PartOfSpeech> partOfSpeechLabels;
@@ -39,7 +39,7 @@ final class ContextSearchBuilder {
         return this;
     }
 
-    ContextSearchBuilder setSentences(Labels<Sentence2> sentences) {
+    ContextSearchBuilder setSentences(Labels<Sentence> sentences) {
         this.sentences = sentences;
         return this;
     }

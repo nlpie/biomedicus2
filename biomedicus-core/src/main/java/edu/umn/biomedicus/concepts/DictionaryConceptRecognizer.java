@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.semantics.Concept;
-import edu.umn.biomedicus.common.simple.SimpleTerm;
+import edu.umn.biomedicus.common.semantics.DictionaryConcept;
+import edu.umn.biomedicus.common.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.TermsBag;
@@ -45,58 +45,18 @@ import static edu.umn.biomedicus.common.syntax.PartOfSpeech.*;
  * @author Serguei Pakhomov
  * @since 1.0.0
  */
-@DocumentScoped
 class DictionaryConceptRecognizer implements DocumentProcessor {
-
-    /**
-     * Class logger.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryConceptRecognizer.class);
-
-    /**
-     * Trivial parts of speech.
-     */
-    private static final Set<PartOfSpeech> TRIVIAL_POS;
-
-    /**
-     * Initialization for trivial parts of speech.
-     */
-    static {
-        Set<PartOfSpeech> builder = new HashSet<>();
-        Collections.addAll(builder,
-                DT,
-                CD,
-                WDT,
-                TO,
-                CC,
-                PRP,
-                PRP$,
-                MD,
-                EX,
-                IN,
-                XX);
-
-        Set<PartOfSpeech> punctuationClass = PartsOfSpeech.getPunctuationClass();
-        builder.addAll(punctuationClass);
-
-        TRIVIAL_POS = Collections.unmodifiableSet(builder);
-    }
-
-    /**
-     * The maximum size of a term span.
-     */
+    private static final Set<PartOfSpeech> TRIVIAL_POS = buildTrivialPos();
     private static final int SPAN_SIZE = 5;
-
-    /**
-     * The concept dictionary to look up concepts from.
-     */
     private final ConceptModel conceptModel;
-    private final Labels<Sentence2> sentences;
+    private final Labels<Sentence> sentences;
     private final Labels<NormIndex> normIndexes;
     private final Labels<TermToken> termTokens;
     private final Document document;
     private final Labels<AcronymExpansion> acronymExpansions;
     private final Labels<PartOfSpeech> partsOfSpeech;
+    private final Labeler<DictionaryTerm> termLabeler;
 
     /**
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
@@ -106,11 +66,12 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     @Inject
     DictionaryConceptRecognizer(ConceptModel conceptModel,
                                 Document document,
-                                Labels<Sentence2> sentences,
+                                Labels<Sentence> sentences,
                                 Labels<AcronymExpansion> acronymExpansions,
                                 Labels<NormIndex> normIndexes,
                                 Labels<TermToken> termTokens,
-                                Labels<PartOfSpeech> partsOfSpeech) {
+                                Labels<PartOfSpeech> partsOfSpeech,
+                                Labeler<DictionaryTerm> termLabeler) {
         this.document = document;
         this.conceptModel = conceptModel;
         this.sentences = sentences;
@@ -118,6 +79,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         this.normIndexes = normIndexes;
         this.termTokens = termTokens;
         this.partsOfSpeech = partsOfSpeech;
+        this.termLabeler = termLabeler;
     }
 
     private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) throws BiomedicusException {
@@ -132,7 +94,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             return false;
         }
 
-        phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase());
+        phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 0.6 - confMod);
@@ -142,7 +104,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         return false;
     }
 
-    private void checkTokenSet(List<Label<TermToken>> tokenSet) {
+    private void checkTokenSet(List<Label<TermToken>> tokenSet) throws BiomedicusException {
         if (tokenSet.size() <= 1) {
             return;
         }
@@ -165,20 +127,22 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         }
     }
 
-    private void makeTerm(SpanLike spanLike, List<SuiCuiTui> cuis, double confidence) {
-        List<Concept> concepts = cuis.stream()
+    private void makeTerm(TextLocation textLocation,
+                          List<SuiCuiTui> cuis,
+                          double confidence) throws BiomedicusException {
+        List<DictionaryConcept> concepts = cuis.stream()
                 .map(suiCuiTui -> suiCuiTui.toConcept(confidence)).collect(Collectors.toList());
 
-        Term term = new SimpleTerm(spanLike.getBegin(), spanLike.getEnd(), concepts.get(0),
-                concepts.subList(1, concepts.size()));
-        document.addTerm(term);
+        DictionaryTerm dictionaryTerm = DictionaryTerm.builder().addConcepts(concepts).build();
+
+        termLabeler.value(dictionaryTerm).label(textLocation);
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Finding concepts in document.");
         String documentText = document.getText();
-        for (Label<Sentence2> sentence : sentences) {
+        for (Label<Sentence> sentence : sentences) {
             LOGGER.trace("Identifying concepts in a sentence");
 
             StringBuilder editedString = new StringBuilder();
@@ -187,17 +151,18 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
             for (Label<TermToken> sentenceTermToken : sentenceTermTokens) {
                 Optional<Label<AcronymExpansion>> acronymForToken = acronymExpansions.withSpan(sentenceTermToken);
-                TokenLike tokenLike;
+                Token token;
                 if (acronymForToken.isPresent()) {
-                    tokenLike = acronymForToken.get().value();
+                    token = acronymForToken.get().value();
                 } else {
-                    tokenLike = sentenceTermToken.value();
+                    token = sentenceTermToken.value();
                 }
-                String tokenText = tokenLike.getText();
-                String trailingText = tokenLike.getTrailingText();
+                String tokenText = token.text();
                 Span span = new Span(editedString.length(), editedString.length() + tokenText.length());
                 editedString.append(tokenText);
-                editedString.append(trailingText);
+                if (token.hasSpaceAfter()) {
+                    editedString.append(' ');
+                }
                 editedStringSpans.add(span);
             }
 
@@ -238,5 +203,25 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                 }
             }
         }
+    }
+
+    private static Set<PartOfSpeech> buildTrivialPos() {
+        Set<PartOfSpeech> builder = new HashSet<>();
+        Collections.addAll(builder,
+                DT,
+                CD,
+                WDT,
+                TO,
+                CC,
+                PRP,
+                PRP$,
+                MD,
+                EX,
+                IN,
+                XX);
+
+        Set<PartOfSpeech> punctuationClass = PartsOfSpeech.getPunctuationClass();
+        builder.addAll(punctuationClass);
+        return Collections.unmodifiableSet(builder);
     }
 }

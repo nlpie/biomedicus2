@@ -20,8 +20,10 @@ import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.common.Views;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
@@ -30,22 +32,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Annotates the category on MTSamples documents using the document id.
  */
-public class MtsamplesCategoryAnnotator extends JCasAnnotator_ImplBase {
+public class MtsamplesCategoryAnnotator extends CasAnnotator_ImplBase {
     /**
      * Class logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MtsamplesCategoryAnnotator.class);
 
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    public void process(CAS cas) throws AnalysisEngineProcessException {
         LOGGER.debug("Processing a document for MTSamples category");
 
-        JCas systemView;
-        try {
-            systemView = aJCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+        CAS systemView = cas.getView(Views.SYSTEM_VIEW);
 
         try {
             Document document = UimaAdapters.documentFromView(systemView);
@@ -56,6 +53,5 @@ public class MtsamplesCategoryAnnotator extends JCasAnnotator_ImplBase {
         } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
-
     }
 }

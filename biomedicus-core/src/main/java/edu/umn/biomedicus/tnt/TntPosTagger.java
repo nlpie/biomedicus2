@@ -16,14 +16,22 @@
 
 package edu.umn.biomedicus.tnt;
 
+import com.google.inject.Inject;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.List;
 
@@ -33,7 +41,7 @@ import java.util.List;
  * @author Ben Knoll
  * @since 1.0.0
  */
-public class TntPosTagger {
+public class TntPosTagger implements DocumentProcessor {
     /**
      * A pos cap for before the beginning of sentences.
      */
@@ -63,6 +71,10 @@ public class TntPosTagger {
      * The tnt model to use.
      */
     private final TntModel tntModel;
+    private final Labels<Sentence> sentence2Labels;
+    private final Labels<ParseToken> parseTokenLabels;
+    private final Document document;
+    private final Labeler<PartOfSpeech> partOfSpeechLabeler;
 
     /**
      * Default constructor. Initializes the beam threshold and tnt model.
@@ -70,20 +82,30 @@ public class TntPosTagger {
      * @param tntModel      tnt model.
      * @param beamThreshold beam threshold in log base 10. The difference from the most probable to exclude.
      */
-    public TntPosTagger(TntModel tntModel, double beamThreshold) {
+    @Inject
+    public TntPosTagger(TntModel tntModel,
+                        @Setting("tnt.beam.threshold") Double beamThreshold,
+                        Document document,
+                        Labels<Sentence> sentence2Labels,
+                        Labels<ParseToken> parseTokenLabels,
+                        Labeler<PartOfSpeech> partOfSpeechLabeler) {
         this.tntModel = tntModel;
         this.beamThreshold = beamThreshold;
+        this.document = document;
+        this.sentence2Labels = sentence2Labels;
+        this.parseTokenLabels = parseTokenLabels;
+        this.partOfSpeechLabeler = partOfSpeechLabeler;
     }
 
-    public void tagSentence(Sentence sentence) {
-        List<Token> tokens = sentence.getTokens();
+    public void tagSentence(Label<Sentence> sentence2Label) throws BiomedicusException {
+        List<Label<ParseToken>> tokens = parseTokenLabels.insideSpan(sentence2Label).all();
         ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel, Ngram.create(BBS, BOS),
                 Ngram::create);
 
-        for (Token token : tokens) {
-            String text = token.getText();
+        for (Label<ParseToken> token : tokens) {
+            CharSequence text = token.getCovered(document.getText());
             boolean isCapitalized = Character.isUpperCase(text.charAt(0));
-            viterbiProcessor.advance(new WordCap(text, isCapitalized));
+            viterbiProcessor.advance(new WordCap(text.toString(), isCapitalized));
             viterbiProcessor.beamFilter(beamThreshold);
         }
 
@@ -95,8 +117,15 @@ public class TntPosTagger {
 
         for (int i = 2; i < tags.size(); i++) {
             PartOfSpeech partOfSpeech = tags.get(i).getPartOfSpeech();
-            Token token = tokens.get(i - 2);
-            token.setPennPartOfSpeech(partOfSpeech);
+            Label<ParseToken> token = tokens.get(i - 2);
+            partOfSpeechLabeler.value(partOfSpeech).label(token);
+        }
+    }
+
+    @Override
+    public void process() throws BiomedicusException {
+        for (Label<Sentence> sentence2Label : sentence2Labels) {
+            tagSentence(sentence2Label);
         }
     }
 }

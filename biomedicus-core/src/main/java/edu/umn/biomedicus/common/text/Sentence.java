@@ -16,79 +16,10 @@
 
 package edu.umn.biomedicus.common.text;
 
-import edu.umn.biomedicus.common.semantics.SubstanceUsageType;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
- * A biomedicus basic unit for a sentence in text.
+ * Post 1.5 labelable sentence. Has no fields.
  *
- * @since 1.0.0
+ * @since 1.5.0
  */
-public interface Sentence extends TextSpan {
-    /**
-     * Gets the tokens within this sentence.
-     *
-     * @return a list of the tokens in the sentence.
-     */
-    default List<Token> getTokens() {
-        return tokens().collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the tokens within this sentence as a stream.
-     *
-     * @return a stream of the tokens in the sentence.
-     */
-    Stream<Token> tokens();
-
-    /**
-     * Gets the terms within this sentence.
-     *
-     * @return list of terms
-     */
-    default List<Term> getTerms() {
-        return terms().collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the terms within this sentence as a stream.
-     *
-     * @return list of the terms
-     */
-    Stream<Term> terms();
-
-    /**
-     * Gets the dependencies string.
-     *
-     * @return dependencies.
-     */
-    String getDependencies();
-
-    /**
-     * Sets the dependencies string.
-     *
-     * @param dependencies dependencies.
-     */
-    void setDependencies(String dependencies);
-
-    /**
-     * Gets the parse tree.
-     *
-     * @return
-     */
-    String getParseTree();
-
-    void setParseTree(String parseTree);
-
-    boolean isSocialHistoryCandidate();
-
-    void setIsSocialHistoryCandidate(boolean isSocialHistoryCandidate);
-
-    Collection<SubstanceUsageType> getSubstanceUsageTypes();
-
-    void addSubstanceUsageType(SubstanceUsageType substanceUsageType);
+public final class Sentence {
 }

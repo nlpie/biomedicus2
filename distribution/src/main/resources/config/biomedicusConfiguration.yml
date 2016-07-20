@@ -14,6 +14,9 @@ settings:
     trigram.path: tnt/trigram.yml
     word.path: tnt/words/
     beam.threshold: 2.0
+  stopwords:
+    model: fileBased
+    fileBased.path: stopwords/PubMedStopwords.txt
   normalization:
     lexicon.path: normalization/lexicon.yml
     fallback.path: normalization/fallbackLexicon.yml
@@ -25,10 +28,10 @@ settings:
     vector:
       model.path: acronym/vectorSpace.yml
       trainer:
-        expansionMap.path: /path-to
-        uniqueIdMap.path: /path-to
-        longforms.path: /path-to
-        outputDir.path: /path-to
+        expansionMap.path: REPLACE_ME_PATH_TO
+        uniqueIdMap.path: REPLACE_ME_PATH_TO
+        longforms.path: REPLACE_ME_PATH_TO
+        outputDir.path: REPLACE_ME_PATH_TO
     senseMap.path: acronym/senseMap.ser
     orthographicModel.path: acronym-orthographic/orthographicModel.yml
   semanticNetwork:
@@ -44,24 +47,27 @@ settings:
       tui.path: conceptFilters/filteredTuis.txt
   sections.headers.path: sections/headers.txt
   parser.implementation: opennlp
+  sentenceDetectorFactory.implementation: opennlp
   opennlp:
-    parser.model.path: opennlp/en-parser-chunking.bin
-    sentence.model.path: NOT_USED
+    sentence.model.path: opennlp/sentenceME.bin
+  syntaxnet:
+    parserEval.path: REPLACE_ME_PATH_TO
+    modelDir.path: REPLACE_ME_PATH_TO
   specialist.path: SPECIALIST/LEX
-  socialhistory:
-    parser: opennlp
   modification:
     history.path: modification/history.yml
     negation.path: modification/negation.yml
     probability.path: modification/probability.yml
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
-  parser.implementation: edu.umn.biomedicus.parsing.Parser
+  sentenceDetectorFactory.implementation: edu.umn.biomedicus.sentence.SentenceDetectorFactory
   acronym.model: edu.umn.biomedicus.acronym.AcronymModel
-  socialhistory.parser: edu.umn.biomedicus.parsing.Parser
+  stopwords.model: edu.umn.biomedicus.stopwords.Stopwords
 # these indicate the options for the bindings above
 interfaceImplementations:
-  edu.umn.biomedicus.parsing.Parser:
-    opennlp: edu.umn.biomedicus.opennlp.OpenNlpParser
   edu.umn.biomedicus.acronym.AcronymModel:
     vector: edu.umn.biomedicus.acronym.AcronymVectorModel
+  edu.umn.biomedicus.sentence.SentenceDetectorFactory:
+    opennlp: edu.umn.biomedicus.opennlp.OpenNlpSentenceDetectorFactory
+  edu.umn.biomedicus.stopwords.Stopwords:
+    fileBased: edu.umn.biomedicus.stopwords.StopwordsModel

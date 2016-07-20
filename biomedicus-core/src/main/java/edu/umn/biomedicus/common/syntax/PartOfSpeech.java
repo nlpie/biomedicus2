@@ -304,7 +304,17 @@ public enum PartOfSpeech {
     /**
      * End of Sentence, abstract tag used for the end of a sentence.
      */
-    EOS("EOS");
+    EOS("EOS"),
+
+    /**
+     * Electronic address.
+     */
+    ADD("ADD"),
+
+    /**
+     * Non-final punctuation.
+     */
+    NFP("NFP");
 
     private final String pos;
 

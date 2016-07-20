@@ -16,27 +16,25 @@
 
 package edu.umn.biomedicus.common.collect;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 import edu.umn.biomedicus.common.tuples.Pair;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 public interface SpansMap<T> {
-    SpansMap<T> toTheLeftOf(SpanLike spanLike);
+    SpansMap<T> toTheLeftOf(TextLocation textLocation);
 
-    SpansMap<T> toTheRightOf(SpanLike spanLike);
+    SpansMap<T> toTheRightOf(TextLocation textLocation);
 
     Stream<T> valuesStream();
 
     Stream<T> descendingValuesStream();
 
-    SpansMap<T> insideSpan(SpanLike spanLike);
+    SpansMap<T> insideSpan(TextLocation textLocation);
 
-    SpansMap<T> containing(SpanLike spanLike);
+    SpansMap<T> containing(TextLocation textLocation);
 
-    Stream<SpanLike> spansStream();
+    Stream<TextLocation> spansStream();
 
-    Stream<Pair<SpanLike, T>> pairStream();
+    Stream<Pair<TextLocation, T>> pairStream();
 }
