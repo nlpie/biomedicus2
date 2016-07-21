@@ -52,6 +52,10 @@ public class UimaBootstrapper {
         List<AbstractPlugin> plugins = new ArrayList<>();
         List<Module> modules = new ArrayList<>();
         for (String pluginClassName : pluginClassNames) {
+            if (pluginClassName.isEmpty()) {
+                continue;
+            }
+
             Class<? extends AbstractPlugin> pluginClass;
             try {
                 pluginClass = Class.forName(pluginClassName).asSubclass(AbstractPlugin.class);

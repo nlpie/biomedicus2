@@ -110,7 +110,7 @@ class CASDocument implements Document {
     private FeatureStructure getMapEntry(String key) {
         FSIterator<FeatureStructure> fsIterator = view.getIndexRepository().getAllIndexedFS(documentMetadataType);
         while (fsIterator.hasNext()) {
-            FeatureStructure featureStructure = fsIterator.get();
+            FeatureStructure featureStructure = fsIterator.next();
             if (Objects.equals(featureStructure.getStringValue(keyFeature), key)) {
                 return featureStructure;
             }

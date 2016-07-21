@@ -51,7 +51,7 @@ settings:
   opennlp:
     sentence.model.path: opennlp/sentenceME.bin
   syntaxnet:
-    installationDir.path: /Users/benknoll/Documents/models/syntaxnet/
+    installationDir.path: REPLACE_ME_PATH_TO
     modelDir: syntaxnet/models/parsey_mcparseface
   specialist.path: SPECIALIST/LEX
   modification:
