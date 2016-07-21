@@ -26,7 +26,6 @@ import org.apache.uima.jcas.JCas;
 final class UimaModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(JCas.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(DocumentScoped.class);
         bind(CAS.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(DocumentScoped.class);
     }
 }
