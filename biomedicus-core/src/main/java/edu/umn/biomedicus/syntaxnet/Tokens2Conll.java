@@ -43,7 +43,7 @@ public class Tokens2Conll {
             NormForm normForm = norms.get(i).value();
             String text = token.text();
             StringJoiner tokenBuilder = new StringJoiner("\t", "", "\n");
-            tokenBuilder.add(Integer.toString((i++ + 1))); // sentence position
+            tokenBuilder.add(Integer.toString((i + 1))); // sentence position
             tokenBuilder.add(text); // text
             tokenBuilder.add(normForm.getNormalForm()); // LEMMA
             tokenBuilder.add("_"); // UPOSTAG
