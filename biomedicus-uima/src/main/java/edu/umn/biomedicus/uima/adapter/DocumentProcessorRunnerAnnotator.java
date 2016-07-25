@@ -38,7 +38,7 @@ import java.util.*;
 /**
  *
  */
-public class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBase {
+public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBase {
     private static final List<String> KNOWN_PARAMETERS = Arrays.asList("viewName", "eagerLoad", "postProcessors");
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunnerAnnotator.class);
     @Nullable private Injector injector;

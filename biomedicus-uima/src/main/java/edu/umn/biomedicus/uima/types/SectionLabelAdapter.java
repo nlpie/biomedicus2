@@ -16,6 +16,9 @@
 
 package edu.umn.biomedicus.uima.types;
 
+import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
+import com.google.inject.Provider;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.text.Section;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
@@ -29,31 +32,15 @@ final class SectionLabelAdapter extends AbstractLabelAdapter<Section> {
     private final Feature hasSubsectionsFeature;
     private final Feature kindFeature;
 
-    private SectionLabelAdapter(CAS cas,
-                                Type type,
-                                Feature titleFeature,
-                                Feature levelFeature,
-                                Feature contentStartFeature,
-                                Feature hasSubsectionsFeature,
-                                Feature kindFeature) {
-        super(cas, type);
-        this.titleFeature = titleFeature;
-        this.levelFeature = levelFeature;
-        this.contentStartFeature = contentStartFeature;
-        this.hasSubsectionsFeature = hasSubsectionsFeature;
-        this.kindFeature = kindFeature;
-    }
+    @Inject
+    SectionLabelAdapter(CAS cas) {
+        super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.type.SectionAnnotation"));
 
-    public static SectionLabelAdapter create(CAS cas) {
-        TypeSystem typeSystem = cas.getTypeSystem();
-        Type type = typeSystem.getType("edu.umn.biomedicus.type.SectionAnnotation");
-        Feature titleFeature = type.getFeatureByBaseName("sectionTitle");
-        Feature levelFeature = type.getFeatureByBaseName("level");
-        Feature contentStartFeature = type.getFeatureByBaseName("contentStart");
-        Feature hasSubsectionsFeature = type.getFeatureByBaseName("hasSubsections");
-        Feature kindFeature = type.getFeatureByBaseName("kind");
-        return new SectionLabelAdapter(cas, type, titleFeature, levelFeature, contentStartFeature,
-                hasSubsectionsFeature, kindFeature);
+        titleFeature = type.getFeatureByBaseName("sectionTitle");
+        levelFeature = type.getFeatureByBaseName("level");
+        contentStartFeature = type.getFeatureByBaseName("contentStart");
+        hasSubsectionsFeature = type.getFeatureByBaseName("hasSubsections");
+        kindFeature = type.getFeatureByBaseName("kind");
     }
 
     @Override

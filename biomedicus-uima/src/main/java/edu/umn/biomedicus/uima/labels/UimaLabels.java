@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.uima.labels;
 
+import com.google.inject.Inject;
+import com.google.inject.TypeLiteral;
 import edu.umn.biomedicus.common.labels.AbstractLabels;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
@@ -26,8 +28,9 @@ import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 
 import java.util.Iterator;
+import java.util.Map;
 
-final class UimaLabels<T> extends AbstractLabels<T> {
+public final class UimaLabels<T> extends AbstractLabels<T> {
     private final CAS cas;
     private final LabelAdapter<T> labelAdapter;
     private final Iterable<Label<T>> iterable;
@@ -42,7 +45,8 @@ final class UimaLabels<T> extends AbstractLabels<T> {
         annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
     }
 
-    UimaLabels(CAS cas, LabelAdapter<T> labelAdapter) {
+    @Inject
+    public UimaLabels(CAS cas, LabelAdapter<T> labelAdapter) {
         this.cas = cas;
         this.labelAdapter = labelAdapter;
         annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");

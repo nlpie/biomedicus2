@@ -22,19 +22,23 @@ import edu.umn.biomedicus.application.BiomedicusFiles;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.plugins.AbstractPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UimaBootstrapper {
+public final class UimaBootstrapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UimaBootstrapper.class);
     private final Injector injector;
     private final List<AbstractPlugin> plugins;
 
-    public UimaBootstrapper(Injector injector, List<AbstractPlugin> plugins) {
+    private UimaBootstrapper(Injector injector, List<AbstractPlugin> plugins) {
         this.injector = injector;
         this.plugins = plugins;
     }
@@ -51,10 +55,14 @@ public class UimaBootstrapper {
         }
         List<AbstractPlugin> plugins = new ArrayList<>();
         List<Module> modules = new ArrayList<>();
+
+        modules.add(new UimaModule());
+
         for (String pluginClassName : pluginClassNames) {
             if (pluginClassName.isEmpty()) {
                 continue;
             }
+            LOGGER.debug("Loading modules from plugin: {}", pluginClassName);
 
             Class<? extends AbstractPlugin> pluginClass;
             try {
@@ -64,10 +72,17 @@ public class UimaBootstrapper {
             }
             AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
             plugins.add(abstractPlugin);
-            modules.addAll(abstractPlugin.modules());
+            Collection<? extends Module> pluginModules = abstractPlugin.modules();
+            if (LOGGER.isDebugEnabled()) {
+                for (Module pluginModule : pluginModules) {
+                    LOGGER.debug("Plugin module: {}", pluginModule.toString());
+                }
+            }
+            modules.addAll(pluginModules);
         }
 
-        return new UimaBootstrapper(injector.createChildInjector(modules.toArray(new Module[modules.size()])), plugins);
+        Injector uimaInjector = injector.createChildInjector(modules);
+        return new UimaBootstrapper(uimaInjector, plugins);
     }
 
     public <T> T createClass(Class<T> tClass) {

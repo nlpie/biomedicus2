@@ -16,12 +16,16 @@
 
 package edu.umn.biomedicus.uima.types;
 
+import com.google.inject.Inject;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
-import org.apache.uima.cas.*;
+import org.apache.uima.cas.ArrayFS;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
 
 import java.util.List;
@@ -30,20 +34,11 @@ final class DictionaryTermLabelAdapter extends AbstractLabelAdapter<DictionaryTe
     private final DictionaryConceptLabelAdapter dictionaryConceptLabelAdapter;
     private final Feature conceptsFeature;
 
-    private DictionaryTermLabelAdapter(CAS cas,
-                                       Type type,
-                                       DictionaryConceptLabelAdapter dictionaryConceptLabelAdapter,
-                                       Feature conceptsFeature) {
-        super(cas, type);
-        this.dictionaryConceptLabelAdapter = dictionaryConceptLabelAdapter;
-        this.conceptsFeature = conceptsFeature;
-    }
-
-    public static DictionaryTermLabelAdapter create(CAS cas) {
-        Type type = cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.DictionaryTerm");
-        DictionaryConceptLabelAdapter dictionaryConceptLabelAdapter = DictionaryConceptLabelAdapter.create(cas);
-        Feature conceptsFeature = type.getFeatureByBaseName("concepts");
-        return new DictionaryTermLabelAdapter(cas, type, dictionaryConceptLabelAdapter, conceptsFeature);
+    @Inject
+    DictionaryTermLabelAdapter(CAS cas) {
+        super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.DictionaryTerm"));
+        dictionaryConceptLabelAdapter = new DictionaryConceptLabelAdapter(cas);
+        conceptsFeature = type.getFeatureByBaseName("concepts");
     }
 
     @Override

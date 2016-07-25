@@ -29,9 +29,10 @@ import org.apache.uima.jcas.JCas;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class UimaAdapters {
+public final class UimaAdapters {
 
     private UimaAdapters() {
+        throw new UnsupportedOperationException("Instantiation of utility class");
     }
 
     /**

@@ -16,6 +16,9 @@
 
 package edu.umn.biomedicus.uima.labels;
 
+import com.google.inject.Inject;
+import com.google.inject.TypeLiteral;
+import com.google.inject.internal.MoreTypes;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
@@ -24,11 +27,14 @@ import edu.umn.biomedicus.common.text.TextLocation;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.apache.uima.cas.CAS;
 
-final class UimaLabeler<T> implements Labeler<T> {
+import java.lang.reflect.Type;
+import java.util.Map;
 
+public final class UimaLabeler<T> implements Labeler<T> {
     private final LabelAdapter<T> labelAdapter;
 
-    UimaLabeler(LabelAdapter<T> labelAdapter) {
+    @Inject
+    public UimaLabeler(LabelAdapter<T> labelAdapter) {
         this.labelAdapter = labelAdapter;
     }
 

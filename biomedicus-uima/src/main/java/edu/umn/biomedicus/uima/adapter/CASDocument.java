@@ -34,7 +34,7 @@ import java.util.Objects;
  * @author Ben Knoll
  * @since 1.3.0
  */
-class CASDocument implements Document {
+final class CASDocument implements Document {
     private final CAS view;
     private final FeatureStructure documentIdFS;
     private final Feature documentIdFeature;

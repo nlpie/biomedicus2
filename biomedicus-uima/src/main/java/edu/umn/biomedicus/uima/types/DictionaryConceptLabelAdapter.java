@@ -16,6 +16,9 @@
 
 package edu.umn.biomedicus.uima.types;
 
+import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
+import com.google.inject.Provider;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.semantics.DictionaryConcept;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
@@ -28,29 +31,13 @@ final class DictionaryConceptLabelAdapter extends AbstractLabelAdapter<Dictionar
     private final Feature confidenceFeature;
     private final Feature semanticTypeFeature;
 
-    private DictionaryConceptLabelAdapter(CAS cas,
-                                            Type type,
-                                            Feature identifierFeature,
-                                            Feature sourceFeature,
-                                            Feature confidenceFeature,
-                                            Feature semanticTypeFeature) {
-        super(cas, type);
-        this.identifierFeature = identifierFeature;
-        this.sourceFeature = sourceFeature;
-        this.confidenceFeature = confidenceFeature;
-        this.semanticTypeFeature = semanticTypeFeature;
-    }
-
-    public static DictionaryConceptLabelAdapter create(CAS cas) {
-        TypeSystem typeSystem = cas.getTypeSystem();
-        Type conceptsType = typeSystem.getType("edu.umn.biomedicus.uima.type1_6.DictionaryConcept");
-        Feature identifierFeature = conceptsType.getFeatureByBaseName("identifier");
-        Feature sourceFeature = conceptsType.getFeatureByBaseName("source");
-        Feature confidenceFeature = conceptsType.getFeatureByBaseName("confidence");
-        Feature semanticTypeFeature = conceptsType.getFeatureByBaseName("semanticType");
-        return new DictionaryConceptLabelAdapter(cas, conceptsType, identifierFeature, sourceFeature, confidenceFeature,
-                semanticTypeFeature);
-
+    @Inject
+    DictionaryConceptLabelAdapter(CAS cas) {
+        super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.DictionaryConcept"));
+        identifierFeature = getType().getFeatureByBaseName("identifier");
+        sourceFeature = getType().getFeatureByBaseName("source");
+        confidenceFeature = getType().getFeatureByBaseName("confidence");
+        semanticTypeFeature = getType().getFeatureByBaseName("semanticType");
     }
 
     @Override
