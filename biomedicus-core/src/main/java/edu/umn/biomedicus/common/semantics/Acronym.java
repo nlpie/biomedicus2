@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.text;
+package edu.umn.biomedicus.common.semantics;
 
-public final class AcronymExpansion implements Token {
+import edu.umn.biomedicus.common.text.Token;
+
+public final class Acronym implements Token {
     private final String text;
 
     private final boolean hasSpaceAfter;
 
-    public AcronymExpansion(String text, boolean hasSpaceAfter) {
+    public Acronym(String text, boolean hasSpaceAfter) {
         this.text = text;
         this.hasSpaceAfter = hasSpaceAfter;
     }
@@ -38,6 +40,6 @@ public final class AcronymExpansion implements Token {
 
     @Override
     public String toString() {
-        return "AcronymExpansion(\"" + text + "\")";
+        return "Acronym(\"" + text + "\")";
     }
 }

@@ -20,6 +20,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.semantics.Acronym;
 import edu.umn.biomedicus.common.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
@@ -54,7 +55,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     private final Labels<NormIndex> normIndexes;
     private final Labels<TermToken> termTokens;
     private final Document document;
-    private final Labels<AcronymExpansion> acronymExpansions;
+    private final Labels<Acronym> acronymExpansions;
     private final Labels<PartOfSpeech> partsOfSpeech;
     private final Labeler<DictionaryTerm> termLabeler;
 
@@ -67,7 +68,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     DictionaryConceptRecognizer(ConceptModel conceptModel,
                                 Document document,
                                 Labels<Sentence> sentences,
-                                Labels<AcronymExpansion> acronymExpansions,
+                                Labels<Acronym> acronymExpansions,
                                 Labels<NormIndex> normIndexes,
                                 Labels<TermToken> termTokens,
                                 Labels<PartOfSpeech> partsOfSpeech,
@@ -150,7 +151,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             List<Label<TermToken>> sentenceTermTokens = termTokens.insideSpan(sentence).all();
 
             for (Label<TermToken> sentenceTermToken : sentenceTermTokens) {
-                Optional<Label<AcronymExpansion>> acronymForToken = acronymExpansions.withSpan(sentenceTermToken);
+                Optional<Label<Acronym>> acronymForToken = acronymExpansions.withSpan(sentenceTermToken);
                 Token token;
                 if (acronymForToken.isPresent()) {
                     token = acronymForToken.get().value();

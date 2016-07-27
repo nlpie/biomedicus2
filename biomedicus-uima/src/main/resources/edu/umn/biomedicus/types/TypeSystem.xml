@@ -239,15 +239,7 @@
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Acronym</name>
-            <description>
-                A token that was detected as an acronym.
-            </description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-
-        <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_6.AcronymExpansion</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Acronym</name>
             <description>
                 An acronym's longform expansion.
             </description>

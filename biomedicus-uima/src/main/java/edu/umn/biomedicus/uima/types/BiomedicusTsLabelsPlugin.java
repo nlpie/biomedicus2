@@ -129,27 +129,15 @@ public final class BiomedicusTsLabelsPlugin extends AbstractPlugin {
         }
     }
 
-    public static class AcronymLabelAdapter extends AbstractLabelAdapter<Acronym> {
+    public static class AcronymLabelAdapter extends AbstractTokenLabelAdapter<Acronym> {
         @Inject
         public AcronymLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_5.Acronym"));
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Acronym"));
         }
 
         @Override
-        protected Acronym createLabelValue(FeatureStructure featureStructure) {
-            return new Acronym();
-        }
-    }
-
-    public static class AcronymExpansionLabelAdapter extends AbstractTokenLabelAdapter<AcronymExpansion> {
-        @Inject
-        public AcronymExpansionLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.AcronymExpansion"));
-        }
-
-        @Override
-        protected AcronymExpansion createToken(String text, boolean hasSpaceAfter) {
-            return new AcronymExpansion(text, hasSpaceAfter);
+        protected Acronym createToken(String text, boolean hasSpaceAfter) {
+            return new Acronym(text, hasSpaceAfter);
         }
     }
 
@@ -289,7 +277,6 @@ public final class BiomedicusTsLabelsPlugin extends AbstractPlugin {
                 bindLabelable(Probable.class, ProbableLabelAdapter.class);
                 bindLabelable(TermToken.class, TermTokenLabelAdapter.class);
                 bindLabelable(Acronym.class, AcronymLabelAdapter.class);
-                bindLabelable(AcronymExpansion.class, AcronymExpansionLabelAdapter.class);
                 bindLabelable(ParseToken.class, ParseTokenLabelAdapter.class);
                 bindLabelable(PartOfSpeech.class, PartOfSpeechLabelAdapter.class);
                 bindLabelable(WordIndex.class, WordIndexLabelAdapter.class);

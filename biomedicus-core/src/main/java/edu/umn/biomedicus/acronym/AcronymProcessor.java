@@ -21,19 +21,20 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
+import edu.umn.biomedicus.common.semantics.Acronym;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Acronym;
 import edu.umn.biomedicus.common.text.TermToken;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Will tag tokens as acronym/abbreviations or not
@@ -41,10 +42,7 @@ import java.util.Set;
  * @author Greg Finley
  * @since 1.5.0
  */
-class AcronymDetector implements DocumentProcessor {
-    /**
-     * class logger
-     */
+class AcronymProcessor implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorModel.class);
 
     /*
@@ -52,6 +50,58 @@ class AcronymDetector implements DocumentProcessor {
      * Some of the verbs may have to change, but PRP and CC are key (esp. for tokens like "it", "or")
      */
     private static final Set<PartOfSpeech> EXCLUDE_POS = buildExcludedPos();
+
+    private final AcronymModel model;
+    @Nullable private final OrthographicAcronymModel orthographicModel;
+    private final Labels<TermToken> termTokenLabels;
+    private final Labels<PartOfSpeech> partOfSpeechLabels;
+    private final Labeler<Acronym> acronymExpansionLabeler;
+
+    /**
+     * Constructor to initialize the acronym detector
+     *
+     * @param model             an AcronymModel that contains lists of acronyms and their senses
+     * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
+     */
+    @Inject
+    public AcronymProcessor(@Setting("acronym.model") AcronymModel model,
+                            @Nullable OrthographicAcronymModel orthographicModel,
+                            Labels<TermToken> termTokenLabels,
+                            Labels<PartOfSpeech> partOfSpeechLabels,
+                            Labeler<Acronym> acronymExpansionLabeler) {
+        this.orthographicModel = orthographicModel;
+        this.model = model;
+        this.termTokenLabels = termTokenLabels;
+        this.partOfSpeechLabels = partOfSpeechLabels;
+        this.acronymExpansionLabeler = acronymExpansionLabeler;
+    }
+
+    @Override
+    public void process() throws BiomedicusException {
+        LOGGER.info("Detecting acronyms in a document.");
+        List<Token> allTokens = null;
+        for (Label<TermToken> termTokenLabel : termTokenLabels) {
+            TermToken termToken = termTokenLabel.value();
+            List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termTokenLabel).all();
+            boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).anyMatch(EXCLUDE_POS::contains);
+            if (!excludedPos && (model.hasAcronym(termToken) || orthographicSaysAcronym(termToken))) {
+                LOGGER.trace("Found potential acronym: {}", termToken);
+                if (allTokens == null) {
+                    allTokens = termTokenLabels.stream().map(Label::value).collect(Collectors.toList());
+                }
+                String sense = model.findBestSense(allTokens, termToken);
+                if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.text())) {
+                    LOGGER.trace("Labeling acronym expansion: {}", sense);
+                    acronymExpansionLabeler.value(new Acronym(sense, termToken.hasSpaceAfter()))
+                            .label(termTokenLabel);
+                }
+            }
+        }
+    }
+
+    private boolean orthographicSaysAcronym(Token token) {
+        return orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token);
+    }
 
     private static Set<PartOfSpeech> buildExcludedPos() {
         return EnumSet.of(
@@ -69,55 +119,6 @@ class AcronymDetector implements DocumentProcessor {
                 PartOfSpeech.POS,
                 PartOfSpeech.MD
         );
-    }
-
-    /*
-     * The model that contains everything known about acronyms
-     */
-    private final AcronymModel model;
-
-    /*
-     * Contains orthographic rules to identify unseen abbreviations
-     */
-    private final OrthographicAcronymModel orthographicModel;
-    private final ValueLabeler acronymLabeler;
-    private final Labels<TermToken> termTokens;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
-
-    /**
-     * Constructor to initialize the acronym detector
-     *
-     * @param model             an AcronymModel that contains lists of acronyms and their senses
-     * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
-     */
-    @Inject
-    public AcronymDetector(@Setting("acronym.model") AcronymModel model,
-                           OrthographicAcronymModel orthographicModel,
-                           Labels<TermToken> termTokens,
-                           Labels<PartOfSpeech> partOfSpeechLabels,
-                           Labeler<Acronym> acronymLabeler) {
-        this.orthographicModel = orthographicModel;
-        this.model = model;
-        this.termTokens = termTokens;
-        this.partOfSpeechLabels = partOfSpeechLabels;
-        this.acronymLabeler = acronymLabeler.value(new Acronym());
-    }
-
-    @Override
-    public void process() throws BiomedicusException {
-        LOGGER.info("Detecting acronyms in a document.");
-        for (Label<TermToken> termTokenLabel : termTokens) {
-            TermToken termToken = termTokenLabel.value();
-            List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termTokenLabel).all();
-            boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).anyMatch(EXCLUDE_POS::contains);
-            if (!excludedPos && (model.hasAcronym(termToken) || orthographicSaysAcronym(termToken))) {
-                acronymLabeler.label(termTokenLabel);
-            }
-        }
-    }
-
-    private boolean orthographicSaysAcronym(Token token) {
-        return orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token);
     }
 }
 

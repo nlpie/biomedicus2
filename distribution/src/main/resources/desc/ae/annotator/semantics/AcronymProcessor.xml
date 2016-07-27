@@ -20,8 +20,8 @@
     <primitive>true</primitive>
     <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorRunnerAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
-        <name>Acronym Expander</name>
-        <description>Expands likely acronyms into the full longform.</description>
+        <name>Acronym Processor</name>
+        <description>Detects and expands acronyms in text.</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
@@ -51,7 +51,7 @@
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string>edu.umn.biomedicus.acronym.AcronymExpander</string>
+                    <string>edu.umn.biomedicus.acronym.AcronymProcessor</string>
                 </value>
             </nameValuePair>
             <nameValuePair>
@@ -65,6 +65,7 @@
                 <value>
                     <array>
                         <string>edu.umn.biomedicus.acronym.AcronymVectorModel</string>
+                        <string>edu.umn.biomedicus.acronym.OrthographicAcronymModel</string>
                     </array>
                 </value>
             </nameValuePair>
