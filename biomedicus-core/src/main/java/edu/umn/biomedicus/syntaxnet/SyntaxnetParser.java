@@ -40,7 +40,6 @@ public final class SyntaxnetParser implements DocumentProcessor {
     private final String modelDirString;
     private final Labels<Sentence> sentenceLabels;
     private final Labels<ParseToken> tokenLabels;
-    private final Labels<NormForm> normFormLabels;
     private final Labeler<DependencyParse> dependencyParseLabeler;
 
     @Inject
@@ -48,13 +47,11 @@ public final class SyntaxnetParser implements DocumentProcessor {
                     @Setting("syntaxnet.modelDir") String modelDirString,
                     Labels<Sentence> sentenceLabels,
                     Labels<ParseToken> tokenLabels,
-                    Labels<NormForm> normFormLabels,
                     Labeler<DependencyParse> dependencyParseLabeler) {
         this.installationDir = installationDir;
         this.modelDirString = modelDirString;
         this.sentenceLabels = sentenceLabels;
         this.tokenLabels = tokenLabels;
-        this.normFormLabels = normFormLabels;
         this.dependencyParseLabeler = dependencyParseLabeler;
     }
 
@@ -109,8 +106,7 @@ public final class SyntaxnetParser implements DocumentProcessor {
             try (Writer writer = new OutputStreamWriter(tagger.getOutputStream())) {
                 for (Label<Sentence> sentenceLabel : sentenceLabels) {
                     List<Label<ParseToken>> sentenceTokenLabels = tokenLabels.insideSpan(sentenceLabel).all();
-                    List<Label<NormForm>> sentenceNormLabels = normFormLabels.insideSpan(sentenceLabel).all();
-                    String conllString = new Tokens2Conll(sentenceTokenLabels, sentenceNormLabels).conllString();
+                    String conllString = new Tokens2Conll(sentenceTokenLabels).conllString();
                     writer.write(conllString);
                     writer.write("\n");
                 }

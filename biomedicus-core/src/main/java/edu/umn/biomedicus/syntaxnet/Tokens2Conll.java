@@ -26,26 +26,20 @@ import java.util.StringJoiner;
 
 public class Tokens2Conll {
     private final List<Label<ParseToken>> tokenLabels;
-    private final List<Label<NormForm>> norms;
 
-    public Tokens2Conll(List<Label<ParseToken>> tokenLabels, List<Label<NormForm>> norms) {
+    public Tokens2Conll(List<Label<ParseToken>> tokenLabels) {
         this.tokenLabels = tokenLabels;
-        this.norms = norms;
-        if (tokenLabels.size() != norms.size()) {
-            throw new IllegalArgumentException("Must have same number of tokens and norms");
-        }
     }
 
     public String conllString() {
         StringBuilder conllBuilder = new StringBuilder();
         for (int i = 0; i < tokenLabels.size(); i++) {
             Token token = tokenLabels.get(i).value();
-            NormForm normForm = norms.get(i).value();
             String text = token.text();
             StringJoiner tokenBuilder = new StringJoiner("\t", "", "\n");
             tokenBuilder.add(Integer.toString((i + 1))); // sentence position
             tokenBuilder.add(text); // text
-            tokenBuilder.add(normForm.getNormalForm()); // LEMMA
+            tokenBuilder.add("_"); // LEMMA
             tokenBuilder.add("_"); // UPOSTAG
             tokenBuilder.add("_"); // XPOSTAG
             tokenBuilder.add("_"); // FEATS
