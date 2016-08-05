@@ -73,4 +73,4 @@ interfaceImplementations:
   edu.umn.biomedicus.acronym.AcronymModel:
     vector: edu.umn.biomedicus.acronym.AcronymVectorModel
   edu.umn.biomedicus.docclass.DocumentClassifierModel:
-    severity: edu.umn.biomedicus.docclass.SeverityClassifierModel
+    severity: edu.umn.biomedicus.internal.docclass.SeverityClassifierModel

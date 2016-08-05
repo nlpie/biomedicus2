@@ -74,7 +74,7 @@
                 <name>eagerLoad</name>
                 <value>
                     <array>
-                        <string>edu.umn.biomedicus.docclass.SeverityClassifierModel</string>
+                        <string>edu.umn.biomedicus.internal.docclass.SeverityClassifierModel</string>
                     </array>
                 </value>
             </nameValuePair>
