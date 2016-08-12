@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @since 1.5.0
  */
 @Singleton
-public class SpecialistSpellingModel {
+public final class SpecialistSpellingModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpecialistSpellingModel.class);
 
     private final Map<String, String> dictionary;

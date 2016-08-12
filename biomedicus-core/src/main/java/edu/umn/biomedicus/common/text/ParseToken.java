@@ -19,23 +19,25 @@ package edu.umn.biomedicus.common.text;
 /**
  *
  */
-public final class ParseToken implements TokenLike {
+public final class ParseToken implements Token {
     private final String text;
 
-    private final String trailingText;
+    private final boolean hasSpaceAfter;
 
-    public ParseToken(String text, String trailingText) {
+    public ParseToken(String text, boolean hasSpaceAfter) {
         this.text = text;
-        this.trailingText = trailingText;
+        this.hasSpaceAfter = hasSpaceAfter;
     }
 
     @Override
-    public String getText() {
+    public String text() {
         return text;
     }
 
     @Override
-    public String getTrailingText() {
-        return trailingText;
+    public boolean hasSpaceAfter() {
+        return hasSpaceAfter;
     }
+
+
 }

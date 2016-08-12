@@ -19,12 +19,12 @@ package edu.umn.biomedicus.common.text;
 import javax.annotation.Nullable;
 
 /**
- * A simple, immutable implementation of the {@link SpanLike} interface.
+ * A simple, immutable implementation of the {@link TextLocation} interface.
  *
  * @author Ben Knoll
  * @since 1.5.0
  */
-public final class Span implements SpanLike, Comparable<Span> {
+public final class Span implements TextLocation, Comparable<Span> {
     /**
      * The begin of the span, inclusive.
      */
@@ -47,6 +47,11 @@ public final class Span implements SpanLike, Comparable<Span> {
         }
         this.begin = begin;
         this.end = end;
+    }
+
+    public Span(TextLocation textLocation) {
+        this.begin = textLocation.getBegin();
+        this.end = textLocation.getEnd();
     }
 
     @Override

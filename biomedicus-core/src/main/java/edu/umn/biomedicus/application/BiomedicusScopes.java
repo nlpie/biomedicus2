@@ -19,72 +19,63 @@ package edu.umn.biomedicus.application;
 import com.google.inject.*;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
+ * Contains the Guice scopes and contexts that store their scoped objects.<br/>
+ * <br/>
+ * There are two primary scopes:<br/>
+ * <ul>
+ * <li>
+ * Processor Scope: contains objects that are one instance per configured document processor. For example, any processor
+ * settings.
+ * </li>
+ * <li>
+ * Document Scope: contains objects that are one instance per document, for example a document, or any data that is
+ * specific to and has one instance per document.
+ * </li>
+ * </ul>
+ * <br/>
+ * The primary methods for running code in scopes are {@link #createProcessorContext(Map)} and
+ * {@link #runInDocumentScope(Callable, Map)}.
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
-public class BiomedicusScopes {
-    public static final Scope DOCUMENT_SCOPE = new Scope() {
-        @Override
-        public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
-            return () -> {
-                DocumentContext documentContext = DOCUMENT_CONTEXT.get();
-                if (null != documentContext) {
-                    @SuppressWarnings("unchecked")
-                    T t = (T) documentContext.seededObjects.get(key);
+public final class BiomedicusScopes {
+    private static final ThreadLocal<Context> PROCESSOR_CONTEXT = new ThreadLocal<>();
+    private static final ThreadLocal<Context> DOCUMENT_CONTEXT = new ThreadLocal<>();
 
-                    if (t == null || t instanceof Key) {
-                        t = unscoped.get();
-                        if (!Scopes.isCircularProxy(t)) {
-                            documentContext.seededObjects.put(key, t);
-                        }
-                    }
-                    return t;
-                } else {
-                    throw new OutOfScopeException("Not currently in a document scope");
-                }
-            };
-        }
-    };
+    /**
+     * The processor scope. Used when binding objects to cause them to have a single instance per processor type.
+     */
+    public static final Scope PROCESSOR_SCOPE = new ContextScope(PROCESSOR_CONTEXT);
 
-    static final Scope PROCESSOR_SCOPE = new Scope() {
-        @Override
-        public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
-            return () -> {
-                ProcessorContext processorContext = PROCESSOR_CONTEXT.get();
-                if (null != processorContext) {
-                    @SuppressWarnings("unchecked")
-                    T t = (T) processorContext.seededObjects.get(key);
-
-                    if (t == null || t instanceof Key) {
-                        t = unscoped.get();
-                        if (!Scopes.isCircularProxy(t)) {
-                            processorContext.seededObjects.put(key, t);
-                        }
-                    }
-                    return t;
-                } else {
-                    throw new OutOfScopeException("Not currently in a processor scope");
-                }
-            };
-        }
-    };
-
-    private static final ThreadLocal<ProcessorContext> PROCESSOR_CONTEXT = new ThreadLocal<>();
-
-    private static final ThreadLocal<DocumentContext> DOCUMENT_CONTEXT = new ThreadLocal<>();
+    /**
+     * The document scope. Used when binding objects to cause them to have a single instance per document.
+     */
+    public static final Scope DOCUMENT_SCOPE = new ContextScope(DOCUMENT_CONTEXT);
 
     private static Map<Key<?>, Object> checkForInvalidSeedsAndCopy(Map<Key<?>, Object> seededObjects) {
-        boolean invalidSeeds = Objects.requireNonNull(seededObjects, "Seeded objects should not be null")
-                .entrySet()
-                .stream()
-                .anyMatch(entry -> entry.getValue() == null || (!entry.getKey().getTypeLiteral().getRawType().isInstance(entry.getValue()) && !(entry.getValue() instanceof Key)));
-
-        if (invalidSeeds) {
-            throw new IllegalArgumentException("Invalid seed map, contains null objects or objects which do not match their keys");
+        for (Map.Entry<Key<?>, Object> entry : seededObjects.entrySet()) {
+            Key<?> key = entry.getKey();
+            Object value = entry.getValue();
+            if (value == null) {
+                throw new IllegalArgumentException("Seeded objects contains null key. Key: " + key);
+            }
+            Class<?> rawType = key.getTypeLiteral().getRawType();
+            if (!rawType.isInstance(value)) {
+                if (!(value instanceof Key)) {
+                    throw new IllegalArgumentException("Seeded object is not instance of key type. " +
+                            "Key: " + key + ". Value: " + value);
+                }
+                Class<?> valueRawType = ((Key) value).getTypeLiteral().getRawType();
+                if (!rawType.isAssignableFrom(valueRawType)) {
+                    throw new IllegalArgumentException("Chained value key type does not extend the key type. " +
+                            "Key Key: " + key + ". Value Key: " + value);
+                }
+            }
         }
 
         return seededObjects.entrySet()
@@ -92,59 +83,114 @@ public class BiomedicusScopes {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    static <T> T runInProcessorScope(Callable<T> callable, Map<Key<?>, Object> seededObjects) throws Exception {
-        ProcessorContext processorContext = new ProcessorContext(checkForInvalidSeedsAndCopy(seededObjects));
-        return processorContext.call(callable);
+    /**
+     * Creates and returns a processor context that can be used to re-enter a processor scope multiple times.
+     *
+     * @param seededObjects the original objects to seed into the context.
+     * @return a context object that can be used to run code in a processor scope.
+     */
+    public static Context createProcessorContext(Map<Key<?>, Object> seededObjects) {
+        return new Context(PROCESSOR_CONTEXT, checkForInvalidSeedsAndCopy(seededObjects));
     }
 
-    static <T> T runInDocumentScope(Callable<T> callable, Map<Key<?>, Object> seededObjects) throws Exception {
-        DocumentContext documentContext = new DocumentContext(checkForInvalidSeedsAndCopy(seededObjects));
+    /**
+     * Creates and uses a document scope to run a callable.
+     *
+     * @param callable      a {@link Callable} to run.
+     * @param seededObjects the original objects to seed into the document context.
+     * @param <T>           the return type of the callable to run.
+     * @return the result of the callable.
+     * @throws Exception any exception throw while executing the callable
+     */
+    public static <T> T runInDocumentScope(Callable<T> callable, Map<Key<?>, Object> seededObjects) throws Exception {
+        Context documentContext = new Context(DOCUMENT_CONTEXT, checkForInvalidSeedsAndCopy(seededObjects));
         return documentContext.call(callable);
     }
 
+    /**
+     * A provider which represents an object that will be provided by seeding into the context via the map arguments on
+     * {@link #createProcessorContext(Map)} or {@link #runInDocumentScope(Callable, Map)}. Modules can bind objects to
+     * this provider in order to satisfy injector dependencies prior to the creation of the scopes. The binding can only
+     * be injected inside a scope, and any provision request outside of a {@link ContextScope} will cause an
+     * {@link IllegalStateException}.
+     *
+     * @param <T> the provided type.
+     * @return a provider
+     */
     public static <T> Provider<T> providedViaSeeding() {
         return () -> {
-            throw new IllegalStateException("This provider should not be called, the object should be seeded when entering the document scope");
+            throw new IllegalStateException("This provider should not be called, " +
+                    "the object should be seeded when entering a scope");
         };
     }
 
-    private static final class ProcessorContext {
-        private final Map<Key<?>, Object> seededObjects;
+    /**
+     * A context object, stores a ref to the context {@link ThreadLocal} and the map of objects to provide within the
+     * scope.<br/>
+     * <br/>
+     * {@link #call(Callable)} causes the current thread to enter the scope so that objects from the map are provided
+     * when scoped objects are needed.
+     */
+    public static final class Context {
+        private final ThreadLocal<Context> contextRef;
+        private final Map<Key<?>, Object> objectsMap;
 
-        ProcessorContext(Map<Key<?>, Object> seededObjects) {
-            this.seededObjects = seededObjects;
+        private Context(ThreadLocal<Context> contextRef, Map<Key<?>, Object> objectsMap) {
+            this.contextRef = contextRef;
+            this.objectsMap = objectsMap;
         }
 
-        private synchronized <T> T call(Callable<T> callable) throws Exception {
-            if (PROCESSOR_CONTEXT.get() != null) {
+        /**
+         * Runs the callable inside of a context, providing objects from that context for injected types within the
+         * context.
+         *
+         * @param callable the {@link Callable} to run.
+         * @param <T>      the return type of the callable.
+         * @return the value of T returned by the callable.
+         * @throws Exception any exception thrown by the callable.
+         */
+        public synchronized <T> T call(Callable<T> callable) throws Exception {
+            if (contextRef.get() != null) {
                 throw new IllegalStateException("Processor scope already in progress");
             }
-            PROCESSOR_CONTEXT.set(this);
+            contextRef.set(this);
             try {
                 return callable.call();
             } finally {
-                PROCESSOR_CONTEXT.remove();
+                contextRef.remove();
             }
         }
     }
 
-    private static final class DocumentContext {
-        private final Map<Key<?>, Object> seededObjects;
+    /**
+     * The context scope. Provides scoped objects from the {@link Context} object for the current thread.
+     */
+    private static class ContextScope implements Scope {
+        private final ThreadLocal<Context> contextRef;
 
-        DocumentContext(Map<Key<?>, Object> seededObjects) {
-            this.seededObjects = seededObjects;
+        private ContextScope(ThreadLocal<Context> contextRef) {
+            this.contextRef = contextRef;
         }
 
-        private synchronized <T> T call(Callable<T> callable) throws Exception {
-            if (DOCUMENT_CONTEXT.get() != null) {
-                throw new IllegalStateException("Document scope already in progress");
-            }
-            DOCUMENT_CONTEXT.set(this);
-            try {
-                return callable.call();
-            } finally {
-                DOCUMENT_CONTEXT.remove();
-            }
+        @Override
+        public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
+            return () -> {
+                Context context = contextRef.get();
+                if (null != context) {
+                    @SuppressWarnings("unchecked")
+                    T t = (T) context.objectsMap.get(key);
+
+                    if (t == null) {
+                        t = unscoped.get();
+                        if (!Scopes.isCircularProxy(t)) {
+                            context.objectsMap.put(key, t);
+                        }
+                    }
+                    return t;
+                } else {
+                    throw new OutOfScopeException("Not currently in a document scope");
+                }
+            };
         }
     }
 }

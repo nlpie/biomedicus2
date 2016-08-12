@@ -17,11 +17,13 @@
 package edu.umn.biomedicus.writers;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;
@@ -29,16 +31,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DocumentScoped
 public class PtbTagsWriter implements DocumentProcessor {
 
     private final Path outputDir;
     private final Document document;
+    private final Labels<ParseToken> parseTokenLabels;
+    private final Labels<PartOfSpeech> partOfSpeechLabels;
 
     @Inject
-    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, Document document) {
+    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir,
+                         Document document,
+                         Labels<ParseToken> parseTokenLabels,
+                         Labels<PartOfSpeech> partOfSpeechLabels) {
         this.outputDir = outputDir;
         this.document = document;
+        this.parseTokenLabels = parseTokenLabels;
+        this.partOfSpeechLabels = partOfSpeechLabels;
     }
 
     @Override
@@ -46,9 +54,12 @@ public class PtbTagsWriter implements DocumentProcessor {
         String text = document.getText();
         StringBuilder rewriter = new StringBuilder(text);
         int added = 0;
-        for (Token token : document.getTokens()) {
-            int end = token.getEnd() + added;
-            String insertion = "/" + token.getPartOfSpeech().toString();
+        for (Label<ParseToken> parseTokenLabel: parseTokenLabels) {
+            int end = parseTokenLabel.getEnd() + added;
+            String insertion = "/" + partOfSpeechLabels.withSpan(parseTokenLabel)
+                    .orElseThrow(() -> new BiomedicusException("No part of speech for parse token."))
+                    .value()
+                    .toString();
             rewriter.insert(end, insertion);
             if (rewriter.charAt(end + insertion.length()) != ' ') {
                 rewriter.insert(end + insertion.length(), ' ');

@@ -16,5 +16,5 @@
 
 package edu.umn.biomedicus.common.semantics;
 
-public class Negated {
+public final class Negated {
 }

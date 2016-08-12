@@ -19,53 +19,105 @@ package edu.umn.biomedicus.application;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import edu.umn.biomedicus.annotations.ProcessorScoped;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  *
  */
-@ProcessorScoped
-class DocumentProcessorRunner implements CollectionProcessor {
+public final class DocumentProcessorRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunner.class);
-
     private final Injector injector;
-
-    private final String documentProcessorClassName;
+    private final SettingsTransformer settingsTransformer;
+    private final Map<String, Object> globalSettings;
+    @Nullable private Injector settingsInjector;
+    @Nullable private Class<? extends DocumentProcessor> documentProcessorClass;
+    @Nullable private BiomedicusScopes.Context processorContext;
 
     @Inject
     DocumentProcessorRunner(Injector injector,
-                            @ProcessorSetting("documentProcessor") String documentProcessorClassName) {
+                            SettingsTransformer settingsTransformer,
+                            @Named("globalSettings") Map<String, Object> globalSettings) {
         this.injector = injector;
-        this.documentProcessorClassName = documentProcessorClassName;
+        this.settingsTransformer = settingsTransformer;
+        this.globalSettings = globalSettings;
     }
 
-    @Override
-    public void processDocument(Document document) throws BiomedicusException {
+    public static DocumentProcessorRunner create(Injector injector) {
+        SettingsTransformer settingsTransformer = injector.getInstance(SettingsTransformer.class);
+        Map<String, Object> globalSettings = injector.getInstance(Key.get(new TypeLiteral<Map<String, Object>>() {
+        }, Names.named("globalSettings")));
+
+        return new DocumentProcessorRunner(injector, settingsTransformer, globalSettings);
+    }
+
+    public void setDocumentProcessorClass(Class<? extends DocumentProcessor> documentProcessorClass) {
+        this.documentProcessorClass = documentProcessorClass;
+    }
+
+    public void setDocumentProcessorClassName(String documentProcessorClassName) throws ClassNotFoundException {
+        this.documentProcessorClass = Class.forName(documentProcessorClassName).asSubclass(DocumentProcessor.class);
+    }
+
+    public void initialize(@Nullable Map<String, Object> processorSettings,
+                           @Nullable Map<Key<?>, Object> processorScopedObjects) throws BiomedicusException {
+        if (documentProcessorClass == null) {
+            throw new IllegalStateException("Document processor class needs to be set");
+        }
+
+        settingsTransformer.setAnnotationFunction(ProcessorSettingImpl::new);
+
+        if (processorSettings != null) {
+            settingsTransformer.addAll(processorSettings);
+        }
+        settingsTransformer.addAll(globalSettings);
+
+        Map<Key<?>, Object> settingsSeededObjects = settingsTransformer.getSettings();
+        settingsInjector = injector.createChildInjector(new ProcessorSettingsModule(settingsSeededObjects.keySet()));
+
+        Map<Key<?>, Object> processorScopeMap = new HashMap<>();
+        processorScopeMap.putAll(settingsSeededObjects);
+        if (processorScopedObjects != null) {
+            processorScopeMap.putAll(processorScopedObjects);
+        }
+
+        processorContext = BiomedicusScopes.createProcessorContext(processorScopeMap);
+    }
+
+    public void processDocument(Document document,
+                                @Nullable Map<Key<?>, Object> documentScopedObjects) throws BiomedicusException {
+        if (processorContext == null) {
+            throw new IllegalStateException("Processor context is null, initialize not ran");
+        }
+        if (settingsInjector == null) {
+            throw new IllegalStateException("Settings injector is null, initialize not ran");
+        }
+
         try {
-            Map<Key<?>, Object> seededObjects = new HashMap<>();
-            seededObjects.put(Key.get(Document.class), document);
-            BiomedicusScopes.runInDocumentScope(() -> {
-                Class<? extends DocumentProcessor> aClass = Class.forName(documentProcessorClassName)
-                        .asSubclass(DocumentProcessor.class);
-                injector.getInstance(aClass).process();
+            processorContext.call(() -> {
+                Map<Key<?>, Object> seededObjects = new HashMap<>();
+                seededObjects.put(Key.get(Document.class), document);
+                if (documentScopedObjects != null) {
+                    seededObjects.putAll(documentScopedObjects);
+                }
+                BiomedicusScopes.runInDocumentScope(() -> {
+                    settingsInjector.getInstance(documentProcessorClass).process();
+                    return null;
+                }, seededObjects);
                 return null;
-            }, seededObjects);
+            });
         } catch (Exception e) {
             LOGGER.error("Error during processing");
             throw new BiomedicusException(e);
         }
-    }
-
-    @Override
-    public void allDocumentsProcessed() throws BiomedicusException {
-
     }
 }

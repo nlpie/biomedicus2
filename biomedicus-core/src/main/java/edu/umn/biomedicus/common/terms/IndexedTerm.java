@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class IndexedTerm implements Comparable<IndexedTerm> {
+public final class IndexedTerm implements Comparable<IndexedTerm> {
     private final int termIdentifier;
 
     public IndexedTerm(int termIdentifier) {

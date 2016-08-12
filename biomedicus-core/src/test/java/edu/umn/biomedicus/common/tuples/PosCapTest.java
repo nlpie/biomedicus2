@@ -16,10 +16,7 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Token;
-import mockit.Expectations;
-import mockit.Mocked;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
@@ -53,30 +50,6 @@ public class PosCapTest {
     }
 
     @Test
-    public void testCreateWithToken(@Mocked Token token) throws Exception {
-        new Expectations() {{
-            token.isCapitalized(); result = true;
-            token.getPartOfSpeech(); result = PartOfSpeech.BOS;
-        }};
-
-        PosCap posCap = PosCap.create(token);
-
-        assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
-        assertEquals(posCap.isCapitalized(), true);
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testCreateWithTokenNullPOS(@Mocked Token token) throws Exception {
-        new Expectations() {{
-            token.getPartOfSpeech(); result = null;
-        }};
-
-        PosCap.create(token);
-
-        fail();
-    }
-
-    @Test
     public void testGetPartOfSpeech() throws Exception {
         PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
@@ -93,20 +66,9 @@ public class PosCapTest {
     @Test
     public void testOrdinal() throws Exception {
         PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-
-        assertEquals(posCap.ordinal(), 108);
-    }
-
-    @Test
-    public void testCardinality() throws Exception {
-        assertEquals(PosCap.cardinality(), 110);
-    }
-
-    @Test
-    public void testCreateFromOrdinal() throws Exception {
-        PosCap posCap = PosCap.createFromOrdinal(108);
-
-        assertEquals(posCap, PosCap.create(PartOfSpeech.BOS, true));
+        int ordinal = posCap.ordinal();
+        PosCap fromOrdinal = PosCap.createFromOrdinal(ordinal);
+        assertEquals(fromOrdinal, posCap);
     }
 
     @Test

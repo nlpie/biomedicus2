@@ -16,13 +16,12 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
-import edu.umn.biomedicus.type.*;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
-import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
-import edu.umn.biomedicus.uima.type1_5.ParseToken;
+import edu.umn.biomedicus.uima.type1_5.*;
+import edu.umn.biomedicus.uima.type1_6.*;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
@@ -34,6 +33,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -99,35 +99,29 @@ public class MtsamplesViewMigrator implements ViewMigrator {
             if (tokenPOS.equals("?")) {
                 tokenPOS = ".";
             }
-            PartOfSpeech partOfSpeech = PartsOfSpeech.MAP.get(tokenPOS);
-            if (partOfSpeech == null) {
-                partOfSpeech = PartsOfSpeech.FALLBACK_MAP.get(tokenPOS);
-                if (partOfSpeech == null) {
-                    LOGGER.error("Unrecognized part of speech {}", tokenPOS);
-                    throw new RuntimeException();
-                }
+            Optional<PartOfSpeech> partOfSpeech = PartsOfSpeech.forTagWithFallback(tokenPOS);
+            if (!partOfSpeech.isPresent()) {
+                LOGGER.error("Unrecognized part of speech {}", tokenPOS);
+                throw new RuntimeException();
             }
-            tokenAnnotation.setPartOfSpeech(partOfSpeech.toString());
-            tokenAnnotation.setNormalForm(annotation.getStringValue(normFormFeature));
             tokenAnnotation.addToIndexes();
+
+            PartOfSpeechTag partOfSpeechTag = new PartOfSpeechTag(target, annotation.getBegin(), annotation.getEnd());
+            partOfSpeechTag.setPartOfSpeech(tokenPOS);
+            partOfSpeechTag.addToIndexes();
         }
 
         Type sentenceType = oldTypeSystem.getType("edu.umn.biomedicus.mtsamples.types.Sentence");
-        Feature isHeadingFeature = sentenceType.getFeatureByBaseName("isHeading");
 
         AnnotationIndex<Annotation> sentenceIndex = source.getAnnotationIndex(sentenceType);
         for (Annotation annotation : sentenceIndex) {
-            SentenceAnnotation sentenceAnnotation = new SentenceAnnotation(target, annotation.getBegin(), annotation.getEnd());
-            sentenceAnnotation.setIsHeading(annotation.getBooleanValue(isHeadingFeature));
+            Sentence sentenceAnnotation = new Sentence(target, annotation.getBegin(), annotation.getEnd());
             sentenceAnnotation.addToIndexes();
         }
 
         Type termType = oldTypeSystem.getType("edu.umn.biomedicus.mtsamples.types.Term");
         Feature termAspectFeature = termType.getFeatureByBaseName("termAspect");
-        Feature termAttributionFeature = termType.getFeatureByBaseName("termAttribution");
         Feature termCertaintyFeature = termType.getFeatureByBaseName("termCertainty");
-        Feature isAcronymFeature = termType.getFeatureByBaseName("isAcronym");
-        Feature termMeaningFeature = termType.getFeatureByBaseName("termMeaning");
         Feature termNegationFeature = termType.getFeatureByBaseName("termNegation");
         Feature termConceptFeature = termType.getFeatureByBaseName("termConcept");
 
@@ -139,54 +133,45 @@ public class MtsamplesViewMigrator implements ViewMigrator {
 
         AnnotationIndex<Annotation> termIndex = source.getAnnotationIndex(termType);
         for (Annotation annotation : termIndex) {
-            TermAnnotation termAnnotation = new TermAnnotation(target, annotation.getBegin(), annotation.getEnd());
-            termAnnotation.setAspect(annotation.getStringValue(termAspectFeature));
-            termAnnotation.setAttribution(annotation.getStringValue(termAttributionFeature));
-            termAnnotation.setCertainty(annotation.getStringValue(termCertaintyFeature));
-            termAnnotation.setIsAcronym(annotation.getBooleanValue(isAcronymFeature));
-            termAnnotation.setMeaning(annotation.getStringValue(termMeaningFeature));
-            termAnnotation.setIsNegated(annotation.getBooleanValue(termNegationFeature));
+            DictionaryTerm termAnnotation = new DictionaryTerm(target, annotation.getBegin(), annotation.getEnd());
+
+            if ("past".equals(annotation.getStringValue(termAspectFeature))) {
+                Historical historical = new Historical(target, annotation.getBegin(), annotation.getEnd());
+                historical.addToIndexes();
+            }
+
+            if ("probable".equals(annotation.getStringValue(termCertaintyFeature))) {
+                Probable probable = new Probable(target, annotation.getBegin(), annotation.getEnd());
+                probable.addToIndexes();
+            }
+
+            if (annotation.getBooleanValue(termNegationFeature)) {
+                Negated negated = new Negated(target, annotation.getBegin(), annotation.getEnd());
+                negated.addToIndexes();
+            }
 
             FeatureStructure termConcept = annotation.getFeatureValue(termConceptFeature);
-            ConceptAnnotation primaryConcept = null;
-            FSArray fsArray = null;
-            if (termConcept == null) {
-                String meaning = termAnnotation.getMeaning();
-                if (meaning != null && meaning.matches("C[0-9]{7}+")) {
-                    ConceptAnnotation conceptAnnotation = new ConceptAnnotation(target, annotation.getBegin(), annotation.getEnd());
-                    conceptAnnotation.setIdentifier(meaning);
-                    conceptAnnotation.addToIndexes();
-                    primaryConcept = conceptAnnotation;
+
+            String termConceptsValue = termConcept.getStringValue(conceptIdFeature);
+            String[] concepts = space.split(termConceptsValue);
+            String[] types = space.split(termConcept.getStringValue(conceptTypeFeature));
+            int length = concepts.length;
+            FSArray fsArray = new FSArray(target, length);
+            for (int i = 0; i < length; i++) {
+                DictionaryConcept concept = new DictionaryConcept(target, annotation.getBegin(), annotation.getEnd());
+                concept.setIdentifier(concepts[i]);
+                if (types.length <= i) {
+                    concept.setSemanticType(types[0]);
                 } else {
-                    LOGGER.warn("Term concept was null: {}", meaning);
-                    continue;
+                    concept.setSemanticType(types[i]);
                 }
-            } else {
-                String termConceptsValue = termConcept.getStringValue(conceptIdFeature);
-                String[] concepts = space.split(termConceptsValue);
-                String[] types = space.split(termConcept.getStringValue(conceptTypeFeature));
-                int length = concepts.length - 1;
-                fsArray = new FSArray(target, length);
-                for (int i = 0; i < length; i++) {
-                    ConceptAnnotation conceptAnnotation = new ConceptAnnotation(target, annotation.getBegin(), annotation.getEnd());
-                    conceptAnnotation.setIdentifier(concepts[i]);
-                    if (types.length <= i) {
-                        conceptAnnotation.setSemanticType(types[0]);
-                    } else {
-                        conceptAnnotation.setSemanticType(types[i]);
-                    }
-                    conceptAnnotation.setSource(termConcept.getStringValue(conceptSourceFeature));
-                    conceptAnnotation.setConfidence(termConcept.getFloatValue(conceptConfidenceFeature));
-                    conceptAnnotation.addToIndexes();
-                    if (i == 0) {
-                        primaryConcept = conceptAnnotation;
-                    } else {
-                        fsArray.set(i - 1, conceptAnnotation);
-                    }
-                }
+                concept.setSource(termConcept.getStringValue(conceptSourceFeature));
+                concept.setConfidence(termConcept.getFloatValue(conceptConfidenceFeature));
+                concept.addToIndexes();
+                fsArray.set(i, concept);
             }
-            termAnnotation.setPrimaryConcept(primaryConcept);
-            termAnnotation.setAlternativeConcepts(fsArray);
+            fsArray.addToIndexes();
+            termAnnotation.setConcepts(fsArray);
             termAnnotation.addToIndexes();
         }
     }

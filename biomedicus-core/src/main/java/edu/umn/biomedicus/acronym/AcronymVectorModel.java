@@ -22,9 +22,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.slf4j.Logger;
@@ -85,7 +83,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public Collection<String> getExpansions(TokenLike token) {
+    public Collection<String> getExpansions(Token token) {
         String acronym = Acronyms.standardForm(token);
         Collection<String> expansions = acronymExpansionsModel.getExpansions(acronym);
         if (expansions != null) {
@@ -100,7 +98,7 @@ class AcronymVectorModel implements AcronymModel {
      * @param token
      * @return
      */
-    public boolean hasAcronym(TokenLike token) {
+    public boolean hasAcronym(Token token) {
         String acronym = Acronyms.standardForm(token);
         return acronymExpansionsModel.hasExpansions(acronym);
     }
@@ -113,7 +111,7 @@ class AcronymVectorModel implements AcronymModel {
      * @return
      */
     @Override
-    public String findBestSense(List<TokenLike> context, TokenLike token) {
+    public String findBestSense(List<Token> context, Token token) {
 
         // String to assign to unknown acronyms
 

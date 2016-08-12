@@ -23,7 +23,7 @@ import edu.umn.biomedicus.annotations.Setting;
 import java.nio.file.Path;
 
 @Singleton
-public class BiomedicusFiles {
+public final class BiomedicusFiles {
     private final Path confFolder;
     private final Path dataFolder;
 

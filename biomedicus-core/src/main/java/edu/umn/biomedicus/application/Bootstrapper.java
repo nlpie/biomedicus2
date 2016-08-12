@@ -38,7 +38,7 @@ import java.util.*;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public class Bootstrapper {
+public final class Bootstrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrapper.class);
 
     private final Injector injector;

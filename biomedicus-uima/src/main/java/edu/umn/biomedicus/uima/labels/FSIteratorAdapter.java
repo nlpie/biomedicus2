@@ -19,7 +19,6 @@ package edu.umn.biomedicus.uima.labels;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.Iterator;
 import java.util.function.Function;
@@ -36,12 +35,12 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
     /**
      * The FSIterator to adapt.
      */
-    private final FSIterator<? extends Annotation> annotationFSIterator;
+    private final FSIterator<AnnotationFS> annotationFSIterator;
 
     /**
      * The function which maps the UIMA Annotation to the BioMedICUS type.
      */
-    private final Function<Annotation, T> mapper;
+    private final Function<AnnotationFS, T> mapper;
 
     /**
      * Default constructor.
@@ -49,7 +48,7 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
      * @param annotationFSIterator the FSIterator received from UIMA.
      * @param mapper               a function which maps a UIMA annotation to an adapter class.
      */
-    public FSIteratorAdapter(FSIterator<? extends Annotation> annotationFSIterator, Function<Annotation, T> mapper) {
+    public FSIteratorAdapter(FSIterator<AnnotationFS> annotationFSIterator, Function<AnnotationFS, T> mapper) {
         this.annotationFSIterator = annotationFSIterator;
         this.mapper = mapper;
     }
@@ -60,7 +59,7 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
      * @param annotationIndex the annotation index
      * @param mapper          a function which maps a UIMA annotation to an adapter class.
      */
-    public FSIteratorAdapter(AnnotationIndex<? extends Annotation> annotationIndex, Function<Annotation, T> mapper) {
+    public FSIteratorAdapter(AnnotationIndex<AnnotationFS> annotationIndex, Function<AnnotationFS, T> mapper) {
         this(annotationIndex.iterator(false), mapper);
     }
 
@@ -74,10 +73,10 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
      * @param <T>    the biomedicus model we are creating an iterator of
      * @return an iterator of biomedicus model classes within the UIMA annotation
      */
-    public static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<? extends Annotation> index,
+    public static <T> Iterator<T> coveredIteratorAdapter(AnnotationIndex<AnnotationFS> index,
                                                          AnnotationFS bound,
-                                                         Function<Annotation, T> mapper) {
-        FSIterator<? extends Annotation> subiterator = index.subiterator(bound);
+                                                         Function<AnnotationFS, T> mapper) {
+        FSIterator<AnnotationFS> subiterator = index.subiterator(bound);
         return new FSIteratorAdapter<>(subiterator, mapper);
     }
 
@@ -88,7 +87,7 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        Annotation next = annotationFSIterator.next();
+        AnnotationFS next = annotationFSIterator.next();
         return mapper.apply(next);
     }
 }

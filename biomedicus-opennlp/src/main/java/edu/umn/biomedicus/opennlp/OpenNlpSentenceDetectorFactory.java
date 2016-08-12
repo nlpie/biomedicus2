@@ -16,10 +16,21 @@
 
 package edu.umn.biomedicus.opennlp;
 
+import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.sentence.BaseSentenceDetectorFactory;
 import edu.umn.biomedicus.sentence.SentenceCandidateGenerator;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * A factory which creates sentence detectors that use OpenNLP's Maximum entropy model to detect sentences.
@@ -27,6 +38,7 @@ import opennlp.tools.sentdetect.SentenceModel;
  * @author Ben Knoll
  * @since 1.1.0
  */
+@ProvidedBy(OpenNlpSentenceDetectorFactory.Loader.class)
 public class OpenNlpSentenceDetectorFactory extends BaseSentenceDetectorFactory {
     private opennlp.tools.sentdetect.SentenceModel model;
 
@@ -36,12 +48,32 @@ public class OpenNlpSentenceDetectorFactory extends BaseSentenceDetectorFactory 
      *
      * @param model sentence model.
      */
-    public OpenNlpSentenceDetectorFactory(SentenceModel model) {
+    private OpenNlpSentenceDetectorFactory(SentenceModel model) {
         this.model = model;
     }
 
     @Override
     protected SentenceCandidateGenerator getCandidateGenerator() {
         return new OpenNlpCandidateGenerator(new SentenceDetectorME(model));
+    }
+
+    @Singleton
+    public static class Loader extends DataLoader<OpenNlpSentenceDetectorFactory> {
+        private final Path path;
+
+        @Inject
+        public Loader(@Setting("opennlp.sentence.model.path") Path path) {
+            this.path = path;
+        }
+
+        @Override
+        protected OpenNlpSentenceDetectorFactory loadModel() throws BiomedicusException {
+            try (InputStream inputStream = Files.newInputStream(path)){
+                SentenceModel sentenceModel = new SentenceModel(inputStream);
+                return new OpenNlpSentenceDetectorFactory(sentenceModel);
+            } catch (IOException e) {
+                throw new BiomedicusException(e);
+            }
+        }
     }
 }

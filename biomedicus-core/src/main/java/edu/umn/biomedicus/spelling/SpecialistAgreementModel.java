@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  *
  */
 @ProvidedBy(SpecialistAgreementModel.Loader.class)
-public class SpecialistAgreementModel {
+public final class SpecialistAgreementModel {
     private final Map<String, Collection<String>> baseToCanonicalForm;
 
     private SpecialistAgreementModel(Map<String, Collection<String>> baseToCanonicalForm) {

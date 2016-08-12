@@ -16,23 +16,26 @@
 
 package edu.umn.biomedicus.uima.labels;
 
+import com.google.inject.Inject;
+import com.google.inject.TypeLiteral;
+import com.google.inject.internal.MoreTypes;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.cas.CAS;
 
-final class UimaLabeler<T> implements Labeler<T> {
+import java.lang.reflect.Type;
+import java.util.Map;
 
-    private final LabelAdapter<T, ?> labelAdapter;
+public final class UimaLabeler<T> implements Labeler<T> {
+    private final LabelAdapter<T> labelAdapter;
 
-    private final JCas jCas;
-
-    UimaLabeler(JCas jCas, LabelAdapter<T, ?> labelAdapter) {
+    @Inject
+    public UimaLabeler(LabelAdapter<T> labelAdapter) {
         this.labelAdapter = labelAdapter;
-        this.jCas = jCas;
     }
 
     @Override
@@ -44,8 +47,8 @@ final class UimaLabeler<T> implements Labeler<T> {
             }
 
             @Override
-            public void label(SpanLike spanLike) throws BiomedicusException {
-                labelAdapter.createLabel(jCas, new Label<>(spanLike.toSpan(), value));
+            public void label(TextLocation textLocation) throws BiomedicusException {
+                labelAdapter.labelToAnnotation(new Label<>(textLocation.toSpan(), value));
             }
         };
     }

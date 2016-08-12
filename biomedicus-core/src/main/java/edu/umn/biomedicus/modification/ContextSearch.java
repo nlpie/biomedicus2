@@ -18,8 +18,10 @@ package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.Span;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,14 @@ final class ContextSearch {
     private final List<PartOfSpeech> scopeDelimitersPos;
     private final List<String> scopeDelimitersTxt;
     private final String documentText;
-    private final Labels<Sentence2> sentences;
+    private final Labels<Sentence> sentences;
     private final Labels<?> tokens;
     private final Labels<PartOfSpeech> partOfSpeechLabels;
     private final Labels<?> modifiableTerms;
 
     ContextSearch(ContextCues contextCues,
                   Document document,
-                  Labels<Sentence2> sentences,
+                  Labels<Sentence> sentences,
                   Labels<?> modifiableTerms,
                   Labels<?> tokens,
                   Labels<PartOfSpeech> partOfSpeechLabels) {
@@ -58,7 +60,7 @@ final class ContextSearch {
 
     List<Span> findMatches() {
         List<Span> matchingSpans = new ArrayList<>();
-        for (Label<Sentence2> sentence : sentences) {
+        for (Label<Sentence> sentence : sentences) {
             Labels<?> sentenceTokens = tokens.insideSpan(sentence);
             for (Label<?> modifiableTerm : modifiableTerms.insideSpan(sentence)) {
                 if (matches(sentenceTokens, modifiableTerm)) {
@@ -74,13 +76,13 @@ final class ContextSearch {
         Labels<?> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
         for (Label<?> leftContextToken : leftContextTokens.limit(leftContextScope)) {
             String tokenText = leftContextToken.getCovered(documentText).toString();
-            if (scopeDelimitersTxt.contains(tokenText.toLowerCase())) {
+            if (scopeDelimitersTxt.contains(tokenText)) {
                 break;
             }
             if (partOfSpeechLabels.insideSpan(leftContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
                 break;
             }
-            if (leftContextCues.contains(tokenText.toLowerCase())) {
+            if (leftContextCues.contains(tokenText)) {
                 return true;
             }
         }
@@ -88,13 +90,13 @@ final class ContextSearch {
         Labels<?> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
         for (Label<?> rightContextToken : rightContextTokens.limit(rightContextScope)) {
             String tokenText = rightContextToken.getCovered(documentText).toString();
-            if (scopeDelimitersTxt.contains(tokenText.toLowerCase())) {
+            if (scopeDelimitersTxt.contains(tokenText)) {
                 break;
             }
             if (partOfSpeechLabels.insideSpan(rightContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
                 break;
             }
-            if (rightContextCues.contains(tokenText.toLowerCase())) {
+            if (rightContextCues.contains(tokenText)) {
                 return true;
             }
         }

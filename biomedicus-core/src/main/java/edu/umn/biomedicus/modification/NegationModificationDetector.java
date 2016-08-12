@@ -17,25 +17,23 @@
 package edu.umn.biomedicus.modification;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.semantics.Negated;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence2;
+import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.common.text.TermToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
-@DocumentScoped
 public final class NegationModificationDetector implements DocumentProcessor {
     private final NegationModificationModel negationModificationModel;
     private final Document document;
-    private final Labels<Sentence2> sentences;
+    private final Labels<Sentence> sentences;
     private final Labels<DictionaryTerm> dictionaryTerms;
     private final Labels<TermToken> termTokens;
     private final Labels<PartOfSpeech> partsOfSpeech;
@@ -44,7 +42,7 @@ public final class NegationModificationDetector implements DocumentProcessor {
     @Inject
     public NegationModificationDetector(NegationModificationModel negationModificationModel,
                                         Document document,
-                                        Labels<Sentence2> sentences,
+                                        Labels<Sentence> sentences,
                                         Labels<DictionaryTerm> dictionaryTerms,
                                         Labels<TermToken> termTokens,
                                         Labels<PartOfSpeech> partsOfSpeech,

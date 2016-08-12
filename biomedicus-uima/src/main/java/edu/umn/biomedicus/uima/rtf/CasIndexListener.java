@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 import edu.umn.biomedicus.rtf.reader.IndexListener;
 import edu.umn.biomedicus.rtfuima.type.ViewIndex;
 import org.apache.uima.jcas.JCas;
@@ -43,8 +43,8 @@ class CasIndexListener implements IndexListener {
     }
 
     @Override
-    public void wroteToDestination(String destinationName, int destinationIndex, SpanLike originalDocumentSpanLike) {
-        ViewIndex viewIndex = new ViewIndex(originalDocumentView, originalDocumentSpanLike.getBegin(), originalDocumentSpanLike.getEnd());
+    public void wroteToDestination(String destinationName, int destinationIndex, TextLocation originalDocumentTextLocation) {
+        ViewIndex viewIndex = new ViewIndex(originalDocumentView, originalDocumentTextLocation.getBegin(), originalDocumentTextLocation.getEnd());
         viewIndex.setDestinationIndex(destinationIndex);
         viewIndex.setDestinationName(destinationName);
         viewIndex.addToIndexes();

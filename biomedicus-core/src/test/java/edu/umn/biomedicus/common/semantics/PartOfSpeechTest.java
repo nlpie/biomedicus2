@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.common.semantics;
 
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;

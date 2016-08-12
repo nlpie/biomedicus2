@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import java.util.function.Predicate;
 
@@ -27,22 +27,22 @@ import java.util.function.Predicate;
  */
 public abstract class AbstractLabels<T> implements Labels<T> {
     @Override
-    public Labels<T> containing(SpanLike spanLike) {
-        return new StandardLabels<>(this).containing(spanLike);
+    public Labels<T> containing(TextLocation textLocation) {
+        return new StandardLabels<>(this).containing(textLocation);
     }
 
     @Override
-    public Labels<T> insideSpan(SpanLike spanLike) {
-        return new StandardLabels<>(new FilteredLabels<>(this, spanLike::contains));
+    public Labels<T> insideSpan(TextLocation textLocation) {
+        return new StandardLabels<>(new FilteredLabels<>(this, textLocation::contains));
     }
 
     @Override
-    public Labels<T> leftwardsFrom(SpanLike span) {
+    public Labels<T> leftwardsFrom(TextLocation span) {
         return new StandardLabels<>(this).leftwardsFrom(span);
     }
 
     @Override
-    public Labels<T> rightwardsFrom(SpanLike span) {
+    public Labels<T> rightwardsFrom(TextLocation span) {
         return new StandardLabels<>(this).leftwardsFrom(span);
     }
 

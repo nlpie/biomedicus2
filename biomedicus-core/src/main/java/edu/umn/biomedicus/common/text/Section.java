@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,41 +16,99 @@
 
 package edu.umn.biomedicus.common.text;
 
-/**
- * A section in a document.
- *
- * @since 1.4
- */
-public interface Section extends TextSpan {
+public final class Section {
+    private final String sectionTitle;
+    private final int contentStart;
+    private final int level;
+    private final boolean hasSubsections;
+    private final String kind;
+
+    private Section(String sectionTitle, int contentStart, int level, boolean hasSubsections, String kind) {
+        this.sectionTitle = sectionTitle;
+        this.contentStart = contentStart;
+        this.level = level;
+        this.hasSubsections = hasSubsections;
+        this.kind = kind;
+    }
+
     /**
      * Returns the title of the section.
      *
      * @return section title.
      */
-    String getSectionTitle();
+    public String getSectionTitle() {
+        return sectionTitle;
+    }
 
     /**
      * Returns the content start of the section.
      *
      * @return content start.
      */
-    int contentStart();
+    public int contentStart() {
+        return contentStart;
+    }
 
     /**
      * Returns the level of the section, ex. 0 for a section 1 for a subsection.
      *
      * @return section level.
      */
-    int getLevel();
+    public int getLevel() {
+        return level;
+    }
 
     /**
      * Returns whether this section has subsections.
      *
      * @return
      */
-    boolean hasSubsections();
+    public boolean hasSubsections() {
+        return hasSubsections;
+    }
 
-    String getKind();
+    public String getKind() {
+        return kind;
+    }
 
-    Iterable<Sentence> getSentences();
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String sectionTitle;
+        private int contentStart;
+        private int level;
+        private boolean hasSubsections;
+        private String kind;
+
+        public Builder setSectionTitle(String sectionTitle) {
+            this.sectionTitle = sectionTitle;
+            return this;
+        }
+
+        public Builder setContentStart(int contentStart) {
+            this.contentStart = contentStart;
+            return this;
+        }
+
+        public Builder setLevel(int level) {
+            this.level = level;
+            return this;
+        }
+
+        public Builder setHasSubsections(boolean hasSubsections) {
+            this.hasSubsections = hasSubsections;
+            return this;
+        }
+
+        public Builder setKind(String kind) {
+            this.kind = kind;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(sectionTitle, contentStart, level, hasSubsections, kind);
+        }
+    }
 }

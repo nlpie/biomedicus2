@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 /**
  * @since 1.3.0
@@ -27,7 +27,7 @@ public interface IndexListener {
      *
      * @param destinationName  destination the character was written to.
      * @param destinationIndex the index in the destination.
-     * @param originalDocumentSpanLike
+     * @param originalDocumentTextLocation
      */
-    void wroteToDestination(String destinationName, int destinationIndex, SpanLike originalDocumentSpanLike);
+    void wroteToDestination(String destinationName, int destinationIndex, TextLocation originalDocumentTextLocation);
 }

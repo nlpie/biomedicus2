@@ -16,28 +16,27 @@
 
 package edu.umn.biomedicus.common.text;
 
-public final class TermToken implements TokenLike {
+public final class TermToken implements Token {
     private final String text;
+    private final boolean hasSpaceAfter;
 
-    private final String trailingText;
-
-    public TermToken(String text, String trailingText) {
+    public TermToken(String text, boolean hasSpaceAfter) {
         this.text = text;
-        this.trailingText = trailingText;
+        this.hasSpaceAfter = hasSpaceAfter;
+    }
+
+    @Override
+    public String text() {
+        return text;
+    }
+
+    @Override
+    public boolean hasSpaceAfter() {
+        return hasSpaceAfter;
     }
 
     @Override
     public String toString() {
         return "TermToken(\"" + text + "\")";
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String getTrailingText() {
-        return trailingText;
     }
 }

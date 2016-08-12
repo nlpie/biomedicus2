@@ -1,2 +1,1 @@
-edu.umn.biomedicus.uima.adapter.UimaPlugin
-edu.umn.biomedicus.uima.labels.BiomedicusTsLabelsPlugin
+edu.umn.biomedicus.uima.types.BiomedicusTsLabelsPlugin

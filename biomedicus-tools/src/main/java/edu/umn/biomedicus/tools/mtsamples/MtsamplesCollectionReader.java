@@ -63,7 +63,6 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
     public void adaptFile(CAS cas, Path path) throws CollectionException {
         CAS systemView = cas.createView(targetViewName);
         JCas systemJCas;
-
         try {
             systemJCas = systemView.getJCas();
         } catch (CASException e) {
@@ -146,7 +145,7 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
         systemView.setDocumentText(text);
 
         try {
-            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemJCas);
+            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemView);
             document.setDocumentId(path.getFileName().toString());
             document.setMetadata("docTypeId", docTypeId);
             document.setMetadata("docType", docType);

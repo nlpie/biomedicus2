@@ -17,42 +17,52 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
+import com.google.inject.TypeLiteral;
 import edu.umn.biomedicus.common.labels.AbstractLabels;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.Iterator;
+import java.util.Map;
 
-final class UimaLabels<T> extends AbstractLabels<T> {
-    private final JCas jCas;
-    private final LabelAdapter<T, ?> labelAdapter;
+public final class UimaLabels<T> extends AbstractLabels<T> {
+    private final CAS cas;
+    private final LabelAdapter<T> labelAdapter;
     private final Iterable<Label<T>> iterable;
+    private Type annotationType;
+    private Type type;
 
-    private UimaLabels(JCas jCas, LabelAdapter<T, ?> labelAdapter, Iterable<Label<T>> iterable) {
-        this.jCas = jCas;
+    private UimaLabels(CAS cas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
+        this.cas = cas;
         this.labelAdapter = labelAdapter;
         this.iterable = iterable;
+        type = labelAdapter.getType();
+        annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
     }
 
-    UimaLabels(JCas jCas, LabelAdapter<T, ?> labelAdapter) {
-        this.jCas = jCas;
+    @Inject
+    public UimaLabels(CAS cas, LabelAdapter<T> labelAdapter) {
+        this.cas = cas;
         this.labelAdapter = labelAdapter;
-        AnnotationIndex<? extends Annotation> annotationIndex = jCas.getAnnotationIndex(labelAdapter.getjCasClass());
-        iterable = () -> new FSIteratorAdapter<>(annotationIndex, labelAdapter::adaptAnnotation);
+        annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
+        type = labelAdapter.getType();
+        AnnotationIndex<AnnotationFS> annotationIndex = cas.getAnnotationIndex(type);
+        iterable = () -> new FSIteratorAdapter<>(annotationIndex, labelAdapter::annotationToLabel);
     }
 
     @Override
-    public Labels<T> insideSpan(SpanLike spanLike) {
-        AnnotationIndex<? extends Annotation> annotationIndex = jCas.getAnnotationIndex(labelAdapter.getjCasClass());
-        Annotation bound = new Annotation(jCas, spanLike.getBegin() - 1, spanLike.getEnd() + 1);
+    public Labels<T> insideSpan(TextLocation textLocation) {
+        AnnotationIndex<AnnotationFS> annotationIndex = cas.getAnnotationIndex(type);
+        AnnotationFS bound = cas.createAnnotation(annotationType, textLocation.getBegin() - 1,
+                textLocation.getEnd() + 1);
         Iterable<Label<T>> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(annotationIndex, bound,
-                labelAdapter::adaptAnnotation);
-        return new UimaLabels<>(jCas, labelAdapter, iterable).filter(spanLike::contains);
+                labelAdapter::annotationToLabel);
+        return new UimaLabels<>(cas, labelAdapter, iterable).filter(textLocation::contains);
     }
 
     @Override

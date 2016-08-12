@@ -22,7 +22,7 @@
                 <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
             </PatternLayout>
         </Console>
-        <File name="LogFile" fileName="${sys:biomedicus.paths.home}/logs/biomedicus.log">
+        <File name="LogFile" fileName="${sys:biomedicus.paths.home}/logs/biomedicus.log" append="false">
             <PatternLayout>
                 <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
             </PatternLayout>

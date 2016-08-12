@@ -23,41 +23,30 @@
 
     <priorityLists>
         <priorityList>
-            <type>edu.umn.biomedicus.type.TextSegmentAnnotation</type>
+            <type>edu.umn.biomedicus.type.SectionAnnotation</type>
+            <type>edu.umn.biomedicus.type.ParagraphAnnotation</type>
             <type>edu.umn.biomedicus.type.RowAnnotation</type>
             <type>edu.umn.biomedicus.type.CellAnnotation</type>
             <type>edu.umn.biomedicus.type.NestedRowAnnotation</type>
-            <type>edu.umn.biomedicus.type.NestedCellAnnotation</type>
-            <type>edu.umn.biomedicus.type.ParagraphAnnotation</type>
-            <type>edu.umn.biomedicus.type.SectionAnnotation</type>
-            <type>edu.umn.biomedicus.type.SubSectionAnnotation</type>
-            <type>edu.umn.biomedicus.type.SentenceAnnotation</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageAnnotation</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageAmount</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageFrequency</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageType</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageStatus</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageTemporal</type>
-            <type>edu.umn.biomedicus.type.SubstanceUsageMethod</type>
-            <type>edu.umn.biomedicus.type.TermAnnotation</type>
-            <type>edu.umn.biomedicus.uima.type1_5.Acronym</type>
-            <type>edu.umn.biomedicus.uima.type1_5.AcronymExpansion</type>
+            <type>edu.umn.biomedicus.type.TextSegmentAnnotation</type>
             <type>edu.umn.biomedicus.type.NewInformationAnnotation</type>
-            <type>edu.umn.biomedicus.type.ConceptAnnotation</type>
-            <type>edu.umn.biomedicus.type.ChunkAnnotation</type>
-            <type>edu.umn.biomedicus.type.DateAnnotation</type>
-            <type>edu.umn.biomedicus.type.MeasurementAnnotation</type>
-            <type>edu.umn.biomedicus.type.SymbolAnnotation</type>
-            <type>edu.umn.biomedicus.type.TimeAnnotation</type>
-            <type>edu.umn.biomedicus.type.QuantityAnnotation</type>
-            <type>edu.umn.biomedicus.type.NamedEntityAnnotation</type>
-            <type>edu.umn.biomedicus.uima.type1_5.TermToken</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Sentence</type>
+            <type>edu.umn.biomedicus.uima.type1_6.DependencyParse</type>
+            <type>edu.umn.biomedicus.uima.type1_6.DictionaryTerm</type>
+            <type>edu.umn.biomedicus.uima.type1_6.DictionaryConcept</type>
             <type>edu.umn.biomedicus.uima.type1_5.Negated</type>
             <type>edu.umn.biomedicus.uima.type1_5.Historical</type>
             <type>edu.umn.biomedicus.uima.type1_5.Probable</type>
-            <type>edu.umn.biomedicus.uima.type1_5.ParseToken</type>
+            <type>edu.umn.biomedicus.uima.type1_6.TermToken</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Acronym</type>
+            <type>edu.umn.biomedicus.uima.type1_6.ParseToken</type>
+            <type>edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag</type>
             <type>edu.umn.biomedicus.uima.type1_5.WordIndex</type>
+            <type>edu.umn.biomedicus.uima.type1_6.NormForm</type>
             <type>edu.umn.biomedicus.uima.type1_5.NormIndex</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Misspelling</type>
+            <type>edu.umn.biomedicus.uima.type1_6.SpellCorrection</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Token</type>
         </priorityList>
     </priorityLists>
 </typePriorities>

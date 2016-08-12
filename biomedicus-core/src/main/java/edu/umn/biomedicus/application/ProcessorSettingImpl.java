@@ -24,7 +24,7 @@ import java.lang.annotation.Annotation;
 
 /**
  */
-public class ProcessorSettingImpl implements ProcessorSetting, Serializable {
+public final class ProcessorSettingImpl implements ProcessorSetting, Serializable {
     private final String value;
 
     public ProcessorSettingImpl(String value) {

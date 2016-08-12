@@ -38,6 +38,7 @@
                 </featureDescription>
             </features>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_5.DocumentMetadata</name>
             <description>
@@ -55,6 +56,7 @@
                 </featureDescription>
             </features>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.SectionAnnotation</name>
             <description>A document section</description>
@@ -87,280 +89,100 @@
                 </featureDescription>
             </features>
         </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubSectionAnnotation</name>
-            <description>A document sub-section</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>title</name>
-                    <description>Title of the subsection</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>contentStart</name>
-                    <description>Start of the content of the subsection, not including the header</description>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>kind</name>
-                    <description>The kind of subsection this is.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
-        </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.ParagraphAnnotation</name>
             <description>A paragraph in text.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.RowAnnotation</name>
             <description>A row in a table.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.CellAnnotation</name>
             <description>A cell in a row.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.NestedRowAnnotation</name>
             <description>A nested row in a cell.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.NestedCellAnnotation</name>
             <description>A nested cell in a nested row.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.type.TextSegmentAnnotation</name>
             <description>
                 A segment of text over which sentence annotations should not bridge. Defined by the physical structure
-                of the document.
+                of the document--i.e., cell boundaries in tables, or paragraph formatting boundaries in structured
+                documents.
             </description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.type.SentenceAnnotation</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Sentence</name>
             <description/>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.type.NewInformationAnnotation</name>
+            <description>
+                Represents some kind of new information in a document that wasn't contained in previous documents from
+                the same patient.
+            </description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
-                    <name>isHeading</name>
-                    <description>
-                        Indicates if this sentence is some sort of a heading (e.g. a section heading).
-                    </description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                    <name>kind</name>
+                    <description>The kind of new information.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
-                <featureDescription>
-                    <name>isSocialHistoryCandidate</name>
-                    <description>Indicates if this sentence is a social history candidate.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>substanceUsageTypes</name>
-                    <rangeTypeName>uima.cas.StringArray</rangeTypeName>
-                </featureDescription>
+            </features>
+        </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.DependencyParse</name>
+            <description>The dependency parse of a sentence.</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
                 <featureDescription>
                     <name>parseTree</name>
-                    <description>
-                        The constituent parse tree.
-                    </description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>dependencies</name>
-                    <description>
-                        The list of dependencies in Stanford Dependency format.
-                    </description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
             </features>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageAnnotation</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>sentence</name>
-                    <rangeTypeName>edu.umn.biomedicus.type.SentenceAnnotation</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>substanceType</name>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>amounts</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageAmount</elementType>
-                </featureDescription>
-                <featureDescription>
-                    <name>frequencies</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageFrequency</elementType>
-                </featureDescription>
-                <featureDescription>
-                    <name>types</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageType</elementType>
-                </featureDescription>
-                <featureDescription>
-                    <name>statuses</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageStatus</elementType>
-                </featureDescription>
-                <featureDescription>
-                    <name>temporal</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageTemporal</elementType>
-                </featureDescription>
-                <featureDescription>
-                    <name>methods</name>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.SubstanceUsageMethod</elementType>
-                </featureDescription>
-            </features>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageAmount</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageFrequency</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageType</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageStatus</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageTemporal</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SubstanceUsageMethod</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.type.TermAnnotation</name>
+            <name>edu.umn.biomedicus.uima.type1_6.DictionaryTerm</name>
             <description/>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
-                    <name>meaning</name>
+                    <name>concepts</name>
                     <description>
-                        The meaning of the term in the context in which it appears, expressed as plain text.
-                        For an unambiguous term, this will be the term itself. For an acronym, this will be the acronym
-                        expansion.
-                    </description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>isNegated</name>
-                    <description/>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>certainty</name>
-                    <description>
-                        If this term has a certainty modifier like
-                        1. confirmed
-                        2. probable
-                    </description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>aspect</name>
-                    <description>
-                        The nature of the state of the condition to which the term referrs:
-
-                        1. current (ongoing condition)
-                        2. past (past medical history)
-                        3. future (has not happened yet but may)
-                    </description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>attribution</name>
-                    <description>
-                        Indicates if this term describes something about the patient or someone else (e.g. a
-                        family member).
-
-                        1. patient
-                        2. family
-                        3. other
-                    </description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>isAcronym</name>
-                    <description>Flag to indicate if this term is an acronym</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>primaryConcept</name>
-                    <description>
-                        Formalized meaning of the term if it could be mapped to an ontology. If not, use the
-                        termMeaning field. A term concept has to have three fields - id, source and confidence score.
-
-                        Ideally, we want to have only one concept per term that best fits the context in which the term
-                        occurs.
-                        So, this feature represents the concept that most likely fits.
-                        Alternative concepts should be stored in another attribute of Term, called termAltConcepts
-                    </description>
-                    <rangeTypeName>edu.umn.biomedicus.type.ConceptAnnotation</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>alternativeConcepts</name>
-                    <description>This attribute represents ALL concepts that are associated with a given term.
+                        This attribute represents the concepts that are associated with a given term.
                     </description>
                     <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.ConceptAnnotation</elementType>
+                    <elementType>edu.umn.biomedicus.uima.type1_6.DictionaryConcept</elementType>
                 </featureDescription>
             </features>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.type.ChunkAnnotation</name>
-            <description>Marks a recognized chunk (shallow parse element).</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.DateAnnotation</name>
-            <description/>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.MeasurementAnnotation</name>
-            <description>Any kind of measurement or lab value like BP or BUN or head circumference</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.SymbolAnnotation</name>
-            <description>Any kind of symbol like x10, #5, @</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>symbolMeaning</name>
-                    <description>The meaning of the symbol in the specific context in which it appears</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.TimeAnnotation</name>
-            <description/>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.ConceptAnnotation</name>
-            <description>This is a type to capture meanings of different terms in a formalized manner</description>
+            <name>edu.umn.biomedicus.uima.type1_6.DictionaryConcept</name>
+            <description>This is a type to capture meanings of different terms in a formalized manner.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
@@ -378,7 +200,7 @@
                     <description>A confidence score, which indicates how confident the annotator is in assigning this
                         concept to the term
                     </description>
-                    <rangeTypeName>uima.cas.Float</rangeTypeName>
+                    <rangeTypeName>uima.cas.Double</rangeTypeName>
                 </featureDescription>
                 <featureDescription>
                     <name>semanticType</name>
@@ -388,114 +210,233 @@
                 </featureDescription>
             </features>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.type.QuantityAnnotation</name>
-            <description>
-                Similar to Measurement type but applies to substances and items that are external to the
-                patient (e.g. drug dosages)
-            </description>
+            <name>edu.umn.biomedicus.uima.type1_5.Negated</name>
+            <description>Specifies a negated term.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.type.NamedEntityAnnotation</name>
-            <description>
-                Named entities other than medical terms - typically places and proper names of various items
-                and locations, etc. (e.g. "ABCD General Hospital Operating Room #1")
-            </description>
+            <name>edu.umn.biomedicus.uima.type1_5.Historical</name>
+            <description>Specifies a historical term.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.type.NewInformationAnnotation</name>
-            <description>
-                Represents some kind of new information in a document that wasn't contained in previous documents from
-                the same patient.
-            </description>
+            <name>edu.umn.biomedicus.uima.type1_5.Probable</name>
+            <description>Specifies a probable term.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>kind</name>
-                    <description>The kind of new information.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.TermToken</name>
+            <name>edu.umn.biomedicus.uima.type1_6.TermToken</name>
             <description>
                 A semantically relevant token, consisting of merged syntactic tokens. Example of merging would be
                 hyphenated words and acronyms with periods between letters.
             </description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>text</name>
-                    <description>The text of the term token.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>trailingText</name>
-                    <description>The text immediately following the term token before the next token.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Token</supertypeName>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Negated</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <name>edu.umn.biomedicus.uima.type1_6.Acronym</name>
+            <description>
+                An acronym's longform expansion.
+            </description>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Token</supertypeName>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Historical</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Probable</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.ParseToken</name>
+            <name>edu.umn.biomedicus.uima.type1_6.ParseToken</name>
             <description>
                 A token in the form standard to PTB-style annotated corpora. Examples include splitting possessives and
                 contractions e.g. "annotation's" to "annotation" "'s" and "we'll" to "we 'll".
             </description>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Token</supertypeName>
+        </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
                     <name>partOfSpeech</name>
-                    <description>The penn treebank part of speech of the token.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>normalForm</name>
-                    <description>Canonical, stem form of the word.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>isStopword</name>
-                    <description>Whether or not the token is a stopword.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>isMisspelled</name>
-                    <description>Whether or not the token is misspelled in the source document.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>correctSpelling</name>
-                    <description>The correct spelling for the token if it is misspelled, otherwise null.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>text</name>
-                    <description>The text of the token.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>trailingText</name>
-                    <description>The text immediately following the token before the next string.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                    <rangeTypeName>edu.umn.biomedicus.uima.type1_6.PartOfSpeech</rangeTypeName>
                 </featureDescription>
             </features>
         </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.PartOfSpeech</name>
+            <supertypeName>uima.cas.String</supertypeName>
+            <allowedValues>
+                <value>
+                    <string>CC</string>
+                </value>
+                <value>
+                    <string>CD</string>
+                </value>
+                <value>
+                    <string>DT</string>
+                </value>
+                <value>
+                    <string>EX</string>
+                </value>
+                <value>
+                    <string>FW</string></value>
+                <value>
+                    <string>IN</string>
+                </value>
+                <value>
+                    <string>JJ</string>
+                </value>
+                <value>
+                    <string>JJR</string>
+                </value>
+                <value>
+                    <string>JJS</string>
+                </value>
+                <value>
+                    <string>LS</string>
+                </value>
+                <value>
+                    <string>MD</string>
+                </value>
+                <value>
+                    <string>NN</string>
+                </value>
+                <value>
+                    <string>NNS</string>
+                </value>
+                <value>
+                    <string>NNP</string>
+                </value>
+                <value>
+                    <string>NNPS</string>
+                </value>
+                <value>
+                    <string>PDT</string>
+                </value>
+                <value>
+                    <string>POS</string>
+                </value>
+                <value>
+                    <string>PRP</string>
+                </value>
+                <value>
+                    <string>PRP$</string>
+                </value>
+                <value>
+                    <string>RB</string>
+                </value>
+                <value>
+                    <string>RBR</string>
+                </value>
+                <value>
+                    <string>RBS</string>
+                </value>
+                <value>
+                    <string>RP</string>
+                </value>
+                <value>
+                    <string>SYM</string>
+                </value>
+                <value>
+                    <string>TO</string>
+                </value>
+                <value>
+                    <string>UH</string>
+                </value>
+                <value>
+                    <string>VB</string>
+                </value>
+                <value>
+                    <string>VBD</string>
+                </value>
+                <value>
+                    <string>VBG</string>
+                </value>
+                <value>
+                    <string>VBN</string>
+                </value>
+                <value>
+                    <string>VBP</string>
+                </value>
+                <value>
+                    <string>VBZ</string>
+                </value>
+                <value>
+                    <string>WDT</string>
+                </value>
+                <value>
+                    <string>WP</string>
+                </value>
+                <value>
+                    <string>WP$</string>
+                </value>
+                <value>
+                    <string>WRB</string>
+                </value>
+                <value>
+                    <string>.</string>
+                </value>
+                <value>
+                    <string>,</string>
+                </value>
+                <value>
+                    <!-- : -->
+                    <string>&#58;</string>
+                    <description></description>
+                </value>
+                <value>
+                    <!-- ( -->
+                    <string>&#40;</string>
+                </value>
+                <value>
+                    <!-- ) -->
+                    <string>&#41;</string>
+                </value>
+                <value>
+                    <!-- `` -->
+                    <string>&#96;&#96;</string>
+                </value>
+                <value>
+                    <string>''</string>
+                </value>
+                <value>
+                    <!-- ` -->
+                    <string>&#96;</string>
+                </value>
+                <value>
+                    <string>'</string>
+                </value>
+                <value>
+                    <!-- " -->
+                    <string>&#34;</string>
+                </value>
+                <value>
+                    <!-- # -->
+                    <string>&#35;</string>
+                </value>
+                <value>
+                    <!-- $ -->
+                    <string>&#36;</string>
+                </value>
+                <value>
+                    <string>HYPH</string>
+                </value>
+                <value>
+                    <string>AFX</string>
+                </value>
+                <value>
+                    <string>GW</string>
+                </value>
+                <value>
+                    <string>XX</string>
+                </value>
+            </allowedValues>
+        </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_5.WordIndex</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -506,6 +447,18 @@
                 </featureDescription>
             </features>
         </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.NormForm</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>normForm</name>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
         <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_5.NormIndex</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
@@ -516,73 +469,33 @@
                 </featureDescription>
             </features>
         </typeDescription>
+
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Acronym</name>
-            <description>
-                A token that was detected as an acronym.
-            </description>
+            <name>edu.umn.biomedicus.uima.type1_6.Misspelling</name>
+            <description>Indicates a misspelled word.</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.AcronymExpansion</name>
-            <description>
-                An acronym's longform expansion.
-            </description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>longform</name>
-                    <description>The longform expansion of the acronym.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>trailingText</name>
-                    <description>The text immediately following the acronym before the next token.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.NewLineAnnotation</name>
-            <description>Used to mark and index newline symbols.</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.TermVectorFS</name>
-            <description>A sparse vector of terms.</description>
-            <supertypeName>uima.cas.TOP</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>identifier</name>
-                    <description>A unique identifier for the term vector.</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>terms</name>
-                    <description>An array of terms.</description>
-                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>edu.umn.biomedicus.type.TermVectorEntryFS</elementType>
-                </featureDescription>
-            </features>
-        </typeDescription>
-        <typeDescription>
-            <name>edu.umn.biomedicus.type.TermVectorEntryFS</name>
-            <description>An entry in the term vector.</description>
-            <supertypeName>uima.cas.TOP</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>index</name>
-                    <description>The index of a term in the term vector space.</description>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>count</name>
-                    <description>The number of times the term occurs.</description>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-            </features>
         </typeDescription>
 
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.SpellCorrection</name>
+            <description>The corrected form of a misspellings.</description>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Token</supertypeName>
+        </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.Token</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>text</name>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>hasSpaceAfter</name>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
 
         <!-- RTF types below here -->
         <typeDescription>
@@ -718,5 +631,6 @@
             <name>edu.umn.biomedicus.rtfuima.type.ParagraphInTable</name>
             <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
         </typeDescription>
+        <!-- end rtf types -->
     </types>
 </typeSystemDescription>

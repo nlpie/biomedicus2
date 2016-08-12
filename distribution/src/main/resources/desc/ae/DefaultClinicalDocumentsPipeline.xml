@@ -46,11 +46,8 @@
         <delegateAnalysisEngine key="termTokens">
             <import location="annotator/syntax/TermTokenMerger.xml"/>
         </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="acronymDetect">
-            <import location="annotator/semantics/AcronymDetector.xml"/>
-        </delegateAnalysisEngine>
-        <delegateAnalysisEngine key="acronymExpand">
-            <import location="annotator/semantics/AcronymExpander.xml"/>
+        <delegateAnalysisEngine key="acronyms">
+            <import location="annotator/semantics/AcronymProcessor.xml"/>
         </delegateAnalysisEngine>
         <delegateAnalysisEngine key="dictionaryMapper">
             <import location="annotator/semantics/DictionaryConceptRecognizer.xml"/>
@@ -80,8 +77,7 @@
                 <node>normalizer</node>
                 <node>normIndexes</node>
                 <node>termTokens</node>
-                <node>acronymDetect</node>
-                <node>acronymExpand</node>
+                <node>acronyms</node>
                 <node>dictionaryMapper</node>
                 <node>history</node>
                 <node>negation</node>

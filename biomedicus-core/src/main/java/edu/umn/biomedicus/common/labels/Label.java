@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.common.text.TextLocation;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.ParameterizedType;
@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public final class Label<T> implements SpanLike {
+public final class Label<T> implements TextLocation {
     private final Span span;
     private final T value;
 

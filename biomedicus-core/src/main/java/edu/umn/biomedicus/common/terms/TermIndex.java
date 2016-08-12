@@ -19,7 +19,9 @@ package edu.umn.biomedicus.common.terms;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,7 +29,7 @@ import java.util.stream.Stream;
 /**
  *
  */
-public class TermIndex {
+public final class TermIndex {
     private final HashIndexMap<String> hashIndexMap;
 
     public TermIndex() {

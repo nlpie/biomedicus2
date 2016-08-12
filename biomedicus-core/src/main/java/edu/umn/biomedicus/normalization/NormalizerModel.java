@@ -17,12 +17,13 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.common.tuples.WordPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -66,10 +67,10 @@ class NormalizerModel {
      *
      * @param token token to normalize
      */
-    public void normalize(Token token) {
-        LOGGER.trace("Normalizing a token: {}", token.getText());
-        String key = token.getText().trim().toLowerCase();
-        PartOfSpeech partOfSpeech = token.getPartOfSpeech();
+    public String normalize(Token token, @Nullable PartOfSpeech partOfSpeech) {
+        String text = token.text();
+        LOGGER.trace("Normalizing a token: {}", text);
+        String key = text.trim().toLowerCase();
         String normalForm = null;
         if (partOfSpeech != null) {
             WordPos wordPos = new WordPos(key, partOfSpeech);
@@ -81,6 +82,6 @@ class NormalizerModel {
         if (normalForm == null) {
             normalForm = key;
         }
-        token.setNormalForm(normalForm.toLowerCase());
+        return normalForm.toLowerCase();
     }
 }

@@ -52,16 +52,6 @@
                 <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
             </imports>
         </typePriorities>
-        <fsIndexCollection/>
-        <capabilities>
-            <capability>
-                <inputs/>
-                <outputs/>
-                <languagesSupported>
-                    <language>en</language>
-                </languagesSupported>
-            </capability>
-        </capabilities>
         <operationalProperties>
             <modifiesCas>false</modifiesCas>
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

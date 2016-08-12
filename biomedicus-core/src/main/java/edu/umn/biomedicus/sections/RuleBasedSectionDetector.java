@@ -17,10 +17,11 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.text.Section;
+import edu.umn.biomedicus.common.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.regex.Matcher;
@@ -33,15 +34,13 @@ import java.util.regex.Pattern;
  * @author Yan Wang (rules)
  * @since 1.4
  */
-@DocumentScoped
 public class RuleBasedSectionDetector implements DocumentProcessor {
-
-    private final Document document;
-
-    /**
-     * The section title/headers pattern.
-     */
     private final Pattern headers;
+    private final Labeler<Section> section2Labeler;
+    private int prevBegin;
+    private int prevEnd;
+    private int begin;
+    private String text;
 
     /**
      * Injectable constructor.
@@ -50,41 +49,39 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
      * @param ruleBasedSectionDetectorModel patterns.
      */
     @Inject
-    RuleBasedSectionDetector(Document document, RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
-        this.document = document;
+    RuleBasedSectionDetector(Document document, RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel, Labeler<Section> section2Labeler) {
         this.headers = ruleBasedSectionDetectorModel.getSectionHeaderPattern();
+        this.section2Labeler = section2Labeler;
+        text = document.getText();
     }
 
 
     @Override
     public void process() throws BiomedicusException {
-        String text = document.getText();
         Matcher matcher = headers.matcher(text);
-        int prevBegin = 0;
-        int prevEnd = 0;
+        prevBegin = 0;
+        prevEnd = 0;
         while (matcher.find()) {
-            int begin = matcher.start();
-            if (!text.substring(prevBegin, begin).isEmpty()) {
-                document.createSection(Span.create(prevBegin, begin))
-                        .withContentStart(prevEnd)
-                        .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
-                        .withHasSubsections(false)
-                        .withLevel(0)
-                        .build();
-            }
+            begin = matcher.start();
+            checkSentence();
 
             prevBegin = begin;
             prevEnd = matcher.end();
         }
 
-        int textEnd = text.length();
-        if (!text.substring(prevBegin, textEnd).isEmpty()) {
-            document.createSection(Span.create(prevBegin, textEnd))
-                    .withContentStart(prevEnd)
-                    .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
-                    .withHasSubsections(false)
-                    .withLevel(0)
+        begin = text.length();
+        checkSentence();
+    }
+
+    private void checkSentence() throws BiomedicusException {
+        if (!text.substring(prevBegin, begin).isEmpty()) {
+            Section section = Section.builder()
+                    .setContentStart(prevEnd)
+                    .setSectionTitle(text.substring(prevBegin, prevEnd).trim())
+                    .setHasSubsections(false)
+                    .setLevel(0)
                     .build();
+            section2Labeler.value(section).label(Span.create(prevBegin, begin));
         }
     }
 }

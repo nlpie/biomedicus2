@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * @author Ben Knoll
  * @since 1.4
  */
-public class GuiceInjector extends Resource_ImplBase {
+public final class GuiceInjector extends Resource_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiceInjector.class);
 
     private final Injector injector;

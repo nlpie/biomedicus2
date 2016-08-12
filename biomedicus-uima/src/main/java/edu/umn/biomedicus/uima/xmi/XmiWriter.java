@@ -17,10 +17,13 @@
 package edu.umn.biomedicus.uima.xmi;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
@@ -29,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import javax.annotation.Nullable;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,12 +43,12 @@ import java.nio.file.Paths;
 /**
  * A UIMA analysis engine that writes the contents of CASes to a files in a folder.
  */
-public class XmiWriter extends JCasAnnotator_ImplBase {
+public class XmiWriter extends CasAnnotator_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(XmiWriter.class);
 
-    private TypeSystemWriterResource typeSystemWriter;
+    @Nullable private TypeSystemWriterResource typeSystemWriter;
 
-    private Path outputDir;
+    @Nullable private Path outputDir;
 
     /**
      * Initializes the outputDirectory.
@@ -71,22 +75,16 @@ public class XmiWriter extends JCasAnnotator_ImplBase {
         }
     }
 
-    /**
-     * Uses documentIdOutputStreamFactory to write a cas to disk.
-     *
-     * @param aJCas the cas to write
-     * @throws AnalysisEngineProcessException if the output fails
-     */
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    public void process(CAS cas) throws AnalysisEngineProcessException {
         try {
-            typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), aJCas.getTypeSystem());
+            typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), cas.getTypeSystem());
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }
         String fileName;
         try {
-            fileName = FileNameProviders.fromInitialView(aJCas, ".xmi");
+            fileName = UimaAdapters.documentFromInitialView(cas).getDocumentId() + ".xmi";
         } catch (BiomedicusException e) {
             throw new AnalysisEngineProcessException(e);
         }
@@ -97,7 +95,7 @@ public class XmiWriter extends JCasAnnotator_ImplBase {
         }
 
         try (OutputStream out = new FileOutputStream(path.toFile())) {
-            XmiCasSerializer.serialize(aJCas.getCas(), out);
+            XmiCasSerializer.serialize(cas, out);
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }

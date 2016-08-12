@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
 
 import java.util.regex.Pattern;
 
@@ -43,8 +42,8 @@ public final class Acronyms {
      * @param t the token to standardize
      * @return the standard form of the token
      */
-    static String standardForm(TokenLike t) {
-        return standardFormString(t.getText());
+    static String standardForm(Token t) {
+        return standardFormString(t.text());
     }
 
     /**

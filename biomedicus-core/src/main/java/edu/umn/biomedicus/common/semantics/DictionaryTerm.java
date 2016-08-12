@@ -37,6 +37,13 @@ public final class DictionaryTerm {
     public static class Builder {
         private final List<DictionaryConcept> concepts = new ArrayList<>();
 
+        public Builder addConcepts(List<DictionaryConcept> dictionaryConcepts) {
+            for (DictionaryConcept dictionaryConcept : dictionaryConcepts) {
+                concepts.add(dictionaryConcept);
+            }
+            return this;
+        }
+
         public Builder addConcept(DictionaryConcept dictionaryConcept) {
             concepts.add(dictionaryConcept);
             return this;

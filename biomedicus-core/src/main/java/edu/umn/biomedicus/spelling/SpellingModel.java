@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  *
  */
 @Singleton
-public class SpellingModel {
+public final class SpellingModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpellingModel.class);
 
     private static class SuggestionProbability {
