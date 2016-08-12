@@ -38,8 +38,7 @@
             <type>edu.umn.biomedicus.uima.type1_5.Historical</type>
             <type>edu.umn.biomedicus.uima.type1_5.Probable</type>
             <type>edu.umn.biomedicus.uima.type1_6.TermToken</type>
-            <type>edu.umn.biomedicus.uima.type1_5.Acronym</type>
-            <type>edu.umn.biomedicus.uima.type1_6.AcronymExpansion</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Acronym</type>
             <type>edu.umn.biomedicus.uima.type1_6.ParseToken</type>
             <type>edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag</type>
             <type>edu.umn.biomedicus.uima.type1_5.WordIndex</type>

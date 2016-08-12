@@ -34,4 +34,6 @@ public final class MapsUtilities {
             return value + 1;
         };
     }
+
+    public static final BiFunction<String, Integer, Integer> STRING_COMPUTE_INCREMENT = computeIncrementFunction();
 }
