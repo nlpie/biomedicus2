@@ -18,9 +18,7 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.BiomedicusFiles;
-import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.application.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.plugins.AbstractPlugin;
 import org.apache.uima.resource.Resource_ImplBase;
@@ -65,5 +63,9 @@ public final class GuiceInjector extends Resource_ImplBase {
 
     public Injector getInjector() {
         return injector;
+    }
+
+    public DocumentProcessorRunner createDocumentProcessorRunner() {
+        return DocumentProcessorRunner.create(injector);
     }
 }

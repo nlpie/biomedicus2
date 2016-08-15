@@ -41,34 +41,17 @@ import java.util.*;
 public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBase {
     private static final List<String> KNOWN_PARAMETERS = Arrays.asList("viewName", "eagerLoad", "postProcessors");
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunnerAnnotator.class);
-    @Nullable private Injector injector;
     @Nullable private String viewName;
     @Nullable private DocumentProcessorRunner documentProcessorRunner;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
-
         try {
-            injector = ((GuiceInjector) aContext.getResourceObject("guiceInjector")).getInjector();
+            documentProcessorRunner = ((GuiceInjector) aContext.getResourceObject("guiceInjector"))
+                    .createDocumentProcessorRunner();
         } catch (ResourceAccessException e) {
             throw new ResourceInitializationException(e);
-        }
-        documentProcessorRunner = DocumentProcessorRunner.create(injector);
-
-        String[] eagerLoad = (String[]) aContext.getConfigParameterValue("eagerLoad");
-        if (eagerLoad != null) {
-            for (String className : eagerLoad) {
-                try {
-                    Object eagerLoaded = injector.getInstance(Class.forName(className));
-                    if (eagerLoaded instanceof DataLoader) {
-                        ((DataLoader) eagerLoaded).eagerLoad();
-                    }
-                } catch (ClassNotFoundException | BiomedicusException e) {
-                    LOGGER.error("Error during document processor loading phase", e);
-                    throw new ResourceInitializationException(e);
-                }
-            }
         }
 
         try {
@@ -76,6 +59,17 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
             documentProcessorRunner.setDocumentProcessorClassName(documentProcessorClassName);
         } catch (ClassNotFoundException e) {
             throw new ResourceInitializationException(e);
+        }
+
+        String[] postProcessors = (String[]) aContext.getConfigParameterValue("postProcessors");
+        if (postProcessors != null) {
+            for (String postProcessor : postProcessors) {
+                try {
+                    documentProcessorRunner.addPostProcessorClassName(postProcessor);
+                } catch (ClassNotFoundException e) {
+                    throw new ResourceInitializationException(e);
+                }
+            }
         }
 
         Map<String, Object> settingsMap = new HashMap<>();
@@ -91,15 +85,22 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
             throw new ResourceInitializationException(e);
         }
 
+        String[] eagerLoad = (String[]) aContext.getConfigParameterValue("eagerLoad");
+        if (eagerLoad != null) {
+            for (String className : eagerLoad) {
+                try {
+                    documentProcessorRunner.eagerLoadClassName(className);
+                } catch (BiomedicusException e) {
+                    throw new ResourceInitializationException(e);
+                }
+            }
+        }
+
         viewName = (String) aContext.getConfigParameterValue("viewName");
     }
 
     @Override
     public void process(CAS cas) throws AnalysisEngineProcessException {
-        if (injector == null) {
-            throw new IllegalStateException("Injector is null.");
-        }
-
         if (documentProcessorRunner == null) {
             throw new IllegalStateException("Document processor runner is null.");
         }
@@ -109,7 +110,6 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
         }
 
         try {
-
             LOGGER.debug("Processing document from view: {}", viewName);
             CAS view = cas.getView(viewName);
             if (view == null) {
@@ -124,6 +124,20 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
             documentProcessorRunner.processDocument(casDocument, additionalSeeded);
         } catch (BiomedicusException e) {
             LOGGER.error("error while processing document");
+            throw new AnalysisEngineProcessException(e);
+        }
+    }
+
+    @Override
+    public void collectionProcessComplete() throws AnalysisEngineProcessException {
+        if (documentProcessorRunner == null) {
+            throw new IllegalStateException("Document processor runner is null.");
+        }
+
+        try {
+            documentProcessorRunner.processingFinished();
+        } catch (BiomedicusException e) {
+            LOGGER.error("Error during collection processing complete", e);
             throw new AnalysisEngineProcessException(e);
         }
     }

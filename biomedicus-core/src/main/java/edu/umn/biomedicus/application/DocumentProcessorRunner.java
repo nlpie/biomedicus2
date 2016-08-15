@@ -28,7 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,6 +38,7 @@ import java.util.Map;
  */
 public final class DocumentProcessorRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunner.class);
+    private final List<Class<? extends PostProcessor>> postProcessors = new ArrayList<>();
     private final Injector injector;
     private final SettingsTransformer settingsTransformer;
     private final Map<String, Object> globalSettings;
@@ -53,11 +56,7 @@ public final class DocumentProcessorRunner {
     }
 
     public static DocumentProcessorRunner create(Injector injector) {
-        SettingsTransformer settingsTransformer = injector.getInstance(SettingsTransformer.class);
-        Map<String, Object> globalSettings = injector.getInstance(Key.get(new TypeLiteral<Map<String, Object>>() {
-        }, Names.named("globalSettings")));
-
-        return new DocumentProcessorRunner(injector, settingsTransformer, globalSettings);
+        return injector.getInstance(DocumentProcessorRunner.class);
     }
 
     public void setDocumentProcessorClass(Class<? extends DocumentProcessor> documentProcessorClass) {
@@ -66,6 +65,14 @@ public final class DocumentProcessorRunner {
 
     public void setDocumentProcessorClassName(String documentProcessorClassName) throws ClassNotFoundException {
         this.documentProcessorClass = Class.forName(documentProcessorClassName).asSubclass(DocumentProcessor.class);
+    }
+
+    public void addPostProcessorClass(Class<? extends PostProcessor> processorListenerClass) {
+        postProcessors.add(processorListenerClass);
+    }
+
+    public void addPostProcessorClassName(String postProcessorClassName) throws ClassNotFoundException {
+        addPostProcessorClass(Class.forName(postProcessorClassName).asSubclass(PostProcessor.class));
     }
 
     public void initialize(@Nullable Map<String, Object> processorSettings,
@@ -91,6 +98,34 @@ public final class DocumentProcessorRunner {
         }
 
         processorContext = BiomedicusScopes.createProcessorContext(processorScopeMap);
+    }
+
+    public void eagerLoadClassName(String className) throws BiomedicusException{
+        try {
+            eagerLoadClass(Class.forName(className));
+        } catch (ClassNotFoundException e) {
+            throw new BiomedicusException(e);
+        }
+    }
+
+    public void eagerLoadClass(Class<?> aClass) throws BiomedicusException {
+        if (processorContext == null) {
+            throw new IllegalStateException("Processor context is null, initialize not ran");
+        }
+        if (settingsInjector == null) {
+            throw new IllegalStateException("Settings injector is null, initialize not ran");
+        }
+        try {
+            processorContext.call(() -> {
+                Object eagerLoaded = settingsInjector.getInstance(aClass);
+                if (eagerLoaded instanceof DataLoader) {
+                    ((DataLoader) eagerLoaded).eagerLoad();
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            throw new BiomedicusException(e);
+        }
     }
 
     public void processDocument(Document document,
@@ -120,4 +155,26 @@ public final class DocumentProcessorRunner {
             throw new BiomedicusException(e);
         }
     }
+
+    public void processingFinished() throws BiomedicusException {
+        if (processorContext == null) {
+            throw new IllegalStateException("Processor context is null, initialize not ran");
+        }
+        if (settingsInjector == null) {
+            throw new IllegalStateException("Settings injector is null, initialize not ran");
+        }
+        try {
+            processorContext.call(() -> {
+                for (Class<? extends PostProcessor> postProcessor : postProcessors) {
+                    settingsInjector.getInstance(postProcessor).afterProcessing();
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            LOGGER.error("Error during post processing.");
+            throw new BiomedicusException(e);
+        }
+    }
+
+
 }

@@ -75,9 +75,17 @@
                     <string>SystemView</string><!-- TODO: change this to process a different view. -->
                 </value>
             </nameValuePair>
-            <!-- TODO: Eager loaded model classes go here
+            <!-- TODO: Eager loaded model classes or post processors go here
             <nameValuePair>
                 <name>eagerLoad</name>
+                <value>
+                    <array>
+                        <string></string>
+                    </array>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>postProcessors</name>
                 <value>
                     <array>
                         <string></string>
