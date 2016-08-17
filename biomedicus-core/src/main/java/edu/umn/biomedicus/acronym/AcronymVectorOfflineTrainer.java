@@ -298,7 +298,9 @@ public class AcronymVectorOfflineTrainer {
             }
             // Files that are larger than 100 MB should not be read all at once
             if (file.toFile().length() < 100000000) {
-                String fileText = new Scanner(file.toFile()).useDelimiter("\\Z").next();
+                Scanner scanner = new Scanner(file.toFile()).useDelimiter("\\Z");
+                String fileText = scanner.next();
+                scanner.close();
                 if(vectorizeNotCount) {
                     vectorizeChunk(fileText);
                 } else {
@@ -327,6 +329,7 @@ public class AcronymVectorOfflineTrainer {
                     totalLength += line.length();
                     LOGGER.info(totalLength + " bytes of large file " + file + " processed");
                 }
+                reader.close();
             }
 
             LOGGER.info(file + " visited");
