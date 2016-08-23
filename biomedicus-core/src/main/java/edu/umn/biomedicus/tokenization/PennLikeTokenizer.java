@@ -36,12 +36,10 @@ public final class PennLikeTokenizer implements DocumentProcessor {
     private final Labeler<ParseToken> parseTokenLabeler;
 
     @Inject
-    public PennLikeTokenizer(Document document,
-                             Labels<Sentence> sentenceLabels,
-                             Labeler<ParseToken> parseTokenLabeler) {
+    public PennLikeTokenizer(Document document) {
         this.document = document;
-        this.sentenceLabels = sentenceLabels;
-        this.parseTokenLabeler = parseTokenLabeler;
+        sentenceLabels = document.labels(Sentence.class);
+        parseTokenLabeler = document.labeler(ParseToken.class);
     }
 
     @Override

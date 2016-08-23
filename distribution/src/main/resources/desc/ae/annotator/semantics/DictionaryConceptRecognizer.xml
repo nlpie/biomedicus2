@@ -86,11 +86,19 @@
         <externalResourceDependency>
             <key>guiceInjector</key>
             <description>The guice injector resource.</description>
-            <interfaceName>edu.umn.biomedicus.uima.adapter.GuiceInjector</interfaceName>
         </externalResourceDependency>
     </externalResourceDependencies>
 
     <resourceManagerConfiguration>
+        <externalResources>
+            <externalResource>
+                <name>guiceInjector</name>
+                <description>The guice resource.</description>
+                <customResourceSpecifier>
+                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+                </customResourceSpecifier>
+            </externalResource>
+        </externalResources>
         <externalResourceBindings>
             <externalResourceBinding>
                 <key>guiceInjector</key>

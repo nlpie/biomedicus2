@@ -16,10 +16,12 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
+import com.google.inject.Inject;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.biomedicus.uima.type1_6.Section;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
@@ -48,16 +50,14 @@ import java.nio.file.Path;
  * @since 1.3.0
  */
 public class MtsamplesCollectionReader implements InputFileAdapter {
-    /**
-     * Class logger.
-     */
     private static final Logger logger = LoggerFactory.getLogger(MtsamplesCollectionReader.class);
+    private final LabelAdapters labelAdapters;
+    @Nullable private String targetViewName;
 
-    /**
-     * The name for the target view.
-     */
-    @Nullable
-    private String targetViewName;
+    @Inject
+    public MtsamplesCollectionReader(LabelAdapters labelAdapters) {
+        this.labelAdapters = labelAdapters;
+    }
 
     @Override
     public void adaptFile(CAS cas, Path path) throws CollectionException {
@@ -130,8 +130,8 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
 
                     int end = documentStringBuilder.length();
 
-                    SectionAnnotation section = new SectionAnnotation(systemJCas, begin, end);
-                    section.setSectionTitle(sectionTitle);
+                    Section section = new Section(systemJCas, begin, end);
+                    section.setKind(sectionTitle);
                     section.addToIndexes();
                 } else {
                     logger.warn("Encountered an element other than section in notes body.");
@@ -145,7 +145,7 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
         systemView.setDocumentText(text);
 
         try {
-            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemView);
+            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemView, labelAdapters);
             document.setDocumentId(path.getFileName().toString());
             document.setMetadata("docTypeId", docTypeId);
             document.setMetadata("docType", docType);

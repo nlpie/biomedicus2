@@ -71,7 +71,7 @@ public class TntPosTagger implements DocumentProcessor {
      * The tnt model to use.
      */
     private final TntModel tntModel;
-    private final Labels<Sentence> sentence2Labels;
+    private final Labels<Sentence> sentenceLabels;
     private final Labels<ParseToken> parseTokenLabels;
     private final Document document;
     private final Labeler<PartOfSpeech> partOfSpeechLabeler;
@@ -85,16 +85,13 @@ public class TntPosTagger implements DocumentProcessor {
     @Inject
     public TntPosTagger(TntModel tntModel,
                         @Setting("tnt.beam.threshold") Double beamThreshold,
-                        Document document,
-                        Labels<Sentence> sentence2Labels,
-                        Labels<ParseToken> parseTokenLabels,
-                        Labeler<PartOfSpeech> partOfSpeechLabeler) {
+                        Document document) {
         this.tntModel = tntModel;
         this.beamThreshold = beamThreshold;
         this.document = document;
-        this.sentence2Labels = sentence2Labels;
-        this.parseTokenLabels = parseTokenLabels;
-        this.partOfSpeechLabeler = partOfSpeechLabeler;
+        sentenceLabels = document.labels(Sentence.class);
+        parseTokenLabels = document.labels(ParseToken.class);
+        partOfSpeechLabeler = document.labeler(PartOfSpeech.class);
     }
 
     public void tagSentence(Label<Sentence> sentence2Label) throws BiomedicusException {
@@ -124,7 +121,7 @@ public class TntPosTagger implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Sentence> sentence2Label : sentence2Labels) {
+        for (Label<Sentence> sentence2Label : sentenceLabels) {
             tagSentence(sentence2Label);
         }
     }

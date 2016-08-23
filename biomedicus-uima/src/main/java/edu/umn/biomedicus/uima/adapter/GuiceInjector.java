@@ -49,13 +49,6 @@ public final class GuiceInjector extends Resource_ImplBase {
         try {
             UimaBootstrapper uimaBootstrapper = UimaBootstrapper.create();
             injector = uimaBootstrapper.getInjector();
-
-            for (AbstractPlugin plugin : uimaBootstrapper.getPlugins()) {
-                for (Class<DataLoader> loaderClass : plugin.dataLoaders()) {
-                    DataLoader dataLoader = injector.getInstance(loaderClass);
-                    dataLoader.eagerLoad();
-                }
-            }
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }

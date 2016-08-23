@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.text;
+package edu.umn.biomedicus;
 
-import com.google.inject.Inject;
-
-import javax.annotation.Nullable;
-
-public final class Section {
-    @Nullable private final String kind;
-
-    @Inject
-    public Section(@Nullable String kind) {
-        this.kind = kind;
-    }
-
-    @Nullable
-    public String getKind() {
-        return kind;
+public final class Biomedicus {
+    public static final class ViewIdentifiers {
+        public static final String ORIGINAL_DOCUMENT = "OriginalDocument";
+        public static final String SYSTEM = "SystemView";
+        public static final String GOLD_STANDARD = "GoldStandard";
     }
 }

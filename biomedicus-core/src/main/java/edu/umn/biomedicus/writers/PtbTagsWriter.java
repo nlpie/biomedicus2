@@ -39,14 +39,11 @@ public class PtbTagsWriter implements DocumentProcessor {
     private final Labels<PartOfSpeech> partOfSpeechLabels;
 
     @Inject
-    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir,
-                         Document document,
-                         Labels<ParseToken> parseTokenLabels,
-                         Labels<PartOfSpeech> partOfSpeechLabels) {
+    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, Document document) {
         this.outputDir = outputDir;
         this.document = document;
-        this.parseTokenLabels = parseTokenLabels;
-        this.partOfSpeechLabels = partOfSpeechLabels;
+        parseTokenLabels = document.labels(ParseToken.class);
+        partOfSpeechLabels = document.labels(PartOfSpeech.class);
     }
 
     @Override

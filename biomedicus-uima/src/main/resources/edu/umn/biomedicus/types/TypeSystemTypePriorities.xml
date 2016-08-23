@@ -23,7 +23,9 @@
 
     <priorityLists>
         <priorityList>
-            <type>edu.umn.biomedicus.type.SectionAnnotation</type>
+            <type>edu.umn.biomedicus.uima.type1_6.Section</type>
+            <type>edu.umn.biomedicus.uima.type1_6.SectionContent</type>
+            <type>edu.umn.biomedicus.uima.type1_6.SectionTitle</type>
             <type>edu.umn.biomedicus.type.ParagraphAnnotation</type>
             <type>edu.umn.biomedicus.type.RowAnnotation</type>
             <type>edu.umn.biomedicus.type.CellAnnotation</type>

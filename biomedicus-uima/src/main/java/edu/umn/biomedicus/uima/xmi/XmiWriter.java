@@ -19,11 +19,15 @@ package edu.umn.biomedicus.uima.xmi;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
+import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
@@ -77,17 +81,15 @@ public class XmiWriter extends CasAnnotator_ImplBase {
 
     @Override
     public void process(CAS cas) throws AnalysisEngineProcessException {
+        TypeSystem typeSystem = cas.getTypeSystem();
         try {
-            typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), cas.getTypeSystem());
+            typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), typeSystem);
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }
-        String fileName;
-        try {
-            fileName = UimaAdapters.documentFromInitialView(cas).getDocumentId() + ".xmi";
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+        Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
+        Feature documentId = type.getFeatureByBaseName("documentId");
+        String fileName = cas.getIndexRepository().getAllIndexedFS(type).next().getStringValue(documentId) + ".xmi";
         Path path = outputDir.resolve(fileName);
 
         if (LOGGER.isInfoEnabled()) {

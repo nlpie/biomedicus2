@@ -19,6 +19,8 @@ package edu.umn.biomedicus.uima.adapter;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.labels.LabelAdapter;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -43,8 +45,8 @@ public final class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the SystemView.
      * @throws BiomedicusException
      */
-    public static Document documentFromInitialView(CAS initialView) throws BiomedicusException {
-        return documentFromView(initialView, Views.SYSTEM_VIEW);
+    public static Document documentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
+        return documentFromView(initialView, Views.SYSTEM_VIEW, labelAdapters);
     }
 
     /**
@@ -55,8 +57,8 @@ public final class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the GoldView.
      * @throws BiomedicusException
      */
-    public static Document goldDocumentFromInitialView(CAS initialView) throws BiomedicusException {
-        return documentFromView(initialView, Views.SYSTEM_VIEW);
+    public static Document goldDocumentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
+        return documentFromView(initialView, Views.SYSTEM_VIEW, labelAdapters);
     }
 
     /**
@@ -68,12 +70,12 @@ public final class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
      * @throws BiomedicusException
      */
-    public static Document documentFromView(CAS initialView, String viewName) throws BiomedicusException {
+    public static Document documentFromView(CAS initialView, String viewName, LabelAdapters labelAdapters) throws BiomedicusException {
         if (CAS.NAME_DEFAULT_SOFA.equals(viewName)) {
             throw new IllegalArgumentException("Cannot create document from _initialView");
         }
         CAS view = initialView.getView(viewName);
-        return new CASDocument(view);
+        return new CASDocument(view, labelAdapters);
     }
 
     /**
@@ -84,7 +86,7 @@ public final class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
      * @throws BiomedicusException
      */
-    public static Document documentFromView(CAS view) throws BiomedicusException {
-        return new CASDocument(view);
+    public static Document documentFromView(CAS view, LabelAdapters labelAdapters) throws BiomedicusException {
+        return new CASDocument(view, labelAdapters);
     }
 }

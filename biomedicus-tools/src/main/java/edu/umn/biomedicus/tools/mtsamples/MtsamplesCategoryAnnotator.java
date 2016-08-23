@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
+import com.google.inject.Inject;
+import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
@@ -32,26 +34,25 @@ import org.slf4j.LoggerFactory;
 /**
  * Annotates the category on MTSamples documents using the document id.
  */
-public class MtsamplesCategoryAnnotator extends CasAnnotator_ImplBase {
-    /**
-     * Class logger.
-     */
+public class MtsamplesCategoryAnnotator implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MtsamplesCategoryAnnotator.class);
+    private final Document document;
+
+    @Inject
+    public MtsamplesCategoryAnnotator(Document document) {
+        this.document = document;
+    }
 
     @Override
-    public void process(CAS cas) throws AnalysisEngineProcessException {
-        LOGGER.debug("Processing a document for MTSamples category");
+    public void process() throws BiomedicusException {
+        String documentId = document.getDocumentId();
 
-        CAS systemView = cas.getView(Views.SYSTEM_VIEW);
-
-        try {
-            Document document = UimaAdapters.documentFromView(systemView);
-            String documentId = document.getDocumentId();
-            int underscore = documentId.indexOf("_");
-            String category = documentId.substring(0, underscore);
-            document.setMetadata("category", category);
-        } catch (BiomedicusException e) {
-            throw new AnalysisEngineProcessException(e);
+        if (documentId == null) {
+            throw new BiomedicusException("documentId is null");
         }
+
+        int underscore = documentId.indexOf("_");
+        String category = documentId.substring(0, underscore);
+        document.setMetadata("category", category);
     }
 }

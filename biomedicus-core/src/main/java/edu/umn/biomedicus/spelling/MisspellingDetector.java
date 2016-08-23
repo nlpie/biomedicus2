@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.semantics.Misspelling;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -42,11 +43,10 @@ public final class MisspellingDetector implements DocumentProcessor {
 
     @Inject
     public MisspellingDetector(Vocabulary vocabulary,
-                               Labels<ParseToken> parseTokenLabels,
-                               Labeler<Misspelling> misspellingLabeler) {
+                               Document document) {
         wordIndex = vocabulary.wordIndex();
-        this.parseTokenLabels = parseTokenLabels;
-        mispellingLabeler = misspellingLabeler.value(new Misspelling());
+        this.parseTokenLabels = document.labels(ParseToken.class);
+        mispellingLabeler = document.labeler(Misspelling.class).value(new Misspelling());
     }
 
     @Override

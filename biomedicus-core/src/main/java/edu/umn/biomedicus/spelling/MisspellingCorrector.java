@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.semantics.Misspelling;
 import edu.umn.biomedicus.common.semantics.SpellCorrection;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Sentence;
 import edu.umn.biomedicus.common.utilities.Patterns;
@@ -44,15 +45,12 @@ public final class MisspellingCorrector implements DocumentProcessor {
 
     @Inject
     public MisspellingCorrector(SpellingModel spellingModel,
-                                Labels<Sentence> sentence2Labels,
-                                Labels<ParseToken> parseTokenLabels,
-                                Labels<Misspelling> misspellingLabels,
-                                Labeler<SpellCorrection> spellCorrectionLabeler) {
+                                Document document) {
         this.spellingModel = spellingModel;
-        this.sentence2Labels = sentence2Labels;
-        this.parseTokenLabels = parseTokenLabels;
-        this.misspellingLabels = misspellingLabels;
-        this.spellCorrectionLabeler = spellCorrectionLabeler;
+        this.sentence2Labels = document.labels(Sentence.class);
+        this.parseTokenLabels = document.labels(ParseToken.class);
+        this.misspellingLabels = document.labels(Misspelling.class);
+        this.spellCorrectionLabeler = document.labeler(SpellCorrection.class);
     }
 
     @Override

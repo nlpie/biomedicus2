@@ -21,6 +21,7 @@ import com.google.inject.Key;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.application.DocumentProcessorRunner;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -43,13 +44,15 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunnerAnnotator.class);
     @Nullable private String viewName;
     @Nullable private DocumentProcessorRunner documentProcessorRunner;
+    private LabelAdapters labelAdapters;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         super.initialize(aContext);
         try {
-            documentProcessorRunner = ((GuiceInjector) aContext.getResourceObject("guiceInjector"))
-                    .createDocumentProcessorRunner();
+            GuiceInjector guiceInjector = (GuiceInjector) aContext.getResourceObject("guiceInjector");
+            documentProcessorRunner = guiceInjector.createDocumentProcessorRunner();
+            labelAdapters = guiceInjector.getInjector().getInstance(LabelAdapters.class);
         } catch (ResourceAccessException e) {
             throw new ResourceInitializationException(e);
         }
@@ -120,7 +123,7 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
             HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
             additionalSeeded.put(Key.get(CAS.class), view);
 
-            CASDocument casDocument = new CASDocument(view);
+            CASDocument casDocument = new CASDocument(view, labelAdapters);
             documentProcessorRunner.processDocument(casDocument, additionalSeeded);
         } catch (BiomedicusException e) {
             LOGGER.error("error while processing document");

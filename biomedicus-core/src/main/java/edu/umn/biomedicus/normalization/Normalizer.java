@@ -21,6 +21,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.NormForm;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -40,14 +41,11 @@ public class Normalizer implements DocumentProcessor {
     private final Labeler<NormForm> normFormLabeler;
 
     @Inject
-    Normalizer(NormalizerModel normalizerModel,
-               Labels<ParseToken> parseTokenLabels,
-               Labels<PartOfSpeech> partOfSpeechLabels,
-               Labeler<NormForm> normFormLabeler) {
+    Normalizer(NormalizerModel normalizerModel, Document document) {
         this.normalizerModel = normalizerModel;
-        this.parseTokenLabels = parseTokenLabels;
-        this.partOfSpeechLabels = partOfSpeechLabels;
-        this.normFormLabeler = normFormLabeler;
+        parseTokenLabels = document.labels(ParseToken.class);
+        partOfSpeechLabels = document.labels(PartOfSpeech.class);
+        normFormLabeler = document.labeler(NormForm.class);
     }
 
     @Override

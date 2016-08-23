@@ -22,10 +22,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.DependencyParse;
-import edu.umn.biomedicus.common.text.NormForm;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,14 +42,12 @@ public final class SyntaxnetParser implements DocumentProcessor {
     @Inject
     SyntaxnetParser(@Setting("syntaxnet.installationDir.path") Path installationDir,
                     @Setting("syntaxnet.modelDir") String modelDirString,
-                    Labels<Sentence> sentenceLabels,
-                    Labels<ParseToken> tokenLabels,
-                    Labeler<DependencyParse> dependencyParseLabeler) {
+                    Document document) {
         this.installationDir = installationDir;
         this.modelDirString = modelDirString;
-        this.sentenceLabels = sentenceLabels;
-        this.tokenLabels = tokenLabels;
-        this.dependencyParseLabeler = dependencyParseLabeler;
+        sentenceLabels = document.labels(Sentence.class);
+        tokenLabels = document.labels(ParseToken.class);
+        dependencyParseLabeler = document.labeler(DependencyParse.class);
     }
 
     @Override

@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.common.text;
 
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import javax.annotation.Nullable;
@@ -63,4 +65,8 @@ public interface Document {
     void setMetadata(String key, String value) throws BiomedicusException;
 
     Document getSiblingDocument(String identifier) throws BiomedicusException;
+
+    <T> Labels<T> labels(Class<T> labelClass);
+
+    <T> Labeler<T> labeler(Class<T> labelClass);
 }

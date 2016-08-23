@@ -99,6 +99,19 @@ public interface Labels<T> extends Iterable<Label<T>> {
      */
     Labels<T> filter(Predicate<Label<T>> predicate);
 
+    /**
+     * Returns an optional of the first label in this labels list.
+     *
+     * @return
+     */
+    default Optional<Label<T>> firstOptionally() {
+        Iterator<Label<T>> iterator = iterator();
+        if (iterator.hasNext()) {
+            return Optional.of(iterator.next());
+        }
+        return Optional.empty();
+    }
+
     default Optional<Label<T>> withSpan(TextLocation textLocation) {
         Iterator<Label<T>> it = insideSpan(textLocation).filter(textLocation::spanEquals).iterator();
         if (it.hasNext()) {

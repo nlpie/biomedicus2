@@ -30,22 +30,20 @@ public final class SentenceProcessor implements DocumentProcessor {
     private final SentenceDetectorFactory sentenceDetectorFactory;
     private final Document document;
     private final Labels<TextSegment> textSegmentLabels;
-    private final Labeler<Sentence> sentence2Labeler;
+    private final Labeler<Sentence> sentenceLabeler;
 
     @Inject
     public SentenceProcessor(@Setting("sentenceDetectorFactory.implementation") SentenceDetectorFactory sentenceDetectorFactory,
-                             Document document,
-                             Labels<TextSegment> textSegmentLabels,
-                             Labeler<Sentence> sentence2Labeler) {
+                             Document document) {
         this.sentenceDetectorFactory = sentenceDetectorFactory;
         this.document = document;
-        this.textSegmentLabels = textSegmentLabels;
-        this.sentence2Labeler = sentence2Labeler;
+        textSegmentLabels = document.labels(TextSegment.class);
+        sentenceLabeler = document.labeler(Sentence.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
         SentenceDetector sentenceDetector = sentenceDetectorFactory.create();
-        sentenceDetector.processDocument(document.getText(), textSegmentLabels, sentence2Labeler);
+        sentenceDetector.processDocument(document, textSegmentLabels, sentenceLabeler);
     }
 }

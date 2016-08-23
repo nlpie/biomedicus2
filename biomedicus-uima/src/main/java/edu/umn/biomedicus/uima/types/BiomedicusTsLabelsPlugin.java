@@ -20,13 +20,16 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.semantics.*;
+import edu.umn.biomedicus.common.style.Bold;
+import edu.umn.biomedicus.common.style.Underlined;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.text.*;
-import edu.umn.biomedicus.plugins.AbstractPlugin;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
+import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.LabelableModule;
+import edu.umn.biomedicus.uima.labels.UimaPlugin;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
@@ -34,8 +37,59 @@ import org.apache.uima.cas.text.AnnotationFS;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public final class BiomedicusTsLabelsPlugin extends AbstractPlugin {
+public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
+
+
+    public static class SectionLabelAdapter extends AbstractLabelAdapter<Section> {
+
+        private final Feature kindFeature;
+
+        @Inject
+        SectionLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Section"));
+            kindFeature = type.getFeatureByBaseName("kind");
+        }
+
+        @Override
+        protected Section createLabelValue(FeatureStructure featureStructure) {
+            return new Section(featureStructure.getStringValue(kindFeature));
+        }
+
+        @Override
+        protected void fillAnnotation(Label<Section> label, AnnotationFS annotationFS) {
+            annotationFS.setStringValue(kindFeature, label.value().getKind());
+        }
+    }
+
+    public static class SectionTitleLabelAdapter extends AbstractLabelAdapter<SectionTitle> {
+
+        @Inject
+        SectionTitleLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SectionTitle"));
+        }
+
+        @Override
+        protected SectionTitle createLabelValue(FeatureStructure featureStructure) {
+            return new SectionTitle();
+        }
+    }
+
+    public static class SectionContentLabelAdapter extends AbstractLabelAdapter<SectionContent> {
+
+        @Inject
+        SectionContentLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SectionContent"));
+        }
+
+        @Override
+        protected SectionContent createLabelValue(FeatureStructure featureStructure) {
+            return new SectionContent();
+        }
+    }
+
     public static class SentenceLabelAdapter extends AbstractLabelAdapter<Sentence> {
         @Inject
         public SentenceLabelAdapter(CAS cas) {
@@ -261,30 +315,56 @@ public final class BiomedicusTsLabelsPlugin extends AbstractPlugin {
         }
     }
 
+    public static class BoldLabelAdapter extends AbstractLabelAdapter<Bold> {
+
+        @Inject
+        BoldLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.rtfuima.type.Bold"));
+        }
+
+        @Override
+        protected Bold createLabelValue(FeatureStructure featureStructure) {
+            return new Bold();
+        }
+    }
+
+    public static class UnderlinedLabelAdapter extends AbstractLabelAdapter<Underlined> {
+        @Inject
+        UnderlinedLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.rtfuima.type.Underline"));
+        }
+
+        @Override
+        protected Underlined createLabelValue(FeatureStructure featureStructure) {
+            return new Underlined();
+        }
+    }
+
 
     @Override
-    public Collection<? extends Module> modules() {
-        return Collections.singletonList(new LabelableModule() {
-            @Override
-            protected void configure() {
-                bindLabelable(Section.class, SectionLabelAdapter.class);
-                bindLabelable(TextSegment.class, TextSegmentLabelAdapter.class);
-                bindLabelable(Sentence.class, SentenceLabelAdapter.class);
-                bindLabelable(DependencyParse.class, DependencyParseLabelAdapter.class);
-                bindLabelable(DictionaryTerm.class, DictionaryTermLabelAdapter.class);
-                bindLabelable(Negated.class, NegatedLabelAdapter.class);
-                bindLabelable(Historical.class, HistoricalLabelAdapter.class);
-                bindLabelable(Probable.class, ProbableLabelAdapter.class);
-                bindLabelable(TermToken.class, TermTokenLabelAdapter.class);
-                bindLabelable(Acronym.class, AcronymLabelAdapter.class);
-                bindLabelable(ParseToken.class, ParseTokenLabelAdapter.class);
-                bindLabelable(PartOfSpeech.class, PartOfSpeechLabelAdapter.class);
-                bindLabelable(WordIndex.class, WordIndexLabelAdapter.class);
-                bindLabelable(NormForm.class, NormFormLabelAdapter.class);
-                bindLabelable(NormIndex.class, NormIndexLabelAdapter.class);
-                bindLabelable(Misspelling.class, MisspellingLabelAdapter.class);
-                bindLabelable(SpellCorrection.class, SpellCorrectionLabelAdapter.class);
-            }
-        });
+    public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
+        Map<Class<?>, LabelAdapterFactory> map = new HashMap<>();
+        map.put(Section.class, SectionLabelAdapter::new);
+        map.put(SectionTitle.class, SectionTitleLabelAdapter::new);
+        map.put(SectionContent.class, SectionContentLabelAdapter::new);
+        map.put(TextSegment.class, TextSegmentLabelAdapter::new);
+        map.put(Sentence.class, SentenceLabelAdapter::new);
+        map.put(DependencyParse.class, DependencyParseLabelAdapter::new);
+        map.put(DictionaryTerm.class, DictionaryTermLabelAdapter::new);
+        map.put(Negated.class, NegatedLabelAdapter::new);
+        map.put(Historical.class, HistoricalLabelAdapter::new);
+        map.put(Probable.class, ProbableLabelAdapter::new);
+        map.put(TermToken.class, TermTokenLabelAdapter::new);
+        map.put(Acronym.class, AcronymLabelAdapter::new);
+        map.put(ParseToken.class, ParseTokenLabelAdapter::new);
+        map.put(PartOfSpeech.class, PartOfSpeechLabelAdapter::new);
+        map.put(WordIndex.class, WordIndexLabelAdapter::new);
+        map.put(NormForm.class, NormFormLabelAdapter::new);
+        map.put(NormIndex.class, NormIndexLabelAdapter::new);
+        map.put(Misspelling.class, MisspellingLabelAdapter::new);
+        map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
+        map.put(Bold.class, BoldLabelAdapter::new);
+        map.put(Underlined.class, UnderlinedLabelAdapter::new);
+        return map;
     }
 }

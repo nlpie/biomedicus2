@@ -41,19 +41,14 @@ public final class HistoryModificationDetector implements DocumentProcessor {
 
     @Inject
     public HistoryModificationDetector(HistoryModificationModel historyModificationModel,
-                                       Document document,
-                                       Labels<Sentence> sentences,
-                                       Labels<DictionaryTerm> dictionaryTerms,
-                                       Labels<TermToken> termTokens,
-                                       Labels<PartOfSpeech> partsOfSpeech,
-                                       Labeler<Historical> historicalLabeler) {
+                                       Document document) {
         this.historyModificationModel = historyModificationModel;
         this.document = document;
-        this.sentences = sentences;
-        this.dictionaryTerms = dictionaryTerms;
-        this.termTokens = termTokens;
-        this.partsOfSpeech = partsOfSpeech;
-        labeler = historicalLabeler.value(new Historical());
+        this.sentences = document.labels(Sentence.class);
+        this.dictionaryTerms = document.labels(DictionaryTerm.class);
+        this.termTokens = document.labels(TermToken.class);
+        this.partsOfSpeech = document.labels(PartOfSpeech.class);
+        labeler = document.labeler(Historical.class).value(new Historical());
     }
 
     @Override

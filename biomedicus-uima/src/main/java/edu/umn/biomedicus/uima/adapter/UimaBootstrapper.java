@@ -22,29 +22,31 @@ import edu.umn.biomedicus.application.BiomedicusFiles;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.plugins.AbstractPlugin;
+import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.biomedicus.uima.labels.UimaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class UimaBootstrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(UimaBootstrapper.class);
     private final Injector injector;
-    private final List<AbstractPlugin> plugins;
 
-    private UimaBootstrapper(Injector injector, List<AbstractPlugin> plugins) {
+    private UimaBootstrapper(Injector injector) {
         this.injector = injector;
-        this.plugins = plugins;
     }
 
     public static UimaBootstrapper create(Module... additionalModules) throws BiomedicusException {
-        Injector injector = Bootstrapper.create(additionalModules).injector();
+        ArrayList<Module> modules = new ArrayList<>();
+        modules.add(new UimaModule());
+        modules.addAll(Arrays.asList(additionalModules));
+        Injector injector = Bootstrapper.create(modules.toArray(new Module[modules.size()])).injector();
         BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
         Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
         List<String> pluginClassNames;
@@ -53,36 +55,31 @@ public final class UimaBootstrapper {
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }
-        List<AbstractPlugin> plugins = new ArrayList<>();
-        List<Module> modules = new ArrayList<>();
 
-        modules.add(new UimaModule());
-
+        LabelAdapters labelAdapters = injector.getInstance(LabelAdapters.class);
         for (String pluginClassName : pluginClassNames) {
             if (pluginClassName.isEmpty()) {
                 continue;
             }
-            LOGGER.debug("Loading modules from plugin: {}", pluginClassName);
+            LOGGER.info("Loading uima plugin: {}", pluginClassName);
 
-            Class<? extends AbstractPlugin> pluginClass;
+            Class<? extends UimaPlugin> pluginClass;
             try {
-                pluginClass = Class.forName(pluginClassName).asSubclass(AbstractPlugin.class);
+                pluginClass = Class.forName(pluginClassName).asSubclass(UimaPlugin.class);
             } catch (ClassNotFoundException e) {
                 throw new BiomedicusException(e);
             }
-            AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
-            plugins.add(abstractPlugin);
-            Collection<? extends Module> pluginModules = abstractPlugin.modules();
-            if (LOGGER.isDebugEnabled()) {
-                for (Module pluginModule : pluginModules) {
-                    LOGGER.debug("Plugin module: {}", pluginModule.toString());
-                }
+
+            UimaPlugin plugin = injector.getInstance(pluginClass);
+
+            Map<Class<?>, LabelAdapterFactory> labelAdapterFactories = plugin.getLabelAdapterFactories();
+            for (Map.Entry<Class<?>, LabelAdapterFactory> entry : labelAdapterFactories.entrySet()) {
+                LabelAdapterFactory value = entry.getValue();
+                labelAdapters.addLabelAdapter(entry.getKey(), value);
             }
-            modules.addAll(pluginModules);
         }
 
-        Injector uimaInjector = injector.createChildInjector(modules);
-        return new UimaBootstrapper(uimaInjector, plugins);
+        return new UimaBootstrapper(injector);
     }
 
     public <T> T createClass(Class<T> tClass) {
@@ -91,9 +88,5 @@ public final class UimaBootstrapper {
 
     public Injector getInjector() {
         return injector;
-    }
-
-    public List<AbstractPlugin> getPlugins() {
-        return plugins;
     }
 }

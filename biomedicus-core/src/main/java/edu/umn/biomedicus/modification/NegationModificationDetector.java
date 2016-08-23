@@ -41,19 +41,14 @@ public final class NegationModificationDetector implements DocumentProcessor {
 
     @Inject
     public NegationModificationDetector(NegationModificationModel negationModificationModel,
-                                        Document document,
-                                        Labels<Sentence> sentences,
-                                        Labels<DictionaryTerm> dictionaryTerms,
-                                        Labels<TermToken> termTokens,
-                                        Labels<PartOfSpeech> partsOfSpeech,
-                                        Labeler<Negated> historicalLabeler) {
+                                        Document document) {
         this.negationModificationModel = negationModificationModel;
         this.document = document;
-        this.sentences = sentences;
-        this.dictionaryTerms = dictionaryTerms;
-        this.termTokens = termTokens;
-        this.partsOfSpeech = partsOfSpeech;
-        labeler = historicalLabeler.value(new Negated());
+        sentences = document.labels(Sentence.class);
+        dictionaryTerms = document.labels(DictionaryTerm.class);
+        termTokens = document.labels(TermToken.class);
+        partsOfSpeech = document.labels(PartOfSpeech.class);
+        labeler = document.labeler(Negated.class).value(new Negated());
     }
 
     @Override

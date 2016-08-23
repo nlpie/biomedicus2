@@ -58,36 +58,26 @@
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.type.SectionAnnotation</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Section</name>
             <description>A document section</description>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>
                 <featureDescription>
-                    <name>sectionTitle</name>
-                    <description>Title of the section</description>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>level</name>
-                    <description>0 for section or 1 for subsection</description>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>contentStart</name>
-                    <description>Start of the content of the section, not including the header</description>
-                    <rangeTypeName>uima.cas.Integer</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>hasSubsections</name>
-                    <description>Whether the section contains subsection annotations.</description>
-                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
                     <name>kind</name>
-                    <description>The kind of section this is.</description>
+                    <description>The kind of section it is.</description>
                     <rangeTypeName>uima.cas.String</rangeTypeName>
                 </featureDescription>
             </features>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.SectionTitle</name>
+            <description>A document section</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.SectionContent</name>
+            <description>A document section</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
         </typeDescription>
 
         <typeDescription>

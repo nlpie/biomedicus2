@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.semantics.StopWord;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -32,17 +33,10 @@ public class StopwordsProcessor implements DocumentProcessor {
     private final ValueLabeler stopWordsLabeler;
 
     @Inject
-    public StopwordsProcessor(Stopwords stopwords, Labels<ParseToken> parseTokenLabels, ValueLabeler stopWordsLabeler) {
+    public StopwordsProcessor(Stopwords stopwords, Document document) {
         this.stopwords = stopwords;
-        this.parseTokenLabels = parseTokenLabels;
-        this.stopWordsLabeler = stopWordsLabeler;
-    }
-
-    @Inject
-    public StopwordsProcessor(Stopwords stopwords,
-                              Labels<ParseToken> parseTokenLabels,
-                              Labeler<StopWord> stopWordLabeler) {
-        this(stopwords, parseTokenLabels, stopWordLabeler.value(new StopWord()));
+        parseTokenLabels = document.labels(ParseToken.class);
+        stopWordsLabeler = document.labeler(StopWord.class).value(new StopWord());
     }
 
     @Override

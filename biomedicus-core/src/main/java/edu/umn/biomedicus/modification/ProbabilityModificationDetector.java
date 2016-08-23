@@ -41,19 +41,14 @@ public final class ProbabilityModificationDetector implements DocumentProcessor 
 
     @Inject
     public ProbabilityModificationDetector(ProbabilityModificationModel probabilityModificationModel,
-                                           Document document,
-                                           Labels<Sentence> sentences,
-                                           Labels<DictionaryTerm> dictionaryTerms,
-                                           Labels<TermToken> termTokens,
-                                           Labels<PartOfSpeech> partsOfSpeech,
-                                           Labeler<Probable> labeler) {
+                                           Document document) {
         this.probabilityModificationModel = probabilityModificationModel;
         this.document = document;
-        this.sentences = sentences;
-        this.dictionaryTerms = dictionaryTerms;
-        this.termTokens = termTokens;
-        this.partsOfSpeech = partsOfSpeech;
-        this.labeler = labeler.value(new Probable());
+        sentences = document.labels(Sentence.class);
+        dictionaryTerms = document.labels(DictionaryTerm.class);
+        termTokens = document.labels(TermToken.class);
+        partsOfSpeech = document.labels(PartOfSpeech.class);
+        labeler = document.labeler(Probable.class).value(new Probable());
     }
 
     @Override

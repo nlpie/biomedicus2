@@ -36,12 +36,20 @@ public interface TextLocation {
      */
     int getBegin();
 
+    default int begin() {
+        return getBegin();
+    }
+
     /**
      * The end offset of the text
      *
      * @return the index after the last character
      */
     int getEnd();
+
+    default int end() {
+        return getEnd();
+    }
 
     default Span toSpan() {
         return new Span(getBegin(), getEnd());

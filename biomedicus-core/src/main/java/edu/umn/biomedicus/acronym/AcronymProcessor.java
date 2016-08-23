@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.semantics.Acronym;
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.TermToken;
 import edu.umn.biomedicus.common.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -66,14 +67,12 @@ class AcronymProcessor implements DocumentProcessor {
     @Inject
     public AcronymProcessor(@Setting("acronym.model") AcronymModel model,
                             @Nullable OrthographicAcronymModel orthographicModel,
-                            Labels<TermToken> termTokenLabels,
-                            Labels<PartOfSpeech> partOfSpeechLabels,
-                            Labeler<Acronym> acronymExpansionLabeler) {
+                            Document document) {
         this.orthographicModel = orthographicModel;
         this.model = model;
-        this.termTokenLabels = termTokenLabels;
-        this.partOfSpeechLabels = partOfSpeechLabels;
-        this.acronymExpansionLabeler = acronymExpansionLabeler;
+        this.termTokenLabels = document.labels(TermToken.class);
+        this.partOfSpeechLabels = document.labels(PartOfSpeech.class);
+        this.acronymExpansionLabeler = document.labeler(Acronym.class);
     }
 
     @Override

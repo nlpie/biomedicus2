@@ -21,10 +21,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TermToken;
+import edu.umn.biomedicus.common.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.*;
@@ -32,16 +29,14 @@ import java.util.*;
 public final class TermTokenMerger implements DocumentProcessor {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
     private final Labels<ParseToken> parseTokens;
-    private final Labeler<TermToken> termTokenLabeler;
     private final Labels<Sentence> sentenceLabels;
+    private final Labeler<TermToken> termTokenLabeler;
 
     @Inject
-    public TermTokenMerger(Labels<Sentence> sentenceLabels,
-                           Labels<ParseToken> parseTokens,
-                           Labeler<TermToken> termTokenLabeler) {
-        this.parseTokens = parseTokens;
-        this.termTokenLabeler = termTokenLabeler;
-        this.sentenceLabels = sentenceLabels;
+    public TermTokenMerger(Document document) {
+        parseTokens = document.labels(ParseToken.class);
+        sentenceLabels = document.labels(Sentence.class);
+        termTokenLabeler = document.labeler(TermToken.class);
     }
 
     @Override

@@ -78,13 +78,15 @@ public final class SentenceDetector {
     /**
      * Adds all sentences in the {@link Document}.
      *
-     * @param documentText      the entire text of the document
+     * @param document          the document to process
      * @param sentence2Labeler  labeler to use
      * @param textSegmentLabels the labels for the text segments
      */
-    public void processDocument(String documentText,
+    public void processDocument(Document document,
                                 Labels<TextSegment> textSegmentLabels,
                                 Labeler<Sentence> sentence2Labeler) throws BiomedicusException {
+        String documentText = document.getText();
+
         List<Label<TextSegment>> textSegments = textSegmentLabels.all();
         if (textSegments.isEmpty()) {
             textSegments = new ArrayList<>();

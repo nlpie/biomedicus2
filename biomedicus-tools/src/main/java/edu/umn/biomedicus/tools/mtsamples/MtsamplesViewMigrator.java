@@ -18,7 +18,6 @@ package edu.umn.biomedicus.tools.mtsamples;
 
 import edu.umn.biomedicus.common.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.type.SectionAnnotation;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
 import edu.umn.biomedicus.uima.type1_5.*;
 import edu.umn.biomedicus.uima.type1_6.*;
@@ -79,10 +78,10 @@ public class MtsamplesViewMigrator implements ViewMigrator {
         Feature sectionTitle = sectionType.getFeatureByBaseName("sectionTitle");
         AnnotationIndex<Annotation> sectionIndex = source.getAnnotationIndex(sectionType);
         for (Annotation annotation : sectionIndex) {
-            SectionAnnotation sectionAnnotation = new SectionAnnotation(target, annotation.getBegin(),
-                    annotation.getEnd());
-            sectionAnnotation.setSectionTitle(annotation.getStringValue(sectionTitle));
+            Section sectionAnnotation = new Section(target, annotation.getBegin(), annotation.getEnd());
             sectionAnnotation.addToIndexes();
+            SectionContent sectionContent = new SectionContent(target, annotation.getBegin(), annotation.getEnd());
+            sectionContent.addToIndexes();
         }
 
         Type tokenType = oldTypeSystem.getType("edu.umn.biomedicus.mtsamples.types.Token");

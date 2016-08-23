@@ -16,8 +16,14 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.uima.labels.LabelAdapter;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.biomedicus.uima.labels.UimaLabeler;
+import edu.umn.biomedicus.uima.labels.UimaLabels;
 import org.apache.uima.cas.*;
 
 import javax.annotation.Nullable;
@@ -41,6 +47,7 @@ final class CASDocument implements Document {
     private final Type documentMetadataType;
     private final Feature keyFeature;
     private final Feature valueFeature;
+    private final LabelAdapters labelAdapters;
 
     /**
      * Default constructor. Instantiates a Document class backed up by a system view {@link CAS}, and the
@@ -48,7 +55,10 @@ final class CASDocument implements Document {
      *
      * @param view the {@link CAS} system view
      */
-    CASDocument(CAS view) throws BiomedicusException {
+    CASDocument(CAS view, LabelAdapters labelAdapters) throws BiomedicusException {
+        if (labelAdapters == null) {
+            throw new IllegalArgumentException("labelAdapters was null.");
+        }
         this.view = view;
         TypeSystem typeSystem = view.getTypeSystem();
         Type docIdType = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
@@ -65,6 +75,7 @@ final class CASDocument implements Document {
         documentMetadataType = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentMetadata");
         keyFeature = documentMetadataType.getFeatureByBaseName("key");
         valueFeature = documentMetadataType.getFeatureByBaseName("value");
+        this.labelAdapters = labelAdapters;
     }
 
     @Override
@@ -143,6 +154,19 @@ final class CASDocument implements Document {
 
     @Override
     public Document getSiblingDocument(String identifier) throws BiomedicusException {
-        return UimaAdapters.documentFromView(view, identifier);
+        CAS targetView = this.view.getView(identifier);
+        return new CASDocument(targetView, labelAdapters);
+    }
+
+    @Override
+    public <T> Labels<T> labels(Class<T> labelClass) {
+        LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view);
+        return new UimaLabels<>(view, labelAdapter);
+    }
+
+    @Override
+    public <T> Labeler<T> labeler(Class<T> labelClass) {
+        LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view);
+        return new UimaLabeler<>(labelAdapter);
     }
 }

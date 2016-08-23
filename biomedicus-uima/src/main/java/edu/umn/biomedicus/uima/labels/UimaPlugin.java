@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.text;
+package edu.umn.biomedicus.uima.labels;
 
-import com.google.inject.Inject;
+import java.util.Map;
 
-import javax.annotation.Nullable;
-
-public final class Section {
-    @Nullable private final String kind;
-
-    @Inject
-    public Section(@Nullable String kind) {
-        this.kind = kind;
-    }
-
-    @Nullable
-    public String getKind() {
-        return kind;
-    }
+public interface UimaPlugin {
+    Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories();
 }

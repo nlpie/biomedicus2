@@ -22,6 +22,9 @@
         <delegateAnalysisEngine key="sentence">
             <import location="annotator/syntax/SentenceDetector.xml"/>
         </delegateAnalysisEngine>
+        <!--<delegateAnalysisEngine key="section">
+            <import location="annotator/semantics/RuleBasedSectionDetector.xml"/>
+        </delegateAnalysisEngine>-->
         <delegateAnalysisEngine key="parseTokens">
             <import location="annotator/syntax/PennLikeTokenizer.xml"/>
         </delegateAnalysisEngine>
@@ -69,6 +72,7 @@
         <flowConstraints>
             <fixedFlow>
                 <node>sentence</node>
+                <!--<node>section</node>-->
                 <node>parseTokens</node>
                 <node>words</node>
                 <node>misspellings</node>
@@ -101,6 +105,13 @@
         </operationalProperties>
     </analysisEngineMetaData>
 
+    <externalResourceDependencies>
+        <externalResourceDependency>
+            <key>guiceInjector</key>
+            <description>The guice injector resource.</description>
+        </externalResourceDependency>
+    </externalResourceDependencies>
+
     <resourceManagerConfiguration>
         <externalResources>
             <externalResource>
@@ -111,5 +122,11 @@
                 </customResourceSpecifier>
             </externalResource>
         </externalResources>
+        <externalResourceBindings>
+            <externalResourceBinding>
+                <key>guiceInjector</key>
+                <resourceName>guiceInjector</resourceName>
+            </externalResourceBinding>
+        </externalResourceBindings>
     </resourceManagerConfiguration>
 </analysisEngineDescription>
