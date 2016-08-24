@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.Biomedicus;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -34,8 +34,8 @@ public abstract class BaseSentenceDetectorFactory implements SentenceDetectorFac
     private static final Pattern SPLITS;
 
     static {
-        ABBREVS = Patterns.loadPatternByJoiningLines("edu/umn/biomedicus/config/sentence/abbrevs.txt");
-        SPLITS = Patterns.loadPatternByJoiningLines("edu/umn/biomedicus/config/sentence/splits.txt");
+        ABBREVS = Biomedicus.Patterns.loadPatternByJoiningLines("edu/umn/biomedicus/config/sentence/abbrevs.txt");
+        SPLITS = Biomedicus.Patterns.loadPatternByJoiningLines("edu/umn/biomedicus/config/sentence/splits.txt");
     }
 
     /**

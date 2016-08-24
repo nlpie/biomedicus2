@@ -17,16 +17,15 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.semantics.Misspelling;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public final class MisspellingDetector implements DocumentProcessor {
         for (Label<ParseToken> parseTokenLabel : parseTokenLabels) {
             ParseToken parseToken = parseTokenLabel.value();
             String text = parseToken.text();
-            if (Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
+            if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
                 mispellingLabeler.label(parseTokenLabel);
             }
         }

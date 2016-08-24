@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.labels.Label;
@@ -27,7 +28,6 @@ import edu.umn.biomedicus.common.semantics.SpellCorrection;
 import edu.umn.biomedicus.common.text.Document;
 import edu.umn.biomedicus.common.text.ParseToken;
 import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public final class MisspellingCorrector implements DocumentProcessor {
             for (Label<ParseToken> tokenLabel : parseTokenLabels.insideSpan(sentence)) {
                 ParseToken token = tokenLabel.value();
                 String text = token.text();
-                if (Patterns.ALPHABETIC_WORD.matcher(text).matches()) {
+                if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text).matches()) {
                     return;
                 }
                 if (misspellingLabels.withSpan(tokenLabel).isPresent()) {

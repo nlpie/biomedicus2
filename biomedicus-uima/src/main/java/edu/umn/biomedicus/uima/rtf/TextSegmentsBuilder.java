@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.type.TextSegmentAnnotation;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -87,7 +87,7 @@ class TextSegmentsBuilder {
             if (currentSplit != prev) {
                 Span span = new Span(0, currentSplit);
                 CharSequence segmentText = span.getCovered(documentText);
-                if (Patterns.NON_WHITESPACE.matcher(segmentText).find()) {
+                if (Biomedicus.Patterns.NON_WHITESPACE.matcher(segmentText).find()) {
                     new TextSegmentAnnotation(jCas, prev, currentSplit).addToIndexes();
                 }
                 prev = currentSplit;
