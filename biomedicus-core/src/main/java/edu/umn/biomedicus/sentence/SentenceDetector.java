@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
+import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
@@ -27,9 +28,15 @@ import edu.umn.biomedicus.common.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Preprocessor;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+
+import static edu.umn.biomedicus.Biomedicus.Patterns.NEWLINE;
 
 /**
  * Detects the sentences in a document.
@@ -79,13 +86,18 @@ public final class SentenceDetector {
      * Adds all sentences in the {@link Document}.
      *
      * @param document          the document to process
-     * @param sentence2Labeler  labeler to use
+     * @param sentenceLabeler  labeler to use
      * @param textSegmentLabels the labels for the text segments
      */
     public void processDocument(Document document,
                                 Labels<TextSegment> textSegmentLabels,
-                                Labeler<Sentence> sentence2Labeler) throws BiomedicusException {
+                                Labeler<Sentence> sentenceLabeler) throws BiomedicusException {
         String documentText = document.getText();
+
+        StringReader stringReader = new StringReader(documentText);
+        BufferedReader bufferedReader = new BufferedReader(stringReader);
+        int maxLength = bufferedReader.lines().mapToInt(String::length).max()
+                .orElseThrow(() -> new BiomedicusException("no max sentence length?"));
 
         List<Label<TextSegment>> textSegments = textSegmentLabels.all();
         if (textSegments.isEmpty()) {
@@ -93,18 +105,42 @@ public final class SentenceDetector {
             textSegments.add(new Label<>(new Span(0, documentText.length()), new TextSegment()));
         }
 
-        ValueLabeler valueLabeler = sentence2Labeler.value(new Sentence());
+        ValueLabeler valueLabeler = sentenceLabeler.value(new Sentence());
+
+        int splitLinesShorterThan = maxLength - 12;
+
+        List<Span> sentencePreCandidates = new ArrayList<>();
 
         for (Label<TextSegment> textSegment : textSegments) {
+            CharSequence textSegmentText = textSegment.getCovered(documentText);
+            int runningBegin = textSegment.getBegin();
+            int lastLineBegin = textSegment.getBegin();
+            Matcher matcher = NEWLINE.matcher(textSegmentText);
+            while (matcher.find()) {
+                int newLine = matcher.start();
+                if (newLine != lastLineBegin && newLine - lastLineBegin < splitLinesShorterThan) {
+                    int lastLineEnd = lastLineBegin - 1;
+                    if (runningBegin < lastLineEnd) {
+                        sentencePreCandidates.add(new Span(runningBegin, lastLineEnd));
+                    }
+                    sentencePreCandidates.add(new Span(lastLineBegin, newLine));
+                    runningBegin = newLine + 1;
+                }
+                lastLineBegin = newLine + 1;
+            }
+            sentencePreCandidates.add(new Span(runningBegin, textSegment.getEnd()));
+        }
 
-            String textSegmentText = sentencePreprocessor.processText(textSegment.getCovered(documentText));
+
+        for (Span sentencePreCandidate : sentencePreCandidates) {
+            String textSegmentText = sentencePreprocessor.processText(sentencePreCandidate.getCovered(documentText));
 
             sentenceSplitter.setDocumentText(textSegmentText);
 
             Iterator<Span> iterator = sentenceCandidateGenerator.generateSentenceSpans(textSegmentText)
                     .stream()
                     .flatMap(sentenceSplitter::splitCandidate)
-                    .map(textSegment::derelativize)
+                    .map(sentencePreCandidate::derelativize)
                     .iterator();
 
             while (iterator.hasNext()) {
