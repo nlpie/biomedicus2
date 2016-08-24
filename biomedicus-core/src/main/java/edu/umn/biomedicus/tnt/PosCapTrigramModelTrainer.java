@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

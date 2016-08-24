@@ -22,7 +22,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.slf4j.Logger;

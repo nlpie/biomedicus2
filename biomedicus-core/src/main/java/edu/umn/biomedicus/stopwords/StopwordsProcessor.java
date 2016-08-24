@@ -19,12 +19,11 @@ package edu.umn.biomedicus.stopwords;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.semantics.StopWord;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.ParseToken;
+import edu.umn.biomedicus.common.types.semantics.StopWord;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public class StopwordsProcessor implements DocumentProcessor {

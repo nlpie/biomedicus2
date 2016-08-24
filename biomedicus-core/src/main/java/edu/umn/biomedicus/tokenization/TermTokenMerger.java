@@ -21,7 +21,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.*;

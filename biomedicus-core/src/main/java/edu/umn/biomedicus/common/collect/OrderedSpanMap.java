@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.collect;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 import edu.umn.biomedicus.common.tuples.Pair;
 
 import java.util.Collection;

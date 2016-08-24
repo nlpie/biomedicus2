@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 
 /**
  *

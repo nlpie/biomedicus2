@@ -18,10 +18,10 @@ package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.Span;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -19,7 +19,7 @@ package edu.umn.biomedicus.application;
 import com.google.inject.AbstractModule;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorScoped;
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.types.text.Document;
 
 /**
  *

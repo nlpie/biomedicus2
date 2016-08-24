@@ -16,14 +16,11 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
 
 /**
  * Utility class for adapting the UIMA backend to the Biomedicus type system.

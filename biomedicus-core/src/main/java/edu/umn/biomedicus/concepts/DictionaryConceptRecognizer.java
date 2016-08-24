@@ -20,13 +20,13 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.semantics.Acronym;
-import edu.umn.biomedicus.common.semantics.DictionaryConcept;
-import edu.umn.biomedicus.common.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.semantics.Acronym;
+import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
+import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static edu.umn.biomedicus.common.syntax.PartOfSpeech.*;
+import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.*;
 
 /**
  * Uses a {@link edu.umn.biomedicus.concepts.ConceptModel} to recognize concepts in text. First, it will

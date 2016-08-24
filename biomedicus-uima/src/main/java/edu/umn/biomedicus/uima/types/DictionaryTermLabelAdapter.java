@@ -18,9 +18,9 @@ package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.semantics.DictionaryConcept;
-import edu.umn.biomedicus.common.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
+import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import org.apache.uima.cas.ArrayFS;
 import org.apache.uima.cas.CAS;

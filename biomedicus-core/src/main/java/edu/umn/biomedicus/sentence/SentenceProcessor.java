@@ -21,9 +21,9 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.TextSegment;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public final class SentenceProcessor implements DocumentProcessor {

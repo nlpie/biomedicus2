@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.stopwords;
 
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.Token;
 
 /**
  * Represents stop words in text, words that should be ignored before processing because they are too common or for some

@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 
 import java.util.LinkedList;
 import java.util.regex.Matcher;

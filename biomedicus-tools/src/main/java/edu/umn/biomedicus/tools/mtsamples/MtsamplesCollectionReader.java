@@ -145,7 +145,7 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
         systemView.setDocumentText(text);
 
         try {
-            edu.umn.biomedicus.common.text.Document document = UimaAdapters.documentFromView(systemView, labelAdapters);
+            edu.umn.biomedicus.common.types.text.Document document = UimaAdapters.documentFromView(systemView, labelAdapters);
             document.setDocumentId(path.getFileName().toString());
             document.setMetadata("docTypeId", docTypeId);
             document.setMetadata("docType", docType);

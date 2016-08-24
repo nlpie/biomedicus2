@@ -23,14 +23,13 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.WordIndex;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.print.Doc;
 import java.util.Locale;
 
 /**

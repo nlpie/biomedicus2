@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.common.semantics.DictionaryConcept;
+import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;

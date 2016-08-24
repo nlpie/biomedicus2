@@ -17,18 +17,16 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import com.google.inject.TypeLiteral;
 import edu.umn.biomedicus.common.labels.AbstractLabels;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
 
 import java.util.Iterator;
-import java.util.Map;
 
 public final class UimaLabels<T> extends AbstractLabels<T> {
     private final CAS cas;

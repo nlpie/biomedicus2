@@ -23,7 +23,7 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.yaml.snakeyaml.Yaml;
 

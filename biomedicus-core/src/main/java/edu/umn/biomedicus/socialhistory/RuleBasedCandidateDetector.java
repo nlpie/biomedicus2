@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public class RuleBasedCandidateDetector implements DocumentProcessor {

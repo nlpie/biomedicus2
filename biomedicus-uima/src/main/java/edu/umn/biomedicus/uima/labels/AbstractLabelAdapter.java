@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.labels;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.types.text.Span;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;

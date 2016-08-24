@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.type1_5.DocumentId;

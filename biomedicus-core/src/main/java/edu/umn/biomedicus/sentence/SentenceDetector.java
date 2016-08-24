@@ -16,21 +16,19 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TextSegment;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Preprocessor;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

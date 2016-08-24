@@ -21,14 +21,13 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.Iterator;
-import java.util.Locale;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
     private final Document document;

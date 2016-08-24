@@ -20,8 +20,8 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public final class UimaLabeler<T> implements Labeler<T> {

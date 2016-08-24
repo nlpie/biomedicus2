@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tools.mtsamples;
 
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.uima.copying.ViewMigrator;
 import edu.umn.biomedicus.uima.type1_5.*;
 import edu.umn.biomedicus.uima.type1_6.*;

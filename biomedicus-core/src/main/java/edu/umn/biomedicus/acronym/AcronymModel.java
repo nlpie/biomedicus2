@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.List;
 import java.util.Set;

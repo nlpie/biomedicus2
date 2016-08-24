@@ -21,9 +21,9 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.style.Bold;
-import edu.umn.biomedicus.common.style.Underlined;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.types.style.Bold;
+import edu.umn.biomedicus.common.types.style.Underlined;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import javax.annotation.Nullable;

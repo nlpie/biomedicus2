@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.modification;
 
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 
 import java.io.IOException;

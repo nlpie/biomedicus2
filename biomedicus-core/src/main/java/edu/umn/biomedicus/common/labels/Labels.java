@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.collect.SlidingWindow;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 
 import java.util.*;
 import java.util.function.Predicate;

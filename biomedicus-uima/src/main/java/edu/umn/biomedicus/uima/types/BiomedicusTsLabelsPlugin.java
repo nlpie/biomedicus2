@@ -17,26 +17,22 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import com.google.inject.Module;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.semantics.*;
-import edu.umn.biomedicus.common.style.Bold;
-import edu.umn.biomedicus.common.style.Underlined;
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.semantics.*;
+import edu.umn.biomedicus.common.types.style.Bold;
+import edu.umn.biomedicus.common.types.style.Underlined;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.text.*;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
-import edu.umn.biomedicus.uima.labels.LabelableModule;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.text.AnnotationFS;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -18,16 +18,8 @@ package edu.umn.biomedicus.tools.mtsamples;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import edu.umn.biomedicus.uima.common.Views;
-import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

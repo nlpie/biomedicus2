@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.text.TextLocation;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 
 import java.util.List;
 

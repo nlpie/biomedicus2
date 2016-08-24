@@ -17,9 +17,8 @@
 package edu.umn.biomedicus.syntaxnet;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.text.NormForm;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.List;
 import java.util.StringJoiner;

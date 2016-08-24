@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.Biomedicus;
-import edu.umn.biomedicus.common.text.Span;
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.type.TextSegmentAnnotation;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;

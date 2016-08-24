@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.serialization;
 
-import edu.umn.biomedicus.common.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
