@@ -86,7 +86,6 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
             }
             if (firstSentence == null) {
                 firstSentence = sentenceLabel;
-                continue;
             }
             lastSentence = sentenceLabel;
         }

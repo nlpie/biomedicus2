@@ -22,9 +22,9 @@
         <delegateAnalysisEngine key="sentence">
             <import location="annotator/syntax/SentenceDetector.xml"/>
         </delegateAnalysisEngine>
-        <!--<delegateAnalysisEngine key="section">
+        <delegateAnalysisEngine key="section">
             <import location="annotator/semantics/RuleBasedSectionDetector.xml"/>
-        </delegateAnalysisEngine>-->
+        </delegateAnalysisEngine>
         <delegateAnalysisEngine key="parseTokens">
             <import location="annotator/syntax/PennLikeTokenizer.xml"/>
         </delegateAnalysisEngine>
@@ -72,7 +72,7 @@
         <flowConstraints>
             <fixedFlow>
                 <node>sentence</node>
-                <!--<node>section</node>-->
+                <node>section</node>
                 <node>parseTokens</node>
                 <node>words</node>
                 <node>misspellings</node>
