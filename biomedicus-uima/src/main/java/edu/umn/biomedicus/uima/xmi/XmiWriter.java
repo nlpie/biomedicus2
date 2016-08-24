@@ -16,8 +16,10 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
+import edu.umn.biomedicus.Biomedicus;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
+import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
@@ -89,7 +91,11 @@ public class XmiWriter extends CasAnnotator_ImplBase {
         }
         Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
         Feature documentId = type.getFeatureByBaseName("documentId");
-        String fileName = cas.getIndexRepository().getAllIndexedFS(type).next().getStringValue(documentId) + ".xmi";
+        String fileName = cas.getView(Biomedicus.ViewIdentifiers.SYSTEM)
+                .getIndexRepository()
+                .getAllIndexedFS(type)
+                .next()
+                .getStringValue(documentId) + ".xmi";
         Path path = outputDir.resolve(fileName);
 
         if (LOGGER.isInfoEnabled()) {
