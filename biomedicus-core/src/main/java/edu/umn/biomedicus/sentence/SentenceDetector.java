@@ -26,12 +26,15 @@ import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.processing.Preprocessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.regex.Matcher;
 
 import static edu.umn.biomedicus.Biomedicus.Patterns.NEWLINE;
@@ -49,6 +52,8 @@ import static edu.umn.biomedicus.Biomedicus.Patterns.NEWLINE;
  * @since 1.1.0
  */
 public final class SentenceDetector {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SentenceDetector.class);
+
     /**
      * Transforms the text, replacing problematic stings or characters, must not change the indexes of characters.
      */
@@ -94,8 +99,13 @@ public final class SentenceDetector {
 
         StringReader stringReader = new StringReader(documentText);
         BufferedReader bufferedReader = new BufferedReader(stringReader);
-        int maxLength = bufferedReader.lines().mapToInt(String::length).max()
-                .orElseThrow(() -> new BiomedicusException("no max sentence length?"));
+        OptionalInt max = bufferedReader.lines().mapToInt(String::length).max();
+        if (!max.isPresent()) {
+            LOGGER.warn("Document has no lines: {}", document.getDocumentId());
+            return;
+        }
+
+        int maxLength = max.getAsInt();
 
         List<Label<TextSegment>> textSegments = textSegmentLabels.all();
         if (textSegments.isEmpty()) {
