@@ -29,11 +29,6 @@ with assistance from the
 Other Resources
 ========================================================================================================================
 
-### BioMedICUS
-
- *   [Demo](http://athena.ahc.umn.edu/biomedicus/)
- *   [Source Code](https://github.org/nlpie/biomedicus)
-
 ### NLP-TAB
 
  *   [Demo](http://athena.ahc.umn.edu/nlptab)
