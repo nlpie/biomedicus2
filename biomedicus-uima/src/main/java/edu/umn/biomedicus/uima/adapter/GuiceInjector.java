@@ -47,8 +47,8 @@ public final class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            UimaBootstrapper uimaBootstrapper = UimaBootstrapper.create();
-            injector = uimaBootstrapper.getInjector();
+            Biomedicus biomedicus = UimaBootstrapper.create();
+            injector = biomedicus.getInjector();
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }

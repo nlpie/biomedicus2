@@ -18,10 +18,9 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.BiomedicusFiles;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.plugins.AbstractPlugin;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
@@ -36,19 +35,13 @@ import java.util.stream.Collectors;
 
 public final class UimaBootstrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(UimaBootstrapper.class);
-    private final Injector injector;
 
-    private UimaBootstrapper(Injector injector) {
-        this.injector = injector;
-    }
-
-    public static UimaBootstrapper create(Module... additionalModules) throws BiomedicusException {
+    public static Biomedicus create(Module... additionalModules) throws BiomedicusException {
         ArrayList<Module> modules = new ArrayList<>();
         modules.add(new UimaModule());
         modules.addAll(Arrays.asList(additionalModules));
-        Injector injector = Bootstrapper.create(modules.toArray(new Module[modules.size()])).injector();
-        BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
-        Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
+        Biomedicus biomedicus = Bootstrapper.create(modules.toArray(new Module[modules.size()]));
+        Path uimaPluginsFile = biomedicus.confFolder().resolve("uimaPlugins.txt");
         List<String> pluginClassNames;
         try {
             pluginClassNames = Files.lines(uimaPluginsFile).collect(Collectors.toList());
@@ -56,7 +49,7 @@ public final class UimaBootstrapper {
             throw new BiomedicusException(e);
         }
 
-        LabelAdapters labelAdapters = injector.getInstance(LabelAdapters.class);
+        LabelAdapters labelAdapters = biomedicus.getInstance(LabelAdapters.class);
         for (String pluginClassName : pluginClassNames) {
             if (pluginClassName.isEmpty()) {
                 continue;
@@ -70,7 +63,7 @@ public final class UimaBootstrapper {
                 throw new BiomedicusException(e);
             }
 
-            UimaPlugin plugin = injector.getInstance(pluginClass);
+            UimaPlugin plugin = biomedicus.getInstance(pluginClass);
 
             Map<Class<?>, LabelAdapterFactory> labelAdapterFactories = plugin.getLabelAdapterFactories();
             for (Map.Entry<Class<?>, LabelAdapterFactory> entry : labelAdapterFactories.entrySet()) {
@@ -79,14 +72,6 @@ public final class UimaBootstrapper {
             }
         }
 
-        return new UimaBootstrapper(injector);
-    }
-
-    public <T> T createClass(Class<T> tClass) {
-        return injector.getInstance(tClass);
-    }
-
-    public Injector getInjector() {
-        return injector;
+        return biomedicus;
     }
 }

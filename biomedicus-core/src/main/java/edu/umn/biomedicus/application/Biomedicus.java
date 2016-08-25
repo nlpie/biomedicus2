@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus;
+package edu.umn.biomedicus.application;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.SettingImpl;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,9 +33,58 @@ import java.nio.file.Path;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * A class that provides access to the functionality of Biomedicus. The instances of this class is the
+ * "application instance" of Biomedicus.
+ *
+ * @author Ben Knoll
+ * @since 1.6.0
+ */
+@Singleton
 public final class Biomedicus {
-    private Biomedicus() {
-        throw new UnsupportedOperationException();
+    private final Injector injector;
+    private final Path confFolder;
+    private final Path dataFolder;
+
+    @Inject
+    Biomedicus(Injector injector,
+               @Setting("paths.conf") Path confFolder,
+               @Setting("paths.data") Path dataFolder) {
+        this.injector = injector;
+        this.confFolder = confFolder;
+        this.dataFolder = dataFolder;
+    }
+
+    public Injector getInjector() {
+        return injector;
+    }
+
+    public <T> T getInstance(Class<T> tClass) {
+        return injector.getInstance(tClass);
+    }
+
+    public Vocabulary getVocabulary() {
+        return injector.getInstance(Vocabulary.class);
+    }
+
+    public <T> T getGlobalSetting(Class<T> settingType, String key) {
+        return injector.getInstance(Key.get(settingType, new SettingImpl(key)));
+    }
+
+    public Path confFolder() {
+        return confFolder;
+    }
+
+    public Path getConfFolder() {
+        return confFolder;
+    }
+
+    public Path dataFolder() {
+        return dataFolder;
+    }
+
+    public Path getDataFolder() {
+        return dataFolder;
     }
 
     public static final class ViewIdentifiers {
@@ -37,11 +93,6 @@ public final class Biomedicus {
         public static final String GOLD_STANDARD = "GoldStandard";
     }
 
-    /**
-     * Utility library for patterns for biomedicus.
-     *
-     * @since 1.1.0
-     */
     public static final class Patterns {
         /**
          * Private constructor to prevent instantiation of utility class.
@@ -52,7 +103,7 @@ public final class Biomedicus {
 
         /**
          * A Pattern that will match against any character that is not whitespace.
-         *
+         * <p>
          * Using {@link java.util.regex.Matcher#find} will return whether or not a string has any non-whitespace characters.
          */
         public static final Pattern NON_WHITESPACE = Pattern.compile("\\S");
@@ -62,10 +113,15 @@ public final class Biomedicus {
          */
         public static final Pattern ALPHABETIC_WORD = Pattern.compile("[\\p{IsAlphabetic}]+");
 
+        /**
+         * A pattern that will match any alphanumeric character
+         */
         public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{IsAlphabetic}\\p{Digit}]");
 
+        /**
+         * A pattern that will match the newline character.
+         */
         public static final Pattern NEWLINE = Pattern.compile("\n");
-
 
         /**
          * Loads a pattern from a file in the resource path by joining all of the lines of the file with an OR symbol '|'
@@ -75,7 +131,7 @@ public final class Biomedicus {
          */
         public static Pattern loadPatternByJoiningLines(String resourceName) {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(resourceName)))){
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(resourceName)))) {
                 return getPattern(reader);
             } catch (IOException e) {
                 throw new RuntimeException(e);

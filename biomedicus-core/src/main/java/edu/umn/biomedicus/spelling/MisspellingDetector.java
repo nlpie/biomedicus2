@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.Biomedicus;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;

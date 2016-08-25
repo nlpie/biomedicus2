@@ -18,6 +18,7 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -189,8 +190,8 @@ public class AcronymExpansionsBuilder {
 
     public static void main(String args[]) {
         try {
-            AcronymExpansionsBuilder acronymExpansionsBuilder = Bootstrapper.create()
-                    .createClass(AcronymExpansionsBuilder.class);
+            Biomedicus biomedicus = Bootstrapper.create();
+            AcronymExpansionsBuilder acronymExpansionsBuilder = biomedicus.getInstance(AcronymExpansionsBuilder.class);
             acronymExpansionsBuilder.setMasterFile(Paths.get(args[0]));
             acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
             acronymExpansionsBuilder.setOutPath(Paths.get(args[2]));

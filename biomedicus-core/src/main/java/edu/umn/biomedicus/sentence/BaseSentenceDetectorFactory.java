@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.Biomedicus;
+import edu.umn.biomedicus.application.Biomedicus;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;

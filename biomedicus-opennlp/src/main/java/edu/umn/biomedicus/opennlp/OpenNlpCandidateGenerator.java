@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.opennlp;
 
-import edu.umn.biomedicus.Biomedicus;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 import edu.umn.biomedicus.sentence.SentenceCandidateGenerator;

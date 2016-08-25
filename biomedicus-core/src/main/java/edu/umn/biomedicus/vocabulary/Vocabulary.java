@@ -16,21 +16,64 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
+ * Loads and provides the shared word index.
  *
+ * @author Ben Knoll
+ * @since 1.5.0
  */
-@ProvidedBy(VocabularyLoader.class)
+@Singleton
+@ProvidedBy(Vocabulary.Loader.class)
 public class Vocabulary {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
     private final TermIndex wordIndex;
 
-    Vocabulary(TermIndex wordIndex) {
+    private Vocabulary(TermIndex wordIndex) {
         this.wordIndex = wordIndex;
     }
 
     public TermIndex wordIndex() {
         return wordIndex;
+    }
+
+    /**
+     *
+     */
+    @Singleton
+    public static class Loader extends DataLoader<Vocabulary> {
+        private final Path wordsPath;
+
+        @Inject
+        Loader(@Setting("vocabulary.wordIndex.path") Path wordsPath) {
+            this.wordsPath = wordsPath;
+        }
+
+        @Override
+        protected Vocabulary loadModel() throws BiomedicusException {
+            try {
+                LOGGER.info("Loading words into term index from path: {}", wordsPath);
+
+                TermIndex wordIndex = new TermIndex();
+                Files.lines(wordsPath).forEach(wordIndex::addTerm);
+
+                return new Vocabulary(wordIndex);
+            } catch (IOException e) {
+                throw new BiomedicusException(e);
+            }
+        }
     }
 }

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.regex.Matcher;
 
-import static edu.umn.biomedicus.Biomedicus.Patterns.NEWLINE;
+import static edu.umn.biomedicus.application.Biomedicus.Patterns.NEWLINE;
 
 /**
  * Detects the sentences in a document.

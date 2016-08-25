@@ -16,14 +16,13 @@
 
 package edu.umn.biomedicus.application;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import com.google.inject.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,13 +40,75 @@ import java.util.*;
 public final class Bootstrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrapper.class);
 
-    private final Injector injector;
+    /**
+     * Creates an instance of the Biomedicus application class using a pre-existing guice injector. Biomedicus will use
+     * a child injector of this application.
+     *
+     * @param injector the pre-existing guice injector
+     * @return biomedicus application whose injector is a child of the argument injector
+     * @throws BiomedicusException if we fail to load necessary configuration, or a necessary path is undefined
+     */
+    public static Biomedicus create(Injector injector) throws BiomedicusException {
+        Bootstrapper bootstrapper = new Bootstrapper();
+        bootstrapper.setInjector(injector);
+        bootstrapper.initializePathsAndConfiguration();
+        return bootstrapper.biomedicus();
+    }
 
-    private String home;
+    /**
+     * Creates an instance of the biomedicus application class with optional overloaded settings and optional additional
+     * guice modules.
+     *
+     * @param overloadedSettings the settings to overload.
+     * @param additionalModules  the additional guice modules to add.
+     * @return biomedicus application class
+     * @throws BiomedicusException if we fail to load necessary configuration, or a necessary path is undefined
+     */
+    public static Biomedicus create(Map<String, Object> overloadedSettings,
+                                    Module... additionalModules) throws BiomedicusException {
+        Bootstrapper bootstrapper = new Bootstrapper();
+        bootstrapper.setOverloadedSettings(overloadedSettings);
+        for (Module additionalModule : additionalModules) {
+            bootstrapper.addAdditionalModule(additionalModule);
+        }
+        bootstrapper.initializePathsAndConfiguration();
+        return bootstrapper.biomedicus();
+    }
 
-    private Bootstrapper(Map<String, Object> overloadedSettings, Module... additionalModules) throws BiomedicusException {
-        List<Module> modules = new ArrayList<>();
-        // Load configuration
+    /**
+     * Creates an instance of the biomedicus application class with optional additional guice modules.
+     *
+     * @param additionalModules the additional guice modules to add.
+     * @return biomedicus application class
+     * @throws BiomedicusException if we fail to load necessary configuration, or a necessary path is undefined
+     */
+    public static Biomedicus create(Module... additionalModules) throws BiomedicusException {
+        return create(Collections.emptyMap(), additionalModules);
+    }
+
+    private final List<Module> modules = new ArrayList<>();
+    @Nullable
+    private String home = null;
+    @Nullable
+    private Injector injector = null;
+    @Nullable
+    private Map<String, Object> overloadedSettings = null;
+
+    private Bootstrapper setInjector(Injector injector) {
+        this.injector = injector;
+        return this;
+    }
+
+    private Bootstrapper setOverloadedSettings(Map<String, Object> overloadedSettings) {
+        this.overloadedSettings = overloadedSettings;
+        return this;
+    }
+
+    private void addAdditionalModule(Module module) {
+        modules.add(module);
+    }
+
+    private void initializePathsAndConfiguration() throws BiomedicusException {
         home = System.getProperty("biomedicus.paths.home");
         if (home == null) {
             home = System.getenv("BIOMEDICUS_HOME");
@@ -133,9 +194,6 @@ public final class Bootstrapper {
 
         modules.add(new BiomedicusModule());
         modules.add(settingsBinder.createModule());
-        modules.addAll(Arrays.asList(additionalModules));
-
-        injector = Guice.createInjector(modules.toArray(new Module[modules.size()]));
     }
 
     private Path absoluteOrResolveAgainstHome(Path path) {
@@ -155,20 +213,14 @@ public final class Bootstrapper {
         return Paths.get(home);
     }
 
-    public <T> T createClass(Class<T> tClass) {
-        return injector.getInstance(tClass);
-    }
+    private Biomedicus biomedicus() {
+        Injector biomedicusInjector;
+        if (injector != null) {
+            biomedicusInjector = injector.createChildInjector(modules);
+        } else {
+            biomedicusInjector = Guice.createInjector(Stage.PRODUCTION, modules);
+        }
 
-    public Injector injector() {
-        return injector;
-    }
-
-
-    public static Bootstrapper create(Map<String, Object> overloadedSettings, Module... additionalModules) throws BiomedicusException {
-        return new Bootstrapper(overloadedSettings, additionalModules);
-    }
-
-    public static Bootstrapper create(Module... additionalModules) throws BiomedicusException {
-        return new Bootstrapper(Collections.emptyMap(), additionalModules);
+        return biomedicusInjector.getInstance(Biomedicus.class);
     }
 }

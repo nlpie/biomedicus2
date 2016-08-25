@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.Bootstrapper;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
@@ -286,7 +287,8 @@ public class ConceptModelBuilder {
         Path ttyBanlistFile = Paths.get(args[3]);
 
         try {
-            ConceptModelBuilder conceptModelBuilder = Bootstrapper.create().createClass(ConceptModelBuilder.class);
+            Biomedicus biomedicus = Bootstrapper.create();
+            ConceptModelBuilder conceptModelBuilder = biomedicus.getInstance(ConceptModelBuilder.class);
             conceptModelBuilder.setRRFsPath(rrfs);
             conceptModelBuilder.setOutputDir(outputDir);
             conceptModelBuilder.setTuisOfInterestFile(tuisOfInterestFile);

@@ -18,7 +18,7 @@ package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.Biomedicus;
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 

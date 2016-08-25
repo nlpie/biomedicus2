@@ -73,7 +73,7 @@
                 <name>eagerLoad</name>
                 <value>
                     <array>
-                        <string>edu.umn.biomedicus.vocabulary.VocabularyLoader</string>
+                        <string>edu.umn.biomedicus.vocabulary.Vocabulary$Loader</string>
                     </array>
                 </value>
             </nameValuePair>

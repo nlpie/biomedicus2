@@ -16,22 +16,15 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import edu.umn.biomedicus.Biomedicus;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.files.FileNameProviders;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.application.Biomedicus;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.impl.XmiCasSerializer;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
