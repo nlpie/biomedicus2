@@ -111,6 +111,7 @@ public final class Bootstrapper {
     private void initializePathsAndConfiguration() throws BiomedicusException {
         home = System.getProperty("biomedicus.paths.home");
         if (home == null) {
+            // retained for backwards compatibility
             home = System.getenv("BIOMEDICUS_HOME");
         }
 

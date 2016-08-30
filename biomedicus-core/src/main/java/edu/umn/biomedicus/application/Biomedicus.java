@@ -111,12 +111,17 @@ public final class Biomedicus {
         /**
          * A Pattern that will match against a string that only contains one or more unicode alphabetic characters.
          */
-        public static final Pattern ALPHABETIC_WORD = Pattern.compile("[\\p{IsAlphabetic}]+");
+        public static final Pattern ALPHABETIC_WORD = Pattern.compile("[\\p{L}]+");
 
         /**
-         * A pattern that will match any alphanumeric character
+         * A pattern that will match against a string that only contains one or more unicode alphanumeric characters.
          */
-        public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{IsAlphabetic}\\p{Digit}]");
+        public static final Pattern ALPHANUMERIC_WORD = Pattern.compile("[\\p{L}\\p{Nd}]+");
+
+        /**
+         * A pattern that will match any unicode alphanumeric character
+         */
+        public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{Nd}\\p{L}]");
 
         /**
          * A pattern that will match the newline character.
