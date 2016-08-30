@@ -216,11 +216,10 @@
     <developers>
         <developer>
             <name>Ben Knoll</name>
-            <email>knol0061@umn.edu</email>
-            <organization>University of Minnesota College of Pharmacy Pharmaceutical Care &amp; Health Systems
+            <email>benknoll@umn.edu</email>
+            <organization>NLP/IE Group at the University of Minnesota Institute for Health Informatics
             </organization>
-            <organizationUrl>http://www.pharmacy.umn.edu/pchs/</organizationUrl>
-            <timezone>-6</timezone>
+            <organizationUrl>http://www.bmhi.umn.edu/ihi/research/nlpie/index.htm</organizationUrl>
         </developer>
     </developers>
     <licenses>
