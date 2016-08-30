@@ -125,8 +125,8 @@ public final class SentenceDetector {
             int lastLineBegin = textSegment.getBegin();
             Matcher matcher = NEWLINE.matcher(textSegmentText);
             while (matcher.find()) {
-                int newLine = matcher.start();
-                if (newLine != lastLineBegin && newLine - lastLineBegin < splitLinesShorterThan) {
+                int newLine = textSegment.derelativize(matcher.start());
+                if (newLine > lastLineBegin && newLine - lastLineBegin < splitLinesShorterThan) {
                     int lastLineEnd = lastLineBegin - 1;
                     if (runningBegin < lastLineEnd) {
                         sentencePreCandidates.add(new Span(runningBegin, lastLineEnd));
