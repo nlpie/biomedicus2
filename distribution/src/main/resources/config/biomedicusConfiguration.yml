@@ -34,13 +34,6 @@ settings:
         outputDir.path: REPLACE_ME_PATH_TO
     senseMap.path: acronym/senseMap.ser
     orthographicModel.path: acronym-orthographic/orthographicModel.yml
-  docclass:
-    stopwords.path: NOT_USED
-    severity:
-      output.path: docclass/severityModel.ser
-      model.path: docclass/severityModel.ser
-      attributesToKeep: 1000
-      minWordCount: 2
   semanticNetwork:
     srdef.path: semnetwork/SRDEF
     semgroups.path: semnetwork/SemGroups.txt
