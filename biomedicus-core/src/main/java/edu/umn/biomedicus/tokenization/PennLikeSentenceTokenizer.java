@@ -66,7 +66,7 @@ final class PennLikeSentenceTokenizer {
     Stream<TokenCandidate> startStreamWithWords() {
         Stream.Builder<TokenCandidate> builder = Stream.builder();
 
-        Matcher characters = Pattern.compile("[^\\p{Z}\\n\\t\\r]").matcher(sentenceText);
+        Matcher characters = WORDS.matcher(sentenceText);
         int last = -1;
         while (characters.find()) {
             last = characters.end();
