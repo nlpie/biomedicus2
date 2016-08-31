@@ -39,6 +39,18 @@ public class PennLikeSentenceTokenizerTest {
     }
 
     @Test
+    public void testDoesSplitZWSP() {
+        PennLikeSentenceTokenizer pennLikeSentenceTokenizer
+                = new PennLikeSentenceTokenizer("This sentence has some zero-width spaces.\u200b\u200b");
+
+        List<PennLikeSentenceTokenizer.TokenCandidate> tokenCandidates = pennLikeSentenceTokenizer.startStreamWithWords()
+                .collect(Collectors.toList());
+
+        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = tokenCandidates.get(tokenCandidates.size() - 1);
+        assertEquals(tokenCandidate.getEnd(), 41);
+    }
+
+    @Test
     public void testWordsEmptySentence() throws Exception {
         PennLikeSentenceTokenizer pennLikeSentenceTokenizer = new PennLikeSentenceTokenizer("");
 
