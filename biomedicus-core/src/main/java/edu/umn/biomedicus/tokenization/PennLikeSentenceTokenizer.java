@@ -28,7 +28,7 @@ final class PennLikeSentenceTokenizer {
     /**
      * Any sequence of 1 or more character that are not unicode whitespace.
      */
-    private static final Pattern WORDS = Pattern.compile("([^\\p{Zs}\\p{Zl}\\p{Zp}\\n\\t\\r]+)");
+    private static final Pattern WORDS = Pattern.compile("([^\\p{Zs}\\p{Zl}\\p{Zp}\\u200B\\n\\t\\r]+)");
     
     private static final Pattern TRAILING_PERIOD = Pattern.compile("(\\.)$");
 
