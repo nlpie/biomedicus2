@@ -39,5 +39,14 @@
                 <include>**/*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../</directory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE.txt</include>
+                <include>Pipeline.pptx</include>
+                <include>SPECIALIST NLP Tools Terms and Conditions.txt</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
