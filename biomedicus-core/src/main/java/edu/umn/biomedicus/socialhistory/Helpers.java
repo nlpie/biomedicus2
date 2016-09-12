@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.socialhistory;
 
-public class SocialHistoryCandidate {
-    private final SubstanceUsageKind substanceUsageKind;
+import edu.umn.biomedicus.common.types.text.TermToken;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageKind = substanceUsageKind;
-    }
+import java.util.List;
 
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
+class Helpers {
+    static String toSentenceString(List<TermToken> termTokenList) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (TermToken sentenceToken : termTokenList) {
+            stringBuilder.append(sentenceToken.text());
+            if (sentenceToken.hasSpaceAfter()) {
+                stringBuilder.append(" ");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

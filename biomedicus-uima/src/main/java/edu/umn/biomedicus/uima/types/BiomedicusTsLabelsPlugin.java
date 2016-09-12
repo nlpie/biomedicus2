@@ -336,6 +336,56 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         }
     }
 
+    public static class SocialHistoryCandidateLabelAdapter extends AbstractLabelAdapter<SocialHistoryCandidate> {
+        private final Feature substanceUsageKind;
+
+        SocialHistoryCandidateLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate"));
+            substanceUsageKind = type.getFeatureByBaseName("substanceUsageKind");
+        }
+
+        @Override
+        protected void fillAnnotation(Label<SocialHistoryCandidate> label, AnnotationFS annotationFS) {
+            SocialHistoryCandidate socialHistoryCandidate = label.value();
+            SubstanceUsageKind substanceUsageKind = socialHistoryCandidate.getSubstanceUsageKind();
+            annotationFS.setStringValue(this.substanceUsageKind, substanceUsageKind.name());
+        }
+
+        @Override
+        protected SocialHistoryCandidate createLabelValue(FeatureStructure featureStructure) {
+            String substanceUsageAsString = featureStructure.getStringValue(substanceUsageKind);
+            return new SocialHistoryCandidate(SubstanceUsageKind.valueOf(substanceUsageAsString));
+        }
+    }
+
+    public static class SubstanceUsageElementLabelAdapter extends AbstractLabelAdapter<SubstanceUsageElement> {
+
+        private final Feature kindFeature;
+        private final Feature elementTypeFeature;
+
+        SubstanceUsageElementLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
+            kindFeature = type.getFeatureByBaseName("substanceUsageKind");
+            elementTypeFeature = type.getFeatureByBaseName("elementTypeFeature");
+        }
+
+
+        @Override
+        protected void fillAnnotation(Label<SubstanceUsageElement> label, AnnotationFS annotationFS) {
+            SubstanceUsageElement value = label.value();
+            annotationFS.setStringValue(kindFeature, value.getSubstanceUsageKind().name());
+            annotationFS.setStringValue(elementTypeFeature, value.getSubstanceUsageElementType().name());
+        }
+
+        @Override
+        protected SubstanceUsageElement createLabelValue(FeatureStructure featureStructure) {
+            return new SubstanceUsageElement(
+                    SubstanceUsageElementType.valueOf(featureStructure.getStringValue(elementTypeFeature)),
+                    SubstanceUsageKind.valueOf(featureStructure.getStringValue(kindFeature))
+            );
+        }
+    }
+
 
     @Override
     public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
@@ -361,6 +411,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
         map.put(Bold.class, BoldLabelAdapter::new);
         map.put(Underlined.class, UnderlinedLabelAdapter::new);
+        map.put(SocialHistoryCandidate.class, SocialHistoryCandidateLabelAdapter::new);
+        map.put(SubstanceUsageElement.class, SubstanceUsageElementLabelAdapter::new);
         return map;
     }
 }

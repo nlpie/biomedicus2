@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.socialhistory;
 
-public class SocialHistoryCandidate {
-    private final SubstanceUsageKind substanceUsageKind;
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
+import edu.umn.biomedicus.common.types.text.TermToken;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageKind = substanceUsageKind;
+import java.util.List;
+
+public class DrugKindCandidateDetector implements KindCandidateDetector {
+
+    @Override
+    public boolean isSocialHistoryHeader(List<TermToken> headerTokens) {
+
+        return false;
     }
 
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
+    @Override
+    public boolean isSocialHistorySentence(List<TermToken> sectionTitleTokens, List<TermToken> sentenceTokens) {
+
+
+
+
+        return false;
+    }
+
+    @Override
+    public SubstanceUsageKind getSocialHistoryKind() {
+        return SubstanceUsageKind.DRUG;
     }
 }
