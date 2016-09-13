@@ -46,19 +46,11 @@ public final class PennLikeTokenizer implements DocumentProcessor {
         for (Label<Sentence> sentence : sentenceLabels) {
             CharSequence text = sentence.getCovered(document.getText());
 
-            PennLikeSentenceTokenizer sentenceTokenizer = new PennLikeSentenceTokenizer(text);
-
-            Iterator<PennLikeSentenceTokenizer.TokenCandidate> iterator = sentenceTokenizer.startStreamWithWords()
-                    .flatMap(sentenceTokenizer::splitTrailingPeriod)
-                    .flatMap(sentenceTokenizer::splitWordByMiddleBreaks)
-                    .flatMap(sentenceTokenizer::splitWordByBeginBreaks)
-                    .flatMap(sentenceTokenizer::splitWordByEndBreaks)
-                    .iterator();
+            Iterator<Span> iterator = PennLikePhraseTokenizer.tokenizeSentence(text).iterator();
 
             Span last = null;
             while (iterator.hasNext()) {
-                PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = iterator.next();
-                Span current = tokenCandidate.toSpan();
+                Span current = iterator.next();
                 if (current.length() == 0) {
                     continue;
                 }

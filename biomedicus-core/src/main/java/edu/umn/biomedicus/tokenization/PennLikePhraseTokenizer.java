@@ -19,12 +19,13 @@ package edu.umn.biomedicus.tokenization;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-final class PennLikeSentenceTokenizer {
+final class PennLikePhraseTokenizer {
     /**
      * Any sequence of 1 or more character that are not unicode whitespace.
      */
@@ -59,8 +60,29 @@ final class PennLikeSentenceTokenizer {
 
     private final CharSequence sentenceText;
 
-    PennLikeSentenceTokenizer(CharSequence sentenceText) {
+    PennLikePhraseTokenizer(CharSequence sentenceText) {
         this.sentenceText = sentenceText;
+    }
+
+    static Stream<Span> tokenizeSentence(CharSequence sentenceText) {
+        PennLikePhraseTokenizer sentenceTokenizer = new PennLikePhraseTokenizer(sentenceText);
+
+        return sentenceTokenizer.startStreamWithWords()
+                .flatMap(sentenceTokenizer::splitTrailingPeriod)
+                .flatMap(sentenceTokenizer::splitWordByMiddleBreaks)
+                .flatMap(sentenceTokenizer::splitWordByBeginBreaks)
+                .flatMap(sentenceTokenizer::splitWordByEndBreaks)
+                .map(TokenCandidate::toSpan);
+    }
+
+    static Stream<Span> tokenizePhrase(CharSequence phraseText) {
+        PennLikePhraseTokenizer tokenizer = new PennLikePhraseTokenizer(phraseText);
+
+        return tokenizer.startStreamWithWords()
+                .flatMap(tokenizer::splitWordByMiddleBreaks)
+                .flatMap(tokenizer::splitWordByBeginBreaks)
+                .flatMap(tokenizer::splitWordByEndBreaks)
+                .map(TokenCandidate::toSpan);
     }
 
     Stream<TokenCandidate> startStreamWithWords() {
