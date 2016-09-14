@@ -21,10 +21,9 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelsUtilities;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
-
-import java.util.*;
 
 public final class TermTokenMergerProcessor implements DocumentProcessor {
     private final Labels<ParseToken> parseTokens;
@@ -41,7 +40,8 @@ public final class TermTokenMergerProcessor implements DocumentProcessor {
     @Override
     public void process() throws BiomedicusException {
         for (Label<Sentence> sentenceLabel : sentenceLabels) {
-            TermTokenMerger<ParseToken> tokenMerger = new TermTokenMerger<>(parseTokens.insideSpan(sentenceLabel));
+            Labels<ParseToken> labels = parseTokens.insideSpan(sentenceLabel);
+            TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labels));
             while (tokenMerger.hasNext()) {
                 Label<TermToken> termTokenLabel = tokenMerger.next();
                 termTokenLabeler.label(termTokenLabel);

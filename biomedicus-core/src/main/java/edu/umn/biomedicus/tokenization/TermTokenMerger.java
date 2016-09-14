@@ -23,31 +23,31 @@ import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.*;
 
-public class TermTokenMerger<T extends Token> implements Iterator<Label<TermToken>> {
+public class TermTokenMerger implements Iterator<Label<TermToken>> {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
-    private final List<Label<T>> running = new ArrayList<>();
-    private final Iterator<Label<T>> iterator;
+    private final List<Label<Token>> running = new ArrayList<>();
+    private final Iterator<Label<Token>> iterator;
     private Label<TermToken> next;
 
-    public TermTokenMerger(Iterator<Label<T>> iterator) {
+    public TermTokenMerger(Iterator<Label<Token>> iterator) {
         this.iterator = iterator;
         findNext();
     }
 
-    public TermTokenMerger(Iterable<Label<T>> iterable) {
+    public TermTokenMerger(Iterable<Label<Token>> iterable) {
         this(iterable.iterator());
     }
 
     private void findNext() {
         next = null;
         while (next == null && iterator.hasNext()) {
-            Label<T> tokenLabel = iterator.next();
+            Label<Token> tokenLabel = iterator.next();
             if (running.size() == 0) {
                 running.add(tokenLabel);
                 continue;
             }
 
-            Label<T> lastLabel = running.get(running.size() - 1);
+            Label<Token> lastLabel = running.get(running.size() - 1);
             Token lastToken = lastLabel.value();
             String lastText = lastToken.text();
             char last = lastText.charAt(lastText.length() - 1);
