@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-final class PennLikePhraseTokenizer {
+public final class PennLikePhraseTokenizer {
     /**
      * Any sequence of 1 or more character that are not unicode whitespace.
      */
@@ -64,7 +64,7 @@ final class PennLikePhraseTokenizer {
         this.sentenceText = sentenceText;
     }
 
-    static Stream<Span> tokenizeSentence(CharSequence sentenceText) {
+    public static Stream<Span> tokenizeSentence(CharSequence sentenceText) {
         PennLikePhraseTokenizer sentenceTokenizer = new PennLikePhraseTokenizer(sentenceText);
 
         return sentenceTokenizer.startStreamWithWords()
@@ -75,7 +75,7 @@ final class PennLikePhraseTokenizer {
                 .map(TokenCandidate::toSpan);
     }
 
-    static Stream<Span> tokenizePhrase(CharSequence phraseText) {
+    public static Stream<Span> tokenizePhrase(CharSequence phraseText) {
         PennLikePhraseTokenizer tokenizer = new PennLikePhraseTokenizer(phraseText);
 
         return tokenizer.startStreamWithWords()
