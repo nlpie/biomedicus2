@@ -16,53 +16,52 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import com.google.inject.Inject;
-import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.types.text.*;
-import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.*;
 
-public final class TermTokenMerger implements DocumentProcessor {
+public class TermTokenMerger<T extends Token> implements Iterator<Label<TermToken>> {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
-    private final Labels<ParseToken> parseTokens;
-    private final Labels<Sentence> sentenceLabels;
-    private final Labeler<TermToken> termTokenLabeler;
+    private final List<Label<T>> running = new ArrayList<>();
+    private final Iterator<Label<T>> iterator;
+    private Label<TermToken> next;
 
-    @Inject
-    public TermTokenMerger(Document document) {
-        parseTokens = document.labels(ParseToken.class);
-        sentenceLabels = document.labels(Sentence.class);
-        termTokenLabeler = document.labeler(TermToken.class);
+    public TermTokenMerger(Iterator<Label<T>> iterator) {
+        this.iterator = iterator;
+        findNext();
     }
 
-    @Override
-    public void process() throws BiomedicusException {
-        List<Label<ParseToken>> running = new ArrayList<>();
-        for (Label<Sentence> sentenceLabel : sentenceLabels) {
-            for (Label<ParseToken> tokenLabel : parseTokens.insideSpan(sentenceLabel)) {
-                if (running.size() == 0) {
-                    running.add(tokenLabel);
-                    continue;
-                }
+    public TermTokenMerger(Iterable<Label<T>> iterable) {
+        this(iterable.iterator());
+    }
 
-                Label<ParseToken> lastLabel = running.get(running.size() - 1);
-                ParseToken lastToken = lastLabel.value();
-                String lastText = lastToken.text();
-                char last = lastText.charAt(lastText.length() - 1);
-                String text = tokenLabel.value().text();
-                char first = text.charAt(0);
-                if (lastToken.hasSpaceAfter() || !shouldMerge(last, first)) {
-                    makeTermToken(running);
-                    running.clear();
-                }
+    private void findNext() {
+        next = null;
+        while (next == null && iterator.hasNext()) {
+            Label<T> tokenLabel = iterator.next();
+            if (running.size() == 0) {
                 running.add(tokenLabel);
+                continue;
             }
-            makeTermToken(running);
-            running.clear();
+
+            Label<T> lastLabel = running.get(running.size() - 1);
+            Token lastToken = lastLabel.value();
+            String lastText = lastToken.text();
+            char last = lastText.charAt(lastText.length() - 1);
+            String text = tokenLabel.value().text();
+            char first = text.charAt(0);
+            if (lastToken.hasSpaceAfter() || !shouldMerge(last, first)) {
+                makeTermToken();
+                running.clear();
+            }
+            running.add(tokenLabel);
+        }
+
+        if (next == null && !running.isEmpty()) {
+            makeTermToken();
         }
     }
 
@@ -76,19 +75,31 @@ public final class TermTokenMerger implements DocumentProcessor {
         return Character.isLetterOrDigit(first) && Character.isLetterOrDigit(last);
     }
 
-    private void makeTermToken(List<Label<ParseToken>> running) throws BiomedicusException {
+    private void makeTermToken() {
         if (running.size() == 0) {
             return;
         }
         StringBuilder tokenText = new StringBuilder();
-        for (Label<ParseToken> label : running) {
-            ParseToken token = label.value();
+        for (Label<? extends Token> label : running) {
+            Token token = label.value();
             tokenText.append(token.text());
         }
-        Label<ParseToken> lastTokenLabel = running.get(running.size() - 1);
+        Label<? extends Token> lastTokenLabel = running.get(running.size() - 1);
         boolean hasSpaceAfter = lastTokenLabel.value().hasSpaceAfter();
 
         TermToken termToken = new TermToken(tokenText.toString(), hasSpaceAfter);
-        termTokenLabeler.value(termToken).label(new Span(running.get(0).getBegin(), lastTokenLabel.getEnd()));
+        next = new Label<>(new Span(running.get(0).getBegin(), lastTokenLabel.getEnd()), termToken);
+    }
+
+    @Override
+    public boolean hasNext() {
+        return next != null;
+    }
+
+    @Override
+    public Label<TermToken> next() {
+        Label<TermToken> copy = this.next;
+        findNext();
+        return copy;
     }
 }
