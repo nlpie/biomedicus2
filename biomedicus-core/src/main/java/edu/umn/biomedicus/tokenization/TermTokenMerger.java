@@ -23,7 +23,13 @@ import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.*;
 
-public class TermTokenMerger implements Iterator<Label<TermToken>> {
+/**
+ * Iterator over a collection of merged tokens. Tokens that are connected by - / \ ' or _ without spaces are merged.
+ *
+ * @author Ben Knoll
+ * @since 1.6.0
+ */
+public final class TermTokenMerger implements Iterator<Label<TermToken>> {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
     private final List<Label<Token>> running = new ArrayList<>();
     private final Iterator<Label<Token>> iterator;
@@ -49,13 +55,8 @@ public class TermTokenMerger implements Iterator<Label<TermToken>> {
 
             Label<Token> lastLabel = running.get(running.size() - 1);
             Token lastToken = lastLabel.value();
-            String lastText = lastToken.text();
-            char last = lastText.charAt(lastText.length() - 1);
-            String text = tokenLabel.value().text();
-            char first = text.charAt(0);
-            if (lastToken.hasSpaceAfter() || !shouldMerge(last, first)) {
+            if (lastToken.hasSpaceAfter()) {
                 makeTermToken();
-                running.clear();
             }
             running.add(tokenLabel);
         }
@@ -63,16 +64,6 @@ public class TermTokenMerger implements Iterator<Label<TermToken>> {
         if (next == null && !running.isEmpty()) {
             makeTermToken();
         }
-    }
-
-    private boolean shouldMerge(char last, char first) {
-        if (MERGE.contains(first) && Character.isLetterOrDigit(last)) {
-            return true;
-        }
-        if (Character.isLetterOrDigit(first) && MERGE.contains(last)) {
-            return true;
-        }
-        return Character.isLetterOrDigit(first) && Character.isLetterOrDigit(last);
     }
 
     private void makeTermToken() {
@@ -89,6 +80,7 @@ public class TermTokenMerger implements Iterator<Label<TermToken>> {
 
         TermToken termToken = new TermToken(tokenText.toString(), hasSpaceAfter);
         next = new Label<>(new Span(running.get(0).getBegin(), lastTokenLabel.getEnd()), termToken);
+        running.clear();
     }
 
     @Override

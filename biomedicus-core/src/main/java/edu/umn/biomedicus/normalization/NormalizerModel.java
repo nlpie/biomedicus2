@@ -16,14 +16,22 @@
 
 package edu.umn.biomedicus.normalization;
 
+import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.common.tuples.WordPos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -36,18 +44,10 @@ import java.util.Map;
  * @author Ben Knoll
  * @since 0.3.0
  */
-@ProvidedBy(NormalizerModelLoader.class)
+@ProvidedBy(NormalizerModel.Loader.class)
 class NormalizerModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(NormalizerModel.class);
-
-    /**
-     * A Table from the part of speech and entry to a base form.
-     */
     private Map<WordPos, String> lexicon;
-
-    /**
-     * Same as lexicon, but only used if pos / entry is not found in lexicon.
-     */
     private Map<WordPos, String> fallbackLexicon;
 
     /**
@@ -57,7 +57,7 @@ class NormalizerModel {
      * @param fallbackLexicon a lexicon to use if we fail to find the token in the first lexicon, this for cases like
      *                        mis-tagged tokens
      */
-    NormalizerModel(Map<WordPos, String> lexicon, Map<WordPos, String> fallbackLexicon) {
+    private NormalizerModel(Map<WordPos, String> lexicon, Map<WordPos, String> fallbackLexicon) {
         this.lexicon = lexicon;
         this.fallbackLexicon = fallbackLexicon;
     }
@@ -83,5 +83,40 @@ class NormalizerModel {
             normalForm = key;
         }
         return normalForm.toLowerCase();
+    }
+
+    /**
+     *
+     */
+    @Singleton
+    public static class Loader extends DataLoader<NormalizerModel> {
+        private final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
+        private final Path lexiconFile;
+        private final Path fallbackLexiconFile;
+
+        @Inject
+        public Loader(@Setting("normalization.lexicon.path") Path lexiconFile,
+                      @Setting("normalization.fallback.path") Path fallbackLexiconFile) {
+            this.lexiconFile = lexiconFile;
+            this.fallbackLexiconFile = fallbackLexiconFile;
+        }
+
+        @Override
+        protected NormalizerModel loadModel() {
+            Yaml yaml = new Yaml();
+            try {
+                LOGGER.info("Loading normalization lexicon file: {}", lexiconFile);
+                @SuppressWarnings("unchecked")
+                Map<WordPos, String> lexicon = (Map<WordPos, String>) yaml.load(Files.newInputStream(lexiconFile));
+
+                LOGGER.info("Loading normalization fallback lexicon file: {}", fallbackLexiconFile);
+                @SuppressWarnings("unchecked")
+                Map<WordPos, String> fallbackLexicon = (Map<WordPos, String>) yaml.load(Files.newInputStream(fallbackLexiconFile));
+
+                return new NormalizerModel(lexicon, fallbackLexicon);
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to load Normalizer model", e);
+            }
+        }
     }
 }

@@ -42,8 +42,8 @@ public final class WordLabeler implements DocumentProcessor {
     private final Labeler<WordIndex> wordIndexLabeler;
 
     @Inject
-    public WordLabeler(Vocabulary vocabulary, Document document) {
-        wordIndex = vocabulary.wordIndex();
+    public WordLabeler(WordsIndex vocabulary, Document document) {
+        wordIndex = vocabulary;
         parseTokenLabels = document.labels(ParseToken.class);
         wordIndexLabeler = document.labeler(WordIndex.class);
     }

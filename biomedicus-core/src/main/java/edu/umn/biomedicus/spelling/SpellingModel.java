@@ -25,7 +25,7 @@ import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.grams.Trigram;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.biomedicus.vocabulary.WordsIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +68,12 @@ public final class SpellingModel {
 
     @Inject
     SpellingModel(@Setting("spelling.arpa.path") Path arpaPath,
-                  Vocabulary vocabulary,
+                  WordsIndex wordsIndex,
                   @Setting("spelling.maxEditDistance") Integer maxEditDistance) throws IOException {
-        TermIndex wordIndex = vocabulary.wordIndex();
-        LOGGER.info("Building BK tree for spelling model using {} words.", wordIndex.size());
+        LOGGER.info("Building BK tree for spelling model using {} words.", wordsIndex.size());
         MetricTree.Builder<String> builder = MetricTree.builder();
         builder.withMetric(StandardEditDistance.levenstein());
-        wordIndex.stream().map(wordIndex::getTerm).forEach(builder::add);
+        wordsIndex.stream().map(wordsIndex::getTerm).forEach(builder::add);
         termsTree = builder.build();
         LOGGER.info("Loading Spelling n-grams from ARPA file: {}", arpaPath);
 

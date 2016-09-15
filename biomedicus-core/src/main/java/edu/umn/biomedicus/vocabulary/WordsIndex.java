@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.plugins;
+package edu.umn.biomedicus.vocabulary;
 
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.EagerLoadable;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.annotations.Setting;
+import org.mapdb.DB;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.nio.file.Path;
 
-public abstract class AbstractPlugin {
-    public Collection<? extends Module> modules() {
-        return Collections.emptyList();
-    }
-
-    public Collection<Class<EagerLoadable>> dataLoaders() {
-        return Collections.emptyList();
+@Singleton
+public class WordsIndex extends MapDbTermIndex {
+    @Inject
+    WordsIndex(@Setting("dictionary.db.path") Path dbPath) {
+        super(dbPath, "words");
     }
 }

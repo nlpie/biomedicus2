@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.plugins;
+package edu.umn.biomedicus.application;
 
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.EagerLoadable;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
-public abstract class AbstractPlugin {
-    public Collection<? extends Module> modules() {
-        return Collections.emptyList();
+@Singleton
+public class LifecycleManager {
+    private final Collection<LifecycleManaged> lifecycleComponents = new ArrayList<>();
+
+    public void register(LifecycleManaged lifecycleComponentProvider) {
+        lifecycleComponents.add(lifecycleComponentProvider);
     }
 
-    public Collection<Class<EagerLoadable>> dataLoaders() {
-        return Collections.emptyList();
+    public void triggerShutdown() throws BiomedicusException {
+        for (LifecycleManaged lifecycleComponent : lifecycleComponents) {
+            lifecycleComponent.doShutdown();
+        }
     }
 }

@@ -21,9 +21,12 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.SettingImpl;
+import edu.umn.biomedicus.common.types.text.NormIndex;
+import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.biomedicus.vocabulary.NormsIndex;
+import edu.umn.biomedicus.vocabulary.TermsIndex;
+import edu.umn.biomedicus.vocabulary.WordsIndex;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -61,10 +64,6 @@ public final class Biomedicus {
 
     public <T> T getInstance(Class<T> tClass) {
         return injector.getInstance(tClass);
-    }
-
-    public Vocabulary getVocabulary() {
-        return injector.getInstance(Vocabulary.class);
     }
 
     public <T> T getGlobalSetting(Class<T> settingType, String key) {

@@ -40,8 +40,8 @@ public final class NormLabeler implements DocumentProcessor {
     private final Labeler<NormIndex> normIndexLabeler;
 
     @Inject
-    public NormLabeler(Vocabulary vocabulary, Document document) {
-        this.wordIndex = vocabulary.wordIndex();
+    public NormLabeler(NormsIndex normsIndex, Document document) {
+        this.wordIndex = normsIndex;
         normFormLabels = document.labels(NormForm.class);
         normIndexLabeler = document.labeler(NormIndex.class);
     }

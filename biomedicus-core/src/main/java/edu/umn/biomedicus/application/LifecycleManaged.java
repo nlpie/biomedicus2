@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.plugins;
+package edu.umn.biomedicus.application;
 
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.EagerLoadable;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.Collection;
-import java.util.Collections;
+public interface LifecycleManaged {
+    void doStartup() throws BiomedicusException;
 
-public abstract class AbstractPlugin {
-    public Collection<? extends Module> modules() {
-        return Collections.emptyList();
-    }
-
-    public Collection<Class<EagerLoadable>> dataLoaders() {
-        return Collections.emptyList();
-    }
+    void doShutdown() throws BiomedicusException;
 }

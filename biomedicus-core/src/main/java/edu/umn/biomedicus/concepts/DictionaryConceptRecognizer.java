@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.*;
 
 /**
- * Uses a {@link edu.umn.biomedicus.concepts.ConceptModel} to recognize concepts in text. First, it will
+ * Uses a {@link ConceptDictionary} to recognize concepts in text. First, it will
  * try to find direct matches against all in-order sublists of tokens in a sentence. Then it will perform syntactic
  * permutations on any prepositional phrases in those sublists.
  *
@@ -50,7 +50,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryConceptRecognizer.class);
     private static final Set<PartOfSpeech> TRIVIAL_POS = buildTrivialPos();
     private static final int SPAN_SIZE = 5;
-    private final ConceptModel conceptModel;
+    private final ConceptDictionary conceptDictionary;
     private final Labels<Sentence> sentences;
     private final Labels<NormIndex> normIndexes;
     private final Document document;
@@ -62,11 +62,11 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     /**
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
      *
-     * @param conceptModel the dictionary to get concepts from.
+     * @param conceptDictionary the dictionary to get concepts from.
      */
     @Inject
-    DictionaryConceptRecognizer(ConceptModel conceptModel, Document document) {
-        this.conceptModel = conceptModel;
+    DictionaryConceptRecognizer(ConceptDictionary conceptDictionary, Document document) {
+        this.conceptDictionary = conceptDictionary;
         this.document = document;
         sentences = document.labels(Sentence.class);
         normIndexes = document.labels(NormIndex.class);
@@ -77,7 +77,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     }
 
     private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) throws BiomedicusException {
-        List<SuiCuiTui> phraseSUI = conceptModel.forPhrase(phrase);
+        List<SuiCuiTui> phraseSUI = conceptDictionary.forPhrase(phrase);
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 1 - confMod);
@@ -88,7 +88,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             return false;
         }
 
-        phraseSUI = conceptModel.forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
+        phraseSUI = conceptDictionary.forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 0.6 - confMod);
@@ -115,7 +115,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         }
         TermsBag normVector = builder.build();
 
-        List<SuiCuiTui> normsCUI = conceptModel.forNorms(normVector);
+        List<SuiCuiTui> normsCUI = conceptDictionary.forNorms(normVector);
         if (normsCUI != null) {
             makeTerm(phraseAsSpan, normsCUI, .3);
         }

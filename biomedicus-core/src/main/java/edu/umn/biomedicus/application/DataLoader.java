@@ -28,7 +28,7 @@ import java.util.concurrent.Semaphore;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public abstract class DataLoader<T> implements Provider<T> {
+public abstract class DataLoader<T> implements Provider<T>, EagerLoadable {
     /**
      * Prevents the data from being loaded more than once.
      */
@@ -54,6 +54,7 @@ public abstract class DataLoader<T> implements Provider<T> {
      *
      * @throws BiomedicusException
      */
+    @Override
     public void eagerLoad() throws BiomedicusException {
         if (!loaded) {
             load();

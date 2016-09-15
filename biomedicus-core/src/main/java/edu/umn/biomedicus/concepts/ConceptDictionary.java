@@ -21,7 +21,8 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.biomedicus.common.types.text.WordIndex;
+import edu.umn.biomedicus.vocabulary.NormsIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,8 @@ import java.util.stream.Stream;
  * @since 1.0.0
  */
 @Singleton
-class ConceptModel {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConceptModel.class);
+class ConceptDictionary {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDictionary.class);
 
     private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
 
@@ -52,13 +53,13 @@ class ConceptModel {
     private final Map<String, List<SuiCuiTui>> lowercasePhrases;
 
     @Inject
-    ConceptModel(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
-                 @Setting("concepts.filters.cui.path") Path filteredCuisPath,
-                 @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-                 @Setting("concepts.filters.tui.path") Path filteredTuisPath,
-                 @Setting("concepts.phrases.path") Path phrasesPath,
-                 @Setting("concepts.norms.path") Path normsPath,
-                 Vocabulary vocabulary) throws IOException {
+    ConceptDictionary(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
+                      @Setting("concepts.filters.cui.path") Path filteredCuisPath,
+                      @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
+                      @Setting("concepts.filters.tui.path") Path filteredTuisPath,
+                      @Setting("concepts.phrases.path") Path phrasesPath,
+                      @Setting("concepts.norms.path") Path normsPath,
+                      NormsIndex normsIndex) throws IOException {
         Pattern splitter = Pattern.compile(",");
 
         Set<SUI> filteredSuis = Files.lines(filteredSuisPath).map(SUI::new).collect(Collectors.toSet());
@@ -92,7 +93,6 @@ class ConceptModel {
 
         LOGGER.info("Loading concept norm vectors: {}", normsPath);
         normDictionary = new HashMap<>();
-        TermIndex normIndex = vocabulary.wordIndex();
         try (BufferedReader normsReader = Files.newBufferedReader(normsPath)) {
             String line;
             while ((line = normsReader.readLine()) != null) {
@@ -104,7 +104,7 @@ class ConceptModel {
                     }
                     return string;
                 });
-                TermsBag termsBag = normIndex.getTermVector(terms);
+                TermsBag termsBag = normsIndex.getTermsBag(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());

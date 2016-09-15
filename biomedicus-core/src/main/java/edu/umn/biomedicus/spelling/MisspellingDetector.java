@@ -27,7 +27,7 @@ import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.biomedicus.vocabulary.WordsIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +41,9 @@ public final class MisspellingDetector implements DocumentProcessor {
     private final ValueLabeler mispellingLabeler;
 
     @Inject
-    public MisspellingDetector(Vocabulary vocabulary,
+    public MisspellingDetector(WordsIndex wordsIndex,
                                Document document) {
-        wordIndex = vocabulary.wordIndex();
+        wordIndex = wordsIndex;
         this.parseTokenLabels = document.labels(ParseToken.class);
         mispellingLabeler = document.labeler(Misspelling.class).value(new Misspelling());
     }

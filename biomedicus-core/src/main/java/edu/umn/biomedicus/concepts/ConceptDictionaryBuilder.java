@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.plugins;
+package edu.umn.biomedicus.concepts;
 
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.EagerLoadable;
-
-import java.util.Collection;
-import java.util.Collections;
-
-public abstract class AbstractPlugin {
-    public Collection<? extends Module> modules() {
-        return Collections.emptyList();
-    }
-
-    public Collection<Class<EagerLoadable>> dataLoaders() {
-        return Collections.emptyList();
-    }
+public class ConceptDictionaryBuilder {
 }

@@ -182,12 +182,15 @@ public final class PennLikePhraseTokenizer {
             CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
             Matcher endBreaksMatcher = END_BREAKS.matcher(tokenText);
             if (endBreaksMatcher.find()) {
-                Span rest = tokenCandidate.derelativize(new Span(0, endBreaksMatcher.start()));
-                tokenCandidate = new TokenCandidate(rest, false);
-                Span endSplit = tokenCandidate.derelativize(new Span(endBreaksMatcher.start(), endBreaksMatcher.end()));
+                int start = endBreaksMatcher.start();
+                Span rest = tokenCandidate.derelativize(new Span(0, start));
+                Span endSplit = tokenCandidate.derelativize(new Span(start, endBreaksMatcher.end()));
                 candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast));
+                tokenCandidate = new TokenCandidate(rest, false);
             } else {
-                candidates.addFirst(tokenCandidate);
+                if (tokenCandidate.getBegin() != tokenCandidate.getEnd()) {
+                    candidates.addFirst(tokenCandidate);
+                }
                 return candidates.stream();
             }
         }

@@ -4,9 +4,8 @@ paths:
   #data: /absolute-path
 # settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
-  vocabulary:
-    wordIndex.path: vocabulary/words.txt
-    specialist.words.path: vocabulary/specialist-words.txt
+  dictionary:
+    db.path: dictionary.db
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
