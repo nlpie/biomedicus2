@@ -21,7 +21,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
