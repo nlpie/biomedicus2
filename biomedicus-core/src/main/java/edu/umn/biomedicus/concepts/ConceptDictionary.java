@@ -19,10 +19,8 @@ package edu.umn.biomedicus.concepts;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.common.types.text.WordIndex;
-import edu.umn.biomedicus.vocabulary.NormsIndex;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +57,7 @@ class ConceptDictionary {
                       @Setting("concepts.filters.tui.path") Path filteredTuisPath,
                       @Setting("concepts.phrases.path") Path phrasesPath,
                       @Setting("concepts.norms.path") Path normsPath,
-                      NormsIndex normsIndex) throws IOException {
+                      Vocabulary vocabulary) throws IOException {
         Pattern splitter = Pattern.compile(",");
 
         Set<SUI> filteredSuis = Files.lines(filteredSuisPath).map(SUI::new).collect(Collectors.toSet());
@@ -104,7 +102,7 @@ class ConceptDictionary {
                     }
                     return string;
                 });
-                TermsBag termsBag = normsIndex.getTermsBag(terms);
+                TermsBag termsBag = vocabulary.getNormsIndex().getTermsBag(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());

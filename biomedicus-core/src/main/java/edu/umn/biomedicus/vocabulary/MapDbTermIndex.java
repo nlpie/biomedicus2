@@ -16,13 +16,13 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.application.LifecycleManaged;
 import edu.umn.biomedicus.common.terms.AbstractTermIndex;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import org.mapdb.*;
+import org.mapdb.BTreeMap;
+import org.mapdb.DB;
+import org.mapdb.IndexTreeList;
+import org.mapdb.Serializer;
 
 import javax.annotation.Nullable;
-import java.nio.file.Path;
 
 /**
  * An index of String terms to and from integers.
@@ -30,53 +30,48 @@ import java.nio.file.Path;
  * @author Ben Knoll
  * @since 1.6.0
  */
-abstract class MapDbTermIndex extends AbstractTermIndex implements LifecycleManaged {
-    private final Path dbPath;
-    private final String dbIdentifier;
-    @Nullable private DB db;
-    @Nullable private IndexTreeList<String> instances = null;
-    @Nullable private BTreeMap<String, Integer> indexes = null;
+class MapDbTermIndex extends AbstractTermIndex {
+    private final IndexTreeList<String> instances;
+    private final BTreeMap<String, Integer> indexes;
+    private boolean open = true;
 
-    MapDbTermIndex(Path dbPath, String dbIdentifier) {
-        this.dbPath = dbPath;
-        this.dbIdentifier = dbIdentifier;
-    }
-
-    void openForWriting(DB db) {
-        this.db = db;
-        instances = db.indexTreeList(dbIdentifier + "Instances", Serializer.STRING).create();
-        indexes = db.treeMap(dbIdentifier + "Indexes", Serializer.STRING_DELTA, Serializer.INTEGER).create();
+    MapDbTermIndex(DB db, String dbIdentifier) {
+        instances = db.indexTreeList(dbIdentifier + "Instances", Serializer.STRING).createOrOpen();
+        indexes = db.treeMap(dbIdentifier + "Indexes", Serializer.STRING_DELTA, Serializer.INTEGER).createOrOpen();
     }
 
     void addTerm(String string) {
-        if (db == null || instances == null || indexes == null) {
-            throw new IllegalStateException("Index for " + dbIdentifier + " is not open.");
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
         }
+
         if (indexes.containsKey(string)) {
             return;
         }
-
         int index = instances.size();
         instances.add(string);
         indexes.put(string, index);
     }
 
     void addTerm(CharSequence term) {
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
+        }
         addTerm(term.toString());
     }
 
     @Override
     public boolean contains(String string) {
-        if (db == null || instances == null || indexes == null) {
-            throw new IllegalStateException("Index for " + dbIdentifier + " is not open.");
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
         }
         return indexes.containsKey(string);
     }
 
     @Override
     protected String getTerm(int termIdentifier) {
-        if (db == null || instances == null || indexes == null) {
-            throw new IllegalStateException("Index for " + dbIdentifier + " is not open.");
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
         }
         String s = instances.get(termIdentifier);
         if (s == null) {
@@ -87,8 +82,8 @@ abstract class MapDbTermIndex extends AbstractTermIndex implements LifecycleMana
 
     @Override
     protected int getIdentifier(@Nullable CharSequence term) {
-        if (db == null || instances == null || indexes == null) {
-            throw new IllegalStateException("Index for " + dbIdentifier + " is not open.");
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
         }
         if (term == null) {
             return -1;
@@ -100,26 +95,13 @@ abstract class MapDbTermIndex extends AbstractTermIndex implements LifecycleMana
 
     @Override
     public int size() {
-        if (db == null || instances == null || indexes == null) {
-            throw new IllegalStateException("Index for " + dbIdentifier + " is not open.");
+        if (!open) {
+            throw new IllegalStateException("Term index has been closed");
         }
         return instances.size();
     }
 
-    @Override
-    public void doStartup() throws BiomedicusException {
-        db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().readOnly().closeOnJvmShutdown().make();
-        instances = db.indexTreeList(dbIdentifier + "Instances", Serializer.STRING).open();
-        indexes = db.treeMap(dbIdentifier + "Indexes", Serializer.STRING_DELTA, Serializer.INTEGER).open();
-    }
-
-    @Override
-    public void doShutdown() throws BiomedicusException {
-        instances = null;
-        indexes = null;
-        if (db != null) {
-            db.close();
-            db = null;
-        }
+    void close() {
+        open = false;
     }
 }

@@ -21,12 +21,11 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.types.text.NormIndex;
-import edu.umn.biomedicus.common.types.text.WordIndex;
+import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.vocabulary.NormsIndex;
-import edu.umn.biomedicus.vocabulary.TermsIndex;
-import edu.umn.biomedicus.vocabulary.WordsIndex;
+import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A class that provides access to the functionality of Biomedicus. The instances of this class is the
@@ -85,6 +85,28 @@ public final class Biomedicus {
     public Path getDataFolder() {
         return dataFolder;
     }
+
+    /**
+     * Gets
+     * @return
+     */
+    public Vocabulary getVocabulary() {
+        return injector.getInstance(Vocabulary.class);
+    }
+
+    public Vocabulary vocabulary() {
+        return injector.getInstance(Vocabulary.class);
+    }
+
+    public static Stream<Span> standardTokenCandidatesForSentence(CharSequence sentenceText) {
+        return PennLikePhraseTokenizer.tokenizeSentence(sentenceText);
+    }
+
+    public static Stream<Span> standardTokenCandidatesForPhrase(CharSequence phraseText) {
+        return PennLikePhraseTokenizer.tokenizePhrase(phraseText);
+    }
+
+
 
     public static final class ViewIdentifiers {
         public static final String ORIGINAL_DOCUMENT = "OriginalDocument";

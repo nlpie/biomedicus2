@@ -16,70 +16,100 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelsUtilities;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
-import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
-import edu.umn.biomedicus.tokenization.TermTokenMerger;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.PathOptionHandler;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class VocabularyBuilder {
-    private final MapDbTermIndex words;
-    private final MapDbTermIndex norms;
-    private final MapDbTermIndex terms;
+    private static final Pattern PIPE_SPLITTER = Pattern.compile("\\|");
 
-    public VocabularyBuilder(Path dbPath) {
-        DB db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().closeOnJvmShutdown().make();
-        words = new WordsIndex(dbPath);
-        words.openForWriting(db);
-        norms = new NormsIndex(dbPath);
-        norms.openForWriting(db);
-        terms = new TermsIndex(dbPath);
-        terms.openForWriting(db);
+    @Option(name = "-s", required = true, handler = PathOptionHandler.class, usage = "path to SPECIALIST Lexicon installation.")
+    private Path specialistPath;
+
+    @Option(name = "-u", required = true, handler = PathOptionHandler.class, usage = "path to UMLS Lexicon installation.")
+    private Path umlsPath;
+
+    @Argument(handler = PathOptionHandler.class)
+    private Path outputPath;
+
+    private void doMain(String[] args) {
+        CmdLineParser parser = new CmdLineParser(this);
+
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println(e.getLocalizedMessage());
+            System.err.println("java edu.umn.biomedicus.vocabulary.VocabularyBuilder [options...] /path/to/outputPath");
+            parser.printUsage(System.err);
+            return;
+        }
+
+        Vocabulary vocabulary = new Vocabulary(outputPath);
+        vocabulary.openForWriting();
+
+        Path lragr = specialistPath.resolve("LRAGR");
+
+        Iterator<String[]> iterator;
+        try {
+            iterator = Files.lines(lragr).map(PIPE_SPLITTER::split).iterator();
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+            return;
+        }
+        int count = 0;
+        while (iterator.hasNext()) {
+            String[] line = iterator.next();
+            String inflectionalVariant = line[1];
+
+            vocabulary.addPhrase(inflectionalVariant);
+
+            String uninflected = line[4];
+
+            vocabulary.addNormPhrase(uninflected);
+
+            if ((++count) % 10000 == 0) {
+                System.out.println("Read " + count + " lines from LRAGR.");
+            }
+        }
+
+        Path mrConso = umlsPath.resolve("MRCONSO.RRF");
+
+        Iterator<String[]> mrconsoIt;
+        try {
+            mrconsoIt = Files.lines(mrConso).map(PIPE_SPLITTER::split).iterator();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        count = 0;
+
+        while (mrconsoIt.hasNext()) {
+            String[] line = mrconsoIt.next();
+
+            String string = line[14];
+
+            vocabulary.addPhrase(string);
+
+            if ((++count) % 10000 == 0) {
+                System.out.println("Read " + count + " lines from MRCONSO.RRF.");
+            }
+        }
+
     }
 
-    public void addPhrase(String phrase) {
-        Iterator<Span> tokensIterator = PennLikePhraseTokenizer.tokenizePhrase(phrase).iterator();
-        List<Label<Token>> parseTokens = new ArrayList<>();
-        Span prev = null;
-        while (tokensIterator.hasNext() || prev != null) {
-            Span span = null;
-            if (tokensIterator.hasNext()) {
-                span = tokensIterator.next();
-            }
-            if (prev != null) {
-                String term = prev.getCovered(phrase).toString();
-                words.addTerm(term);
-                boolean hasSpaceAfter = span != null && prev.getEnd() != span.getBegin();
-                ParseToken parseToken = new ParseToken(term, hasSpaceAfter);
-                Label<ParseToken> parseTokenLabel = new Label<>(prev, parseToken);
-                parseTokens.add(LabelsUtilities.cast(parseTokenLabel));
-            }
-            prev = span;
-        }
-
-        TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens);
-        while (termTokenMerger.hasNext()) {
-            Label<TermToken> termToken = termTokenMerger.next();
-            terms.addTerm(termToken.value().text());
-        }
-    }
-
-    public void addNormPhrase(String phrase) {
-        Iterator<Span> normsIt = PennLikePhraseTokenizer.tokenizePhrase(phrase).iterator();
-        while (normsIt.hasNext()) {
-            Span span = normsIt.next();
-            CharSequence norm = span.getCovered(phrase);
-            norms.addTerm(norm);
-        }
+    public static void main(String[] args) {
+        new VocabularyBuilder().doMain(args);
     }
 }
