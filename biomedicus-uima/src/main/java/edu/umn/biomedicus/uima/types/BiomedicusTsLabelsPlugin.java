@@ -366,7 +366,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         SubstanceUsageElementLabelAdapter(CAS cas) {
             super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
             kindFeature = type.getFeatureByBaseName("substanceUsageKind");
-            elementTypeFeature = type.getFeatureByBaseName("elementTypeFeature");
+            elementTypeFeature = type.getFeatureByBaseName("substanceUsageElementType");
         }
 
 
