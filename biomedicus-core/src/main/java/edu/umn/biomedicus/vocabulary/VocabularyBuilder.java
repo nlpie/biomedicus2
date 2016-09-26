@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -107,6 +108,11 @@ public class VocabularyBuilder {
             }
         }
 
+        try {
+            vocabulary.doShutdown();
+        } catch (BiomedicusException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

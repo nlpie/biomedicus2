@@ -21,6 +21,7 @@ import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -33,7 +34,7 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
     private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
     private final List<Label<Token>> running = new ArrayList<>();
     private final Iterator<Label<Token>> iterator;
-    private Label<TermToken> next;
+    @Nullable private Label<TermToken> next;
 
     public TermTokenMerger(Iterator<Label<Token>> iterator) {
         this.iterator = iterator;
@@ -90,7 +91,10 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
 
     @Override
     public Label<TermToken> next() {
-        Label<TermToken> copy = this.next;
+        if (next == null) {
+            throw new NoSuchElementException();
+        }
+        Label<TermToken> copy = next;
         findNext();
         return copy;
     }

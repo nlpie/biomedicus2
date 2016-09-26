@@ -235,7 +235,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
         @Override
         protected void fillAnnotation(Label<WordIndex> label, AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature, label.value().term().indexedTerm());
+            annotationFS.setIntValue(indexFeature, label.value().term().termIdentifier());
         }
 
         @Override
@@ -277,7 +277,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
         @Override
         protected void fillAnnotation(Label<NormIndex> label, AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature, label.value().term().indexedTerm());
+            annotationFS.setIntValue(indexFeature, label.value().term().termIdentifier());
         }
 
         @Override

@@ -35,7 +35,7 @@ public abstract class AbstractTermIndex implements TermIndex {
         if (indexedTerm.isUnknown()) {
             return null;
         }
-        return getTerm(indexedTerm.indexedTerm());
+        return getTerm(indexedTerm.termIdentifier());
     }
 
     @Override
