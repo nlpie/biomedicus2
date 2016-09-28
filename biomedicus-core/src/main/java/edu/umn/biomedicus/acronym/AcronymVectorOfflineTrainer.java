@@ -48,7 +48,7 @@ public class AcronymVectorOfflineTrainer {
     private int winSize;
     private int totalDocs = 0;
     // Only use these most common words
-    private static int NWORDS = 150000;
+    private final int nWords;
 
     // Directed graph that contains all phrases and is used
     private Map wordGraph;
@@ -64,7 +64,8 @@ public class AcronymVectorOfflineTrainer {
         String expansionsFile = args[0];
         String corpusPath = args[1];
         String outDir = args[2];
-        AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile);
+        int nWords = Integer.parseInt(args[3]);
+        AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile, nWords);
         trainer.trainOnCorpus(corpusPath);
         trainer.writeAcronymModel(outDir);
     }
@@ -76,7 +77,8 @@ public class AcronymVectorOfflineTrainer {
      * @throws BiomedicusException
      * @throws IOException
      */
-    public AcronymVectorOfflineTrainer(String expansionsFile) throws BiomedicusException, IOException {
+    public AcronymVectorOfflineTrainer(String expansionsFile, int nWords) throws BiomedicusException, IOException {
+        this.nWords = nWords;
         // Get all possible acronym expansions and make vectors for each one
         aem = new AcronymExpansionsModel.Loader(Paths.get(expansionsFile)).loadModel();
         Set<String> allExpansions = new HashSet<>();
@@ -129,7 +131,7 @@ public class AcronymVectorOfflineTrainer {
             sortedWordFreq.addAll(wordFrequency.keySet());
             Map<String, Integer> dictionary = new HashMap<>();
             Iterator<String> iter = sortedWordFreq.descendingIterator();
-            for (int i = 0; i < NWORDS; i++) {
+            for (int i = 0; i < nWords; i++) {
                 if (!iter.hasNext()) break;
                 String word = iter.next();
                 dictionary.put(word, i);
