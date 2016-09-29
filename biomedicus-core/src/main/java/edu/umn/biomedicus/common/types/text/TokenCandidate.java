@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.common.types.text;
 
-import edu.umn.biomedicus.common.types.text.Span;
+public class TokenCandidate implements Token {
+    private final String text;
+    private final boolean spaceAfter;
 
-import java.util.List;
-
-public final class Probable {
-    private final List<Span> cueTerms;
-
-    public Probable(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
+    public TokenCandidate(String text, boolean spaceAfter) {
+        this.text = text;
+        this.spaceAfter = spaceAfter;
     }
 
-    public List<Span> getCueTerms() {
-        return cueTerms;
+    @Override
+    public String text() {
+        return text;
+    }
+
+    @Override
+    public boolean hasSpaceAfter() {
+        return spaceAfter;
     }
 }

@@ -55,4 +55,8 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
     public int compareTo(IndexedTerm o) {
         return Integer.compare(termIdentifier, o.termIdentifier);
     }
+
+    public static IndexedTerm unknown() {
+        return new IndexedTerm(-1);
+    }
 }

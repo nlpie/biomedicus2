@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.common.collect.SlidingWindow;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
 import java.util.*;
@@ -118,10 +117,6 @@ public interface Labels<T> extends Iterable<Label<T>> {
             return Optional.of(it.next());
         }
         return Optional.empty();
-    }
-
-    default Iterable<List<Label<T>>> slidingWindowsOfSize(int size) {
-        return new SlidingWindow<>(this, size);
     }
 
 

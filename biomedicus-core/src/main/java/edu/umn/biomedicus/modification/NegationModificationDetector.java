@@ -18,8 +18,9 @@ package edu.umn.biomedicus.modification;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.Negated;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -29,39 +30,75 @@ import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public final class NegationModificationDetector implements DocumentProcessor {
-    private final NegationModificationModel negationModificationModel;
-    private final Document document;
+    private static final ContextCues CONTEXT_CUES = ContextCues.builder()
+            .addLeftPhrase("No")
+            .addLeftPhrase("no")
+            .addLeftPhrase("Deny")
+            .addLeftPhrase("deny")
+            .addLeftPhrase("Denies")
+            .addLeftPhrase("denies")
+            .addLeftPhrase("Denying")
+            .addLeftPhrase("denying")
+            .addLeftPhrase("Absent")
+            .addLeftPhrase("absent")
+            .addLeftPhrase("Negative")
+            .addLeftPhrase("negative")
+            .addLeftPhrase("Without")
+            .addLeftPhrase("without")
+            .addLeftPhrase("Never")
+            .addLeftPhrase("never")
+            .addLeftPhrase("Unremarkable")
+            .addLeftPhrase("unremarkable")
+            .addLeftPhrase("Un-remarkable")
+            .addLeftPhrase("un-remarkable")
+            .addRightPhrase("none")
+            .addRightPhrase("negative")
+            .addRightPhrase("absent")
+            .addScopeDelimitingPos(PartOfSpeech.WDT)
+            .addScopeDelimitingPos(PartOfSpeech.PRP)
+            .addScopeDelimitingPos(PartOfSpeech.VBZ)
+            .addScopeDelimitingWord("but")
+            .addScopeDelimitingWord("however")
+            .addScopeDelimitingWord("therefore")
+            .addScopeDelimitingWord("otherwise")
+            .addScopeDelimitingWord(";")
+            .addScopeDelimitingWord(":")
+            .addScopeDelimitingWord("except")
+            .build();
     private final Labels<Sentence> sentences;
     private final Labels<DictionaryTerm> dictionaryTerms;
     private final Labels<TermToken> termTokens;
     private final Labels<PartOfSpeech> partsOfSpeech;
-    private final ValueLabeler labeler;
+    private final Labeler<Negated> labeler;
 
     @Inject
-    public NegationModificationDetector(NegationModificationModel negationModificationModel,
-                                        Document document) {
-        this.negationModificationModel = negationModificationModel;
-        this.document = document;
+    public NegationModificationDetector(Document document) {
         sentences = document.labels(Sentence.class);
         dictionaryTerms = document.labels(DictionaryTerm.class);
         termTokens = document.labels(TermToken.class);
         partsOfSpeech = document.labels(PartOfSpeech.class);
-        labeler = document.labeler(Negated.class).value(new Negated());
+        labeler = document.labeler(Negated.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        ContextSearchBuilder contextSearchBuilder = new ContextSearchBuilder();
-        contextSearchBuilder.setContextCues(negationModificationModel.getContextCues())
-                .setDocument(document)
+        ContextSearch.ContextSearchBuilder contextSearchBuilder = new ContextSearch.ContextSearchBuilder();
+        contextSearchBuilder.setContextCues(CONTEXT_CUES)
                 .setSentences(sentences)
                 .setModifiableTerms(dictionaryTerms)
                 .setTokens(termTokens)
                 .setPartOfSpeechLabels(partsOfSpeech);
         ContextSearch contextSearch = contextSearchBuilder.createContextSearch();
-        for (Span span : contextSearch.findMatches()) {
-            labeler.label(span);
+        Map<Span, List<Label<TermToken>>> matches = contextSearch.findMatches();
+        for (Map.Entry<Span, List<Label<TermToken>>> entry : matches.entrySet()) {
+            List<Label<TermToken>> cues = entry.getValue();
+            List<Span> cuesList = cues.stream().map(Label::toSpan).collect(Collectors.toList());
+            labeler.value(new Negated(cuesList)).label(entry.getKey());
         }
     }
 }

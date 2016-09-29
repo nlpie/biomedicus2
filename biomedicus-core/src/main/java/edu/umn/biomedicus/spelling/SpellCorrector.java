@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.spelling;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.List;
+public class SpellCorrector implements DocumentProcessor {
+    @Override
+    public void process() throws BiomedicusException {
 
-public final class Probable {
-    private final List<Span> cueTerms;
-
-    public Probable(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
-    public List<Span> getCueTerms() {
-        return cueTerms;
     }
 }

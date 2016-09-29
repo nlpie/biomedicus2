@@ -16,5 +16,18 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
+import edu.umn.biomedicus.common.types.text.Span;
+
+import java.util.List;
+
 public final class Negated {
+    private final List<Span> cueTerms;
+
+    public Negated(List<Span> cueTerms) {
+        this.cueTerms = cueTerms;
+    }
+
+    public List<Span> getCueTerms() {
+        return cueTerms;
+    }
 }

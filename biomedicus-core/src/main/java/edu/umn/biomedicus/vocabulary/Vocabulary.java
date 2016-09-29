@@ -17,8 +17,12 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
+import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.application.LifecycleManaged;
+import edu.umn.biomedicus.application.LifecycleManager;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelsUtilities;
 import edu.umn.biomedicus.common.terms.TermIndex;
@@ -38,16 +42,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Singleton
+@ProvidedBy(Vocabulary.Loader.class)
 public class Vocabulary implements LifecycleManaged {
     private final Path dbPath;
     private boolean isOpen = false;
-    @Nullable private DB db;
-    @Nullable private MapDbTermIndex wordsIndex;
-    @Nullable private MapDbTermIndex termsIndex;
-    @Nullable private MapDbTermIndex normsIndex;
+    @Nullable
+    private DB db;
+    @Nullable
+    private MapDbTermIndex wordsIndex;
+    @Nullable
+    private MapDbTermIndex termsIndex;
+    @Nullable
+    private MapDbTermIndex normsIndex;
 
-    @Inject
-    public Vocabulary(@Setting("dictionary.db.path") Path dbPath) {
+    Vocabulary(Path dbPath) {
         this.dbPath = dbPath;
     }
 
@@ -121,6 +130,7 @@ public class Vocabulary implements LifecycleManaged {
         db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().make();
         openIndexes();
     }
+
     @Override
     public void doStartup() throws BiomedicusException {
         db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().readOnly().make();
@@ -145,5 +155,27 @@ public class Vocabulary implements LifecycleManaged {
             db.close();
         }
         isOpen = false;
+    }
+
+    @Singleton
+    public static class Loader extends DataLoader<Vocabulary> {
+
+        private final Path dbPath;
+        private final LifecycleManager lifecycleManager;
+
+        @Inject
+        public Loader(@Setting("vocabulary.db.path") Path dbPath,
+                      LifecycleManager lifecycleManager) {
+            this.dbPath = dbPath;
+            this.lifecycleManager = lifecycleManager;
+        }
+
+        @Override
+        protected Vocabulary loadModel() throws BiomedicusException {
+            Vocabulary vocabulary = new Vocabulary(dbPath);
+            vocabulary.doStartup();
+            lifecycleManager.register(vocabulary);
+            return vocabulary;
+        }
     }
 }
