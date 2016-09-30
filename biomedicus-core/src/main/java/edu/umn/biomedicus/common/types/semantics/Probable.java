@@ -20,13 +20,14 @@ import edu.umn.biomedicus.common.types.text.Span;
 
 import java.util.List;
 
-public final class Probable {
+public final class Probable implements DictionaryTermModifier{
     private final List<Span> cueTerms;
 
     public Probable(List<Span> cueTerms) {
         this.cueTerms = cueTerms;
     }
 
+    @Override
     public List<Span> getCueTerms() {
         return cueTerms;
     }

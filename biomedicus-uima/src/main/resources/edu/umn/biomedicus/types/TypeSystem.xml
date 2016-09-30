@@ -226,6 +226,11 @@
                 </featureDescription>
             </features>
         </typeDescription>
+        
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.ModificationCue</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
 
         <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_6.Modification</name>
@@ -234,7 +239,7 @@
                 <featureDescription>
                     <name>cues</name>
                     <rangeTypeName>uima.cas.FSArray</rangeTypeName>
-                    <elementType>uima.tcas.Annotation</elementType>
+                    <elementType>edu.umn.biomedicus.uima.type1_6.ModificationCue</elementType>
                 </featureDescription>
             </features>
         </typeDescription>

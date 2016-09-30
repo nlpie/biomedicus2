@@ -30,12 +30,12 @@ import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.cas.FSArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
@@ -132,150 +132,75 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         }
     }
 
-    public static class NegatedLabelAdapter extends AbstractLabelAdapter<Negated> {
+    static abstract class DictionaryTermModifierLabelAdapter<T extends DictionaryTermModifier> extends AbstractLabelAdapter<T> {
         private final Feature cues;
-        private final Type annotationType;
+        private final Type cueType;
+        private final Function<List<Span>, T> constructor;
 
+        DictionaryTermModifierLabelAdapter(CAS cas, Type type, Function<List<Span>, T> constructor) {
+            super(cas, type);
+            this.constructor = constructor;
+            cues = type.getFeatureByBaseName("cues");
+            cueType = cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.ModificationCue");
+        }
+
+        @Override
+        protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
+            T value = label.value();
+            List<Span> cueTerms = value.getCueTerms();
+            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
+            for (int i = 0; i < cueTerms.size(); i++) {
+                Span cueTerm = cueTerms.get(i);
+                AnnotationFS cueAnnotation = cas.createAnnotation(cueType, cueTerm.getBegin(), cueTerm.getEnd());
+                cas.addFsToIndexes(cueAnnotation);
+                fsArray.set(i, cueAnnotation);
+            }
+            cas.addFsToIndexes(fsArray);
+            annotationFS.setFeatureValue(cues, fsArray);
+        }
+
+        @Override
+        protected T createLabelValue(FeatureStructure featureStructure) {
+            FeatureStructure cuesValue = featureStructure.getFeatureValue(cues);
+            if (!(cuesValue instanceof ArrayFS)) {
+                throw new IllegalStateException("Cues is not ArrayFS");
+            }
+            ArrayFS cuesArray = (ArrayFS) cuesValue;
+
+            int size = cuesArray.size();
+            List<Span> cueTerms = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                FeatureStructure cueFs = cuesArray.get(i);
+                if (!(cueFs instanceof AnnotationFS)) {
+                    throw new IllegalStateException();
+                }
+                AnnotationFS cueAnnotation = (AnnotationFS) cueFs;
+                Span span = new Span(cueAnnotation.getBegin(), cueAnnotation.getEnd());
+                cueTerms.add(span);
+            }
+
+            return constructor.apply(cueTerms);
+        }
+    }
+
+    private static class NegatedLabelAdapter extends DictionaryTermModifierLabelAdapter<Negated> {
         @Inject
         public NegatedLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Negated"));
-            cues = type.getFeatureByBaseName("cues");
-            annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
-        }
-
-        @Override
-        protected void fillAnnotation(Label<Negated> label, AnnotationFS annotationFS) {
-            Negated value = label.value();
-            List<Span> cueTerms = value.getCueTerms();
-            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
-            for (int i = 0; i < cueTerms.size(); i++) {
-                Span cueTerm = cueTerms.get(i);
-                AnnotationFS cueAnnotation = cas.createAnnotation(annotationType, cueTerm.getBegin(), cueTerm.getEnd());
-                cas.addFsToIndexes(cueAnnotation);
-                fsArray.set(i, cueAnnotation);
-            }
-            cas.addFsToIndexes(fsArray);
-            annotationFS.setFeatureValue(cues, fsArray);
-        }
-
-        @Override
-        protected Negated createLabelValue(FeatureStructure featureStructure) {
-            FeatureStructure featureValue = featureStructure.getFeatureValue(cues);
-            if (!(featureStructure instanceof FSArray)) {
-                throw new IllegalStateException("Cues is not FSArray");
-            }
-            ArrayFS fsArray = (ArrayFS) featureValue;
-
-            List<Span> cueTerms = new ArrayList<>();
-            for (int i = 0; i < fsArray.size(); i++) {
-                FeatureStructure annoFs = fsArray.get(i);
-                if (!(annoFs instanceof AnnotationFS)) {
-                    throw new IllegalStateException();
-                }
-                AnnotationFS annotationFS = (AnnotationFS) annoFs;
-                Span span = new Span(annotationFS.getBegin(), annotationFS.getEnd());
-                cueTerms.add(span);
-            }
-
-            return new Negated(cueTerms);
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Negated"), Negated::new);
         }
     }
 
-    public static class HistoricalLabelAdapter extends AbstractLabelAdapter<Historical> {
-        private final Feature cues;
-        private final Type annotationType;
-
+    private static class HistoricalLabelAdapter extends DictionaryTermModifierLabelAdapter<Historical> {
         @Inject
         public HistoricalLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Historical"));
-            cues = type.getFeatureByBaseName("cues");
-            annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
-        }
-
-        @Override
-        protected void fillAnnotation(Label<Historical> label, AnnotationFS annotationFS) {
-            Historical value = label.value();
-            List<Span> cueTerms = value.getCueTerms();
-            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
-            for (int i = 0; i < cueTerms.size(); i++) {
-                Span cueTerm = cueTerms.get(i);
-                AnnotationFS cueAnnotation = cas.createAnnotation(annotationType, cueTerm.getBegin(), cueTerm.getEnd());
-                cas.addFsToIndexes(cueAnnotation);
-                fsArray.set(i, cueAnnotation);
-            }
-            cas.addFsToIndexes(fsArray);
-            annotationFS.setFeatureValue(cues, fsArray);
-        }
-
-        @Override
-        protected Historical createLabelValue(FeatureStructure featureStructure) {
-            FeatureStructure featureValue = featureStructure.getFeatureValue(cues);
-            if (!(featureStructure instanceof FSArray)) {
-                throw new IllegalStateException("Cues is not FSArray");
-            }
-            FSArray fsArray = (FSArray) featureValue;
-
-            List<Span> cueTerms = new ArrayList<>();
-            for (int i = 0; i < fsArray.size(); i++) {
-                FeatureStructure annoFs = fsArray.get(i);
-                if (!(annoFs instanceof AnnotationFS)) {
-                    throw new IllegalStateException();
-                }
-                AnnotationFS annotationFS = (AnnotationFS) annoFs;
-                Span span = new Span(annotationFS.getBegin(), annotationFS.getEnd());
-                cueTerms.add(span);
-            }
-
-            return new Historical(cueTerms);
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Historical"), Historical::new);
         }
     }
 
-    public static class ProbableLabelAdapter extends AbstractLabelAdapter<Probable> {
-        private final Feature cues;
-        private final Type annotationType;
-
+    private static class ProbableLabelAdapter extends DictionaryTermModifierLabelAdapter<Probable> {
         @Inject
         public ProbableLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Probable"));
-            cues = type.getFeatureByBaseName("cues");
-            annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
-        }
-
-        @Override
-        protected void fillAnnotation(Label<Probable> label, AnnotationFS annotationFS) {
-            Probable value = label.value();
-            List<Span> cueTerms = value.getCueTerms();
-            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
-            for (int i = 0; i < cueTerms.size(); i++) {
-                Span cueTerm = cueTerms.get(i);
-                AnnotationFS cueAnnotation = cas.createAnnotation(annotationType, cueTerm.getBegin(), cueTerm.getEnd());
-                cas.addFsToIndexes(cueAnnotation);
-                fsArray.set(i, cueAnnotation);
-            }
-            cas.addFsToIndexes(fsArray);
-            annotationFS.setFeatureValue(cues, fsArray);
-        }
-
-        @Override
-        protected Probable createLabelValue(FeatureStructure featureStructure) {
-            FeatureStructure featureValue = featureStructure.getFeatureValue(cues);
-            if (!(featureStructure instanceof FSArray)) {
-                throw new IllegalStateException("Cues is not FSArray");
-            }
-            FSArray fsArray = (FSArray) featureValue;
-
-            List<Span> cueTerms = new ArrayList<>();
-            for (int i = 0; i < fsArray.size(); i++) {
-                FeatureStructure annoFs = fsArray.get(i);
-                if (!(annoFs instanceof AnnotationFS)) {
-                    throw new IllegalStateException();
-                }
-                AnnotationFS annotationFS = (AnnotationFS) annoFs;
-                Span span = new Span(annotationFS.getBegin(), annotationFS.getEnd());
-                cueTerms.add(span);
-            }
-
-            return new Probable(cueTerms);
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Probable"), Probable::new);
         }
     }
 
