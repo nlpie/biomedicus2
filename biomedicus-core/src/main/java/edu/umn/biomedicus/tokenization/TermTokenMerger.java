@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.types.text.Token;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Iterator over a collection of merged tokens. Tokens that are connected by - / \ ' or _ without spaces are merged.
@@ -56,7 +57,10 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
 
             Label<Token> lastLabel = running.get(running.size() - 1);
             Token lastToken = lastLabel.value();
-            if (lastToken.hasSpaceAfter()) {
+            String lastTokenText = lastToken.text();
+            char lastTokenLastChar = lastTokenText.charAt(lastTokenText.length() - 1);
+            char curTokenFirstChar = tokenLabel.value().text().charAt(0);
+            if (lastToken.hasSpaceAfter() || (!MERGE.contains(curTokenFirstChar) && !MERGE.contains(lastTokenLastChar))) {
                 makeTermToken();
             }
             running.add(tokenLabel);

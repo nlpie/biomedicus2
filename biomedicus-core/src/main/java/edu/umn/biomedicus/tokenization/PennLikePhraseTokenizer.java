@@ -31,7 +31,7 @@ public final class PennLikePhraseTokenizer {
      */
     private static final Pattern WORDS = Pattern.compile("([^\\p{Z}\\p{C}]+)");
 
-    private static final Pattern TRAILING_PERIOD = Pattern.compile("(\\.)$");
+    private static final Pattern TRAILING_PERIOD = Pattern.compile("([.])$");
 
     /**
      * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
@@ -54,7 +54,7 @@ public final class PennLikePhraseTokenizer {
     private static final Pattern END_BREAKS = Pattern.compile(
             "((')|('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|" +
                     "(\\p{Pe})|(\\p{Pf})|" +
-                    "([\\p{P}&&[^\\.]])|" +
+                    "([\\p{P}&&[^.]])|" +
                     "(\\p{Sc}))$"
     );
 
