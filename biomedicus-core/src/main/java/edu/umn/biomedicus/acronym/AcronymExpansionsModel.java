@@ -76,7 +76,7 @@ class AcronymExpansionsModel {
                 String acronym;
                 while ((acronym = bufferedReader.readLine()) != null) {
                     String[] acronymExpansions = splitter.split(bufferedReader.readLine());
-                    expansions.put(Acronyms.standardAcronymForm(acronym), Arrays.asList(acronymExpansions));
+                    expansions.put(acronym, Arrays.asList(acronymExpansions));
                 }
             } catch (IOException e) {
                 throw new BiomedicusException(e);
