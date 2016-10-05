@@ -344,13 +344,13 @@
             </destinationKeywordAction>
         </controlKeyword>
         <controlKeyword>
-            <keyword>fldinst</keyword>
+            <keyword>fieldinst</keyword>
             <destinationKeywordAction>
                 <destinationName>FieldInstructions</destinationName>
             </destinationKeywordAction>
         </controlKeyword>
         <controlKeyword>
-            <keyword>fldrslt</keyword>
+            <keyword>fieldrslt</keyword>
             <destinationKeywordAction>
                 <destinationName>FieldResult</destinationName>
             </destinationKeywordAction>

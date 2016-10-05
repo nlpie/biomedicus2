@@ -70,10 +70,14 @@ public final class DictionaryConcept implements Concept {
     }
 
     public static class Builder {
-        @Nullable private String identifier;
-        @Nullable private String source;
-        @Nullable private String type;
-        @Nullable private Double confidence;
+        @Nullable
+        private String identifier;
+        @Nullable
+        private String source;
+        @Nullable
+        private String type;
+        @Nullable
+        private Double confidence;
 
         public Builder withIdentifier(String identifier) {
             this.identifier = identifier;

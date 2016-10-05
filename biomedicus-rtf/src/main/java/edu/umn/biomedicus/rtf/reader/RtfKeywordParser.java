@@ -24,7 +24,7 @@ import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import java.util.Map;
 
 /**
- *
+ * Created by benknoll on 6/18/15.
  */
 public class RtfKeywordParser {
 

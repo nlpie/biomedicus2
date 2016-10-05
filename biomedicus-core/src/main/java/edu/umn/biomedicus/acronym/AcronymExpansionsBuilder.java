@@ -86,6 +86,9 @@ public class AcronymExpansionsBuilder {
 
     private void buildAcronymExpansions() throws IOException {
         expansions = new HashMap<>();
+        // acronyms in the casi data set shouldn't have their sense set expanded beyond that data
+        Set<String> casiOverride = new HashSet<>();
+        Map<String, Integer> casiSenseCounts = new HashMap<>();
         Pattern splitter = Pattern.compile("\\|");
 
         LOGGER.info("Loading CASI data set: {}", dataSet);
@@ -93,13 +96,24 @@ public class AcronymExpansionsBuilder {
                 .filter(line -> line.length() > 0)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[0];
+                            String sense = splits[1];
+                            if ("GENERAL ENGLISH".equals(sense)) {
+                                sense = splits[0].toLowerCase();
+                            }
+                            casiSenseCounts.put(sense, casiSenseCounts.getOrDefault(sense, 0) + 1);
+                        });
+        Files.lines(dataSet, StandardCharsets.ISO_8859_1)
+                .filter(line -> line.length() > 0)
+                .map(splitter::split)
+                .forEach(splits -> {
+                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
                     String sense = splits[1];
                     if ("GENERAL ENGLISH".equals(sense)) {
                         sense = abbreviation.toLowerCase();
                     }
                     Set<String> senses = getOrAdd(abbreviation);
-                    if (!senses.contains(sense)) {
+                    casiOverride.add(abbreviation);
+                    if (!senses.contains(sense) && !"UNSURED SENSE".equals(sense) && casiSenseCounts.get(sense) >= 5) {
                         senses.add(sense);
                     }
                 });
@@ -108,21 +122,23 @@ public class AcronymExpansionsBuilder {
         Files.lines(specialistLrabrPath)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[1];
-                    String longform = splits[4];
+                    String abbreviation = Acronyms.standardAcronymForm(splits[1]);
+                    if (!casiOverride.contains(abbreviation)) {
+                        String longform = splits[4];
 
-                    if (longform == null) {
-                        return;
-                    }
+                        if (longform == null) {
+                            return;
+                        }
 
-                    Collection<String> specialistSenses = specialistAgreementModel.getCanonicalFormForBase(longform);
-                    if (specialistSenses != null) {
-                        Set<String> senses = getOrAdd(abbreviation);
-                        specialistSenses.stream().filter(sense -> !senses.contains(sense)).forEach(senses::add);
-                    } else if (splits[3].equals("")) {
-                        // some expansions don't have EUIs (or appear in LRAGR), so deal with them here
-                        Set<String> senses = getOrAdd(abbreviation);
-                        senses.add(longform);
+                        Collection<String> specialistSenses = specialistAgreementModel.getCanonicalFormForBase(longform);
+                        if (specialistSenses != null) {
+                            Set<String> senses = getOrAdd(abbreviation);
+                            specialistSenses.stream().filter(sense -> !senses.contains(sense)).forEach(senses::add);
+                        } else if (splits[3].equals("")) {
+                            // some expansions don't have EUIs (or appear in LRAGR), so deal with them here
+                            Set<String> senses = getOrAdd(abbreviation);
+                            senses.add(longform);
+                        }
                     }
                 });
 
@@ -130,7 +146,7 @@ public class AcronymExpansionsBuilder {
         Files.lines(masterFile)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[0];
+                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
                     String sense = splits[1];
                     double frequency;
                     try {

@@ -76,7 +76,7 @@ public class VectorSpaceDouble {
     /**
      *  Number of "documents" (contexts) seen in training
      */
-    private int totalDocs = 0;
+    private long totalDocs = 0;
 
     /**
      *  A log-transformed version of documentsPerTerm
@@ -132,7 +132,7 @@ public class VectorSpaceDouble {
         this.windowSize = windowSize;
     }
 
-    public int getTotalDocs() {
+    public long getTotalDocs() {
         return totalDocs;
     }
 
@@ -254,7 +254,7 @@ public class VectorSpaceDouble {
      */
     private String standardForm(Token t) {
         String form = t.text();
-        return Acronyms.standardFormString(form).toLowerCase();
+        return Acronyms.standardForm(form).toLowerCase();
     }
 
     /**
@@ -265,7 +265,7 @@ public class VectorSpaceDouble {
      */
     public int removeWord(String word) {
         System.out.println(word);
-        return dictionary.remove(Acronyms.standardFormString(word).toLowerCase());
+        return dictionary.remove(Acronyms.standardForm(word).toLowerCase());
     }
 
     /**
@@ -279,7 +279,7 @@ public class VectorSpaceDouble {
         Set<Integer> indicesRemoved = new HashSet<>();
         Set<String> wordsInDictionary = new HashSet<>(dictionary.keySet());
         for (String word : wordsInDictionary) {
-            word = Acronyms.standardFormString(word).toLowerCase();
+            word = Acronyms.standardForm(word).toLowerCase();
             if (!wordsToKeep.contains(word)) {
                 indicesRemoved.add(removeWord(word));
             }

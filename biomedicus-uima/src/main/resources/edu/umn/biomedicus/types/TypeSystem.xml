@@ -155,32 +155,6 @@
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>substanceUsageKind</name>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
-        </typeDescription>
-
-        <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement</name>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
-            <features>
-                <featureDescription>
-                    <name>substanceUsageKind</name>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-                <featureDescription>
-                    <name>substanceUsageElementType</name>
-                    <rangeTypeName>uima.cas.String</rangeTypeName>
-                </featureDescription>
-            </features>
-        </typeDescription>
-
-        <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_6.DictionaryTerm</name>
             <description/>
             <supertypeName>uima.tcas.Annotation</supertypeName>
