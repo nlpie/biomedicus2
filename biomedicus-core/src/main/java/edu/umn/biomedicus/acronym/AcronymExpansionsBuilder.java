@@ -106,7 +106,7 @@ public class AcronymExpansionsBuilder {
                 .filter(line -> line.length() > 0)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[0];
+                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
                     String sense = splits[1];
                     if ("GENERAL ENGLISH".equals(sense)) {
                         sense = abbreviation.toLowerCase();
@@ -122,7 +122,7 @@ public class AcronymExpansionsBuilder {
         Files.lines(specialistLrabrPath)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[1];
+                    String abbreviation = Acronyms.standardAcronymForm(splits[1]);
                     if (!casiOverride.contains(abbreviation)) {
                         String longform = splits[4];
 
@@ -146,7 +146,7 @@ public class AcronymExpansionsBuilder {
         Files.lines(masterFile)
                 .map(splitter::split)
                 .forEach(splits -> {
-                    String abbreviation = splits[0];
+                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
                     String sense = splits[1];
                     double frequency;
                     try {
