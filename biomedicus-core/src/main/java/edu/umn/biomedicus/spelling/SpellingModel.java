@@ -70,11 +70,11 @@ public final class SpellingModel {
     SpellingModel(@Setting("spelling.arpa.path") Path arpaPath,
                   Vocabulary vocabulary,
                   @Setting("spelling.maxEditDistance") Integer maxEditDistance) throws IOException {
-        TermIndex wordIndex = vocabulary.wordIndex();
-        LOGGER.info("Building BK tree for spelling model using {} words.", wordIndex.size());
+        TermIndex wordsIndex = vocabulary.getWordsIndex();
+        LOGGER.info("Building BK tree for spelling model using {} words.", wordsIndex.size());
         MetricTree.Builder<String> builder = MetricTree.builder();
         builder.withMetric(StandardEditDistance.levenstein());
-        wordIndex.stream().map(wordIndex::getTerm).forEach(builder::add);
+        wordsIndex.stream().map(wordsIndex::getTerm).forEach(builder::add);
         termsTree = builder.build();
         LOGGER.info("Loading Spelling n-grams from ARPA file: {}", arpaPath);
 

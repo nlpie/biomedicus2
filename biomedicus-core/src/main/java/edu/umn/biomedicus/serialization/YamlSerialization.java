@@ -109,7 +109,7 @@ public final class YamlSerialization {
                         @Override
                         public Object construct(Node node) {
                             String[] val = (String[]) constructArray((SequenceNode) node);
-                            return termIndex.getTermVector(Arrays.asList(val));
+                            return termIndex.getTermsBag(Arrays.asList(val));
                         }
                     });
                 }

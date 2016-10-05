@@ -28,13 +28,14 @@ import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
@@ -131,39 +132,75 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         }
     }
 
-    public static class NegatedLabelAdapter extends AbstractLabelAdapter<Negated> {
+    static abstract class DictionaryTermModifierLabelAdapter<T extends DictionaryTermModifier> extends AbstractLabelAdapter<T> {
+        private final Feature cues;
+        private final Type cueType;
+        private final Function<List<Span>, T> constructor;
+
+        DictionaryTermModifierLabelAdapter(CAS cas, Type type, Function<List<Span>, T> constructor) {
+            super(cas, type);
+            this.constructor = constructor;
+            cues = type.getFeatureByBaseName("cues");
+            cueType = cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.ModificationCue");
+        }
+
+        @Override
+        protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
+            T value = label.value();
+            List<Span> cueTerms = value.getCueTerms();
+            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
+            for (int i = 0; i < cueTerms.size(); i++) {
+                Span cueTerm = cueTerms.get(i);
+                AnnotationFS cueAnnotation = cas.createAnnotation(cueType, cueTerm.getBegin(), cueTerm.getEnd());
+                cas.addFsToIndexes(cueAnnotation);
+                fsArray.set(i, cueAnnotation);
+            }
+            cas.addFsToIndexes(fsArray);
+            annotationFS.setFeatureValue(cues, fsArray);
+        }
+
+        @Override
+        protected T createLabelValue(FeatureStructure featureStructure) {
+            FeatureStructure cuesValue = featureStructure.getFeatureValue(cues);
+            if (!(cuesValue instanceof ArrayFS)) {
+                throw new IllegalStateException("Cues is not ArrayFS");
+            }
+            ArrayFS cuesArray = (ArrayFS) cuesValue;
+
+            int size = cuesArray.size();
+            List<Span> cueTerms = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                FeatureStructure cueFs = cuesArray.get(i);
+                if (!(cueFs instanceof AnnotationFS)) {
+                    throw new IllegalStateException();
+                }
+                AnnotationFS cueAnnotation = (AnnotationFS) cueFs;
+                Span span = new Span(cueAnnotation.getBegin(), cueAnnotation.getEnd());
+                cueTerms.add(span);
+            }
+
+            return constructor.apply(cueTerms);
+        }
+    }
+
+    private static class NegatedLabelAdapter extends DictionaryTermModifierLabelAdapter<Negated> {
         @Inject
         public NegatedLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_5.Negated"));
-        }
-
-        @Override
-        protected Negated createLabelValue(FeatureStructure featureStructure) {
-            return new Negated();
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Negated"), Negated::new);
         }
     }
 
-    public static class HistoricalLabelAdapter extends AbstractLabelAdapter<Historical> {
+    private static class HistoricalLabelAdapter extends DictionaryTermModifierLabelAdapter<Historical> {
         @Inject
         public HistoricalLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_5.Historical"));
-        }
-
-        @Override
-        protected Historical createLabelValue(FeatureStructure featureStructure) {
-            return new Historical();
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Historical"), Historical::new);
         }
     }
 
-    public static class ProbableLabelAdapter extends AbstractLabelAdapter<Probable> {
+    private static class ProbableLabelAdapter extends DictionaryTermModifierLabelAdapter<Probable> {
         @Inject
         public ProbableLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_5.Probable"));
-        }
-
-        @Override
-        protected Probable createLabelValue(FeatureStructure featureStructure) {
-            return new Probable();
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Probable"), Probable::new);
         }
     }
 
@@ -235,7 +272,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
         @Override
         protected void fillAnnotation(Label<WordIndex> label, AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature, label.value().term().indexedTerm());
+            annotationFS.setIntValue(indexFeature, label.value().term().termIdentifier());
         }
 
         @Override
@@ -277,7 +314,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
         @Override
         protected void fillAnnotation(Label<NormIndex> label, AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature, label.value().term().indexedTerm());
+            annotationFS.setIntValue(indexFeature, label.value().term().termIdentifier());
         }
 
         @Override
@@ -366,7 +403,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         SubstanceUsageElementLabelAdapter(CAS cas) {
             super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
             kindFeature = type.getFeatureByBaseName("substanceUsageKind");
-            elementTypeFeature = type.getFeatureByBaseName("elementTypeFeature");
+            elementTypeFeature = type.getFeatureByBaseName("substanceUsageElementType");
         }
 
 

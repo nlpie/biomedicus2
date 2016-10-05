@@ -19,52 +19,39 @@ package edu.umn.biomedicus.modification;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 final class ContextSearch {
-    private final int leftContextScope;
-    private final List<String> leftContextCues;
-    private final int rightContextScope;
-    private final List<String> rightContextCues;
-    private final List<PartOfSpeech> scopeDelimitersPos;
-    private final List<String> scopeDelimitersTxt;
-    private final String documentText;
     private final Labels<Sentence> sentences;
-    private final Labels<?> tokens;
+    private final Labels<TermToken> tokens;
     private final Labels<PartOfSpeech> partOfSpeechLabels;
     private final Labels<?> modifiableTerms;
+    private final ContextCues contextCues;
 
     ContextSearch(ContextCues contextCues,
-                  Document document,
                   Labels<Sentence> sentences,
                   Labels<?> modifiableTerms,
-                  Labels<?> tokens,
+                  Labels<TermToken> tokens,
                   Labels<PartOfSpeech> partOfSpeechLabels) {
-        leftContextScope = contextCues.getLeftContextScope();
-        leftContextCues = contextCues.getLeftContextCues();
-        rightContextScope = contextCues.getRightContextScope();
-        rightContextCues = contextCues.getRightContextCues();
-        scopeDelimitersPos = contextCues.getScopeDelimitersPos();
-        scopeDelimitersTxt = contextCues.getScopeDelimitersTxt();
-        documentText = document.getText();
+        this.contextCues = contextCues;
         this.sentences = sentences;
         this.modifiableTerms = modifiableTerms;
         this.tokens = tokens;
         this.partOfSpeechLabels = partOfSpeechLabels;
     }
 
-    List<Span> findMatches() {
-        List<Span> matchingSpans = new ArrayList<>();
+    Map<Span, List<Label<TermToken>>> findMatches() {
+        Map<Span, List<Label<TermToken>>> matchingSpans = new HashMap<>();
         for (Label<Sentence> sentence : sentences) {
-            Labels<?> sentenceTokens = tokens.insideSpan(sentence);
+            Labels<TermToken> sentenceTokens = tokens.insideSpan(sentence);
             for (Label<?> modifiableTerm : modifiableTerms.insideSpan(sentence)) {
-                if (matches(sentenceTokens, modifiableTerm)) {
-                    matchingSpans.add(modifiableTerm.toSpan());
+                List<Label<TermToken>> matches = matches(sentenceTokens, modifiableTerm);
+                if (matches != null) {
+                    matchingSpans.put(modifiableTerm.toSpan(), matches);
                 }
             }
         }
@@ -72,35 +59,58 @@ final class ContextSearch {
         return matchingSpans;
     }
 
-    private boolean matches(Labels<?> sentenceTokens, Label<?> modifiableTerm) {
-        Labels<?> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
-        for (Label<?> leftContextToken : leftContextTokens.limit(leftContextScope)) {
-            String tokenText = leftContextToken.getCovered(documentText).toString();
-            if (scopeDelimitersTxt.contains(tokenText)) {
-                break;
-            }
-            if (partOfSpeechLabels.insideSpan(leftContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
-                break;
-            }
-            if (leftContextCues.contains(tokenText)) {
-                return true;
-            }
+    private List<Label<TermToken>> matches(Labels<TermToken> sentenceTokens,
+                                            Label<?> modifiableTerm) {
+        Labels<TermToken> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
+        List<Label<TermToken>> labels = contextCues.searchLeft(leftContextTokens.all(), partOfSpeechLabels);
+        if (labels != null) {
+            return labels;
         }
 
-        Labels<?> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
-        for (Label<?> rightContextToken : rightContextTokens.limit(rightContextScope)) {
-            String tokenText = rightContextToken.getCovered(documentText).toString();
-            if (scopeDelimitersTxt.contains(tokenText)) {
-                break;
-            }
-            if (partOfSpeechLabels.insideSpan(rightContextToken).stream().map(Label::value).anyMatch(scopeDelimitersPos::contains)) {
-                break;
-            }
-            if (rightContextCues.contains(tokenText)) {
-                return true;
-            }
+
+        Labels<TermToken> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
+        labels = contextCues.searchRight(rightContextTokens.all(), partOfSpeechLabels);
+        if (labels != null) {
+            return labels;
         }
-        return false;
+
+        return null;
     }
 
+    static final class ContextSearchBuilder {
+        private ContextCues contextCues;
+        private Labels<Sentence> sentences;
+        private Labels<?> modifiableTerms;
+        private Labels<TermToken> tokens;
+        private Labels<PartOfSpeech> partOfSpeechLabels;
+
+        ContextSearchBuilder setContextCues(ContextCues contextCues) {
+            this.contextCues = contextCues;
+            return this;
+        }
+
+        ContextSearchBuilder setSentences(Labels<Sentence> sentences) {
+            this.sentences = sentences;
+            return this;
+        }
+
+        ContextSearchBuilder setModifiableTerms(Labels<?> modifiableTerms) {
+            this.modifiableTerms = modifiableTerms;
+            return this;
+        }
+
+        ContextSearchBuilder setTokens(Labels<TermToken> tokens) {
+            this.tokens = tokens;
+            return this;
+        }
+
+        ContextSearchBuilder setPartOfSpeechLabels(Labels<PartOfSpeech> partOfSpeechLabels) {
+            this.partOfSpeechLabels = partOfSpeechLabels;
+            return this;
+        }
+
+        ContextSearch createContextSearch() {
+            return new ContextSearch(contextCues, sentences, modifiableTerms, tokens, partOfSpeechLabels);
+        }
+    }
 }

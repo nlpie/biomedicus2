@@ -113,8 +113,8 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
     @Override
     public OrderedSpanMap<T> toTheLeftOf(TextLocation textLocation) {
-        NavigableMap<Integer, NavigableMap<Integer, T>> headMap = backingTree.headMap(textLocation.getBegin(), true);
-        int newEndMax = Math.min(textLocation.getEnd(), endMax);
+        NavigableMap<Integer, NavigableMap<Integer, T>> headMap = backingTree.headMap(textLocation.getBegin(), false);
+        int newEndMax = Math.min(textLocation.getBegin(), endMax);
         return new OrderedSpanMap<>(headMap, endMin, newEndMax);
     }
 

@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.application;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.List;
+public interface LifecycleManaged {
+    void doStartup() throws BiomedicusException;
 
-public final class Negated implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
-
-    public Negated(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
-    @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
-    }
+    void doShutdown() throws BiomedicusException;
 }

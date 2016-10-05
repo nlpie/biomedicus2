@@ -16,9 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import com.google.inject.Injector;
 import com.google.inject.Key;
-import edu.umn.biomedicus.application.DataLoader;
 import edu.umn.biomedicus.application.DocumentProcessorRunner;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
@@ -26,8 +24,6 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -92,7 +88,7 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
         if (eagerLoad != null) {
             for (String className : eagerLoad) {
                 try {
-                    documentProcessorRunner.eagerLoadClassName(className);
+                    documentProcessorRunner.require(className);
                 } catch (BiomedicusException e) {
                     throw new ResourceInitializationException(e);
                 }

@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.application;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public final class Negated implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
+@Singleton
+public class LifecycleManager {
+    private final Collection<LifecycleManaged> lifecycleComponents = new ArrayList<>();
 
-    public Negated(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
+    public void register(LifecycleManaged lifecycleComponentProvider) {
+        lifecycleComponents.add(lifecycleComponentProvider);
     }
 
-    @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
+    public void triggerShutdown() throws BiomedicusException {
+        for (LifecycleManaged lifecycleComponent : lifecycleComponents) {
+            lifecycleComponent.doShutdown();
+        }
     }
 }

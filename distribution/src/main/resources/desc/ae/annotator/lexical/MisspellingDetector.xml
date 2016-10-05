@@ -69,14 +69,6 @@
                     <string>SystemView</string>
                 </value>
             </nameValuePair>
-            <nameValuePair>
-                <name>eagerLoad</name>
-                <value>
-                    <array>
-                        <string>edu.umn.biomedicus.vocabulary.Vocabulary$Loader</string>
-                    </array>
-                </value>
-            </nameValuePair>
         </configurationParameterSettings>
         <typeSystemDescription>
             <imports>

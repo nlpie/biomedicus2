@@ -28,7 +28,7 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
         this.termIdentifier = termIdentifier;
     }
 
-    public int indexedTerm() {
+    public int termIdentifier() {
         return termIdentifier;
     }
 
@@ -54,5 +54,9 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
     @Override
     public int compareTo(IndexedTerm o) {
         return Integer.compare(termIdentifier, o.termIdentifier);
+    }
+
+    public static IndexedTerm unknown() {
+        return new IndexedTerm(-1);
     }
 }

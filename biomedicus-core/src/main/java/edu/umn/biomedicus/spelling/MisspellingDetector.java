@@ -43,7 +43,7 @@ public final class MisspellingDetector implements DocumentProcessor {
     @Inject
     public MisspellingDetector(Vocabulary vocabulary,
                                Document document) {
-        wordIndex = vocabulary.wordIndex();
+        wordIndex = vocabulary.getWordsIndex();
         this.parseTokenLabels = document.labels(ParseToken.class);
         mispellingLabeler = document.labeler(Misspelling.class).value(new Misspelling());
     }

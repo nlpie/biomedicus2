@@ -19,6 +19,7 @@ package edu.umn.biomedicus.application;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -98,15 +99,15 @@ public final class DocumentProcessorRunner {
         processorContext = BiomedicusScopes.createProcessorContext(processorScopeMap);
     }
 
-    public void eagerLoadClassName(String className) throws BiomedicusException{
+    public void require(String className) throws BiomedicusException{
         try {
-            eagerLoadClass(Class.forName(className));
+            require(Class.forName(className));
         } catch (ClassNotFoundException e) {
             throw new BiomedicusException(e);
         }
     }
 
-    public void eagerLoadClass(Class<?> aClass) throws BiomedicusException {
+    public void require(Class<?> aClass) throws BiomedicusException {
         if (processorContext == null) {
             throw new IllegalStateException("Processor context is null, initialize not ran");
         }
@@ -115,9 +116,14 @@ public final class DocumentProcessorRunner {
         }
         try {
             processorContext.call(() -> {
-                Object eagerLoaded = settingsInjector.getInstance(aClass);
-                if (eagerLoaded instanceof DataLoader) {
-                    ((DataLoader) eagerLoaded).eagerLoad();
+                Provider<?> provider = settingsInjector.getProvider(aClass);
+                if (provider instanceof EagerLoadable) {
+                    ((EagerLoadable) provider).eagerLoad();
+                    return null;
+                }
+                Object o = provider.get();
+                if (o instanceof EagerLoadable) {
+                    ((EagerLoadable) o).eagerLoad();
                 }
                 return null;
             });

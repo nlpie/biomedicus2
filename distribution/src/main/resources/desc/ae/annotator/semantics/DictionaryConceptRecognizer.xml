@@ -60,7 +60,7 @@
                 <name>eagerLoad</name>
                 <value>
                     <array>
-                        <string>edu.umn.biomedicus.concepts.ConceptModel</string>
+                        <string>edu.umn.biomedicus.concepts.ConceptDictionary</string>
                     </array>
                 </value>
             </nameValuePair>

@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.common.types.text.Span;
-
-import java.util.List;
-
-public final class Negated implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
-
-    public Negated(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
-    @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
-    }
+public class ConceptDictionaryBuilder {
 }

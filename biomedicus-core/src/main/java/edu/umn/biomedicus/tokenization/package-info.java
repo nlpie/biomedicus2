@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+/**
+ * Classes for tokenization functionality.
+ *
+ * @since 1.6.0
+ */
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+@ReturnTypesAreNonnullByDefault
+package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
 
-import java.util.List;
-
-public final class Negated implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
-
-    public Negated(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
-    @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

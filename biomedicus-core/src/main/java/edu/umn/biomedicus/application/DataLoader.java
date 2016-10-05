@@ -19,6 +19,7 @@ package edu.umn.biomedicus.application;
 import com.google.inject.Provider;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 
@@ -28,7 +29,7 @@ import java.util.concurrent.Semaphore;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public abstract class DataLoader<T> implements Provider<T> {
+public abstract class DataLoader<T> implements Provider<T>, EagerLoadable {
     /**
      * Prevents the data from being loaded more than once.
      */
@@ -47,13 +48,15 @@ public abstract class DataLoader<T> implements Provider<T> {
     /**
      * The singleton instance of the object to provide.
      */
+    @Nullable
     private T instance;
 
     /**
      * Loads the data before it is actually needed.
      *
-     * @throws BiomedicusException
+     * @throws BiomedicusException if there is an issue loading the object.
      */
+    @Override
     public void eagerLoad() throws BiomedicusException {
         if (!loaded) {
             load();
@@ -68,6 +71,9 @@ public abstract class DataLoader<T> implements Provider<T> {
             } catch (BiomedicusException e) {
                 throw new IllegalStateException(e);
             }
+        }
+        if (instance == null) {
+            throw new IllegalStateException("Loaded object was null");
         }
         return instance;
     }
@@ -90,7 +96,7 @@ public abstract class DataLoader<T> implements Provider<T> {
      * To be implemented by subclasses, performs the initialization of the object.
      *
      * @return full initialized object.
-     * @throws BiomedicusException
+     * @throws BiomedicusException if there is an issue loading the object
      */
     protected abstract T loadModel() throws BiomedicusException;
 }

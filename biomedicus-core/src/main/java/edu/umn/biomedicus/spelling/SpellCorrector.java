@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.spelling;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.List;
-
-public final class Negated implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
-
-    public Negated(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
+public class SpellCorrector implements DocumentProcessor {
     @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
+    public void process() throws BiomedicusException {
+
     }
 }

@@ -62,7 +62,7 @@
             <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
-                    <string>edu.umn.biomedicus.tokenization.TermTokenMerger</string>
+                    <string>edu.umn.biomedicus.tokenization.TermTokenMergerProcessor</string>
                 </value>
             </nameValuePair>
             <nameValuePair>

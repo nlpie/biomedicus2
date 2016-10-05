@@ -53,7 +53,7 @@ public final class TermsBag implements Comparable<TermsBag> {
     }
 
     private int indexOf(IndexedTerm indexedTerm) {
-        return Arrays.binarySearch(identifiers, indexedTerm.indexedTerm());
+        return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier());
     }
 
     public boolean contains(IndexedTerm indexedTerm) {
@@ -119,7 +119,11 @@ public final class TermsBag implements Comparable<TermsBag> {
                 return this;
             }
 
-            identifierToCount.compute(indexedTerm.indexedTerm(), (identifier, count) -> {
+            return addIdentifier(indexedTerm.termIdentifier());
+        }
+
+        Builder addIdentifier(int identifier) {
+            identifierToCount.compute(identifier, (id, count) -> {
                 if (count == null) {
                     count = 0;
                 }

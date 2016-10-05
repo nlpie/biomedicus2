@@ -43,7 +43,7 @@ public final class WordLabeler implements DocumentProcessor {
 
     @Inject
     public WordLabeler(Vocabulary vocabulary, Document document) {
-        wordIndex = vocabulary.wordIndex();
+        wordIndex = vocabulary.getWordsIndex();
         parseTokenLabels = document.labels(ParseToken.class);
         wordIndexLabeler = document.labeler(WordIndex.class);
     }

@@ -226,23 +226,40 @@
                 </featureDescription>
             </features>
         </typeDescription>
+        
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.ModificationCue</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+        </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Negated</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Modification</name>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>cues</name>
+                    <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+                    <elementType>edu.umn.biomedicus.uima.type1_6.ModificationCue</elementType>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.Negated</name>
             <description>Specifies a negated term.</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Modification</supertypeName>
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Historical</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Historical</name>
             <description>Specifies a historical term.</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Modification</supertypeName>
         </typeDescription>
 
         <typeDescription>
-            <name>edu.umn.biomedicus.uima.type1_5.Probable</name>
+            <name>edu.umn.biomedicus.uima.type1_6.Probable</name>
             <description>Specifies a probable term.</description>
-            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.Modification</supertypeName>
         </typeDescription>
 
         <typeDescription>

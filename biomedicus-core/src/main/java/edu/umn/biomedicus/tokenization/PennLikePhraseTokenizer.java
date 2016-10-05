@@ -19,18 +19,19 @@ package edu.umn.biomedicus.tokenization;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-final class PennLikeSentenceTokenizer {
+public final class PennLikePhraseTokenizer {
     /**
      * Any sequence of 1 or more character that are not unicode whitespace.
      */
     private static final Pattern WORDS = Pattern.compile("([^\\p{Z}\\p{C}]+)");
 
-    private static final Pattern TRAILING_PERIOD = Pattern.compile("(\\.)$");
+    private static final Pattern TRAILING_PERIOD = Pattern.compile("([.])$");
 
     /**
      * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
@@ -53,14 +54,35 @@ final class PennLikeSentenceTokenizer {
     private static final Pattern END_BREAKS = Pattern.compile(
             "((')|('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|" +
                     "(\\p{Pe})|(\\p{Pf})|" +
-                    "([\\p{P}&&[^\\.]])|" +
+                    "([\\p{P}&&[^.]])|" +
                     "(\\p{Sc}))$"
     );
 
     private final CharSequence sentenceText;
 
-    PennLikeSentenceTokenizer(CharSequence sentenceText) {
+    PennLikePhraseTokenizer(CharSequence sentenceText) {
         this.sentenceText = sentenceText;
+    }
+
+    public static Stream<Span> tokenizeSentence(CharSequence sentenceText) {
+        PennLikePhraseTokenizer sentenceTokenizer = new PennLikePhraseTokenizer(sentenceText);
+
+        return sentenceTokenizer.startStreamWithWords()
+                .flatMap(sentenceTokenizer::splitTrailingPeriod)
+                .flatMap(sentenceTokenizer::splitWordByMiddleBreaks)
+                .flatMap(sentenceTokenizer::splitWordByBeginBreaks)
+                .flatMap(sentenceTokenizer::splitWordByEndBreaks)
+                .map(TokenCandidate::toSpan);
+    }
+
+    public static Stream<Span> tokenizePhrase(CharSequence phraseText) {
+        PennLikePhraseTokenizer tokenizer = new PennLikePhraseTokenizer(phraseText);
+
+        return tokenizer.startStreamWithWords()
+                .flatMap(tokenizer::splitWordByMiddleBreaks)
+                .flatMap(tokenizer::splitWordByBeginBreaks)
+                .flatMap(tokenizer::splitWordByEndBreaks)
+                .map(TokenCandidate::toSpan);
     }
 
     Stream<TokenCandidate> startStreamWithWords() {
@@ -160,12 +182,15 @@ final class PennLikeSentenceTokenizer {
             CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
             Matcher endBreaksMatcher = END_BREAKS.matcher(tokenText);
             if (endBreaksMatcher.find()) {
-                Span rest = tokenCandidate.derelativize(new Span(0, endBreaksMatcher.start()));
-                tokenCandidate = new TokenCandidate(rest, false);
-                Span endSplit = tokenCandidate.derelativize(new Span(endBreaksMatcher.start(), endBreaksMatcher.end()));
+                int start = endBreaksMatcher.start();
+                Span rest = tokenCandidate.derelativize(new Span(0, start));
+                Span endSplit = tokenCandidate.derelativize(new Span(start, endBreaksMatcher.end()));
                 candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast));
+                tokenCandidate = new TokenCandidate(rest, false);
             } else {
-                candidates.addFirst(tokenCandidate);
+                if (tokenCandidate.getBegin() != tokenCandidate.getEnd()) {
+                    candidates.addFirst(tokenCandidate);
+                }
                 return candidates.stream();
             }
         }

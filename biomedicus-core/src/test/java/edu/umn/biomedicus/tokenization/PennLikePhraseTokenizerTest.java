@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 
-public class PennLikeSentenceTokenizerTest {
-    private PennLikeSentenceTokenizer pennLikeSentenceTokenizer
-            = new PennLikeSentenceTokenizer("This test's logic will confirm that the tokenizer (P.T.B.-like) is well-behaved.");
+public class PennLikePhraseTokenizerTest {
+    private PennLikePhraseTokenizer pennLikePhraseTokenizer
+            = new PennLikePhraseTokenizer("This test's logic will confirm that the tokenizer (P.T.B.-like) is well-behaved.");
 
     @Test
     public void testWords() throws Exception {
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.startStreamWithWords()
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.startStreamWithWords()
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 11);
@@ -40,21 +40,21 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testDoesSplitZWSP() {
-        PennLikeSentenceTokenizer pennLikeSentenceTokenizer
-                = new PennLikeSentenceTokenizer("This sentence has some zero-width spaces.\u200b\u200b");
+        PennLikePhraseTokenizer pennLikePhraseTokenizer
+                = new PennLikePhraseTokenizer("This sentence has some zero-width spaces.\u200b\u200b");
 
-        List<PennLikeSentenceTokenizer.TokenCandidate> tokenCandidates = pennLikeSentenceTokenizer.startStreamWithWords()
+        List<PennLikePhraseTokenizer.TokenCandidate> tokenCandidates = pennLikePhraseTokenizer.startStreamWithWords()
                 .collect(Collectors.toList());
 
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = tokenCandidates.get(tokenCandidates.size() - 1);
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = tokenCandidates.get(tokenCandidates.size() - 1);
         assertEquals(tokenCandidate.getEnd(), 41);
     }
 
     @Test
     public void testWordsEmptySentence() throws Exception {
-        PennLikeSentenceTokenizer pennLikeSentenceTokenizer = new PennLikeSentenceTokenizer("");
+        PennLikePhraseTokenizer pennLikePhraseTokenizer = new PennLikePhraseTokenizer("");
 
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.startStreamWithWords()
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.startStreamWithWords()
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 0);
@@ -62,9 +62,9 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testWordsWhitespaceSentence() throws Exception {
-        PennLikeSentenceTokenizer pennLikeSentenceTokenizer = new PennLikeSentenceTokenizer("\n \t   ");
+        PennLikePhraseTokenizer pennLikePhraseTokenizer = new PennLikePhraseTokenizer("\n \t   ");
 
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.startStreamWithWords()
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.startStreamWithWords()
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 0);
@@ -72,8 +72,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testSplitEndPossessive() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(5, 11, false); // test's
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitWordByEndBreaks(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(5, 11, false); // test's
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitWordByEndBreaks(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 2);
@@ -83,8 +83,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testSplitBeginParen() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(50, 63, false); // (P.T.B.-like)
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitWordByBeginBreaks(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(50, 63, false); // (P.T.B.-like)
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitWordByBeginBreaks(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 2);
@@ -94,8 +94,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testSplitEndParen() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(51, 63, false); // P.T.B.-like)
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitWordByEndBreaks(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(51, 63, false); // P.T.B.-like)
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitWordByEndBreaks(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 2);
@@ -105,8 +105,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testSplitMidBreaks() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(51, 62, false); // P.T.B.-like
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitWordByMiddleBreaks(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(51, 62, false); // P.T.B.-like
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitWordByMiddleBreaks(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 3);
@@ -117,8 +117,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testSplitTrailingPeriod() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(67, 80, true); // well-behaved.
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitTrailingPeriod(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(67, 80, true); // well-behaved.
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitTrailingPeriod(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 2);
@@ -128,8 +128,8 @@ public class PennLikeSentenceTokenizerTest {
 
     @Test
     public void testDoNotSplitInternalPeriods() throws Exception {
-        PennLikeSentenceTokenizer.TokenCandidate tokenCandidate = pennLikeSentenceTokenizer.new TokenCandidate(51, 57, false); // P.T.B.
-        List<PennLikeSentenceTokenizer.TokenCandidate> list = pennLikeSentenceTokenizer.splitTrailingPeriod(tokenCandidate)
+        PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(51, 57, false); // P.T.B.
+        List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer.splitTrailingPeriod(tokenCandidate)
                 .collect(Collectors.toList());
 
         assertEquals(list.size(), 1);

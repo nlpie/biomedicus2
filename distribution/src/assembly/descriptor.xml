@@ -44,11 +44,7 @@
             <includes>
                 <include>README.md</include>
                 <include>LICENSE.txt</include>
-                <include>LICENSE-3RD-PARTY.txt</include>
-                <include>NOTICE.txt</include>
                 <include>Pipeline.pptx</include>
-                <include>SPECIALIST NLP Tools Terms and Conditions.txt</include>
-                <include>THIRD-PARTY.txt</include>
             </includes>
         </fileSet>
     </fileSets>
