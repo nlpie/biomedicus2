@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.uima.adapter;
 
-public class SocialHistoryCandidate {
-    private final SubstanceUsageKind substanceUsageKind;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CAS;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageKind = substanceUsageKind;
-    }
-
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
+public class NoOpAnnotator extends CasAnnotator_ImplBase {
+    @Override
+    public void process(CAS cas) throws AnalysisEngineProcessException {
+        // this method left purposefully empty
     }
 }

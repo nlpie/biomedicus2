@@ -16,11 +16,17 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
-public class SocialHistoryCandidate {
+public class SubstanceUsageElement {
+    private final SubstanceUsageElementType substanceUsageElementType;
     private final SubstanceUsageKind substanceUsageKind;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
+    public SubstanceUsageElement(SubstanceUsageElementType substanceUsageElementType, SubstanceUsageKind substanceUsageKind) {
+        this.substanceUsageElementType = substanceUsageElementType;
         this.substanceUsageKind = substanceUsageKind;
+    }
+
+    public SubstanceUsageElementType getSubstanceUsageElementType() {
+        return substanceUsageElementType;
     }
 
     public SubstanceUsageKind getSubstanceUsageKind() {

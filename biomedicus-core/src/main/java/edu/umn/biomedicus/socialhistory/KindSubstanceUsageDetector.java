@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.socialhistory;
 
-public class SocialHistoryCandidate {
-    private final SubstanceUsageKind substanceUsageKind;
+import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
+import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.exc.BiomedicusException;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageKind = substanceUsageKind;
-    }
-
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
-    }
+public interface KindSubstanceUsageDetector {
+    void processCandidate(Document document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException;
 }

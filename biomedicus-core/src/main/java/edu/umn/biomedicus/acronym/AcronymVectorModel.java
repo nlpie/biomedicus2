@@ -113,9 +113,12 @@ class AcronymVectorModel implements AcronymModel {
     @Override
     public String findBestSense(List<Token> context, Token token) {
 
-        String acronym = Acronyms.standardAcronymForm(token);
+        // String to assign to unknown acronyms
+
+        String acronym = Acronyms.standardForm(token);
 
         // If the model doesn't contain this acronym, make sure it doesn't contain an upper-case version of it
+
         Collection<String> senses = acronymExpansionsModel.getExpansions(acronym);
         if (senses == null) {
             senses = acronymExpansionsModel.getExpansions(acronym.toUpperCase());
@@ -134,6 +137,7 @@ class AcronymVectorModel implements AcronymModel {
         if (senses.size() == 1) {
             return senses.iterator().next();
         }
+
 
         List<String> usableSenses = new ArrayList<>();
         // Be sure that there even are disambiguation vectors for senses

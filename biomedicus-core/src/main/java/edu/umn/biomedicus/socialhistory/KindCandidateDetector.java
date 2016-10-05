@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.socialhistory;
 
-public enum SubstanceUsageType {
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
+import edu.umn.biomedicus.common.types.text.TermToken;
+
+import java.util.List;
+
+public interface KindCandidateDetector {
+    boolean isSocialHistoryHeader(List<TermToken> headerTokens);
+
+    boolean isSocialHistorySentence(List<TermToken> sectionTitleTokens, List<TermToken> sentenceTokens);
+
+    SubstanceUsageKind getSocialHistoryKind();
 }

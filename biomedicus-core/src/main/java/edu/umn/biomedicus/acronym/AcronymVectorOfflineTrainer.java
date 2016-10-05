@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.tokenization.PennLikeTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Trains an AcronymVectorModel based on pre-processed (space-tokenized) text.
@@ -42,43 +40,31 @@ public class AcronymVectorOfflineTrainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorOfflineTrainer.class);
 
-    final AcronymExpansionsModel aem;
+    AcronymExpansionsModel aem;
     private Map<String, Map<Integer, Double>> senseVectors;
     VectorSpaceDouble vectorSpace;
     private Map<String, Integer> wordFrequency;
-    private final Map<String, String> alternateFormOf;
 
     private int winSize;
-    private long totalDocs = 0;
+    private int totalDocs = 0;
     // Only use these most common words
-    private final int nWords;
-    private static final int DEFAULT_N_WORDS = 100000;
-
-    // todo: temp (or work in as an argument)
-    private static final int MAX_EXAMPLES_PER_SENSE = 8000;
-    private final Map<String, Integer> examplesPerSense = new HashMap<>();
-
-    // Stop counting words after so many bytes (should have a good idea of the top nWords by this point)
-    private final long maxBytesToCountWords = 2000000000;
-    private long bytesWordCounted = 0;
+    private static int NWORDS = 150000;
 
     // Directed graph that contains all phrases and is used
     private Map wordGraph;
 
     // Will be used to calculate IDF
-    private long[] documentsPerTerm;
+    private int[] documentsPerTerm;
 
     // Defines the point on the word graph where new words are no longer added
     private final static String STOP = "PHRASE*EndS+HErE";
-    private final String TEXTBREAK = "\\W+";
+    private final String TEXTBREAK = "[^\\w]+";
 
     public static void main(String[] args) throws BiomedicusException, IOException {
         String expansionsFile = args[0];
         String corpusPath = args[1];
-        String outDir = args.length > 2 ? args[2] : ".";
-        int nWords = args.length > 3 ? Integer.parseInt(args[3]) : DEFAULT_N_WORDS;
-        String alternateLongformsFile = args.length > 4 ? args[4] : null;
-        AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile, nWords, alternateLongformsFile);
+        String outDir = args[2];
+        AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile);
         trainer.trainOnCorpus(corpusPath);
         trainer.writeAcronymModel(outDir);
     }
@@ -86,12 +72,11 @@ public class AcronymVectorOfflineTrainer {
     /**
      * Initialize the trainer: read in possible acronym expansions
      *
-     * @param expansionsFile a plaintext AcronymExpansionsModel (as created by AcronymExpansionsBuilder)
+     * @param expansionsFile a yaml AcronymExpansionsModel (as created by AcronymExpansionsBuilder)
      * @throws BiomedicusException
      * @throws IOException
      */
-    public AcronymVectorOfflineTrainer(String expansionsFile, int nWords, String alternateLongformsFile) throws BiomedicusException, IOException {
-        this.nWords = nWords;
+    public AcronymVectorOfflineTrainer(String expansionsFile) throws BiomedicusException, IOException {
         // Get all possible acronym expansions and make vectors for each one
         aem = new AcronymExpansionsModel.Loader(Paths.get(expansionsFile)).loadModel();
         Set<String> allExpansions = new HashSet<>();
@@ -104,26 +89,6 @@ public class AcronymVectorOfflineTrainer {
         senseVectors = new HashMap<>();
         for (String expansion : allExpansions) {
             senseVectors.put(expansion, new HashMap<>());
-        }
-
-        // Get alternate forms from a separate file, if provided.
-        alternateFormOf = new HashMap<>();
-        if (alternateLongformsFile != null) {
-            LOGGER.info("Adding expansion phrase search equivalents from file " + alternateLongformsFile);
-            BufferedReader reader = new BufferedReader(new FileReader(alternateLongformsFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split("\\|");
-                if (senseVectors.containsKey(fields[0])) {
-                    for (int i = 1; i < fields.length; i++) {
-                        alternateFormOf.put(fields[i], fields[0]);
-                    }
-                } else {
-                    LOGGER.warn("Trying to add alternate forms of \"" + fields[0] + "\", which is not a known sense of any abbreviation");
-                }
-            }
-            allExpansions.addAll(alternateFormOf.keySet());
-            LOGGER.info(allExpansions.size() + " possible senses, counting equivalents");
         }
 
         // Build a graph that contains all possible phrases
@@ -164,12 +129,12 @@ public class AcronymVectorOfflineTrainer {
             sortedWordFreq.addAll(wordFrequency.keySet());
             Map<String, Integer> dictionary = new HashMap<>();
             Iterator<String> iter = sortedWordFreq.descendingIterator();
-            for (int i = 0; i < nWords; i++) {
+            for (int i = 0; i < NWORDS; i++) {
                 if (!iter.hasNext()) break;
                 String word = iter.next();
                 dictionary.put(word, i);
             }
-            documentsPerTerm = new long[dictionary.size()];
+            documentsPerTerm = new int[dictionary.size()];
             vectorSpace.setDictionary(dictionary);
         }
 
@@ -186,7 +151,7 @@ public class AcronymVectorOfflineTrainer {
     public void getWordCounts(String corpusPath) throws IOException {
 
         vectorSpace = new VectorSpaceDouble();
-        wordFrequency = new HashMap<>();
+        wordFrequency = new HashMap<>(3000000);
         winSize = (int) vectorSpace.getWindowSize();
 
         Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(false));
@@ -204,9 +169,8 @@ public class AcronymVectorOfflineTrainer {
 
         WordVectorDouble idfVector = new WordVectorDouble();
         Map<Integer, Double> idfMap = new HashMap<>();
-        System.out.println(Arrays.toString(documentsPerTerm));
         for(int i = 0; i < documentsPerTerm.length; i++) {
-            idfMap.put(i, Math.log((1. + totalDocs) / (documentsPerTerm[i] + 1.)));
+            idfMap.put(i, Math.log((1. + totalDocs) / (documentsPerTerm[i] + 1)));
         }
         idfVector.setVector(idfMap);
         vectorSpace.setIdf(idfVector);
@@ -239,18 +203,12 @@ public class AcronymVectorOfflineTrainer {
         avm.writeToDirectory(outPath);
     }
 
-    private final static Pattern initialJunk = Pattern.compile("^\\W+");
-    private final static Pattern finalJunk = Pattern.compile("\\W+$");
-    // todo: use the same standardForm function that the test-time vectorizer uses
-    // todo: use the same tokenizer as the pipeline
     private String[] tokenize(String orig) {
-        orig = initialJunk.matcher(orig).replaceFirst("");
-        orig = finalJunk.matcher(orig).replaceFirst("");
         return orig.toLowerCase().split(TEXTBREAK);
     }
 
     /**
-     * Given a sense, its context, and its position in that context, add its surroundings to its context vector
+     * Given a word or phrase, its context, and its position in that context, add its surroundings to its context vector
      * This step constitutes reading a 'document' for the purposes of IDF
      *
      * @param expansion the expansion string, which needs to match the expansions in the sense vector map
@@ -259,15 +217,6 @@ public class AcronymVectorOfflineTrainer {
      * @param endPos    array offset one after the end of the expansion (always >= startPos + 1)
      */
     private void vectorizeForWord(String expansion, String[] words, int startPos, int endPos) {
-
-        // todo: temp (probably remove; if not, make it more efficient [remove spent senses from word graph?])
-        int examples = examplesPerSense.getOrDefault(expansion, 0) + 1;
-        if (examples >= MAX_EXAMPLES_PER_SENSE) {
-            return;
-        }
-        else {
-            examplesPerSense.put(expansion, examples);
-        }
 
         Map<Integer, Double> vector = senseVectors.get(expansion);
 
@@ -284,8 +233,7 @@ public class AcronymVectorOfflineTrainer {
                 i = endPos;
                 continue;
             }
-            String word = Acronyms.standardForm(words[i]);
-            Integer wordInt = vectorSpace.getDictionary().get(word);
+            Integer wordInt = vectorSpace.getDictionary().get(words[i]);
             if(wordInt != null) {
                 wordsInThisDoc.add(wordInt);
                 Double oldVal = vector.putIfAbsent(wordInt, 1.0);
@@ -313,10 +261,7 @@ public class AcronymVectorOfflineTrainer {
             for (int j = i; j < words.length && lookup.containsKey(words[j]); j++) {
                 lookup = (Map) lookup.get(words[j]);
                 if (lookup.containsKey(STOP)) {
-                    String fullPhrase = (String) lookup.get(STOP);
-                    // Look up this form in the alternate forms list to see if counts should actually be updated for something else
-                    fullPhrase = alternateFormOf.getOrDefault(fullPhrase, fullPhrase);
-                    vectorizeForWord(fullPhrase, words, i, j + 1);
+                    vectorizeForWord((String) lookup.get(STOP), words, i, j + 1);
                 }
             }
         }
@@ -329,10 +274,9 @@ public class AcronymVectorOfflineTrainer {
     private void countChunk(String context) {
         String[] words = tokenize(context);
         for(int i=0; i<words.length; i++) {
-            String word = Acronyms.standardForm(words[i]);
-            Integer oldVal = wordFrequency.putIfAbsent(word, 1);
+            Integer oldVal = wordFrequency.putIfAbsent(words[i], 1);
             if(oldVal != null) {
-                wordFrequency.put(word, oldVal+1);
+                wordFrequency.put(words[i], oldVal+1);
             }
         }
     }
@@ -361,11 +305,6 @@ public class AcronymVectorOfflineTrainer {
                     vectorizeChunk(fileText);
                 } else {
                     countChunk(fileText);
-                    bytesWordCounted += fileText.length();
-                    if (bytesWordCounted >= maxBytesToCountWords) {
-                        LOGGER.info("Done counting words.");
-                        return FileVisitResult.TERMINATE;
-                    }
                 }
             } else {
                 // Make virtual files out of this file, splitting on whitespace every ~100 MB
@@ -381,18 +320,13 @@ public class AcronymVectorOfflineTrainer {
                         if (nextByte < 0 || nextChar == ' ' || nextChar == '\t' || nextChar == '\n') break;
                         line += (char) nextByte;
                     }
-                    totalLength += line.length();
                     if(vectorizeNotCount) {
                         vectorizeChunk(line);
                     } else {
                         countChunk(line);
                         LOGGER.info(wordFrequency.size() + " total words found");
-                        bytesWordCounted += line.length();
-                        if (bytesWordCounted >= maxBytesToCountWords) {
-                            LOGGER.info("Done counting words.");
-                            return FileVisitResult.TERMINATE;
-                        }
                     }
+                    totalLength += line.length();
                     LOGGER.info(totalLength + " bytes of large file " + file + " processed");
                 }
                 reader.close();

@@ -79,14 +79,16 @@ class AcronymProcessor implements DocumentProcessor {
     public void process() throws BiomedicusException {
         LOGGER.info("Detecting acronyms in a document.");
         List<Token> allTokens = null;
-        for (Label<TermToken> termTokenLabel : termTokenLabels) {
+        // Need to populate a list first: vectorizer needs object identity but UimaLabels' stream() creates new objects
+        List<Label<TermToken>> termTokenLabelsList = termTokenLabels.stream().collect(Collectors.toList());
+        for (Label<TermToken> termTokenLabel : termTokenLabelsList) {
             TermToken termToken = termTokenLabel.value();
             List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termTokenLabel).all();
             boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).anyMatch(EXCLUDE_POS::contains);
             if (!excludedPos && (model.hasAcronym(termToken) || orthographicSaysAcronym(termToken))) {
                 LOGGER.trace("Found potential acronym: {}", termToken);
                 if (allTokens == null) {
-                    allTokens = termTokenLabels.stream().map(Label::value).collect(Collectors.toList());
+                    allTokens = termTokenLabelsList.stream().map(Label::value).collect(Collectors.toList());
                 }
                 String sense = model.findBestSense(allTokens, termToken);
                 if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.text())) {
