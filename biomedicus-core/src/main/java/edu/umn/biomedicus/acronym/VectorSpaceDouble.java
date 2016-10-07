@@ -181,7 +181,7 @@ public class VectorSpaceDouble {
         int stopIndex = Math.min(stopCenterToken + (int) windowSize, context.size());
         for (int i=startIndex; i<stopIndex; i++) {
             if (i == startCenterToken) {
-                if (startCenterToken >= context.size()) break;
+                if (stopCenterToken >= context.size()) break;
                 i = stopCenterToken;
             }
             // Generate a list of words, if deemed acceptable words, whose values in the vector will be updated
