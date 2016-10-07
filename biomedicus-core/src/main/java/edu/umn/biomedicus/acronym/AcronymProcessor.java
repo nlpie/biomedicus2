@@ -79,18 +79,18 @@ class AcronymProcessor implements DocumentProcessor {
     public void process() throws BiomedicusException {
         LOGGER.info("Detecting acronyms in a document.");
         List<Token> allTokens = null;
-        // Need to populate a list first: vectorizer needs object identity but UimaLabels' stream() creates new objects
         List<Label<TermToken>> termTokenLabelsList = termTokenLabels.stream().collect(Collectors.toList());
-        for (Label<TermToken> termTokenLabel : termTokenLabelsList) {
+        for (int i = 0; i < termTokenLabelsList.size(); i++) {
+            Label<TermToken> termTokenLabel = termTokenLabelsList.get(i);
             TermToken termToken = termTokenLabel.value();
             List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termTokenLabel).all();
-            boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).anyMatch(EXCLUDE_POS::contains);
+            boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).allMatch(EXCLUDE_POS::contains);
             if (!excludedPos && (model.hasAcronym(termToken) || orthographicSaysAcronym(termToken))) {
                 LOGGER.trace("Found potential acronym: {}", termToken);
                 if (allTokens == null) {
                     allTokens = termTokenLabelsList.stream().map(Label::value).collect(Collectors.toList());
                 }
-                String sense = model.findBestSense(allTokens, termToken);
+                String sense = model.findBestSense(allTokens, i);
                 if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(termToken.text())) {
                     LOGGER.trace("Labeling acronym expansion: {}", sense);
                     acronymExpansionLabeler.value(new Acronym(sense, termToken.hasSpaceAfter()))

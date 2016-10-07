@@ -50,17 +50,19 @@ public class AcronymVectorOfflineEvaluation {
             String modifiedContents = contents.substring(0, begin) + " TOKENOFINTEREST " + contents.substring(end);
 
             List<Token> tokenList = new ArrayList<>();
-            Token tokenOfInterest = null;
+            int tokenOfInterest = 0;
+            int i=0;
             for (String tokText : modifiedContents.split("\\W+")) {
                 Token tok;
                 if (tokText.equals("TOKENOFINTEREST")) {
                     tokText = acronym;
                     tok = new SimpleToken(tokText);
-                    tokenOfInterest = tok;
+                    tokenOfInterest = i;
                 } else {
                     tok = new SimpleToken(tokText);
                 }
                 tokenList.add(tok);
+                i++;
             }
 
             String hyp = avm.findBestSense(tokenList, tokenOfInterest);

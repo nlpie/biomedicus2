@@ -123,7 +123,7 @@ public class AcronymExpansionsBuilder {
                 .map(splitter::split)
                 .forEach(splits -> {
                     String abbreviation = Acronyms.standardAcronymForm(splits[1]);
-                    if (!casiOverride.contains(abbreviation)) {
+                    if (!containsFormOf(casiOverride, abbreviation)) {
                         String longform = splits[4];
 
                         if (longform == null) {
@@ -193,6 +193,12 @@ public class AcronymExpansionsBuilder {
                 writer.newLine();
             }
         }
+    }
+
+    private static boolean containsFormOf(Set<String> set, String abbr) {
+        if (set.contains(abbr)) return true;
+        if (set.contains(abbr.replace(".", ""))) return true;
+        return false;
     }
 
     private Set<String> getOrAdd(String abbreviation) {
