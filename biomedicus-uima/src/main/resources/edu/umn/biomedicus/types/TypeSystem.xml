@@ -226,6 +226,16 @@
                 </featureDescription>
             </features>
         </typeDescription>
+        <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.PierConcept</name>
+            <supertypeName>edu.umn.biomedicus.uima.type1_6.DictionaryConcept</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>negated</name>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
         
         <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_6.ModificationCue</name>
