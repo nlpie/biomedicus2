@@ -31,12 +31,9 @@ import java.util.List;
 class ContextCues {
     private final List<List<String>> leftPhrases;
     private final int maxSizeLeftPhrase;
-
     private final List<List<String>> rightPhrases;
     private final int maxSizeRightPhrase;
-
     private final List<PartOfSpeech> scopeDelimitersPos;
-
     private final List<String> scopeDelimiterWords;
 
     private ContextCues(List<List<String>> leftPhrases,
@@ -53,11 +50,17 @@ class ContextCues {
         this.scopeDelimiterWords = scopeDelimiterWords;
     }
 
+    @Nullable
     List<Label<TermToken>> searchLeft(List<Label<TermToken>> parseTokenLabels,
                                       Labels<PartOfSpeech> partOfSpeeches) {
-        return search(parseTokenLabels, partOfSpeeches, leftPhrases, maxSizeLeftPhrase);
+        List<Label<TermToken>> search = search(parseTokenLabels, partOfSpeeches, leftPhrases, maxSizeLeftPhrase);
+        if (search != null) {
+            Collections.reverse(search);
+        }
+        return search;
     }
 
+    @Nullable
     List<Label<TermToken>> searchRight(List<Label<TermToken>> parseTokenLabels,
                                        Labels<PartOfSpeech> partOfSpeeches) {
         return search(parseTokenLabels, partOfSpeeches, rightPhrases, maxSizeRightPhrase);
@@ -65,9 +68,9 @@ class ContextCues {
 
     @Nullable
     private List<Label<TermToken>> search(List<Label<TermToken>> parseTokenLabels,
-                                           Labels<PartOfSpeech> partOfSpeeches,
-                                           List<List<String>> phrases,
-                                           int maxSize) {
+                                          Labels<PartOfSpeech> partOfSpeeches,
+                                          List<List<String>> phrases,
+                                          int maxSize) {
         int size = parseTokenLabels.size();
         for (int i = 0; i < size; i++) {
             Label<TermToken> firstParseToken = parseTokenLabels.get(i);
@@ -86,7 +89,7 @@ class ContextCues {
                     leftSearch.add(parseTokenLabel.value().text());
                 }
                 if (phrases.contains(leftSearch)) {
-                    return leftRange;
+                    return new ArrayList<>(leftRange);
                 }
             }
         }
