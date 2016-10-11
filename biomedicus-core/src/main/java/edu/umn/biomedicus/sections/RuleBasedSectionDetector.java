@@ -19,8 +19,8 @@ package edu.umn.biomedicus.sections;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.style.Bold;
 import edu.umn.biomedicus.common.types.style.Underlined;
 import edu.umn.biomedicus.common.types.text.*;
@@ -39,13 +39,13 @@ import java.util.regex.Pattern;
  */
 public class RuleBasedSectionDetector implements DocumentProcessor {
     private final Pattern headers;
-    private final Labels<Sentence> sentenceLabels;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
     private final Labeler<Section> sectionLabeler;
     private final Labeler<SectionTitle> sectionTitleLabeler;
     private final Labeler<SectionContent> sectionContentLabeler;
     private final String text;
-    private final Labels<Bold> boldLabels;
-    private final Labels<Underlined> underlinedLabels;
+    private final LabelIndex<Bold> boldLabelIndex;
+    private final LabelIndex<Underlined> underlinedLabelIndex;
 
     /**
      * Injectable constructor.
@@ -57,19 +57,19 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
     RuleBasedSectionDetector(Document document,
                              RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
         this.headers = ruleBasedSectionDetectorModel.getSectionHeaderPattern();
-        sentenceLabels = document.labels(Sentence.class);
-        boldLabels = document.labels(Bold.class);
-        underlinedLabels = document.labels(Underlined.class);
-        sectionLabeler = document.labeler(Section.class);
-        sectionTitleLabeler = document.labeler(SectionTitle.class);
-        sectionContentLabeler = document.labeler(SectionContent.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        boldLabelIndex = document.getLabelIndex(Bold.class);
+        underlinedLabelIndex = document.getLabelIndex(Underlined.class);
+        sectionLabeler = document.getLabeler(Section.class);
+        sectionTitleLabeler = document.getLabeler(SectionTitle.class);
+        sectionContentLabeler = document.getLabeler(SectionContent.class);
         text = document.getText();
     }
 
 
     @Override
     public void process() throws BiomedicusException {
-        Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabels.iterator();
+        Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabelIndex.iterator();
         Label<Sentence> header = null;
         Label<Sentence> firstSentence = null;
         Label<Sentence> lastSentence = null;
@@ -77,8 +77,8 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
         while (sentenceLabelIterator.hasNext()) {
             Label<Sentence> sentenceLabel = sentenceLabelIterator.next();
             CharSequence sentenceText = sentenceLabel.getCovered(text);
-            if (headers.matcher(sentenceText).matches() || boldLabels.withSpan(sentenceLabel).isPresent()
-                    || underlinedLabels.withSpan(sentenceLabel).isPresent()) {
+            if (headers.matcher(sentenceText).matches() || boldLabelIndex.withTextLocation(sentenceLabel).isPresent()
+                    || underlinedLabelIndex.withTextLocation(sentenceLabel).isPresent()) {
                 makeSection(header, firstSentence, lastSentence);
                 header = sentenceLabel;
                 firstSentence = null;

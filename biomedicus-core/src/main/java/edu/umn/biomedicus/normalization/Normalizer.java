@@ -18,8 +18,8 @@ package edu.umn.biomedicus.normalization;
 
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.NormForm;
@@ -36,23 +36,23 @@ import javax.inject.Inject;
 public class Normalizer implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(Normalizer.class);
     private final NormalizerModel normalizerModel;
-    private final Labels<ParseToken> parseTokenLabels;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
     private final Labeler<NormForm> normFormLabeler;
 
     @Inject
     Normalizer(NormalizerModel normalizerModel, Document document) {
         this.normalizerModel = normalizerModel;
-        parseTokenLabels = document.labels(ParseToken.class);
-        partOfSpeechLabels = document.labels(PartOfSpeech.class);
-        normFormLabeler = document.labeler(NormForm.class);
+        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);
+        normFormLabeler = document.getLabeler(NormForm.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Normalizing tokens in a document.");
-        for (Label<ParseToken> parseTokenLabel : parseTokenLabels) {
-            PartOfSpeech partOfSpeech = partOfSpeechLabels.withSpan(parseTokenLabel)
+        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
+            PartOfSpeech partOfSpeech = partOfSpeechLabelIndex.withTextLocation(parseTokenLabel)
                     .orElseThrow(() -> new BiomedicusException("Part of speech label not found for parse token label"))
                     .value();
             String normalForm = normalizerModel.normalize(parseTokenLabel.value(), partOfSpeech);

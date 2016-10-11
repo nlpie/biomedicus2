@@ -19,7 +19,7 @@ package edu.umn.biomedicus.stopwords;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.types.semantics.StopWord;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -28,19 +28,19 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 
 public class StopwordsProcessor implements DocumentProcessor {
     private final Stopwords stopwords;
-    private final Labels<ParseToken> parseTokenLabels;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final ValueLabeler stopWordsLabeler;
 
     @Inject
     public StopwordsProcessor(Stopwords stopwords, Document document) {
         this.stopwords = stopwords;
-        parseTokenLabels = document.labels(ParseToken.class);
-        stopWordsLabeler = document.labeler(StopWord.class).value(new StopWord());
+        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        stopWordsLabeler = document.getLabeler(StopWord.class).value(new StopWord());
     }
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<ParseToken> parseTokenLabel : parseTokenLabels) {
+        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
             if (stopwords.isStopWord(parseTokenLabel.value())) {
                 stopWordsLabeler.label(parseTokenLabel);
             }

@@ -19,11 +19,9 @@ package edu.umn.biomedicus.modification;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -77,19 +75,19 @@ public final class ProbabilityModificationDetector implements DocumentProcessor 
             .addScopeDelimitingWord("except")
             .build();
 
-    private final Labels<Sentence> sentences;
-    private final Labels<DictionaryTerm> dictionaryTerms;
-    private final Labels<TermToken> termTokens;
-    private final Labels<PartOfSpeech> partsOfSpeech;
+    private final LabelIndex<Sentence> sentences;
+    private final LabelIndex<DictionaryTerm> dictionaryTerms;
+    private final LabelIndex<TermToken> termTokens;
+    private final LabelIndex<PartOfSpeech> partsOfSpeech;
     private final Labeler<Probable> labeler;
 
     @Inject
     public ProbabilityModificationDetector(Document document) {
-        sentences = document.labels(Sentence.class);
-        dictionaryTerms = document.labels(DictionaryTerm.class);
-        termTokens = document.labels(TermToken.class);
-        partsOfSpeech = document.labels(PartOfSpeech.class);
-        labeler = document.labeler(Probable.class);
+        sentences = document.getLabelIndex(Sentence.class);
+        dictionaryTerms = document.getLabelIndex(DictionaryTerm.class);
+        termTokens = document.getLabelIndex(TermToken.class);
+        partsOfSpeech = document.getLabelIndex(PartOfSpeech.class);
+        labeler = document.getLabeler(Probable.class);
     }
 
     @Override
@@ -99,7 +97,7 @@ public final class ProbabilityModificationDetector implements DocumentProcessor 
                 .setSentences(sentences)
                 .setModifiableTerms(dictionaryTerms)
                 .setTokens(termTokens)
-                .setPartOfSpeechLabels(partsOfSpeech)
+                .setPartOfSpeechLabelIndex(partsOfSpeech)
                 .createContextSearch();
         Map<Span, List<Label<TermToken>>> matches = contextSearch.findMatches();
         for (Map.Entry<Span, List<Label<TermToken>>> entry : matches.entrySet()) {

@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.standard;
 
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -77,12 +77,12 @@ public class StandardDocument implements Document {
     }
 
     @Override
-    public <T> Labels<T> labels(Class<T> labelClass) {
+    public <T> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
         return null;
     }
 
     @Override
-    public <T> Labeler<T> labeler(Class<T> labelClass) {
+    public <T> Labeler<T> getLabeler(Class<T> labelClass) {
         return null;
     }
 }

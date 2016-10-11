@@ -19,23 +19,23 @@ package edu.umn.biomedicus.application;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 
 import java.util.Map;
 
 @DocumentScoped
 public class LabelsLibrary {
-    private final Map<Class, Labels> labelsMap;
+    private final Map<Class, LabelIndex> labelsMap;
     private final Map<Class, Labeler> labelerMap;
 
     @Inject
-    LabelsLibrary(Map<Class, Labels> labelsMap, Map<Class, Labeler> labelerMap) {
+    LabelsLibrary(Map<Class, LabelIndex> labelsMap, Map<Class, Labeler> labelerMap) {
         this.labelsMap = labelsMap;
         this.labelerMap = labelerMap;
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Labels<T> labelsFor(Class<T> tClass) {
+    public <T> LabelIndex<T> labelsFor(Class<T> tClass) {
         return labelsMap.get(tClass);
     }
 

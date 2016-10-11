@@ -17,9 +17,9 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.labels.AbstractLabels;
+import edu.umn.biomedicus.common.labels.AbstractLabelIndex;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
@@ -28,14 +28,14 @@ import org.apache.uima.cas.text.AnnotationIndex;
 
 import java.util.Iterator;
 
-public final class UimaLabels<T> extends AbstractLabels<T> {
+public final class UimaLabelIndex<T> extends AbstractLabelIndex<T> {
     private final CAS cas;
     private final LabelAdapter<T> labelAdapter;
     private final Iterable<Label<T>> iterable;
     private Type annotationType;
     private Type type;
 
-    private UimaLabels(CAS cas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
+    private UimaLabelIndex(CAS cas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
         this.cas = cas;
         this.labelAdapter = labelAdapter;
         this.iterable = iterable;
@@ -44,7 +44,7 @@ public final class UimaLabels<T> extends AbstractLabels<T> {
     }
 
     @Inject
-    public UimaLabels(CAS cas, LabelAdapter<T> labelAdapter) {
+    public UimaLabelIndex(CAS cas, LabelAdapter<T> labelAdapter) {
         this.cas = cas;
         this.labelAdapter = labelAdapter;
         annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
@@ -54,13 +54,13 @@ public final class UimaLabels<T> extends AbstractLabels<T> {
     }
 
     @Override
-    public Labels<T> insideSpan(TextLocation textLocation) {
+    public LabelIndex<T> insideSpan(TextLocation textLocation) {
         AnnotationIndex<AnnotationFS> annotationIndex = cas.getAnnotationIndex(type);
         AnnotationFS bound = cas.createAnnotation(annotationType, textLocation.getBegin() - 1,
                 textLocation.getEnd() + 1);
         Iterable<Label<T>> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(annotationIndex, bound,
                 labelAdapter::annotationToLabel);
-        return new UimaLabels<>(cas, labelAdapter, iterable).filter(textLocation::contains);
+        return new UimaLabelIndex<>(cas, labelAdapter, iterable).filter(textLocation::contains);
     }
 
     @Override

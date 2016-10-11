@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.*;
 
@@ -26,28 +26,28 @@ import java.util.List;
 import java.util.Map;
 
 final class ContextSearch {
-    private final Labels<Sentence> sentences;
-    private final Labels<TermToken> tokens;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
-    private final Labels<?> modifiableTerms;
+    private final LabelIndex<Sentence> sentences;
+    private final LabelIndex<TermToken> tokens;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
+    private final LabelIndex<?> modifiableTerms;
     private final ContextCues contextCues;
 
     ContextSearch(ContextCues contextCues,
-                  Labels<Sentence> sentences,
-                  Labels<?> modifiableTerms,
-                  Labels<TermToken> tokens,
-                  Labels<PartOfSpeech> partOfSpeechLabels) {
+                  LabelIndex<Sentence> sentences,
+                  LabelIndex<?> modifiableTerms,
+                  LabelIndex<TermToken> tokens,
+                  LabelIndex<PartOfSpeech> partOfSpeechLabelIndex) {
         this.contextCues = contextCues;
         this.sentences = sentences;
         this.modifiableTerms = modifiableTerms;
         this.tokens = tokens;
-        this.partOfSpeechLabels = partOfSpeechLabels;
+        this.partOfSpeechLabelIndex = partOfSpeechLabelIndex;
     }
 
     Map<Span, List<Label<TermToken>>> findMatches() {
         Map<Span, List<Label<TermToken>>> matchingSpans = new HashMap<>();
         for (Label<Sentence> sentence : sentences) {
-            Labels<TermToken> sentenceTokens = tokens.insideSpan(sentence);
+            LabelIndex<TermToken> sentenceTokens = tokens.insideSpan(sentence);
             for (Label<?> modifiableTerm : modifiableTerms.insideSpan(sentence)) {
                 List<Label<TermToken>> matches = matches(sentenceTokens, modifiableTerm);
                 if (matches != null) {
@@ -59,17 +59,17 @@ final class ContextSearch {
         return matchingSpans;
     }
 
-    private List<Label<TermToken>> matches(Labels<TermToken> sentenceTokens,
+    private List<Label<TermToken>> matches(LabelIndex<TermToken> sentenceTokens,
                                             Label<?> modifiableTerm) {
-        Labels<TermToken> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
-        List<Label<TermToken>> labels = contextCues.searchLeft(leftContextTokens.all(), partOfSpeechLabels);
+        LabelIndex<TermToken> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
+        List<Label<TermToken>> labels = contextCues.searchLeft(leftContextTokens.all(), partOfSpeechLabelIndex);
         if (labels != null) {
             return labels;
         }
 
 
-        Labels<TermToken> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
-        labels = contextCues.searchRight(rightContextTokens.all(), partOfSpeechLabels);
+        LabelIndex<TermToken> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
+        labels = contextCues.searchRight(rightContextTokens.all(), partOfSpeechLabelIndex);
         if (labels != null) {
             return labels;
         }
@@ -79,38 +79,38 @@ final class ContextSearch {
 
     static final class ContextSearchBuilder {
         private ContextCues contextCues;
-        private Labels<Sentence> sentences;
-        private Labels<?> modifiableTerms;
-        private Labels<TermToken> tokens;
-        private Labels<PartOfSpeech> partOfSpeechLabels;
+        private LabelIndex<Sentence> sentences;
+        private LabelIndex<?> modifiableTerms;
+        private LabelIndex<TermToken> tokens;
+        private LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
 
         ContextSearchBuilder setContextCues(ContextCues contextCues) {
             this.contextCues = contextCues;
             return this;
         }
 
-        ContextSearchBuilder setSentences(Labels<Sentence> sentences) {
+        ContextSearchBuilder setSentences(LabelIndex<Sentence> sentences) {
             this.sentences = sentences;
             return this;
         }
 
-        ContextSearchBuilder setModifiableTerms(Labels<?> modifiableTerms) {
+        ContextSearchBuilder setModifiableTerms(LabelIndex<?> modifiableTerms) {
             this.modifiableTerms = modifiableTerms;
             return this;
         }
 
-        ContextSearchBuilder setTokens(Labels<TermToken> tokens) {
+        ContextSearchBuilder setTokens(LabelIndex<TermToken> tokens) {
             this.tokens = tokens;
             return this;
         }
 
-        ContextSearchBuilder setPartOfSpeechLabels(Labels<PartOfSpeech> partOfSpeechLabels) {
-            this.partOfSpeechLabels = partOfSpeechLabels;
+        ContextSearchBuilder setPartOfSpeechLabelIndex(LabelIndex<PartOfSpeech> partOfSpeechLabelIndex) {
+            this.partOfSpeechLabelIndex = partOfSpeechLabelIndex;
             return this;
         }
 
         ContextSearch createContextSearch() {
-            return new ContextSearch(contextCues, sentences, modifiableTerms, tokens, partOfSpeechLabels);
+            return new ContextSearch(contextCues, sentences, modifiableTerms, tokens, partOfSpeechLabelIndex);
         }
     }
 }

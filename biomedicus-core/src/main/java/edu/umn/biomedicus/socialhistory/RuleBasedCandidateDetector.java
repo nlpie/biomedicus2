@@ -19,8 +19,8 @@ package edu.umn.biomedicus.socialhistory;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.*;
@@ -33,31 +33,31 @@ import java.util.List;
 public class RuleBasedCandidateDetector implements DocumentProcessor {
     private final List<? extends KindCandidateDetector> candidateDetectors = Arrays.asList(new DrugKindCandidateDetector(),
             new AlcoholKindCandidateDetector(), new TobaccoKindCandidateDetector());
-    private final Labels<SectionTitle> sectionTitleLabels;
-    private final Labels<TermToken> termTokenLabels;
-    private final Labels<SectionContent> sectionContentLabels;
-    private final Labels<Sentence> sentenceLabels;
-    private final Labels<Section> sectionLabels;
+    private final LabelIndex<SectionTitle> sectionTitleLabelIndex;
+    private final LabelIndex<TermToken> termTokenLabelIndex;
+    private final LabelIndex<SectionContent> sectionContentLabelIndex;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
+    private final LabelIndex<Section> sectionLabelIndex;
     private final Labeler<SocialHistoryCandidate> candidateLabeler;
 
     @Inject
     public RuleBasedCandidateDetector(Document document) {
-        sectionLabels = document.labels(Section.class);
-        sectionTitleLabels = document.labels(SectionTitle.class);
-        termTokenLabels = document.labels(TermToken.class);
-        candidateLabeler = document.labeler(SocialHistoryCandidate.class);
-        sectionContentLabels = document.labels(SectionContent.class);
-        sentenceLabels = document.labels(Sentence.class);
+        sectionLabelIndex = document.getLabelIndex(Section.class);
+        sectionTitleLabelIndex = document.getLabelIndex(SectionTitle.class);
+        termTokenLabelIndex = document.getLabelIndex(TermToken.class);
+        candidateLabeler = document.getLabeler(SocialHistoryCandidate.class);
+        sectionContentLabelIndex = document.getLabelIndex(SectionContent.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Section> sectionLabel : sectionLabels) {
-            Label<SectionTitle> sectionTitleLabel = sectionTitleLabels.insideSpan(sectionLabel)
+        for (Label<Section> sectionLabel : sectionLabelIndex) {
+            Label<SectionTitle> sectionTitleLabel = sectionTitleLabelIndex.insideSpan(sectionLabel)
                     .firstOptionally()
                     .orElseThrow(() -> new BiomedicusException("Section did not have a title"));
 
-            List<TermToken> titleTokens = termTokenLabels.insideSpan(sectionTitleLabel).values();
+            List<TermToken> titleTokens = termTokenLabelIndex.insideSpan(sectionTitleLabel).values();
             List<KindCandidateDetector> headerMatches = new ArrayList<>();
             for (KindCandidateDetector candidateDetector : candidateDetectors) {
                 if (candidateDetector.isSocialHistoryHeader(titleTokens)) {
@@ -69,11 +69,11 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                 continue;
             }
 
-            Label<SectionContent> sectionContentLabel = sectionContentLabels.insideSpan(sectionLabel).firstOptionally()
+            Label<SectionContent> sectionContentLabel = sectionContentLabelIndex.insideSpan(sectionLabel).firstOptionally()
                     .orElseThrow(() -> new BiomedicusException("No section content"));
-            Labels<Sentence> sentenceLabels = this.sentenceLabels.insideSpan(sectionContentLabel);
-            for (Label<Sentence> sentenceLabel : sentenceLabels) {
-                List<TermToken> sentenceTermTokens = termTokenLabels.insideSpan(sentenceLabel).values();
+            LabelIndex<Sentence> sentenceLabelIndex = this.sentenceLabelIndex.insideSpan(sectionContentLabel);
+            for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+                List<TermToken> sentenceTermTokens = termTokenLabelIndex.insideSpan(sentenceLabel).values();
                 for (KindCandidateDetector headerMatch : headerMatches) {
                     if (headerMatch.isSocialHistorySentence(titleTokens, sentenceTermTokens)) {
                         SubstanceUsageKind socialHistoryKind = headerMatch.getSocialHistoryKind();

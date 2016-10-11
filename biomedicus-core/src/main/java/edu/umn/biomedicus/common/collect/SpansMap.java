@@ -26,15 +26,19 @@ public interface SpansMap<T> {
 
     SpansMap<T> toTheRightOf(TextLocation textLocation);
 
-    Stream<T> valuesStream();
-
-    Stream<T> descendingValuesStream();
-
     SpansMap<T> insideSpan(TextLocation textLocation);
 
     SpansMap<T> containing(TextLocation textLocation);
 
     Stream<TextLocation> spansStream();
+
+    Stream<T> ascendingStartDecreasingSizeValuesStream();
+
+    Stream<T> descendingStartDecreasingSizeValuesStream();
+
+    Stream<T> ascendingStartIncreasingSizeValueStream();
+
+    Stream<T> descendingStartIncreasingSizeValuesStream();
 
     Stream<Pair<TextLocation, T>> pairStream();
 }

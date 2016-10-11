@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
@@ -35,15 +35,15 @@ public class PtbTagsWriter implements DocumentProcessor {
 
     private final Path outputDir;
     private final Document document;
-    private final Labels<ParseToken> parseTokenLabels;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
 
     @Inject
     public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, Document document) {
         this.outputDir = outputDir;
         this.document = document;
-        parseTokenLabels = document.labels(ParseToken.class);
-        partOfSpeechLabels = document.labels(PartOfSpeech.class);
+        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);
     }
 
     @Override
@@ -51,9 +51,9 @@ public class PtbTagsWriter implements DocumentProcessor {
         String text = document.getText();
         StringBuilder rewriter = new StringBuilder(text);
         int added = 0;
-        for (Label<ParseToken> parseTokenLabel: parseTokenLabels) {
+        for (Label<ParseToken> parseTokenLabel: parseTokenLabelIndex) {
             int end = parseTokenLabel.getEnd() + added;
-            String insertion = "/" + partOfSpeechLabels.withSpan(parseTokenLabel)
+            String insertion = "/" + partOfSpeechLabelIndex.withTextLocation(parseTokenLabel)
                     .orElseThrow(() -> new BiomedicusException("No part of speech for parse token."))
                     .value()
                     .toString();

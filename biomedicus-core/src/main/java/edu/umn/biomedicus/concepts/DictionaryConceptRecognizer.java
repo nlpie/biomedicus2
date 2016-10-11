@@ -18,8 +18,8 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
@@ -51,13 +51,13 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     private static final Set<PartOfSpeech> TRIVIAL_POS = buildTrivialPos();
     private static final int SPAN_SIZE = 5;
     private final ConceptDictionary conceptDictionary;
-    private final Labels<Sentence> sentences;
-    private final Labels<NormIndex> normIndexes;
+    private final LabelIndex<Sentence> sentences;
+    private final LabelIndex<NormIndex> normIndexes;
     private final Document document;
     private final Labeler<DictionaryTerm> termLabeler;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
-    private final Labels<TermToken> termTokenLabels;
-    private final Labels<Acronym> acronymLabels;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
+    private final LabelIndex<TermToken> termTokenLabelIndex;
+    private final LabelIndex<Acronym> acronymLabelIndex;
 
     /**
      * Creates a dictionary concept recognizer from a concept dictionary and a document.
@@ -68,12 +68,12 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     DictionaryConceptRecognizer(ConceptDictionary conceptDictionary, Document document) {
         this.conceptDictionary = conceptDictionary;
         this.document = document;
-        sentences = document.labels(Sentence.class);
-        normIndexes = document.labels(NormIndex.class);
-        termLabeler = document.labeler(DictionaryTerm.class);
-        partOfSpeechLabels = document.labels(PartOfSpeech.class);
-        termTokenLabels = document.labels(TermToken.class);
-        acronymLabels = document.labels(Acronym.class);
+        sentences = document.getLabelIndex(Sentence.class);
+        normIndexes = document.getLabelIndex(NormIndex.class);
+        termLabeler = document.getLabeler(DictionaryTerm.class);
+        partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);
+        termTokenLabelIndex = document.getLabelIndex(TermToken.class);
+        acronymLabelIndex = document.getLabelIndex(Acronym.class);
     }
 
     private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) throws BiomedicusException {
@@ -106,7 +106,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         Span phraseAsSpan = new Span(tokenSet.get(0).getBegin(), tokenSet.get(tokenSet.size() - 1).getEnd());
         TermsBag.Builder builder = TermsBag.builder();
         for (Label<NormIndex> normIndexLabel : normIndexes.insideSpan(phraseAsSpan)) {
-            Optional<Label<PartOfSpeech>> partOfSpeechLabel = partOfSpeechLabels.withSpan(normIndexLabel);
+            Optional<Label<PartOfSpeech>> partOfSpeechLabel = partOfSpeechLabelIndex.withTextLocation(normIndexLabel);
             if (partOfSpeechLabel.isPresent() && TRIVIAL_POS.contains(partOfSpeechLabel.get().value())) {
                 continue;
             }
@@ -141,10 +141,10 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
             StringBuilder editedString = new StringBuilder();
             List<Span> editedStringSpans = new ArrayList<>();
-            List<Label<TermToken>> sentenceTermTokens = termTokenLabels.insideSpan(sentence).all();
+            List<Label<TermToken>> sentenceTermTokens = termTokenLabelIndex.insideSpan(sentence).all();
 
             for (Label<TermToken> sentenceTermToken : sentenceTermTokens) {
-                Optional<Label<Acronym>> acronymForToken = acronymLabels.withSpan(sentenceTermToken);
+                Optional<Label<Acronym>> acronymForToken = acronymLabelIndex.withTextLocation(sentenceTermToken);
                 Token token;
                 if (acronymForToken.isPresent()) {
                     token = acronymForToken.get().value();
@@ -165,7 +165,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                 List<Label<TermToken>> window = sentenceTermTokens.subList(from, to);
 
                 Label<TermToken> firstTokenLabel = window.get(0);
-                boolean firstTokenAllTrivial = partOfSpeechLabels.insideSpan(firstTokenLabel)
+                boolean firstTokenAllTrivial = partOfSpeechLabelIndex.insideSpan(firstTokenLabel)
                         .all()
                         .stream()
                         .map(Label::value)
@@ -185,7 +185,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
                         phraseFound = checkPhrase(asSpan, editedSubstring, subsetSize == 1, .1);
                     }
                     if (!phraseFound) {
-                        boolean lastTokenAllTrivial = partOfSpeechLabels.insideSpan(lastTokenLabel)
+                        boolean lastTokenAllTrivial = partOfSpeechLabelIndex.insideSpan(lastTokenLabel)
                                 .all()
                                 .stream()
                                 .map(Label::value)

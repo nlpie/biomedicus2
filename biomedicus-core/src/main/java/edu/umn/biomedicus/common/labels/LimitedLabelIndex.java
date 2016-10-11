@@ -16,62 +16,51 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class FilteredLabels<T> extends AbstractLabels<T> {
+class LimitedLabelIndex<T> extends AbstractLabelIndex<T> {
+    private final LabelIndex<T> labelIndex;
 
-    private final Labels<T> labels;
-    private final Predicate<Label<T>> predicate;
+    private final int limit;
 
-    public FilteredLabels(Labels<T> labels, Predicate<Label<T>> predicate) {
-        this.labels = labels;
-        this.predicate = predicate;
+    LimitedLabelIndex(LabelIndex<T> labelIndex, int limit) {
+        this.labelIndex = labelIndex;
+        this.limit = limit;
+    }
+
+    @Override
+    public LabelIndex<T> limit(int max) {
+        if (max >= limit) {
+            return this;
+        }
+        return new LimitedLabelIndex<>(labelIndex, max);
     }
 
     @Override
     public Iterator<Label<T>> iterator() {
-        Iterator<Label<T>> iterator = labels.iterator();
+        Iterator<Label<T>> iterator = labelIndex.iterator();
         return new Iterator<Label<T>>() {
-            @Nullable private Label<T> current;
-
-            {
-                forward();
-            }
-
+            private int count = 0;
             @Override
             public boolean hasNext() {
-                return current != null;
+                return count < limit && iterator.hasNext();
             }
 
             @Override
             public Label<T> next() {
-                if (current == null) {
+                if (count >= limit) {
                     throw new NoSuchElementException();
                 }
-                Label<T> label = current;
-                forward();
-                return label;
-            }
-
-            private void forward() {
-                while (iterator.hasNext()) {
-                    Label<T> next = iterator.next();
-                    if (predicate.test(next)) {
-                        current = next;
-                        return;
-                    }
-                }
-                current = null;
+                count += 1;
+                return iterator.next();
             }
         };
     }
 
     @Override
     public Stream<Label<T>> stream() {
-        return labels.stream().filter(predicate);
+        return labelIndex.stream().limit(limit);
     }
 }

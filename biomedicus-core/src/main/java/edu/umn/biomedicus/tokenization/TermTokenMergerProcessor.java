@@ -19,29 +19,29 @@ package edu.umn.biomedicus.tokenization;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.labels.LabelsUtilities;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public final class TermTokenMergerProcessor implements DocumentProcessor {
-    private final Labels<ParseToken> parseTokens;
-    private final Labels<Sentence> sentenceLabels;
+    private final LabelIndex<ParseToken> parseTokens;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
     private final Labeler<TermToken> termTokenLabeler;
 
     @Inject
     public TermTokenMergerProcessor(Document document) {
-        parseTokens = document.labels(ParseToken.class);
-        sentenceLabels = document.labels(Sentence.class);
-        termTokenLabeler = document.labeler(TermToken.class);
+        parseTokens = document.getLabelIndex(ParseToken.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        termTokenLabeler = document.getLabeler(TermToken.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Sentence> sentenceLabel : sentenceLabels) {
-            Labels<ParseToken> labels = parseTokens.insideSpan(sentenceLabel);
-            TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labels));
+        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+            LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentenceLabel);
+            TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labelIndex));
             while (tokenMerger.hasNext()) {
                 Label<TermToken> termTokenLabel = tokenMerger.next();
                 termTokenLabeler.label(termTokenLabel);

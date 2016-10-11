@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -65,19 +65,19 @@ public final class HistoryModificationDetector implements DocumentProcessor {
             .addScopeDelimitingWord(":")
             .build();
 
-    private final Labels<Sentence> sentences;
-    private final Labels<DictionaryTerm> dictionaryTerms;
-    private final Labels<TermToken> termTokens;
-    private final Labels<PartOfSpeech> partsOfSpeech;
+    private final LabelIndex<Sentence> sentences;
+    private final LabelIndex<DictionaryTerm> dictionaryTerms;
+    private final LabelIndex<TermToken> termTokens;
+    private final LabelIndex<PartOfSpeech> partsOfSpeech;
     private final Labeler<Historical> labeler;
 
     @Inject
     public HistoryModificationDetector(Document document) {
-        this.sentences = document.labels(Sentence.class);
-        this.dictionaryTerms = document.labels(DictionaryTerm.class);
-        this.termTokens = document.labels(TermToken.class);
-        this.partsOfSpeech = document.labels(PartOfSpeech.class);
-        labeler = document.labeler(Historical.class);
+        this.sentences = document.getLabelIndex(Sentence.class);
+        this.dictionaryTerms = document.getLabelIndex(DictionaryTerm.class);
+        this.termTokens = document.getLabelIndex(TermToken.class);
+        this.partsOfSpeech = document.getLabelIndex(PartOfSpeech.class);
+        labeler = document.getLabeler(Historical.class);
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class HistoryModificationDetector implements DocumentProcessor {
                 .setSentences(sentences)
                 .setModifiableTerms(dictionaryTerms)
                 .setTokens(termTokens)
-                .setPartOfSpeechLabels(partsOfSpeech)
+                .setPartOfSpeechLabelIndex(partsOfSpeech)
                 .createContextSearch();
         Map<Span, List<Label<TermToken>>> matches = contextSearch.findMatches();
         for (Map.Entry<Span, List<Label<TermToken>>> entry : matches.entrySet()) {

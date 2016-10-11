@@ -17,9 +17,8 @@
 package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.TermToken;
 
 import javax.annotation.Nullable;
@@ -52,7 +51,7 @@ class ContextCues {
 
     @Nullable
     List<Label<TermToken>> searchLeft(List<Label<TermToken>> parseTokenLabels,
-                                      Labels<PartOfSpeech> partOfSpeeches) {
+                                      LabelIndex<PartOfSpeech> partOfSpeeches) {
         List<Label<TermToken>> search = search(parseTokenLabels, partOfSpeeches, leftPhrases, maxSizeLeftPhrase);
         if (search != null) {
             Collections.reverse(search);
@@ -62,13 +61,13 @@ class ContextCues {
 
     @Nullable
     List<Label<TermToken>> searchRight(List<Label<TermToken>> parseTokenLabels,
-                                       Labels<PartOfSpeech> partOfSpeeches) {
+                                       LabelIndex<PartOfSpeech> partOfSpeeches) {
         return search(parseTokenLabels, partOfSpeeches, rightPhrases, maxSizeRightPhrase);
     }
 
     @Nullable
     private List<Label<TermToken>> search(List<Label<TermToken>> parseTokenLabels,
-                                          Labels<PartOfSpeech> partOfSpeeches,
+                                          LabelIndex<PartOfSpeech> partOfSpeeches,
                                           List<List<String>> phrases,
                                           int maxSize) {
         int size = parseTokenLabels.size();

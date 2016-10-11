@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 /**
- * A collection of utilities for dealing with the {@link Labels} type.
+ * A collection of utilities for dealing with the {@link LabelIndex} type.
  *
  * @author Ben Knoll
  * @since 1.6.0
@@ -28,17 +28,17 @@ public final class LabelsUtilities {
     }
 
     /**
-     * Changes the type bound to that of a superclass of the current bound. This works because labels collections are
+     * Changes the type bound to that of a superclass of the current bound. This works because labelIndex collections are
      * immutable and thus the bounded type is covariant.
      *
-     * @param labels the labels object to be given a new bound.
+     * @param labelIndex the labels object to be given a new bound.
      * @param <T> the super-type type bound parameter
      * @param <U> the sub-type type bound parameter
-     * @return the same labels object, except bounded by the super-type.
+     * @return the same labelIndex object, except bounded by the super-type.
      */
     @SuppressWarnings("unchecked")
-    public static <T, U extends T> Labels<T> cast(Labels<U> labels) {
-        return (Labels<T>) labels;
+    public static <T, U extends T> LabelIndex<T> cast(LabelIndex<U> labelIndex) {
+        return (LabelIndex<T>) labelIndex;
     }
 
     /**

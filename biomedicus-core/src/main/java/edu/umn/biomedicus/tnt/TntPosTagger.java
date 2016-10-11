@@ -21,8 +21,8 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
@@ -71,8 +71,8 @@ public class TntPosTagger implements DocumentProcessor {
      * The tnt model to use.
      */
     private final TntModel tntModel;
-    private final Labels<Sentence> sentenceLabels;
-    private final Labels<ParseToken> parseTokenLabels;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final Document document;
     private final Labeler<PartOfSpeech> partOfSpeechLabeler;
 
@@ -89,13 +89,13 @@ public class TntPosTagger implements DocumentProcessor {
         this.tntModel = tntModel;
         this.beamThreshold = beamThreshold;
         this.document = document;
-        sentenceLabels = document.labels(Sentence.class);
-        parseTokenLabels = document.labels(ParseToken.class);
-        partOfSpeechLabeler = document.labeler(PartOfSpeech.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        partOfSpeechLabeler = document.getLabeler(PartOfSpeech.class);
     }
 
     public void tagSentence(Label<Sentence> sentence2Label) throws BiomedicusException {
-        List<Label<ParseToken>> tokens = parseTokenLabels.insideSpan(sentence2Label).all();
+        List<Label<ParseToken>> tokens = parseTokenLabelIndex.insideSpan(sentence2Label).all();
         ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel, Ngram.create(BBS, BOS),
                 Ngram::create);
 
@@ -121,7 +121,7 @@ public class TntPosTagger implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Sentence> sentence2Label : sentenceLabels) {
+        for (Label<Sentence> sentence2Label : sentenceLabelIndex) {
             tagSentence(sentence2Label);
         }
     }

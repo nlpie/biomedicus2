@@ -20,8 +20,8 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
@@ -35,8 +35,8 @@ public final class SyntaxnetParser implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyntaxnetParser.class);
     private final Path installationDir;
     private final String modelDirString;
-    private final Labels<Sentence> sentenceLabels;
-    private final Labels<ParseToken> tokenLabels;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
+    private final LabelIndex<ParseToken> tokenLabelIndex;
     private final Labeler<DependencyParse> dependencyParseLabeler;
 
     @Inject
@@ -45,9 +45,9 @@ public final class SyntaxnetParser implements DocumentProcessor {
                     Document document) {
         this.installationDir = installationDir;
         this.modelDirString = modelDirString;
-        sentenceLabels = document.labels(Sentence.class);
-        tokenLabels = document.labels(ParseToken.class);
-        dependencyParseLabeler = document.labeler(DependencyParse.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        tokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        dependencyParseLabeler = document.getLabeler(DependencyParse.class);
     }
 
     @Override
@@ -99,8 +99,8 @@ public final class SyntaxnetParser implements DocumentProcessor {
 
 
             try (Writer writer = new OutputStreamWriter(tagger.getOutputStream())) {
-                for (Label<Sentence> sentenceLabel : sentenceLabels) {
-                    List<Label<ParseToken>> sentenceTokenLabels = tokenLabels.insideSpan(sentenceLabel).all();
+                for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+                    List<Label<ParseToken>> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel).all();
                     String conllString = new Tokens2Conll(sentenceTokenLabels).conllString();
                     writer.write(conllString);
                     writer.write("\n");
@@ -108,7 +108,7 @@ public final class SyntaxnetParser implements DocumentProcessor {
             }
 
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(parser.getInputStream()))) {
-                for (Label<Sentence> sentenceLabel : sentenceLabels) {
+                for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
                     StringBuilder sentenceParse = new StringBuilder();
                     String line;
                     while ((line = bufferedReader.readLine()) != null && !line.isEmpty()) {

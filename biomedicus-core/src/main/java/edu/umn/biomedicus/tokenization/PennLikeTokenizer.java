@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
@@ -31,19 +31,19 @@ import java.util.Iterator;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
     private final Document document;
-    private final Labels<Sentence> sentenceLabels;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
     private final Labeler<ParseToken> parseTokenLabeler;
 
     @Inject
     public PennLikeTokenizer(Document document) {
         this.document = document;
-        sentenceLabels = document.labels(Sentence.class);
-        parseTokenLabeler = document.labeler(ParseToken.class);
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        parseTokenLabeler = document.getLabeler(ParseToken.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Sentence> sentence : sentenceLabels) {
+        for (Label<Sentence> sentence : sentenceLabelIndex) {
             CharSequence text = sentence.getCovered(document.getText());
 
             Iterator<Span> iterator = PennLikePhraseTokenizer.tokenizeSentence(text).iterator();

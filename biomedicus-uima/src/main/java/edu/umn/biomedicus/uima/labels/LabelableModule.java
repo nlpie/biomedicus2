@@ -20,8 +20,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
 import edu.umn.biomedicus.annotations.DocumentScoped;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -33,10 +33,10 @@ public abstract class LabelableModule extends AbstractModule {
 
         bind(labelAdapterTypeLiteral).to(labelAdapter).in(DocumentScoped.class);
 
-        ParameterizedType labelsParameterizedType = Types.newParameterizedType(Labels.class, tClass);
-        TypeLiteral<Labels<T>> labelsTypeLiteral = (TypeLiteral<Labels<T>>) TypeLiteral.get(labelsParameterizedType);
-        ParameterizedType uimaLabelsParameterizedType = Types.newParameterizedType(UimaLabels.class, tClass);
-        TypeLiteral<UimaLabels<T>> uimaLabelsTypeLiteral = (TypeLiteral<UimaLabels<T>>) TypeLiteral.get(uimaLabelsParameterizedType);
+        ParameterizedType labelsParameterizedType = Types.newParameterizedType(LabelIndex.class, tClass);
+        TypeLiteral<LabelIndex<T>> labelsTypeLiteral = (TypeLiteral<LabelIndex<T>>) TypeLiteral.get(labelsParameterizedType);
+        ParameterizedType uimaLabelsParameterizedType = Types.newParameterizedType(UimaLabelIndex.class, tClass);
+        TypeLiteral<UimaLabelIndex<T>> uimaLabelsTypeLiteral = (TypeLiteral<UimaLabelIndex<T>>) TypeLiteral.get(uimaLabelsParameterizedType);
 
         bind(labelsTypeLiteral).to(uimaLabelsTypeLiteral).in(DocumentScoped.class);
 

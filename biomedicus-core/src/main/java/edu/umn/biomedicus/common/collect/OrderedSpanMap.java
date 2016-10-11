@@ -126,12 +126,27 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
     }
 
     public void clear() {
-        backingTree.values().stream()
-                .forEach(endMap -> endMap.subMap(endMin, true, endMax, true).clear());
+        backingTree.values().forEach(endMap -> endMap.subMap(endMin, true, endMax, true).clear());
     }
 
     @Override
-    public Stream<T> valuesStream() {
+    public Stream<T> ascendingStartDecreasingSizeValuesStream() {
+        return backingTree.values().stream()
+                .map(endMap -> endMap.subMap(endMin, true, endMax, true).descendingMap())
+                .map(Map::values)
+                .flatMap(Collection::stream);
+    }
+
+    @Override
+    public Stream<T> descendingStartDecreasingSizeValuesStream() {
+        return backingTree.descendingMap().values().stream()
+                .map(endMap -> endMap.subMap(endMin, true, endMax, true).descendingMap())
+                .map(Map::values)
+                .flatMap(Collection::stream);
+    }
+
+    @Override
+    public Stream<T> ascendingStartIncreasingSizeValueStream() {
         return backingTree.values().stream()
                 .map(endMap -> endMap.subMap(endMin, true, endMax, true))
                 .map(Map::values)
@@ -139,9 +154,9 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
     }
 
     @Override
-    public Stream<T> descendingValuesStream() {
+    public Stream<T> descendingStartIncreasingSizeValuesStream() {
         return backingTree.descendingMap().values().stream()
-                .map(endMap -> endMap.subMap(endMin, true, endMax, true).descendingMap())
+                .map(endMap -> endMap.subMap(endMin, true, endMax, true))
                 .map(Map::values)
                 .flatMap(Collection::stream);
     }

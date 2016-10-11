@@ -18,7 +18,7 @@ package edu.umn.biomedicus.sentence;
 
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Sentence;
@@ -90,10 +90,10 @@ public final class SentenceDetector {
      *
      * @param document          the document to process
      * @param sentenceLabeler  labeler to use
-     * @param textSegmentLabels the labels for the text segments
+     * @param textSegmentLabelIndex the labels for the text segments
      */
     public void processDocument(Document document,
-                                Labels<TextSegment> textSegmentLabels,
+                                LabelIndex<TextSegment> textSegmentLabelIndex,
                                 Labeler<Sentence> sentenceLabeler) throws BiomedicusException {
         String documentText = document.getText();
 
@@ -107,7 +107,7 @@ public final class SentenceDetector {
 
         int maxLength = max.getAsInt();
 
-        List<Label<TextSegment>> textSegments = textSegmentLabels.all();
+        List<Label<TextSegment>> textSegments = textSegmentLabelIndex.all();
         if (textSegments.isEmpty()) {
             textSegments = new ArrayList<>();
             textSegments.add(new Label<>(new Span(0, documentText.length()), new TextSegment()));

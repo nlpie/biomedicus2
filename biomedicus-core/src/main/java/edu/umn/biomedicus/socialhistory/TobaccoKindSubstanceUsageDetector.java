@@ -30,12 +30,12 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
     @Override
     public void processCandidate(Document document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
 
-        Label<Sentence> sentenceLabel = document.labels(Sentence.class).withSpan(socialHistoryCandidateLabel)
+        Label<Sentence> sentenceLabel = document.getLabelIndex(Sentence.class).withTextLocation(socialHistoryCandidateLabel)
                 .orElseThrow(() -> new BiomedicusException("SocialHistory Candidate does not have sentence"));
-        Label<DependencyParse> dependencyParseLabel = document.labels(DependencyParse.class).withSpan(sentenceLabel)
+        Label<DependencyParse> dependencyParseLabel = document.getLabelIndex(DependencyParse.class).withTextLocation(sentenceLabel)
                 .orElseThrow(() -> new BiomedicusException("No parse for sentence."));
 
         SubstanceUsageElement value = new SubstanceUsageElement(SubstanceUsageElementType.AMOUNT, SubstanceUsageKind.NICOTINE);
-        document.labeler(SubstanceUsageElement.class).value(value).label(sentenceLabel);
+        document.getLabeler(SubstanceUsageElement.class).value(value).label(sentenceLabel);
     }
 }

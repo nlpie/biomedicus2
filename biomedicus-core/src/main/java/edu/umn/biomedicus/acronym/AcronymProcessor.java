@@ -19,8 +19,8 @@ package edu.umn.biomedicus.acronym;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -54,8 +54,8 @@ class AcronymProcessor implements DocumentProcessor {
 
     private final AcronymModel model;
     @Nullable private final OrthographicAcronymModel orthographicModel;
-    private final Labels<TermToken> termTokenLabels;
-    private final Labels<PartOfSpeech> partOfSpeechLabels;
+    private final LabelIndex<TermToken> termTokenLabelIndex;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
     private final Labeler<Acronym> acronymExpansionLabeler;
 
     /**
@@ -70,9 +70,9 @@ class AcronymProcessor implements DocumentProcessor {
                             Document document) {
         this.orthographicModel = orthographicModel;
         this.model = model;
-        this.termTokenLabels = document.labels(TermToken.class);
-        this.partOfSpeechLabels = document.labels(PartOfSpeech.class);
-        this.acronymExpansionLabeler = document.labeler(Acronym.class);
+        this.termTokenLabelIndex = document.getLabelIndex(TermToken.class);
+        this.partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);
+        this.acronymExpansionLabeler = document.getLabeler(Acronym.class);
     }
 
     @Override
@@ -80,10 +80,10 @@ class AcronymProcessor implements DocumentProcessor {
         LOGGER.info("Detecting acronyms in a document.");
         List<Token> allTokens = null;
         // Need to populate a list first: vectorizer needs object identity but UimaLabels' stream() creates new objects
-        List<Label<TermToken>> termTokenLabelsList = termTokenLabels.stream().collect(Collectors.toList());
+        List<Label<TermToken>> termTokenLabelsList = termTokenLabelIndex.stream().collect(Collectors.toList());
         for (Label<TermToken> termTokenLabel : termTokenLabelsList) {
             TermToken termToken = termTokenLabel.value();
-            List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termTokenLabel).all();
+            List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabelIndex.insideSpan(termTokenLabel).all();
             boolean excludedPos = partOfSpeechLabelsForToken.stream().map(Label::value).anyMatch(EXCLUDE_POS::contains);
             if (!excludedPos && (model.hasAcronym(termToken) || orthographicSaysAcronym(termToken))) {
                 LOGGER.trace("Found potential acronym: {}", termToken);

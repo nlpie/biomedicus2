@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -38,20 +38,20 @@ import java.util.Locale;
 public final class WordLabeler implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
     private final TermIndex wordIndex;
-    private final Labels<ParseToken> parseTokenLabels;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final Labeler<WordIndex> wordIndexLabeler;
 
     @Inject
     public WordLabeler(Vocabulary vocabulary, Document document) {
         wordIndex = vocabulary.getWordsIndex();
-        parseTokenLabels = document.labels(ParseToken.class);
-        wordIndexLabeler = document.labeler(WordIndex.class);
+        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        wordIndexLabeler = document.getLabeler(WordIndex.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Labeling word term index identifiers in a document.");
-        for (Label<ParseToken> parseTokenLabel : parseTokenLabels) {
+        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
             ParseToken token = parseTokenLabel.value();
             IndexedTerm indexedTerm = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
             WordIndex wordIndex = new WordIndex(indexedTerm);

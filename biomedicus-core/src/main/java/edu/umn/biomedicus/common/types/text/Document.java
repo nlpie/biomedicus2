@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.types.text;
 
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import javax.annotation.Nullable;
@@ -66,7 +66,7 @@ public interface Document {
 
     Document getSiblingDocument(String identifier) throws BiomedicusException;
 
-    <T> Labels<T> labels(Class<T> labelClass);
+    <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
 
-    <T> Labeler<T> labeler(Class<T> labelClass);
+    <T> Labeler<T> getLabeler(Class<T> labelClass);
 }

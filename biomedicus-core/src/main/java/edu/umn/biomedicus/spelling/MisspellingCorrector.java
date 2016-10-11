@@ -21,8 +21,8 @@ import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -38,34 +38,34 @@ import org.slf4j.LoggerFactory;
 public final class MisspellingCorrector implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingCorrector.class);
     private final SpellingModel spellingModel;
-    private final Labels<Sentence> sentence2Labels;
-    private final Labels<ParseToken> parseTokenLabels;
-    private final Labels<Misspelling> misspellingLabels;
+    private final LabelIndex<Sentence> sentence2LabelIndex;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
+    private final LabelIndex<Misspelling> misspellingLabelIndex;
     private final Labeler<SpellCorrection> spellCorrectionLabeler;
 
     @Inject
     public MisspellingCorrector(SpellingModel spellingModel,
                                 Document document) {
         this.spellingModel = spellingModel;
-        this.sentence2Labels = document.labels(Sentence.class);
-        this.parseTokenLabels = document.labels(ParseToken.class);
-        this.misspellingLabels = document.labels(Misspelling.class);
-        this.spellCorrectionLabeler = document.labeler(SpellCorrection.class);
+        this.sentence2LabelIndex = document.getLabelIndex(Sentence.class);
+        this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
+        this.misspellingLabelIndex = document.getLabelIndex(Misspelling.class);
+        this.spellCorrectionLabeler = document.getLabeler(SpellCorrection.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Correcting any misspelled words in a document.");
-        for (Label<Sentence> sentence : sentence2Labels) {
+        for (Label<Sentence> sentence : sentence2LabelIndex) {
             String first = "<NONE>";
             String prev = "<NONE>";
-            for (Label<ParseToken> tokenLabel : parseTokenLabels.insideSpan(sentence)) {
+            for (Label<ParseToken> tokenLabel : parseTokenLabelIndex.insideSpan(sentence)) {
                 ParseToken token = tokenLabel.value();
                 String text = token.text();
                 if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text).matches()) {
                     return;
                 }
-                if (misspellingLabels.withSpan(tokenLabel).isPresent()) {
+                if (misspellingLabelIndex.withTextLocation(tokenLabel).isPresent()) {
                     String suggested = spellingModel.suggestCorrection(text, Ngram.create(first, prev));
                     if (suggested != null) {
                         LOGGER.debug("Correcting word: {} with {}", text, suggested);

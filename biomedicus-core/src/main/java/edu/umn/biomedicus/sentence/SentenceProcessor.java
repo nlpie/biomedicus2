@@ -19,8 +19,8 @@ package edu.umn.biomedicus.sentence;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.TextSegment;
@@ -29,7 +29,7 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 public final class SentenceProcessor implements DocumentProcessor {
     private final SentenceDetectorFactory sentenceDetectorFactory;
     private final Document document;
-    private final Labels<TextSegment> textSegmentLabels;
+    private final LabelIndex<TextSegment> textSegmentLabelIndex;
     private final Labeler<Sentence> sentenceLabeler;
 
     @Inject
@@ -37,13 +37,13 @@ public final class SentenceProcessor implements DocumentProcessor {
                              Document document) {
         this.sentenceDetectorFactory = sentenceDetectorFactory;
         this.document = document;
-        textSegmentLabels = document.labels(TextSegment.class);
-        sentenceLabeler = document.labeler(Sentence.class);
+        textSegmentLabelIndex = document.getLabelIndex(TextSegment.class);
+        sentenceLabeler = document.getLabeler(Sentence.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
         SentenceDetector sentenceDetector = sentenceDetectorFactory.create();
-        sentenceDetector.processDocument(document, textSegmentLabels, sentenceLabeler);
+        sentenceDetector.processDocument(document, textSegmentLabelIndex, sentenceLabeler);
     }
 }

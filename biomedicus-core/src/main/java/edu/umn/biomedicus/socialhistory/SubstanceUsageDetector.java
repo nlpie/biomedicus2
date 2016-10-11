@@ -19,12 +19,9 @@ package edu.umn.biomedicus.socialhistory;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labels;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.DependencyParse;
 import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.HashMap;
@@ -51,7 +48,7 @@ public class SubstanceUsageDetector implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<SocialHistoryCandidate> socialHistoryCandidateLabel : document.labels(SocialHistoryCandidate.class)) {
+        for (Label<SocialHistoryCandidate> socialHistoryCandidateLabel : document.getLabelIndex(SocialHistoryCandidate.class)) {
             SubstanceUsageKind substanceUsageKind = socialHistoryCandidateLabel.value().getSubstanceUsageKind();
             kindMap.get(substanceUsageKind).processCandidate(document, socialHistoryCandidateLabel);
         }
