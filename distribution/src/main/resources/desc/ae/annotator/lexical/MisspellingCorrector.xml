@@ -69,6 +69,14 @@
                     <string>SystemView</string>
                 </value>
             </nameValuePair>
+            <nameValuePair>
+                <name>eagerLoad</name>
+                <value>
+                    <array>
+                        <string>edu.umn.biomedicus.spelling.SpellingModel</string>
+                    </array>
+                </value>
+            </nameValuePair>
         </configurationParameterSettings>
         <typeSystemDescription>
             <imports>
