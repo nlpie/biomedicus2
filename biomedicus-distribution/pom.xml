@@ -22,9 +22,10 @@
         <groupId>edu.umn.biomedicus</groupId>
         <version>1.6.0-SNAPSHOT</version>
     </parent>
+    <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>distribution</artifactId>
+    <artifactId>biomedicus-distribution</artifactId>
 
     <dependencies>
         <dependency>
@@ -71,7 +72,6 @@
 
 
     <build>
-        <finalName>biomedicus-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -96,16 +96,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <id>default-install</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.2</version>
                 <executions>
@@ -116,7 +106,6 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>src/assembly/descriptor.xml</descriptor>
                             </descriptors>

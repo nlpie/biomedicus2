@@ -29,8 +29,9 @@
         <module>biomedicus-rtf</module>
         <module>biomedicus-tools</module>
         <module>biomedicus-uima</module>
-        <module>distribution</module>
+        <module>biomedicus-distribution</module>
     </modules>
+
     <name>biomedicus</name>
     <description>BioMedICUS Annotation System</description>
 
