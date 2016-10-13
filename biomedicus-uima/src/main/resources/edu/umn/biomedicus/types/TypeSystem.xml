@@ -155,6 +155,18 @@
         </typeDescription>
 
         <typeDescription>
+            <name>edu.umn.biomedicus.uima.type1_6.ConstituencyParse</name>
+            <description>The constituency parse of a sentence.</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>parse</name>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
+        <typeDescription>
             <name>edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate</name>
             <supertypeName>uima.tcas.Annotation</supertypeName>
             <features>

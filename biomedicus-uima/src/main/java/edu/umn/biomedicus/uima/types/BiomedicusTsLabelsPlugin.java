@@ -28,6 +28,7 @@ import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
+import opennlp.tools.parser.Cons;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.text.AnnotationFS;
 
@@ -423,6 +424,27 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         }
     }
 
+    public static class ConstituencyParseLabelAdapter extends AbstractLabelAdapter<ConstituencyParse> {
+
+        private final Feature parseFeature;
+
+        ConstituencyParseLabelAdapter(CAS cas) {
+            super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.ConstituencyParse"));
+            parseFeature = type.getFeatureByBaseName("parse");
+        }
+
+        @Override
+        protected void fillAnnotation(Label<ConstituencyParse> label, AnnotationFS annotationFS) {
+            ConstituencyParse constituencyParse = label.value();
+            annotationFS.setStringValue(parseFeature, constituencyParse.getParse());
+        }
+
+        @Override
+        protected ConstituencyParse createLabelValue(FeatureStructure featureStructure) {
+            return new ConstituencyParse(featureStructure.getStringValue(parseFeature));
+        }
+    }
+
 
     @Override
     public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
@@ -450,6 +472,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         map.put(Underlined.class, UnderlinedLabelAdapter::new);
         map.put(SocialHistoryCandidate.class, SocialHistoryCandidateLabelAdapter::new);
         map.put(SubstanceUsageElement.class, SubstanceUsageElementLabelAdapter::new);
+        map.put(ConstituencyParse.class, ConstituencyParseLabelAdapter::new);
         return map;
     }
 }
