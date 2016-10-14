@@ -68,7 +68,7 @@ public final class Acronyms {
      * @return the standard form as a String
      */
     static String standardAcronymForm(CharSequence charSequence) {
-        return charSequence.toString().replace('&', '/').replace('+', '/').replace(".", "");
+        return charSequence.toString().replace('&', '/').replace('+', '/');
     }
     static String standardAcronymForm(Token t) {
         return standardAcronymForm(t.text());

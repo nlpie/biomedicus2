@@ -61,8 +61,7 @@ public class AcronymVectorOfflineTrainer {
     // Directed graph that contains all phrases and is used
     private PhraseGraph phraseGraph;
 
-    // Defines the point on the word graph where new words are no longer added
-    private final static String TEXTBREAK = "\\W+";
+    private final static String TEXTBREAK = "[^\\w\\-/]+";
     private final static Pattern initialJunk = Pattern.compile("^\\W+");
     private final static Pattern finalJunk = Pattern.compile("\\W+$");
 
@@ -102,7 +101,7 @@ public class AcronymVectorOfflineTrainer {
 
         // Get alternate forms from a separate file, if provided.
         alternateFormOf = new HashMap<>();
-        Set<String> doublyLinkedAlternateForms = new HashSet<>();
+        Set<String> doublyReferencedAlternateForms = new HashSet<>();
         if (alternateLongformsFile != null) {
             LOGGER.info("Adding expansion phrase search equivalents from file " + alternateLongformsFile);
             BufferedReader reader = new BufferedReader(new FileReader(alternateLongformsFile));
@@ -112,7 +111,7 @@ public class AcronymVectorOfflineTrainer {
                 if (senseVectors.containsKey(fields[0])) {
                     for (int i = 1; i < fields.length; i++) {
                         if (alternateFormOf.containsKey(fields[i]) && !alternateFormOf.get(fields[i]).equals(fields[0])) {
-                            doublyLinkedAlternateForms.add(fields[i]);
+                            doublyReferencedAlternateForms.add(fields[i]);
                             LOGGER.warn(String.format("%s appears as an alternate for multiple longforms; ignoring", fields[i]));
                         } else if (senseVectors.containsKey(fields[i])) {
                             LOGGER.warn(String.format("%s appears as a sense and as an alternate form for another sense; ignoring alternate form use", fields[i]));
@@ -124,7 +123,7 @@ public class AcronymVectorOfflineTrainer {
                     LOGGER.warn("Trying to add alternate forms of \"" + fields[0] + "\", which is not a known sense of any abbreviation");
                 }
             }
-            doublyLinkedAlternateForms.forEach(alternateFormOf::remove);
+            doublyReferencedAlternateForms.forEach(alternateFormOf::remove);
             allExpansions.addAll(alternateFormOf.keySet());
             LOGGER.info(allExpansions.size() + " possible senses, counting equivalents");
         }
@@ -162,21 +161,18 @@ public class AcronymVectorOfflineTrainer {
          * @return the longest possible phrase, or null if none found from this index
          */
         public String getLongestPhraseFrom(List<Token> words, int index) {
+            String longestEligiblePhrase = null;
             Map<String, Object> lookup = graph;
-            int i;
-            for (i = index; i < words.size(); i++) {
+            for (int i = index; i < words.size(); i++) {
                 String thisWord = words.get(i).text();
+                longestEligiblePhrase = (String) lookup.getOrDefault(null, longestEligiblePhrase);
                 if (lookup.containsKey(thisWord)) {
-                    lookup = (Map) lookup.get(words.get(i).text());
+                    lookup = (Map) lookup.get(words.get(i));
                 } else {
                     break;
                 }
             }
-            if (lookup.containsKey(null)) {
-                return (String) lookup.get(null);
-            } else {
-                return null;
-            }
+            return longestEligiblePhrase;
         }
     }
 
@@ -235,6 +231,7 @@ public class AcronymVectorOfflineTrainer {
             vector.multiply(idf);
             vector.normVector();
             vector.multiply(idf);
+            vector.multiply(idf);
         }
         LOGGER.info(senseVectors.size() + " vectors total");
         LOGGER.info("initializing acronym vector model");
@@ -248,7 +245,7 @@ public class AcronymVectorOfflineTrainer {
         avm.writeToDirectory(outPath);
     }
 
-    // todo: use the same tokenizer as the pipeline
+    // todo: use the same tokenizer as the pipeline (or make this part of a training pipeline)
     private String[] tokenize(String orig) {
         orig = initialJunk.matcher(orig).replaceFirst("");
         orig = finalJunk.matcher(orig).replaceFirst("");

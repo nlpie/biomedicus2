@@ -121,6 +121,9 @@ class AcronymVectorModel implements AcronymModel {
             senses = acronymExpansionsModel.getExpansions(acronym.toUpperCase());
         }
         if (senses == null) {
+            senses = acronymExpansionsModel.getExpansions(acronym.replace(".", ""));
+        }
+        if (senses == null) {
             senses = acronymExpansionsModel.getExpansions(acronym.toLowerCase());
         }
         if (senses == null && alignmentModel != null) {
@@ -161,7 +164,6 @@ class AcronymVectorModel implements AcronymModel {
         String winner = Acronyms.UNKNOWN;
 
         SparseVector vector = vectorSpaceDouble.vectorize(context, forThisIndex);
-        vector.multiply(vectorSpaceDouble.getIdf());
 
         // Loop through all possible senses for this acronym
         for (String sense : usableSenses) {
@@ -211,7 +213,7 @@ class AcronymVectorModel implements AcronymModel {
         String[] words = senseMap.keySet().toArray(new String[0]);
         stream.writeObject(words);
         for (String word : words) {
-            SparseVector vec = (SparseVector) senseMap.get(word);
+            SparseVector vec = senseMap.get(word);
             Map<Integer, Double> vecMap = vec.getVector();
             int size = vecMap.size();
             stream.write(ByteBuffer.allocate(4).putInt(size).array());
