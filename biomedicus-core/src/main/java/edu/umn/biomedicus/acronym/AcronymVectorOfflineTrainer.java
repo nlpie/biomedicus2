@@ -165,9 +165,11 @@ public class AcronymVectorOfflineTrainer {
             Map<String, Object> lookup = graph;
             for (int i = index; i < words.size(); i++) {
                 String thisWord = words.get(i).text();
-                longestEligiblePhrase = (String) lookup.getOrDefault(null, longestEligiblePhrase);
+                if (lookup.containsKey(null)) {
+                    longestEligiblePhrase = (String) lookup.get(null);
+                }
                 if (lookup.containsKey(thisWord)) {
-                    lookup = (Map) lookup.get(words.get(i));
+                    lookup = (Map) lookup.get(thisWord);
                 } else {
                     break;
                 }
