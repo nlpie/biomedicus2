@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @since 1.5.0
  */
 class AcronymProcessor implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymVectorModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcronymProcessor.class);
 
     /*
      * All part of speech tags to exclude from consideration as acronyms.
