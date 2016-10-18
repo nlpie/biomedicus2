@@ -19,38 +19,68 @@ package edu.umn.biomedicus.socialhistory;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SubstanceUsageDetector implements DocumentProcessor {
 
-    private final Map<SubstanceUsageKind, KindSubstanceUsageDetector> kindMap = createKindMap();
+    private final LabelIndex<TermToken> termTokenLabels;
+    private final TobaccoKindSubstanceUsageDetector tobaccoKindSubstanceUsageDetector;
+    private final AlcoholKindSubstanceUsageDetector alcoholKindSubstanceUsageDetector;
+    private final DrugKindSubstanceUsageDetector drugKindSubstanceUsageDetector;
+    private final Document document;
+    private Helpers helper = new Helpers();
+    private final Map<SubstanceUsageKind, KindSubstanceUsageDetector> kindMap;
+    private  LabelIndex<ParseToken> parseTokenLabels;
+
+    @Inject
+    public SubstanceUsageDetector(Document document, TobaccoKindSubstanceUsageDetector tobaccoKindSubstanceUsageDetector, AlcoholKindSubstanceUsageDetector alcoholKindSubstanceUsageDetector, DrugKindSubstanceUsageDetector drugKindSubstanceUsageDetector) {
+
+        termTokenLabels = document.getLabelIndex(TermToken.class);
+        this.document = document;
+        this.tobaccoKindSubstanceUsageDetector = tobaccoKindSubstanceUsageDetector;
+        this.alcoholKindSubstanceUsageDetector = alcoholKindSubstanceUsageDetector;
+        this.drugKindSubstanceUsageDetector = drugKindSubstanceUsageDetector;
+        parseTokenLabels = document.getLabelIndex(ParseToken.class);
+        kindMap = createKindMap();
+    }
+
+
+
+
 
     private Map<SubstanceUsageKind, KindSubstanceUsageDetector> createKindMap() {
+
         Map<SubstanceUsageKind, KindSubstanceUsageDetector> kindSubstanceUsageDetectorMap = new HashMap<>();
 
-        kindSubstanceUsageDetectorMap.put(SubstanceUsageKind.NICOTINE, new TobaccoKindSubstanceUsageDetector());
+        kindSubstanceUsageDetectorMap.put(SubstanceUsageKind.NICOTINE,  tobaccoKindSubstanceUsageDetector);
+        kindSubstanceUsageDetectorMap.put(SubstanceUsageKind.ALCOHOL,  alcoholKindSubstanceUsageDetector);
+        kindSubstanceUsageDetectorMap.put(SubstanceUsageKind.DRUG,  drugKindSubstanceUsageDetector);
+
 
         return kindSubstanceUsageDetectorMap;
     }
 
-    private final Document document;
 
-    @Inject
-    SubstanceUsageDetector(Document document) {
-        this.document = document;
-    }
+
 
     @Override
     public void process() throws BiomedicusException {
+
         for (Label<SocialHistoryCandidate> socialHistoryCandidateLabel : document.getLabelIndex(SocialHistoryCandidate.class)) {
+
             SubstanceUsageKind substanceUsageKind = socialHistoryCandidateLabel.value().getSubstanceUsageKind();
             kindMap.get(substanceUsageKind).processCandidate(document, socialHistoryCandidateLabel);
         }
+
     }
 }
