@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
+import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
 import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.jcas.JCas;
@@ -88,14 +88,15 @@ public class XmiInputFileAdapter implements InputFileAdapter {
         if (addDocumentId != null && addDocumentId) {
             JCas defaultView;
             try {
-                defaultView = cas.getJCas();
+                defaultView = cas.getJCas().getView(Biomedicus.ViewIdentifiers.SYSTEM);
             } catch (CASException e) {
                 throw new CollectionException(e);
             }
-
-            DocumentId clinicalNoteAnnotation = new DocumentId(defaultView);
-            clinicalNoteAnnotation.setDocumentId(path.getFileName().toString());
-            clinicalNoteAnnotation.addToIndexes();
+            DocumentId documentId = new DocumentId(defaultView);
+            String docIdString = path.getFileName().toString();
+            docIdString = docIdString.substring(0, docIdString.lastIndexOf('.'));
+            documentId.setDocumentId(docIdString);
+            documentId.addToIndexes();
         }
     }
 

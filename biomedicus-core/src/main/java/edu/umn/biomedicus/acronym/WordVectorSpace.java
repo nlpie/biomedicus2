@@ -17,6 +17,8 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.types.text.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
@@ -24,13 +26,16 @@ import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 /**
- * A vector space used to calculate word vectors from context
- * Used by the AcronymExpander
+ * A vector space used to calculate word vectors from context.
+ * Keeps a dictionary and frequency statistics.
  *
  * @author Greg Finley
  * @since 1.5.0
  */
-public class VectorSpaceDouble {
+public class WordVectorSpace {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordVectorSpace.class);
+
     /**
      * How quickly the sigmoid falls off. More of an idiosyncratic steepness parameter than a slope
      */
@@ -92,7 +97,7 @@ public class VectorSpaceDouble {
     /**
      * Default constructor, uses maximum distance of 9.
      */
-    public VectorSpaceDouble() {
+    public WordVectorSpace() {
         setMaxDist(9);
     }
 
@@ -217,11 +222,16 @@ public class VectorSpaceDouble {
      * For de-identification purposes: remove a single word from the dictionary
      *
      * @param word a string of the word to be removed
-     * @return the integer index of the word removed
+     * @return the integer index of the word removed (null if it was not present)
      */
-    public int removeWord(String word) {
-        System.out.println(word);
-        return dictionary.remove(Acronyms.standardContextForm(word));
+    public Integer removeWord(String word) {
+        LOGGER.info("removing word {}", word);
+        Integer wordInt = dictionary.remove(word);
+        if (wordInt != null) {
+            idf.set(wordInt, 0);
+            documentsPerTerm.remove(wordInt);
+        }
+        return wordInt;
     }
 
     /**
@@ -231,17 +241,17 @@ public class VectorSpaceDouble {
      * @return a Set of integers corresponding to the words removed
      */
     public Set<Integer> removeWordsExcept(Set<String> wordsToKeep) {
-        System.out.println(dictionary.size());
+        LOGGER.info("dictionary size before de-ID: {}" , dictionary.size());
         Set<Integer> indicesRemoved = new HashSet<>();
         Set<String> wordsInDictionary = new HashSet<>(dictionary.keySet());
         for (String word : wordsInDictionary) {
-            word = Acronyms.standardContextForm(word);
-            if (!wordsToKeep.contains(word)) {
+            String standardWord = Acronyms.standardContextForm(word);
+            if (!wordsToKeep.contains(standardWord)) {
                 indicesRemoved.add(removeWord(word));
             }
         }
-        System.out.println(indicesRemoved.size());
-        System.out.println(dictionary.size());
+        LOGGER.info("{} indices removed" , indicesRemoved.size());
+        LOGGER.info("dictionary size after de-ID: {}" , dictionary.size());
         return indicesRemoved;
     }
 

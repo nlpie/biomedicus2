@@ -46,7 +46,7 @@ public class AcronymVectorOfflineTrainer {
 
     final AcronymExpansionsModel aem;
     private Map<String, SparseVector> senseVectors;
-    VectorSpaceDouble vectorSpace;
+    WordVectorSpace vectorSpace;
     private Map<String, Integer> wordFrequency;
     private final Map<String, String> alternateFormOf;
 
@@ -198,7 +198,7 @@ public class AcronymVectorOfflineTrainer {
      */
     public void precountWords(String corpusPath) throws IOException {
 
-        vectorSpace = new VectorSpaceDouble();
+        vectorSpace = new WordVectorSpace();
         wordFrequency = new HashMap<>();
 
         Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(false));

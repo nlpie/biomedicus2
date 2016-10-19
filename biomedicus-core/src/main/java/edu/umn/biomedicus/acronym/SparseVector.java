@@ -132,6 +132,16 @@ public class SparseVector {
         return vector.getOrDefault(i, 0.);
     }
 
+    public double set(int ind, double val) {
+        double toReturn = get(ind);
+        if (val == 0) {
+            vector.remove(ind);
+        } else {
+            vector.put(ind, val);
+        }
+        return toReturn;
+    }
+
     @Override
     public String toString() {
         return vector.toString();

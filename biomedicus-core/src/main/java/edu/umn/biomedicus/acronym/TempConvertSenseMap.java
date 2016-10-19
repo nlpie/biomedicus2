@@ -15,15 +15,12 @@ import java.util.Map;
 public class TempConvertSenseMap {
 
     public static void main(String[] args) throws IOException {
-//        args = new String[] {"/Users/gpfinley/hermes2/home/gpfinley/expansions/old_pier_method_74_only/senseMap.ser",
-//        "/Users/gpfinley/hermes2/home/gpfinley/expansions/translate/senseMap.ser"};
-
         Path senseMapPath = Paths.get(args[0]);
         Path outPath = Paths.get(args[1]);
 
         saveNew(loadOld(senseMapPath), outPath);
 
-        Map map = loadNew(outPath);
+        loadNew(outPath);
     }
 
     static Map<String, SparseVector> loadNew(Path senseMapPath) throws IOException {
