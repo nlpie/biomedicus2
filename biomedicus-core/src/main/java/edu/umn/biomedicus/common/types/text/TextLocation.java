@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 /**
  * A template for a subsection of text, or a span. Indexes are in standard java string format, end exclusive, i.e. the
@@ -36,6 +38,11 @@ public interface TextLocation {
      */
     int getBegin();
 
+    /**
+     * Alias for getBegin();
+     *
+     * @return the index of the first character
+     */
     default int begin() {
         return getBegin();
     }
@@ -47,10 +54,20 @@ public interface TextLocation {
      */
     int getEnd();
 
+    /**
+     * The end offset of the text
+     *
+     * @return the index after the last character in the text.
+     */
     default int end() {
         return getEnd();
     }
 
+    /**
+     * Converts this text location
+     *
+     * @return
+     */
     default Span toSpan() {
         return new Span(getBegin(), getEnd());
     }
@@ -150,6 +167,23 @@ public interface TextLocation {
      */
     default IntStream indices() {
         return IntStream.range(getBegin(), getEnd());
+    }
+
+    /**
+     * Determines if one text location overlaps another.
+     *
+     * @param other
+     * @return
+     */
+    default boolean overlaps(TextLocation other) {
+        return other.getBegin() < getEnd() || other.getEnd() > getBegin();
+    }
+
+    default Span mergeOverlapping(TextLocation other) {
+        if (!overlaps(other)) {
+            throw new IllegalArgumentException("Text spans do not overlap");
+        }
+        return new Span(min(getBegin(), other.getBegin()), max(getEnd(), other.getEnd()));
     }
 
     /**

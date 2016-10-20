@@ -132,13 +132,7 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      *
      * @return an optional of the first label, empty if there are no labels in this label index.
      */
-    default Optional<Label<T>> firstOptionally() {
-        Iterator<Label<T>> iterator = iterator();
-        if (iterator.hasNext()) {
-            return Optional.of(iterator.next());
-        }
-        return Optional.empty();
-    }
+    Optional<Label<T>> firstOptionally();
 
     /**
      * Returns optionally a label with the specified text location.
@@ -146,13 +140,7 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      * @param textLocation the location
      * @return an optional of the label with the text location, empty if no label has that location
      */
-    default Optional<Label<T>> withTextLocation(TextLocation textLocation) {
-        Iterator<Label<T>> it = insideSpan(textLocation).filter(textLocation::spanEquals).iterator();
-        if (it.hasNext()) {
-            return Optional.of(it.next());
-        }
-        return Optional.empty();
-    }
+    Optional<Label<T>> withTextLocation(TextLocation textLocation);
 
     /**
      * Returns optionally a label with the specified span.
@@ -160,9 +148,15 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      * @param span the span
      * @return an optional of the label with the span, empty if no label has that span
      */
-    default Optional<Label<T>> withSpan(Span span) {
-        return withTextLocation(span);
-    }
+    Optional<Label<T>> withSpan(Span span);
+
+    /**
+     * Optionally return any label that matches a text location exactly.
+     *
+     * @param textLocation text location to find matches for
+     * @return an optional label that matches the text location.
+     */
+    Optional<Label<T>> matching(TextLocation textLocation);
 
 
     /**
@@ -170,28 +164,19 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      *
      * @return new list with all the labels in this label index.
      */
-    default List<Label<T>> all() {
-        return stream().collect(Collectors.toList());
-    }
+    List<Label<T>> all();
 
     /**
      * Stream of all the labels in this label index.
      *
      * @return stream
      */
-    default Stream<Label<T>> stream() {
-        Iterator<Label<T>> iterator = iterator();
-        Spliterator<Label<T>> spliterator = Spliterators.spliteratorUnknownSize(iterator,
-                ORDERED | DISTINCT | IMMUTABLE | NONNULL | SORTED);
-        return StreamSupport.stream(spliterator, false);
-    }
+    Stream<Label<T>> stream();
 
     /**
      * List of all the label values in this label index.
      *
      * @return list of all the label values
      */
-    default List<T> values() {
-        return stream().map(Label::value).collect(Collectors.toList());
-    }
+    List<T> values();
 }

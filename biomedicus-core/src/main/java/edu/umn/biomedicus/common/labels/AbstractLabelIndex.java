@@ -16,9 +16,16 @@
 
 package edu.umn.biomedicus.common.labels;
 
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static java.util.Spliterator.*;
 
 /**
  * Abstract class for a LabelIndex implementation. Provides sensible defaults for methods using an adapter pattern.
@@ -80,5 +87,51 @@ public abstract class AbstractLabelIndex<T> implements LabelIndex<T> {
     @Override
     public LabelIndex<T> filter(Predicate<Label<T>> predicate) {
         return new FilteredLabelIndex<>(this, predicate);
+    }
+
+    @Override
+    public Optional<Label<T>> withSpan(Span span) {
+        return matching(span);
+    }
+
+    @Override
+    public Optional<Label<T>> withTextLocation(TextLocation textLocation) {
+        return matching(textLocation);
+    }
+
+    @Override
+    public Optional<Label<T>> matching(TextLocation textLocation) {
+        Iterator<Label<T>> it = insideSpan(textLocation).filter(textLocation::spanEquals).iterator();
+        if (it.hasNext()) {
+            return Optional.of(it.next());
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Label<T>> all() {
+        return stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public Stream<Label<T>> stream() {
+        Iterator<Label<T>> iterator = iterator();
+        Spliterator<Label<T>> spliterator = Spliterators.spliteratorUnknownSize(iterator,
+                ORDERED | DISTINCT | IMMUTABLE | NONNULL | SORTED);
+        return StreamSupport.stream(spliterator, false);
+    }
+
+    @Override
+    public List<T> values() {
+        return stream().map(Label::value).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Label<T>> firstOptionally() {
+        Iterator<Label<T>> iterator = iterator();
+        if (iterator.hasNext()) {
+            return Optional.of(iterator.next());
+        }
+        return Optional.empty();
     }
 }

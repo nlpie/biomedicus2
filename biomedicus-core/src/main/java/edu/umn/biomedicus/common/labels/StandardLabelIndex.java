@@ -61,7 +61,7 @@ public class StandardLabelIndex<T> extends AbstractLabelIndex<T> {
     }
 
     @Override
-    public Optional<Label<T>> withTextLocation(TextLocation textLocation) {
+    public Optional<Label<T>> matching(TextLocation textLocation) {
         return Optional.ofNullable(tree.get(textLocation));
     }
 
