@@ -60,7 +60,7 @@ public final class FSIteratorAdapter<T> implements Iterator<T> {
      * @param mapper          a function which maps a UIMA annotation to an adapter class.
      */
     public FSIteratorAdapter(AnnotationIndex<AnnotationFS> annotationIndex, Function<AnnotationFS, T> mapper) {
-        this(annotationIndex.iterator(false), mapper);
+        this(annotationIndex.iterator(), mapper);
     }
 
     /**
