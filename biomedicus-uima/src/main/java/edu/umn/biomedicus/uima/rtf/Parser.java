@@ -127,14 +127,6 @@ public class Parser extends JCasAnnotator_ImplBase {
         }
 
         String documentText = originalDocument.getDocumentText();
-        StringReader reader = new StringReader(documentText);
-        RtfSource rtfSource = new ReaderRtfSource(reader);
-
-        try {
-            casRtfParser.parseFile(aJCas, rtfSource);
-        } catch (IOException | RtfReaderException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
 
         JCas systemView;
         try {
@@ -143,12 +135,33 @@ public class Parser extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
+        boolean isRtf;
+        if (documentText.indexOf("{\\rtf1") == 0) {
+            StringReader reader = new StringReader(documentText);
+            RtfSource rtfSource = new ReaderRtfSource(reader);
+
+            try {
+                casRtfParser.parseFile(aJCas, rtfSource);
+            } catch (IOException | RtfReaderException e) {
+                throw new AnalysisEngineProcessException(e);
+            }
+            isRtf = true;
+        } else {
+            systemView.setDocumentText(documentText);
+            isRtf = false;
+        }
+
         JFSIndexRepository jfsIndexRepository = originalDocument.getJFSIndexRepository();
 
         DocumentId originalDocId = (DocumentId) jfsIndexRepository.getAllIndexedFS(DocumentId.type).next();
         DocumentId copyDocId = new DocumentId(systemView);
         copyDocId.setDocumentId(originalDocId.getDocumentId());
         copyDocId.addToIndexes();
+
+        DocumentMetadata documentMetadata = new DocumentMetadata(systemView);
+        documentMetadata.setKey("isRtf");
+        documentMetadata.setValue(Boolean.toString(isRtf));
+        documentMetadata.addToIndexes();
 
         FSIterator<DocumentMetadata> documentMetadataIt = jfsIndexRepository.getAllIndexedFS(DocumentMetadata.type);
         while (documentMetadataIt.hasNext()) {

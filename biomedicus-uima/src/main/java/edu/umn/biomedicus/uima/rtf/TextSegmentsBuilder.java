@@ -44,23 +44,15 @@ class TextSegmentsBuilder {
     private final JCas jCas;
 
     /**
-     * Initializes with a collection of splits.
-     *
-     * @param splits the collection of splits.
-     * @param jCas   the view to build in.
-     */
-    TextSegmentsBuilder(Collection<Integer> splits, JCas jCas) {
-        this.splits = splits;
-        this.jCas = jCas;
-    }
-
-    /**
      * Initializes with an empty collection.
      *
      * @param jCas the view to build in.
      */
     TextSegmentsBuilder(JCas jCas) {
-        this(new ArrayList<>(), jCas);
+        this.splits = new ArrayList<>();
+        splits.add(0);
+        splits.add(jCas.getDocumentText().length());
+        this.jCas = jCas;
     }
 
     /**
