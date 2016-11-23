@@ -50,6 +50,8 @@ public final class NegationModificationDetector implements DocumentProcessor {
             .addLeftPhrase("negative")
             .addLeftPhrase("Without")
             .addLeftPhrase("without")
+            .addLeftPhrase("w/o")
+            .addLeftPhrase("W/O")
             .addLeftPhrase("Never")
             .addLeftPhrase("never")
             .addLeftPhrase("Unremarkable")
