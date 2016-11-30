@@ -128,13 +128,7 @@ public class Parser extends JCasAnnotator_ImplBase {
 
         String documentText = originalDocument.getDocumentText();
 
-        JCas systemView;
-        try {
-            systemView = aJCas.getView(targetViewName);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-
+        JCas targetView;
         boolean isRtf;
         if (documentText.indexOf("{\\rtf1") == 0) {
             StringReader reader = new StringReader(documentText);
@@ -146,19 +140,31 @@ public class Parser extends JCasAnnotator_ImplBase {
                 throw new AnalysisEngineProcessException(e);
             }
             isRtf = true;
+
+            try {
+                targetView = aJCas.getView(targetViewName);
+            } catch (CASException e) {
+                throw new AnalysisEngineProcessException(e);
+            }
         } else {
-            systemView.setDocumentText(documentText);
+            try {
+                targetView = aJCas.createView(targetViewName);
+            } catch (CASException e) {
+                throw new AnalysisEngineProcessException(e);
+            }
+
+            targetView.setDocumentText(documentText);
             isRtf = false;
         }
 
         JFSIndexRepository jfsIndexRepository = originalDocument.getJFSIndexRepository();
 
         DocumentId originalDocId = (DocumentId) jfsIndexRepository.getAllIndexedFS(DocumentId.type).next();
-        DocumentId copyDocId = new DocumentId(systemView);
+        DocumentId copyDocId = new DocumentId(targetView);
         copyDocId.setDocumentId(originalDocId.getDocumentId());
         copyDocId.addToIndexes();
 
-        DocumentMetadata documentMetadata = new DocumentMetadata(systemView);
+        DocumentMetadata documentMetadata = new DocumentMetadata(targetView);
         documentMetadata.setKey("isRtf");
         documentMetadata.setValue(Boolean.toString(isRtf));
         documentMetadata.addToIndexes();
@@ -166,7 +172,7 @@ public class Parser extends JCasAnnotator_ImplBase {
         FSIterator<DocumentMetadata> documentMetadataIt = jfsIndexRepository.getAllIndexedFS(DocumentMetadata.type);
         while (documentMetadataIt.hasNext()) {
             DocumentMetadata origDocMeta = documentMetadataIt.next();
-            DocumentMetadata copyDocMeta = new DocumentMetadata(systemView);
+            DocumentMetadata copyDocMeta = new DocumentMetadata(targetView);
             copyDocMeta.setKey(origDocMeta.getKey());
             copyDocMeta.setValue(origDocMeta.getValue());
             copyDocMeta.addToIndexes();
