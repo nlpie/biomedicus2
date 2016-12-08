@@ -529,13 +529,6 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
             List<Integer> usageTokens = new ArrayList<>();
             Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
 
-            //Check if the word is noun, depends on if "use" in "tobacco use" should be method
-//            if (usageTokens.size() == 1 ){
-//                Hashtable<Integer, String> posHash = ( Hashtable<Integer, String>) googleRelationHash.get("POS");
-//                if (posHash.get(usageTokens.get(0)).toString().matches(".*NN.*") ) continue;
-//
-//            }
-
             // use in "used to" is not a method
             if ( ( strSentence.substring(start, end).matches(".*(?i)use.*") && strSentence.substring(start, end).matches(".*(?i)to.*"))) {
                 continue;

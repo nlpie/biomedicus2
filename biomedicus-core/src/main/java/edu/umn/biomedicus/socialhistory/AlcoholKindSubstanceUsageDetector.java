@@ -889,6 +889,7 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
             Integer start = enumKey.nextElement();
             Integer end = spanHash.get(start);
             Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
+
             allElementsSpanHash.put(start,end);
             String strMatch = strSentence.substring(start,end);
 
@@ -907,13 +908,12 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
             String strDrugPattern = ".*(?i)(" + KindSubstanceUsageDetector.strDrugKeywords + ").*";
             String strTobaccoPattern = ".*(?i)(" + KindSubstanceUsageDetector.strTobaccoKeywords + ").*";
+            String strAlcoholPattern = ".*(?i)(" + KindSubstanceUsageDetector.strAlcoholKeywords + ").*";
 
             if (!strSentence.toString().matches(strDrugPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
                 SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.AMOUNT, SubstanceUsageKind.ALCOHOL)).label(substanceUsageSpan);
             }
-
-            String strAlcoholPattern = ".*(?i)(" + KindSubstanceUsageDetector.strAlcoholKeywords + ").*";
-            if (strMatch.toString().matches(strAlcoholPattern)){
+            else if (strMatch.toString().matches(strAlcoholPattern)){
                 SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.AMOUNT, SubstanceUsageKind.ALCOHOL)).label(substanceUsageSpan);
             }
             // Check if ancesters of all matched tokens related to alcohol
