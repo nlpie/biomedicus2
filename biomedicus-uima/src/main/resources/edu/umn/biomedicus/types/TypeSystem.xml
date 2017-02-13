@@ -246,6 +246,14 @@
                     <name>negated</name>
                     <rangeTypeName>uima.cas.Boolean</rangeTypeName>
                 </featureDescription>
+                <featureDescription>
+                    <name>historical</name>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>probable</name>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
             </features>
         </typeDescription>
         
