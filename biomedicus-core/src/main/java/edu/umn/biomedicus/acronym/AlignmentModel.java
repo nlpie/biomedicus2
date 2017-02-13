@@ -27,10 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,18 +45,46 @@ import java.util.stream.Collectors;
  */
 @ProvidedBy(AlignmentModel.Loader.class)
 class AlignmentModel implements Serializable {
+
+    public static void main(String[] args) throws IOException {
+        Path longformsPath = Paths.get(args[0]);
+        Path outPath = Paths.get(args[1]);
+        boolean caseSensitive = args.length > 2;
+        create(longformsPath, caseSensitive).serialize(outPath);
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AlignmentModel.class);
 
     private List<String> longforms;
-
-    /*
-     * Defaults to false, which is the recommended value
-     */
     private boolean caseSensitive;
+    private transient Map<String, Double> cachedScores = new HashMap<>();
+
+    public List<String> getLongforms() {
+        return longforms;
+    }
+
+    public void setLongforms(List<String> longforms) {
+        this.longforms = longforms;
+    }
+
+    public boolean isCaseSensitive() {
+        return caseSensitive;
+    }
+
+    public void setCaseSensitive(boolean caseSensitive) {
+        this.caseSensitive = caseSensitive;
+    }
 
     private AlignmentModel(List<String> longforms, boolean caseSensitive) {
         this.longforms = longforms;
         this.caseSensitive = caseSensitive;
+    }
+
+    public void serialize(Path outPath) throws IOException {
+        Yaml yaml = YamlSerialization.createYaml();
+        FileWriter writer = new FileWriter(outPath.toFile());
+        yaml.dump(this, writer);
+        writer.close();
     }
 
     public static AlignmentModel create(Path longformsPath, boolean caseSensitive) throws IOException {

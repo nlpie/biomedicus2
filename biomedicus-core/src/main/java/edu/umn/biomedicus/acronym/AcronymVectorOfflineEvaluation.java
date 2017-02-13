@@ -11,8 +11,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Temporary class. Used to evaluate acronym expansion without all the other biomedicus processing (incl. tokenization!)
- *
+ * Evaluate acronym expansion on the CASI data set without other biomedicus processing.
+ * Used for quick-and-dirty checking of a model.
  *
  * Created by gpfinley on 10/4/16.
  */
@@ -118,6 +118,7 @@ public class AcronymVectorOfflineEvaluation {
     static void printConfusionByAcronym(Map<String, List<Result>> resultsByAcronym) {
         for(Map.Entry<String, List<Result>> e : resultsByAcronym.entrySet()) {
             String acronym = e.getKey();
+            System.out.println(acronym);
             List<Result> results = e.getValue();
             Set<String> senses = new HashSet<>();
             results.forEach(result -> {
