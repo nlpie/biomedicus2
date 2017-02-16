@@ -30,32 +30,10 @@ import java.util.concurrent.Semaphore;
  * @since 1.5.0
  */
 public abstract class DataLoader<T> implements Provider<T>, EagerLoadable {
-    /**
-     * Prevents the data from being loaded more than once.
-     */
-    private final Semaphore loadOnce = new Semaphore(1);
+    private transient final Object lock = new Object();
+    private transient volatile boolean loaded = false;
+    @Nullable private transient volatile T instance;
 
-    /**
-     * Lets additional threads that attempt to load during loading wait for the data to finish loading.
-     */
-    private final CountDownLatch waitTilLoaded = new CountDownLatch(1);
-
-    /**
-     * true when the object has been loaded, single check to prevent double semaphore + latch check.
-     */
-    private boolean loaded = false;
-
-    /**
-     * The singleton instance of the object to provide.
-     */
-    @Nullable
-    private T instance;
-
-    /**
-     * Loads the data before it is actually needed.
-     *
-     * @throws BiomedicusException if there is an issue loading the object.
-     */
     @Override
     public void eagerLoad() throws BiomedicusException {
         if (!loaded) {
@@ -72,28 +50,24 @@ public abstract class DataLoader<T> implements Provider<T>, EagerLoadable {
                 throw new IllegalStateException(e);
             }
         }
-        if (instance == null) {
-            throw new IllegalStateException("Loaded object was null");
-        }
         return instance;
     }
 
     private void load() throws BiomedicusException {
-        if (loadOnce.tryAcquire()) {
-            instance = loadModel();
-            loaded = true;
-            waitTilLoaded.countDown();
-        } else {
-            try {
-                waitTilLoaded.await();
-            } catch (InterruptedException e) {
-                throw new BiomedicusException(e);
+        synchronized (lock) {
+            if (!loaded) {
+                instance = loadModel();
+                if (instance == null) {
+                    throw new IllegalStateException("Loader returned null");
+                }
+                loaded = true;
             }
         }
     }
 
     /**
-     * To be implemented by subclasses, performs the initialization of the object.
+     * To be implemented by subclasses, performs the initialization of the
+     * object.
      *
      * @return full initialized object.
      * @throws BiomedicusException if there is an issue loading the object

@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
-
-import edu.umn.biomedicus.exc.BiomedicusException;
+package edu.umn.biomedicus.common.collect;
 
 /**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
  *
- * @since 1.6.0
  */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+public class IntInt {
+    private final int first;
+    private final int second;
+
+    public IntInt(int first, int second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    public int getFirst() {
+        return first;
+    }
+
+    public int getSecond() {
+        return second;
+    }
 }
