@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.collect.OrderedSpanMap;
+import edu.umn.biomedicus.common.collect.SpansMap;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
 import java.util.Iterator;
@@ -25,107 +26,88 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class StandardLabelIndex<T> extends AbstractLabelIndex<T> {
-    private final OrderedSpanMap<Label<T>> tree;
-
+    private final SpansMap<T> tree;
     private final Predicate<Label<T>> filter;
 
-    private final boolean ascending;
-
-    private final boolean sizeDecreasing;
-
-    public StandardLabelIndex(OrderedSpanMap<Label<T>> tree, Predicate<Label<T>> filter, boolean ascending, boolean sizeDecreasing) {
+    public StandardLabelIndex(SpansMap<T> tree,
+                              Predicate<Label<T>> filter) {
         this.tree = tree;
         this.filter = filter;
-        this.ascending = ascending;
-        this.sizeDecreasing = sizeDecreasing;
     }
 
     public StandardLabelIndex(Iterable<Label<T>> labels) {
-        tree = new OrderedSpanMap<>();
+        OrderedSpanMap<T> orderedSpanMap = new OrderedSpanMap<>();
         filter = (label) -> true;
-        ascending = true;
-        sizeDecreasing = true;
         for (Label<T> label : labels) {
-            tree.put(label, label);
+            orderedSpanMap.put(label, label.value());
         }
+        tree = orderedSpanMap;
     }
 
     @Override
     public LabelIndex<T> containing(TextLocation textLocation) {
-        return new StandardLabelIndex<>(tree.containing(textLocation), filter, ascending, sizeDecreasing);
+        return new StandardLabelIndex<>(tree.containing(textLocation), filter);
     }
 
     @Override
     public LabelIndex<T> insideSpan(TextLocation textLocation) {
-        return new StandardLabelIndex<>(tree.insideSpan(textLocation), filter, ascending, sizeDecreasing);
+        return new StandardLabelIndex<>(tree.insideSpan(textLocation), filter);
     }
 
     @Override
     public Optional<Label<T>> matching(TextLocation textLocation) {
-        return Optional.ofNullable(tree.get(textLocation));
+        return tree.get(textLocation)
+                .map(t -> new Label<>(textLocation.toSpan(), t));
     }
 
     @Override
     public LabelIndex<T> leftwardsFrom(TextLocation span) {
-        return new StandardLabelIndex<>(tree.toTheLeftOf(span), filter, false, sizeDecreasing);
+        return new StandardLabelIndex<>(tree.toTheLeftOf(span).descendingBegin()
+                .descendingEnd(), filter);
     }
 
     @Override
     public LabelIndex<T> rightwardsFrom(TextLocation span) {
-        return new StandardLabelIndex<>(tree.toTheRightOf(span), filter, true, false);
+        return new StandardLabelIndex<>(tree.toTheRightOf(span), filter);
     }
 
     @Override
     public LabelIndex<T> reverse() {
-        return new StandardLabelIndex<>(tree, filter, !ascending, sizeDecreasing);
+        return new StandardLabelIndex<>(tree, filter);
     }
 
     @Override
     public LabelIndex<T> ascendingBegin() {
-        return new StandardLabelIndex<>(tree, filter, true, sizeDecreasing);
+        return new StandardLabelIndex<>(tree.ascendingBegin(), filter);
     }
 
     @Override
     public LabelIndex<T> descendingBegin() {
-        return new StandardLabelIndex<>(tree, filter, false, sizeDecreasing);
+        return new StandardLabelIndex<>(tree.descendingBegin(), filter);
     }
 
     @Override
-    public LabelIndex<T> increasingSize() {
-        return new StandardLabelIndex<>(tree, filter, ascending, false);
+    public LabelIndex<T> ascendingEnd() {
+        return new StandardLabelIndex<>(tree.descendingBegin(), filter);
     }
 
     @Override
-    public LabelIndex<T> decreasingSize() {
-        return new StandardLabelIndex<>(tree, filter, ascending, true);
+    public LabelIndex<T> descendingEnd() {
+        return new StandardLabelIndex<>(tree.descendingBegin(), filter);
     }
 
     @Override
     public LabelIndex<T> filter(Predicate<Label<T>> predicate) {
-        return new StandardLabelIndex<>(tree, filter.and(predicate), ascending, sizeDecreasing);
+        return new StandardLabelIndex<>(tree, filter.and(predicate));
     }
 
     @Override
     public Iterator<Label<T>> iterator() {
-        return stream().iterator();
+        return tree.entries().iterator();
     }
 
     @Override
     public Stream<Label<T>> stream() {
-        Stream<Label<T>> labelStream;
-        if (ascending) {
-            if (sizeDecreasing) {
-                labelStream = tree.ascendingStartDecreasingSizeValuesStream();
-            } else {
-                labelStream = tree.ascendingStartIncreasingSizeValueStream();
-            }
-        } else {
-            if (sizeDecreasing) {
-                labelStream = tree.descendingStartDecreasingSizeValuesStream();
-            } else {
-                labelStream = tree.descendingStartIncreasingSizeValuesStream();
-            }
-        }
-        return labelStream.filter(filter);
+        return tree.entries().stream().filter(filter);
     }
 }

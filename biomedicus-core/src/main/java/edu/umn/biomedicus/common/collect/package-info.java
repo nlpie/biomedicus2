@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.collect;
-
 /**
  *
  */
-public class IntInt {
-    private final int first;
-    private final int second;
+@ReturnTypesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+package edu.umn.biomedicus.common.collect;
 
-    public IntInt(int first, int second) {
-        this.first = first;
-        this.second = second;
-    }
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
 
-    public int getFirst() {
-        return first;
-    }
-
-    public int getSecond() {
-        return second;
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;
