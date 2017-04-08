@@ -19,6 +19,7 @@ package edu.umn.biomedicus.common.labels;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
 
+import javax.annotation.Nullable;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -59,13 +60,17 @@ public class Searcher {
     }
 
     static class Return {
-        final Node head;
-        final Node demarc;
-        final Node tail;
+        @Nullable final Node head;
+        @Nullable final Node demarc;
+        @Nullable final Node tail;
 
-        Return(Node head,
-               Node demarc,
-               Node tail) {
+        Return(@Nullable Node single) {
+            head = demarc = tail = single;
+        }
+
+        Return(@Nullable Node head,
+               @Nullable Node demarc,
+               @Nullable Node tail) {
             this.head = head;
             this.demarc = demarc;
             this.tail = tail;
@@ -162,7 +167,7 @@ public class Searcher {
                 switch (ch) {
                     case '(':
                     case '[':
-                        Return group = groupLike();
+                        Return group = ch == '(' ? group() : pinning();
                         node = group.head;
                         if (node == null) {
                             continue;
@@ -183,7 +188,7 @@ public class Searcher {
                     case '&':
                         break LOOP;
                     default:
-                        node = type();
+                        node = type(false);
                         break;
                 }
 
@@ -206,36 +211,60 @@ public class Searcher {
             return new Return(head, demarc, tail);
         }
 
-        private Return groupLike() {
-            if (read() == '(') {
-                return group();
-            } else {
-                // ch is '['
-                return pinning();
-            }
-        }
-
         private Return group() {
             Node head = null;
             Node tail = null;
+
+            int ch = next();
+            if (ch == '?') {
+                ch = skip();
+                switch (ch) {
+                    case ':':
+                    case '=':
+                    case '!':
+                    case '>':
+                    case '<':
+                        default:
+                }
+            }
         }
 
         private Return pinning() {
+            int ch = readPastWhitespace();
+            boolean seek = false;
+            if (ch == '?') {
+                seek = true;
+                read();
+            }
 
+            Node pinned = type(seek);
+            InnerConditions innerConditions = null;
+
+            while (true) {
+                Return expr = alts(TAIL);
+                if (expr.head == null) {
+                    break;
+                }
+                if (innerConditions == null) {
+                    innerConditions = new InnerConditions(localsCount++);
+                }
+                innerConditions.addCondition(expr.head);
+                if (!consume('&')) {
+                    break;
+                }
+            }
+
+            if (innerConditions == null) {
+                return new Return(pinned);
+            } else {
+                pinned.next = innerConditions;
+                return new Return(pinned, innerConditions, innerConditions);
+            }
         }
 
-        private Return intersection(Node end) {
-
-        }
-
-        private Node type() {
+        private Node type(boolean seek) {
             TypeMatch node;
             int ch = read();
-            boolean seek = false;
-            if (ch == '>') {
-                seek = true;
-                ch = read();
-            }
             if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
                 throw error("Illegal identifier");
 
@@ -450,13 +479,23 @@ public class Searcher {
             return arr[index];
         }
 
+        int skip() {
+            int ch = arr[index + 1];
+            index += 2;
+            return ch;
+        }
+
         void unwind() {
             index--;
         }
 
+        int next() {
+            return arr[++index];
+        }
+
         boolean consume(int ch) {
-            if (peek() == ch) {
-                read();
+            if (arr[index] == ch) {
+                index = index + 1;
                 return true;
             } else {
                 return false;
@@ -551,18 +590,43 @@ public class Searcher {
         }
     }
 
-    static class Intersection extends Node {
+    static class InnerConditions extends Node {
         final int localAddr;
         Node[] conditions = new Node[2];
         int size = 0;
 
-        Intersection(int localAddr) {
+        InnerConditions(int localAddr) {
             this.localAddr = localAddr;
         }
 
         @Override
         public boolean search(DefaultSearch search) {
-            return false;
+            int begin = search.begin;
+            int end = search.end;
+            int limit = search.limit;
+
+            for (Node condition : conditions) {
+                search.begin = search.end = begin;
+                search.limit = end;
+                if (!condition.search(search)) {
+                    return false;
+                }
+            }
+
+            search.begin = begin;
+            search.end = end;
+            search.limit = limit;
+
+            return next.search(search);
+        }
+
+        void addCondition(Node node) {
+            if (conditions.length == size) {
+                Node[] tmp = new Node[conditions.length * 2];
+                System.arraycopy(conditions, 0, tmp, 0, size);
+                conditions = tmp;
+            }
+            conditions[size++] = node;
         }
     }
 
@@ -600,6 +664,7 @@ public class Searcher {
             for (Label<?> label : labelIndex) {
                 if (!propertiesMatch(search, label)) continue;
                 Span span = label.toSpan();
+                search.begin = span.getBegin();
                 search.end = span.getEnd();
                 if (group != -1) {
                     search.groups[group * 2] = label.getBegin();
