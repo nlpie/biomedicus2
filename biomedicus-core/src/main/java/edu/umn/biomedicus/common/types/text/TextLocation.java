@@ -19,9 +19,7 @@ package edu.umn.biomedicus.common.types.text;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 
 /**
  * A template for a subsection of text, or a span. Indexes are in standard java string format, end exclusive, i.e. the
@@ -89,7 +87,8 @@ public interface TextLocation {
      * @return the relativized span
      */
     default Span relativize(TextLocation other) {
-        return new Span(relativize(other.getBegin()), relativize(other.getEnd()));
+        return new Span(relativize(other.getBegin()),
+                relativize(other.getEnd()));
     }
 
     /**
@@ -109,7 +108,8 @@ public interface TextLocation {
      * @return the derelativized span
      */
     default Span derelativize(TextLocation other) {
-        return new Span(derelativize(other.getBegin()), derelativize(other.getEnd()));
+        return new Span(derelativize(other.getBegin()),
+                derelativize(other.getEnd()));
     }
 
     /**
@@ -183,7 +183,8 @@ public interface TextLocation {
         if (!overlaps(other)) {
             throw new IllegalArgumentException("Text spans do not overlap");
         }
-        return new Span(min(getBegin(), other.getBegin()), max(getEnd(), other.getEnd()));
+        return new Span(min(getBegin(), other.getBegin()),
+                max(getEnd(), other.getEnd()));
     }
 
     /**
@@ -199,6 +200,19 @@ public interface TextLocation {
         // firstInsert will be negative if the first character is not in the array.
         // if every character is in the array than the distance between firstInsert and lastInsert will be equal to the
         // annotation length - 1, otherwise less.
-        return firstInsert >= 0 && abs(lastInsert) - abs(firstInsert) == length() - 1;
+        return firstInsert >= 0
+                && abs(lastInsert) - abs(firstInsert) == length() - 1;
+    }
+
+    /**
+     * Returns the span that is everything after this span up to the end of the
+     * provided span.
+     *
+     * @param other the span to include up to the end
+     * @return new span from the end of this span up to the end of the other
+     * span
+     */
+    default Span upToInclusive(Span other) {
+        return new Span(getEnd(), other.getEnd());
     }
 }

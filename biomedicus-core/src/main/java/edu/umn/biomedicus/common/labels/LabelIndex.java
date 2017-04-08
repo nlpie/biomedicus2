@@ -136,7 +136,7 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      *
      * @return an optional of the first label, empty if there are no labels in this label index.
      */
-    Optional<Label<T>> firstOptionally();
+    Optional<Label<T>> first();
 
     /**
      * Returns optionally a label with the specified text location.

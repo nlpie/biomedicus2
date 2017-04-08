@@ -127,7 +127,7 @@ public abstract class AbstractLabelIndex<T> implements LabelIndex<T> {
     }
 
     @Override
-    public Optional<Label<T>> firstOptionally() {
+    public Optional<Label<T>> first() {
         Iterator<Label<T>> iterator = iterator();
         if (iterator.hasNext()) {
             return Optional.of(iterator.next());
