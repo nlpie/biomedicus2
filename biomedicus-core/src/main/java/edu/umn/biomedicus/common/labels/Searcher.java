@@ -60,41 +60,43 @@ public class Searcher {
     }
 
     /**
-     * Represents a return value of a chain with a node which demarcates the proper begin value for that chain.
-     */
-    static class Demarcated {
-        @Nullable final Node head;
-        @Nullable final Node demarc;
-        @Nullable final Node tail;
-
-        Demarcated(@Nullable Node single) {
-            head = demarc = tail = single;
-        }
-
-        Demarcated(@Nullable Node head,
-                   @Nullable Node demarc,
-                   @Nullable Node tail) {
-            this.head = head;
-            this.demarc = demarc;
-            this.tail = tail;
-        }
-    }
-
-    /**
      * Represents a return value of an atomic chain with a head and a tail. The begin value after the tail is the proper
      * matching begin value for the entire chain.
      */
     static class Chain {
-        @Nullable final Node head;
-        @Nullable final Node tail;
+        final Node head;
+        final Node tail;
 
-        Chain(@Nullable Node single) {
+        Chain(Node single) {
             head = tail = single;
         }
 
-        Chain(@Nullable Node head, @Nullable Node tail) {
+        Chain(Node head, Node tail) {
             this.head = head;
             this.tail = tail;
+        }
+    }
+
+    static class Save {
+        final int begin;
+        final int end;
+        final int limit;
+
+        Save(DefaultSearch search) {
+            begin = search.lastBegin;
+            end = search.lastEnd;
+            limit = search.limit;
+        }
+
+        void apply(DefaultSearch search) {
+            search.lastBegin = begin;
+            search.lastEnd = end;
+            search.limit = limit;
+        }
+
+        void pin(DefaultSearch search) {
+            search.limit = search.lastEnd;
+            search.lastBegin = search.lastEnd = begin;
         }
     }
 
@@ -117,68 +119,34 @@ public class Searcher {
         }
 
         private Searcher compile() {
-            Demarcated expr = alts();
-            expr.tail.next = ACCEPT;
-            Node root = expr.head;
-            return new Searcher(root, groupIndex, numberBranches, groupNames);
+            return new Searcher(alts(ACCEPT), groupIndex,
+                    numberBranches, groupNames);
         }
 
-        private Demarcated alts() {
-            Node prev = null;
-            Node firstDemarc = null;
-            Node firstTail = null;
-            Branch branch = null;
-            Node join = null;
-
-            while (true) {
-                Demarcated sequence = seqs();
-                if (prev == null) {
-                    prev = sequence.head;
-                    firstDemarc = sequence.demarc;
-                    firstTail = sequence.tail;
-                } else {
-                    if (join == null) {
-                        join = new Noop();
-                    }
-                    if (prev == branch) {
-                        // branch has been created already, add new path
-                        branch.add(sequence.head);
-                    } else {
-                        // created new branch, need to create branch and add first alternation
-                        branch = new Branch(join);
-                        if (firstTail == null) {
-                            // first path is an empty path
-                            branch.optional = true;
-                        } else {
-                            // add first path to branch
-                            Node newFirstTail = loadBegin(firstDemarc, firstTail);
-                            newFirstTail.next = join;
-                            branch.add(prev);
-                        }
-                        prev = branch;
-                    }
-                    if (sequence.head == null) {
-                        branch.optional = true;
-                    } else {
-                        // insert the node responsible for saving the begin
-                        Node newTail = loadBegin(sequence.demarc, sequence.tail);
-                        newTail.next = join;
-                    }
-                }
-                if (peek() != '|') {
-                    if (join == null) {
-                        return sequence;
-                    } else {
-                        return new Demarcated(prev, join, join);
-                    }
-                }
-                read();
+        private Node alts(Node end) {
+            Chain concat = concat(end);
+            peekPastWhiteSpace();
+            if (!accept('|')) {
+                return concat.head;
             }
+            Node join = new Noop();
+            Branch branch = new Branch();
+            if (concat.head == end) {
+                branch.add(join);
+            } else {
+                branch.add(concat.head);
+                concat.tail.next = join;
+            }
+            do {
+                Chain next = concat(join);
+                branch.add(next.head);
+                peekPastWhiteSpace();
+            } while (accept('|'));
+            return branch;
         }
 
-        private Demarcated seqs() {
+        private Chain concat(Node end) {
             Node head = null;
-            Node demarc = null;
             Node tail = null;
             Node node;
             LOOP:
@@ -195,13 +163,10 @@ public class Searcher {
                         if (head == null) {
                             head = node;
                         } else {
-                            if (demarc == null) {
-                                demarc = tail;
-                            }
                             tail.next = node;
                         }
                         tail = chain.tail;
-                        break;
+                        continue;
                     case '|':
                     case ')':
                     case ']':
@@ -215,26 +180,42 @@ public class Searcher {
                 node = trailing(node);
 
                 if (head == null) {
-                    head = demarc = tail = node;
+                    head = tail = node;
                 } else {
-                    if (demarc == null) {
-                        demarc = node;
-                    }
                     tail.next = node;
                     tail = node;
                 }
             }
             if (head == null) {
-                return new Demarcated(null);
+                return new Chain(end, end);
             }
-            return new Demarcated(head, demarc, tail);
+            if (head != tail) {
+                Node tmp = head.next;
+                int local = localsCount++;
+                head.next = new SaveBegin(local);
+                head.next.next = tmp;
+
+                LoadBegin loadBegin = new LoadBegin(local);
+                tail = tail.next = loadBegin;
+            }
+
+            return new Chain(head, tail);
+        }
+
+        private Node trailing(Node node, boolean group) {
+
+            int ch = peek();
+            switch (ch) {
+                case '?':
+                    ch = next();
+            }
+
+            return null;
         }
 
         private Chain group() {
-            Node head = null;
-            Node tail = null;
-
-            Demarcated inner;
+            Node head;
+            Node tail;
 
             int ch = next();
             if (ch == '?') {
@@ -242,8 +223,8 @@ public class Searcher {
                 switch (ch) {
                     case '=':
                     case '!':
-                        inner = alts();
-                        loadBegin(inner.head, inner.tail).next = new GroupTail(groupIndex);
+                        tail = new GroupTail(groupIndex);
+                        head = alts(tail);
                         groupIndex = groupIndex + 2;
                         if (ch == '=') {
                             head = tail = new PositiveLookahead(head);
@@ -252,35 +233,38 @@ public class Searcher {
                         }
                         break;
                     case '>':
-                        inner = alts();
-                        loadBegin(inner.head, inner.tail).next = new GroupTail(groupIndex);
+                        tail = new GroupTail(groupIndex);
+                        head = alts(tail);
                         groupIndex = groupIndex + 2;
-                        head = tail = new Independent(inner.head);
+                        head = tail = new Independent(head);
                         break;
                     case '<':
                         String name = readGroupName();
                         if (groupNames.containsKey(name)) {
-                            throw error("Duplicate capturing group name: \"" + name + "\"");
+                            throw error("Duplicate capturing group name: \""
+                                    + name + "\"");
                         }
-                        inner = alts();
-                        head = inner.head;
-                        tail = loadBegin(inner.head, inner.tail);
-                        tail.next = new GroupTail(groupIndex);
+                        tail = new GroupTail(groupIndex);
+                        head = alts(tail);
                         groupNames.put(name, groupIndex);
                         groupIndex = groupIndex + 2;
-                        default:
+                        break;
+                    default:
+                        unread();
+                        tail = new GroupTail(groupIndex);
+                        head = alts(tail);
+                        tail.next = new GroupTail(groupIndex);
+                        groupIndex = groupIndex + 2;
+                        break;
                 }
             } else {
-                inner = alts();
-                head = inner.head;
-                tail = loadBegin(inner.head, inner.tail);
+                tail = new GroupTail(groupIndex);
+                head = alts(tail);
                 tail.next = new GroupTail(groupIndex);
                 groupIndex = groupIndex + 2;
             }
             peekPastWhiteSpace();
-            if (!consume(')')) {
-                throw error("Unclosed group");
-            }
+            expect(')', "Unclosed group");
 
             return new Chain(head, tail);
         }
@@ -290,7 +274,8 @@ public class Searcher {
             int ch;
             while ((ch = read()) != '>') {
                 if (!Character.isAlphabetic(ch) && !Character.isDigit(ch)) {
-                    throw error("Non alphanumeric character in capturing group name");
+                    throw error(
+                            "Non alphanumeric character in capturing group name");
                 }
                 stringBuilder.append(ch);
             }
@@ -311,28 +296,22 @@ public class Searcher {
             }
 
             Node pinned = type(seek);
-            InnerConditions innerConditions = null;
 
-            while (true) {
-                Demarcated expr = alts();
-                if (expr.head == null) {
-                    break;
-                }
-                if (innerConditions == null) {
-                    innerConditions = new InnerConditions(localsCount++);
-                }
-                innerConditions.addCondition(expr.head);
-                if (!consume('&')) {
-                    break;
-                }
-            }
-
-            if (innerConditions == null) {
+            if (accept(']')) {
                 return new Chain(pinned);
-            } else {
-                pinned.next = innerConditions;
-                return new Chain(pinned, innerConditions);
             }
+
+            InnerConditions innerConditions = new InnerConditions(
+                    localsCount++);
+
+            do {
+                Node inner = alts(ACCEPT);
+                innerConditions.addCondition(inner);
+                peekPastWhiteSpace();
+            } while (accept('&'));
+
+            pinned.next = innerConditions;
+            return new Chain(pinned, innerConditions);
         }
 
         private Node type(boolean seek) {
@@ -379,24 +358,6 @@ public class Searcher {
                 } while (true);
             }
             return node;
-        }
-
-        Node loadBegin(Node demarc, Node tail) {
-            if (demarc == tail) {
-                // we don't need to save and load
-                return tail;
-            }
-
-            SaveBegin save = new SaveBegin(localsCount);
-            LoadBegin load = new LoadBegin(localsCount++);
-
-            save.next = demarc.next;
-            demarc.next = save;
-
-            load.next = tail.next;
-            tail.next = load;
-
-            return load;
         }
 
         String readAlphanumeric() {
@@ -553,7 +514,7 @@ public class Searcher {
             return ch;
         }
 
-        void unwind() {
+        void unread() {
             index--;
         }
 
@@ -561,13 +522,20 @@ public class Searcher {
             return arr[++index];
         }
 
-        boolean consume(int ch) {
+        boolean accept(int ch) {
             if (arr[index] == ch) {
                 index = index + 1;
                 return true;
-            } else {
-                return false;
             }
+            return false;
+        }
+
+        boolean expect(int ch, String msg) {
+            if (arr[index] != ch) {
+                throw error(msg);
+            }
+            index = index + 1;
+            return true;
         }
 
         boolean consumePastWhiteSpace(int ch) {
@@ -591,6 +559,11 @@ public class Searcher {
         boolean search(DefaultSearch search) {
             return true;
         }
+
+        @Nullable
+        Class<?> topType() {
+            return null;
+        }
     }
 
     static class SaveBegin extends Node {
@@ -602,7 +575,7 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            search.locals[local] = search.begin;
+            search.locals[local] = search.lastBegin;
             return next.search(search);
         }
     }
@@ -616,7 +589,7 @@ public class Searcher {
 
         @Override
         public boolean search(DefaultSearch search) {
-            search.begin = search.locals[local];
+            search.lastBegin = search.locals[local];
             return next.search(search);
         }
     }
@@ -630,8 +603,8 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            search.groups[groupIndex] = search.begin;
-            search.groups[groupIndex + 1] = search.end;
+            search.groups[groupIndex] = search.lastBegin;
+            search.groups[groupIndex + 1] = search.lastEnd;
             return next.search(search);
         }
     }
@@ -639,12 +612,6 @@ public class Searcher {
     static class Branch extends Node {
         Node[] paths = new Node[2];
         int size = 0;
-        Node join;
-        boolean optional = false;
-
-        Branch(Node branchJoin) {
-            join = branchJoin;
-        }
 
         void add(Node node) {
             if (size >= paths.length) {
@@ -657,12 +624,16 @@ public class Searcher {
 
         @Override
         public boolean search(DefaultSearch search) {
+            int begin = search.lastBegin;
+            int end = search.lastEnd;
             for (int i = 0; i < size; i++) {
+                search.lastBegin = begin;
+                search.lastEnd = end;
                 if (paths[i].search(search)) {
                     return true;
                 }
             }
-            return optional && join.search(search);
+            return false;
         }
     }
 
@@ -682,14 +653,13 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            int begin = search.begin;
-            int end = search.end;
-
+            int begin = search.lastBegin;
+            int end = search.lastEnd;
             if (!condition.search(search)) {
                 return false;
             }
-            search.begin = begin;
-            search.end = end;
+            search.lastBegin = begin;
+            search.lastEnd = end;
             return next.search(search);
         }
     }
@@ -703,14 +673,14 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            int begin = search.begin;
-            int end = search.end;
+            int begin = search.lastBegin;
+            int end = search.lastEnd;
 
             if (condition.search(search)) {
                 return false;
             }
-            search.begin = begin;
-            search.end = end;
+            search.lastBegin = begin;
+            search.lastEnd = end;
             return next.search(search);
         }
     }
@@ -737,7 +707,13 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            return node.search(search) && next.search(search) || next.search(search);
+            Save save = new Save(search);
+            if (node.search(search) && next.search(search)) {
+                return true;
+            }
+            save.apply(search);
+
+            return next.search(search);
         }
     }
 
@@ -750,7 +726,13 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            return next.search(search) || (node.search(search) && next.search(search));
+            Save save = new Save(search);
+            if (next.search(search)) {
+                return true;
+            }
+            save.apply(search);
+
+            return node.search(search) && next.search(search);
         }
     }
 
@@ -763,14 +745,59 @@ public class Searcher {
 
         @Override
         boolean search(DefaultSearch search) {
-            int origBegin = search.begin;
-            int origEnd = search.end;
+            Save save = new Save(search);
             if (!node.search(search)) {
-                search.begin = origBegin;
-                search.end = origEnd;
+                save.apply(search);
             }
             return next.search(search);
         }
+    }
+
+    static abstract class RecursiveLoop extends Node {
+        Node body;
+        final int countLocal;
+        final int beginLocal;
+        final int min, max;
+
+        RecursiveLoop(int countLocal, int beginLocal, int min, int max) {
+            this.countLocal = countLocal;
+            this.beginLocal = beginLocal;
+            this.min = min;
+            this.max = max;
+        }
+
+        abstract boolean searchLoop(Search search);
+    }
+
+    static class PossessiveLoop extends Node {
+
+    }
+
+    static class GreedyLoop extends RecursiveLoop {
+
+        GreedyLoop(int countLocal, int beginLocal, int min, int max) {
+            super(countLocal, beginLocal, min, max);
+        }
+
+        @Override
+        boolean searchLoop(Search search) {
+            return false;
+        }
+    }
+
+    static class LazyRecursiveLoop extends RecursiveLoop {
+        LazyRecursiveLoop(int countLocal, int beginLocal, int min, int max) {
+            super(countLocal, beginLocal, min, max);
+        }
+
+        @Override
+        boolean searchLoop(Search search) {
+            return false;
+        }
+    }
+
+    static class LoopHead extends Node {
+
     }
 
     static class InnerConditions extends Node {
@@ -784,21 +811,16 @@ public class Searcher {
 
         @Override
         public boolean search(DefaultSearch search) {
-            int begin = search.begin;
-            int end = search.end;
-            int limit = search.limit;
+            Save save = new Save(search);
 
             for (Node condition : conditions) {
-                search.begin = search.end = begin;
-                search.limit = end;
+                save.pin(search);
                 if (!condition.search(search)) {
                     return false;
                 }
             }
 
-            search.begin = begin;
-            search.end = end;
-            search.limit = limit;
+            save.apply(search);
 
             return next.search(search);
         }
@@ -828,33 +850,34 @@ public class Searcher {
         @Override
         public boolean search(DefaultSearch search) {
             LabelIndex<?> labelIndex = search.document.getLabelIndex(labelType)
-                    .insideSpan(new Span(search.end, search.limit));
+                    .insideSpan(new Span(search.lastEnd, search.limit));
             if (!seek) {
                 Optional<? extends Label<?>> labelOp = labelIndex.first();
                 if (!labelOp.isPresent()) return false;
                 Label<?> label = labelOp.get();
                 if (!propertiesMatch(search, label)) return false;
-                search.end = label.getEnd();
+                search.lastBegin = label.getBegin();
+                search.lastEnd = label.getEnd();
                 if (group != -1) {
                     search.groups[group * 2] = label.getBegin();
                     search.groups[group * 2 + 1] = label.getEnd();
                 }
                 if (next.search(search)) {
-                    search.begin = label.getBegin();
+                    search.lastBegin = label.getBegin();
                     return true;
                 }
             }
             for (Label<?> label : labelIndex) {
                 if (!propertiesMatch(search, label)) continue;
                 Span span = label.toSpan();
-                search.begin = span.getBegin();
-                search.end = span.getEnd();
+                search.lastBegin = span.getBegin();
+                search.lastEnd = span.getEnd();
                 if (group != -1) {
                     search.groups[group * 2] = label.getBegin();
                     search.groups[group * 2 + 1] = label.getEnd();
                 }
                 if (next.search(search)) {
-                    search.begin = span.getBegin();
+                    search.lastBegin = span.getBegin();
                     return true;
                 }
             }
@@ -972,9 +995,10 @@ public class Searcher {
         final int[] groups;
         final int[] locals;
         boolean found;
-        int from;
-        int begin;
-        int end;
+
+        int lastBegin;
+        int lastEnd;
+
         int limit;
 
         DefaultSearch(Document document, Span span) {
@@ -982,9 +1006,9 @@ public class Searcher {
             labels = new Label[numberGroups];
             groups = new int[numberGroups];
             locals = new int[numberLocals];
-            found = root.search(this);
-            begin = end = span.getBegin();
+            int begin = span.getBegin();
             limit = span.getEnd();
+            found = root.search(this);
         }
 
         @Override
@@ -1015,7 +1039,7 @@ public class Searcher {
             Arrays.fill(groups, -1);
             Arrays.fill(labels, null);
 
-            return found = root.search(this);
+            return found = root.search(this, );
         }
 
         @Override
