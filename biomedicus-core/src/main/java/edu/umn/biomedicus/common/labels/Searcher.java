@@ -31,7 +31,16 @@ import java.util.regex.PatternSyntaxException;
  *
  */
 public class Searcher {
-    static final Node ACCEPT = new Node();
+    static final Node ACCEPT = new Node() {
+        @Nullable
+        @Override
+        Class<?> firstType() {
+            return null;
+        }
+    };
+
+    static final int LOOP_LIMIT = 10_000;
+
     private final Node root;
     private final int numberGroups;
     private final int numberLocals;
@@ -60,8 +69,9 @@ public class Searcher {
     }
 
     /**
-     * Represents a return value of an atomic chain with a head and a tail. The begin value after the tail is the proper
-     * matching begin value for the entire chain.
+     * Represents a return value of an atomic chain with a head and a tail. The
+     * begin value after the tail is the proper matching begin value for the
+     * entire chain.
      */
     static class Chain {
         final Node head;
@@ -166,6 +176,12 @@ public class Searcher {
                             tail.next = node;
                         }
                         tail = chain.tail;
+
+                        Chain repetition = groupRepetition(head, tail);
+
+                        head = repetition.head;
+                        tail = repetition.tail;
+
                         continue;
                     case '|':
                     case ')':
@@ -177,7 +193,7 @@ public class Searcher {
                         node = type(false);
                 }
 
-                node = trailing(node);
+                node = atomicRepetition(node);
 
                 if (head == null) {
                     head = tail = node;
@@ -202,15 +218,199 @@ public class Searcher {
             return new Chain(head, tail);
         }
 
-        private Node trailing(Node node, boolean group) {
-
+        private Chain groupRepetition(Node head, Node tail) {
             int ch = peek();
             switch (ch) {
                 case '?':
                     ch = next();
-            }
+                    if (ch == '+') {
+                        next();
+                        head = new PossessiveOptional(head);
+                        return new Chain(head, head);
+                    } else {
+                        tail.next = new Noop();
+                        tail = tail.next;
+                        Branch branch = new Branch();
+                        if (ch == '?') {
+                            next();
+                            branch.add(tail);
+                            branch.add(head);
+                        } else {
+                            branch.add(head);
+                            branch.add(tail);
+                        }
+                        head = branch;
+                        return new Chain(head, tail);
+                    }
+                case '*':
+                    ch = next();
+                    RecursiveLoop recursiveLoop;
+                    if (ch == '+') {
+                        next();
+                        recursiveLoop = new PossessiveLoop(head, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    } else if (ch == '?') {
+                        next();
+                        recursiveLoop = new LazyLoop(head, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    } else {
+                        next();
+                        recursiveLoop = new GreedyLoop(head, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    }
+                    return new Chain(new LoopHead(recursiveLoop,
+                            recursiveLoop.beginLocal), recursiveLoop);
+                case '+':
+                    ch = next();
+                    if (ch == '+') {
+                        next();
+                        recursiveLoop = new PossessiveLoop(head, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    } else if (ch == '?') {
+                        next();
+                        recursiveLoop = new LazyLoop(head, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    } else {
+                        next();
+                        recursiveLoop = new GreedyLoop(head, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    }
+                    return new Chain(new LoopHead(recursiveLoop,
+                            recursiveLoop.beginLocal), recursiveLoop);
 
-            return null;
+                case '{':
+                    Span span = parseCurlyRange();
+                    int min = span.getBegin();
+                    int max = span.getEnd();
+
+                    ch = peek();
+                    if (ch == '+') {
+                        next();
+                        recursiveLoop = new PossessiveLoop(head, localsCount++,
+                                localsCount++, min, max);
+                    } else if (ch == '?') {
+                        next();
+                        recursiveLoop = new LazyLoop(head, localsCount++,
+                                localsCount++, min, max);
+                    } else {
+                        next();
+                        recursiveLoop = new GreedyLoop(head, localsCount++,
+                                localsCount++, min, max);
+                    }
+                    return new Chain(new LoopHead(recursiveLoop,
+                            recursiveLoop.beginLocal), recursiveLoop);
+
+                default:
+                    return new Chain(head, tail);
+            }
+        }
+
+        private Node atomicRepetition(Node node) {
+            int ch = peek();
+            switch (ch) {
+                case '?':
+                    ch = next();
+                    if (ch == '?') {
+                        next();
+                        node = new LazyOptional(node);
+                    } else if (ch == '+') {
+                        next();
+                        node = new PossessiveOptional(node);
+                    } else {
+                        node = new GreedyOptional(node);
+                    }
+                    break;
+                case '*':
+                    ch = next();
+                    RecursiveLoop loop;
+                    if (ch == '+') {
+                        next();
+                        loop = new PossessiveLoop(node, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    } else if (ch == '?') {
+                        next();
+                        loop = new LazyLoop(node, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    } else {
+                        next();
+                        loop = new GreedyLoop(node, localsCount++,
+                                localsCount++, 0, LOOP_LIMIT);
+                    }
+                    return new LoopHead(loop, loop.beginLocal);
+                case '+':
+                    ch = next();
+                    if (ch == '+') {
+                        next();
+                        loop = new PossessiveLoop(node, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    } else if (ch == '?') {
+                        next();
+                        loop = new LazyLoop(node, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    } else {
+                        next();
+                        loop = new GreedyLoop(node, localsCount++,
+                                localsCount++, 1, LOOP_LIMIT);
+                    }
+                    return new LoopHead(loop, loop.beginLocal);
+
+                case '{':
+                    Span span = parseCurlyRange();
+                    int min = span.getBegin();
+                    int max = span.getEnd();
+
+                    ch = peek();
+                    if (ch == '+') {
+                        next();
+                        loop = new PossessiveLoop(node, localsCount++,
+                                localsCount++, min, max);
+                    } else if (ch == '?') {
+                        next();
+                        loop = new LazyLoop(node, localsCount++,
+                                localsCount++, min, max);
+                    } else {
+                        next();
+                        loop = new GreedyLoop(node, localsCount++,
+                                localsCount++, min, max);
+                    }
+                    return new LoopHead(loop, loop.beginLocal);
+            }
+            return node;
+        }
+
+        private Span parseCurlyRange() {
+            int ch;
+            ch = peekNext();
+            if (!Character.isDigit(ch)) {
+                throw error(
+                        "Curly brackets should be in format {min[,max]}");
+            }
+            skip();
+            int min = 0;
+            do {
+                min = min * 10 + (ch - '0');
+            } while (ch <= '9' && ch >= '0');
+            int max = min;
+            if (ch == ',') {
+                ch = read();
+                max = LOOP_LIMIT;
+                if (ch != '}') {
+                    max = 0;
+                    while (ch <= '9' && ch >= '0') {
+                        max = max * 10 + (ch - '0');
+                        ch = read();
+                    }
+                }
+            }
+            if (ch != '}') {
+                throw error(
+                        "Unclosed curly bracket repetition");
+            }
+            if (max < min || min < 0 || max < 0) {
+                throw error(
+                        "Curly bracket repetition illegal range");
+            }
+            return new Span(min, max);
         }
 
         private Chain group() {
@@ -458,7 +658,8 @@ public class Searcher {
                 String backReferenceGroup = parseBackreferenceGroupName();
                 ch = peek();
                 if (ch == '.') {
-                    Class<?> type = groupTypes.get(backReferenceGroup);
+                    Integer brGroup = groupNames.get(backReferenceGroup);
+                    Class<?> type = groupTypes.get(brGroup);
                     String backPropertyName = parseTypeName(read());
                     try {
                         Method method = type.getMethod(backPropertyName);
@@ -506,6 +707,10 @@ public class Searcher {
 
         int peek() {
             return arr[index];
+        }
+
+        int peekNext() {
+            return arr[index + 1];
         }
 
         int skip() {
@@ -561,8 +766,8 @@ public class Searcher {
         }
 
         @Nullable
-        Class<?> topType() {
-            return null;
+        Class<?> firstType() {
+            return next.firstType();
         }
     }
 
@@ -754,50 +959,244 @@ public class Searcher {
     }
 
     static abstract class RecursiveLoop extends Node {
-        Node body;
+        final Node body;
         final int countLocal;
         final int beginLocal;
         final int min, max;
 
-        RecursiveLoop(int countLocal, int beginLocal, int min, int max) {
+        RecursiveLoop(Node body,
+                      int countLocal,
+                      int beginLocal,
+                      int min,
+                      int max) {
+            this.body = body;
             this.countLocal = countLocal;
             this.beginLocal = beginLocal;
             this.min = min;
             this.max = max;
         }
 
-        abstract boolean searchLoop(Search search);
-    }
+        abstract boolean enterLoop(DefaultSearch search);
 
-    static class PossessiveLoop extends Node {
-
+        @Nullable
+        @Override
+        Class<?> firstType() {
+            return body.firstType();
+        }
     }
 
     static class GreedyLoop extends RecursiveLoop {
 
-        GreedyLoop(int countLocal, int beginLocal, int min, int max) {
-            super(countLocal, beginLocal, min, max);
+        GreedyLoop(Node body,
+                   int countLocal,
+                   int beginLocal,
+                   int min,
+                   int max) {
+            super(body, countLocal, beginLocal, min, max);
         }
 
         @Override
-        boolean searchLoop(Search search) {
+        boolean enterLoop(DefaultSearch search) {
+            int save = search.locals[countLocal];
+            boolean found;
+            if (0 < min) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+            } else if (0 < max) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+                if (!found) {
+                    found = next.search(search);
+                }
+            } else {
+                found = next.search(search);
+            }
+
+            search.locals[countLocal] = save;
+            return found;
+        }
+
+        @Override
+        boolean search(DefaultSearch search) {
+            if (search.lastEnd == search.locals[beginLocal]) {
+                // our loop is not actually going anywhere but  theoretically it
+                // would match an infinite number of times and then back off
+                // to something under the max
+                return next.search(search);
+            }
+            int count = search.locals[countLocal];
+
+            if (count < min) {
+                // increment and loop
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (!bodyFound) {
+                    // loop failed, de-increment
+                    search.locals[countLocal] = count;
+                }
+                return bodyFound;
+            }
+
+            if (count < max) {
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (!bodyFound) {
+                    search.locals[countLocal] = count;
+                } else {
+                    return true;
+                }
+            }
+            return next.search(search);
+        }
+    }
+
+    static class LazyLoop extends RecursiveLoop {
+        LazyLoop(Node body, int countLocal, int beginLocal, int min, int max) {
+            super(body, countLocal, beginLocal, min, max);
+        }
+
+        @Override
+        boolean enterLoop(DefaultSearch search) {
+            int save = search.locals[countLocal];
+            boolean found = false;
+            if (0 < min) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+            } else if (next.search(search)) {
+                found = true;
+            } else if (0 < max) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+            }
+
+            search.locals[countLocal] = save;
+            return found;
+        }
+
+        @Override
+        boolean search(DefaultSearch search) {
+            if (search.lastEnd == search.locals[beginLocal]) {
+                // our loop is not actually going anywhere but theoretically it
+                // would match the minimum number of times then find the next.
+                return next.search(search);
+            }
+
+            int count = search.locals[countLocal];
+            if (count < min) {
+                search.locals[countLocal] = count + 1;
+                boolean found = body.search(search);
+                if (!found) {
+                    search.locals[countLocal] = count;
+                }
+                return found;
+            }
+            if (next.search(search)) {
+                return true;
+            }
+            if (count < max) {
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (!bodyFound) {
+                    search.locals[countLocal] = count;
+                }
+                return bodyFound;
+            }
+
             return false;
         }
     }
 
-    static class LazyRecursiveLoop extends RecursiveLoop {
-        LazyRecursiveLoop(int countLocal, int beginLocal, int min, int max) {
-            super(countLocal, beginLocal, min, max);
+    static class PossessiveLoop extends RecursiveLoop {
+        PossessiveLoop(Node body,
+                       int countLocal,
+                       int beginLocal,
+                       int min,
+                       int max) {
+            super(body, countLocal, beginLocal, min, max);
         }
 
         @Override
-        boolean searchLoop(Search search) {
-            return false;
+        boolean enterLoop(DefaultSearch search) {
+            int save = search.locals[countLocal];
+            boolean found;
+            if (0 < min) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+            } else if (0 < max) {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+                if (!found) {
+                    found = next.search(search);
+                }
+            } else {
+                search.locals[countLocal] = 1;
+                found = body.search(search);
+                found = !found && next.search(search);
+            }
+
+            search.locals[countLocal] = save;
+            return found;
+        }
+
+        @Override
+        boolean search(DefaultSearch search) {
+            if (search.lastEnd == search.locals[beginLocal]) {
+                return next.search(search);
+            }
+            int count = search.locals[countLocal];
+
+            if (count < min) {
+                // increment and loop
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (!bodyFound) {
+                    // loop failed, de-increment
+                    search.locals[countLocal] = count;
+                }
+                return bodyFound;
+            } else if (count < max) {
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (!bodyFound) {
+                    search.locals[countLocal] = count;
+                    return next.search(search);
+                } else {
+                    return true;
+                }
+            } else {
+                search.locals[countLocal] = count + 1;
+                boolean bodyFound = body.search(search);
+                if (bodyFound) {
+                    // possessive over maximum
+                    return false;
+                } else {
+                    search.locals[countLocal] = count;
+                    return next.search(search);
+                }
+            }
         }
     }
 
     static class LoopHead extends Node {
+        private final RecursiveLoop recursiveLoop;
+        private final int beginLocal;
 
+        LoopHead(RecursiveLoop recursiveLoop, int beginLocal) {
+            this.recursiveLoop = recursiveLoop;
+            this.beginLocal = beginLocal;
+        }
+
+        @Override
+        boolean search(DefaultSearch search) {
+            search.locals[beginLocal] = search.lastEnd;
+            return recursiveLoop.enterLoop(search);
+        }
+
+        @Nullable
+        @Override
+        Class<?> firstType() {
+            return recursiveLoop.firstType();
+        }
     }
 
     static class InnerConditions extends Node {
@@ -882,6 +1281,12 @@ public class Searcher {
                 }
             }
             return false;
+        }
+
+        @Nullable
+        @Override
+        Class<?> firstType() {
+            return labelType;
         }
 
         boolean propertiesMatch(Search search, Label label) {
@@ -1006,7 +1411,7 @@ public class Searcher {
             labels = new Label[numberGroups];
             groups = new int[numberGroups];
             locals = new int[numberLocals];
-            int begin = span.getBegin();
+            lastEnd = lastBegin = span.getBegin();
             limit = span.getEnd();
             found = root.search(this);
         }
@@ -1039,7 +1444,7 @@ public class Searcher {
             Arrays.fill(groups, -1);
             Arrays.fill(labels, null);
 
-            return found = root.search(this, );
+            return found = root.search(this);
         }
 
         @Override
