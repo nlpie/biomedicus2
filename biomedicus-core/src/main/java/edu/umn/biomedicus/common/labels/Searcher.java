@@ -118,19 +118,23 @@ public class Searcher {
         private final Map<Integer, Class<?>> groupTypes = new HashMap<>();
         private int index = 0;
         private int groupIndex = 0;
-        private int numberBranches = 0;
         private int localsCount = 0;
 
         private Parser(LabelAliases labelAliases,
                        String pattern) {
             this.labelAliases = labelAliases;
             this.pattern = pattern;
-            arr = pattern.toCharArray();
+            char[] charr = pattern.toCharArray();
+            char[] tmp = new char[charr.length + 2];
+            tmp[tmp.length - 1] = 0;
+            tmp[tmp.length - 2] = 0;
+            System.arraycopy(charr, 0, tmp, 0, charr.length);
+            arr = tmp;
         }
 
         private Searcher compile() {
             return new Searcher(alts(ACCEPT), groupIndex,
-                    numberBranches, groupNames);
+                    localsCount, groupNames);
         }
 
         private Node alts(Node end) {
@@ -477,7 +481,7 @@ public class Searcher {
                     throw error(
                             "Non alphanumeric character in capturing group name");
                 }
-                stringBuilder.append(ch);
+                stringBuilder.append((char) ch);
             }
 
             if (stringBuilder.length() == 0) {
@@ -520,13 +524,14 @@ public class Searcher {
             if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
                 throw error("Illegal identifier");
 
-            String first = readAlphanumeric();
+            String first = readAlphanumeric(ch);
             String variable = null;
             String type;
-            ch = read();
+            ch = peek();
             if (ch == ':') {
+                next();
                 variable = first;
-                type = readAlphanumeric();
+                type = readAlphanumeric(ch);
             } else {
                 type = first;
             }
@@ -545,8 +550,9 @@ public class Searcher {
                 groupTypes.put(group, aClass);
             }
             node = new TypeMatch(aClass, seek, group);
-            ch = read();
+            ch = peek();
             if (ch == '{') {
+                next();
                 do {
                     parseProperty(node);
                     if (peek() == ',') {
@@ -560,12 +566,12 @@ public class Searcher {
             return node;
         }
 
-        String readAlphanumeric() {
+        String readAlphanumeric(int ch) {
             StringBuilder groupName = new StringBuilder();
-            int ch;
+            groupName.append((char) ch);
             while (Character.isAlphabetic(ch = peek())
                     || Character.isDigit(ch)) {
-                groupName.append(ch);
+                groupName.append((char) ch);
                 read();
             }
             return groupName.toString();
@@ -573,11 +579,11 @@ public class Searcher {
 
         String parseTypeName(int ch) {
             StringBuilder typeName = new StringBuilder();
-            typeName.append(ch);
+            typeName.append((char) ch);
             read();
             while (Character.isAlphabetic(ch = peek())
                     || Character.isDigit(ch)) {
-                typeName.append(ch);
+                typeName.append((char) ch);
             }
 
             return typeName.toString();
@@ -590,11 +596,11 @@ public class Searcher {
             while ((ch = read()) != '"' || escaped) {
                 if (escaped) {
                     escaped = false;
-                    vb.append(ch);
+                    vb.append((char) ch);
                 } else if (ch == '\\') {
                     escaped = true;
                 } else {
-                    vb.append(ch);
+                    vb.append((char) ch);
                 }
             }
             return vb.toString();
@@ -1212,9 +1218,9 @@ public class Searcher {
         public boolean search(DefaultSearch search) {
             Save save = new Save(search);
 
-            for (Node condition : conditions) {
+            for (int i = 0; i < size; i++) {
                 save.pin(search);
-                if (!condition.search(search)) {
+                if (!conditions[i].search(search)) {
                     return false;
                 }
             }
@@ -1449,12 +1455,7 @@ public class Searcher {
 
         @Override
         public Span getSpan() {
-            return new Span(groups[0], groups[1]);
-        }
-
-        @Override
-        public Optional<Label<?>> getTopLabel() {
-            return Optional.ofNullable((Label<?>) labels[0]);
+            return new Span(lastBegin, lastEnd);
         }
     }
 }

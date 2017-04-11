@@ -33,6 +33,4 @@ public interface Search {
     boolean findNext();
 
     Span getSpan();
-
-    Optional<Label<?>> getTopLabel();
 }
