@@ -36,6 +36,27 @@ public class SearcherTest {
 
     }
 
+    static class Foo {
+        private String value;
+        private int baz;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public int getBaz() {
+            return baz;
+        }
+
+        public void setBaz(int baz) {
+            this.baz = baz;
+        }
+    }
+
     @Mocked
     Document document;
 
@@ -64,7 +85,21 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases, "Blah");
 
         Search search = blah.search(document);
-        assertEquals(search.getSpan(), span);
+        assertEquals(search.getSpan().get(), span);
+    }
+
+    @Test
+    public void testNoMatchType() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); result = Optional.empty();
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "Blah");
+
+        Search search = blah.search(document);
+        assertFalse(search.foundMatch());
     }
 
     @Test
@@ -79,6 +114,137 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases, "[Blah Blah Blah]");
 
         Search search = blah.search(document);
-        assertEquals(search.getSpan(), span);
+        assertEquals(search.getSpan().get(), span);
+    }
+
+    @Test
+    public void testNoMatchPin() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); returns(Optional.of(label), Optional.empty());
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "[Blah Blah]");
+
+        Search search = blah.search(document);
+        assertFalse(search.foundMatch());
+    }
+
+    @Test
+    public void testStringPropertyMatch() throws Exception {
+        Foo foo = new Foo();
+        foo.setValue("bar");
+
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+            labelAliases.getLabelable("Foo"); result = Foo.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases,
+                "Foo{value=\"bar\"}");
+
+        Search search = blah.search(document);
+        assertEquals(search.getSpan().get(), new Span(0, 5));
+    }
+
+    @Test
+    public void testStringPropertyNoMatch() throws Exception {
+        Foo foo = new Foo();
+        foo.setValue("baz");
+
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+            labelAliases.getLabelable("Foo"); result = Foo.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases,
+                "Foo{value=\"bar\"}");
+
+        Search search = blah.search(document);
+        assertFalse(search.foundMatch());
+    }
+
+    @Test
+    public void testMultiProperties() throws Exception {
+        Foo foo = new Foo();
+        foo.setValue("baz");
+        foo.setBaz(42);
+
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+            labelAliases.getLabelable("Foo"); result = Foo.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases,
+                "Foo{value=\"baz\",baz=42}");
+
+        Search search = blah.search(document);
+        assertEquals(search.getSpan().get(), new Span(0, 5));
+    }
+
+    @Test
+    public void testAlternations() throws Exception {
+        Optional<Label<Blah>> label = Optional
+                .of(new Label<>(new Span(0, 5), new Blah()));
+
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); returns(label);
+            labelAliases.getLabelable("Foo"); result = Foo.class;
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases,
+                "Foo | Blah");
+
+        Search search = blah.search(document);
+        assertEquals(search.getSpan().get(), new Span(0, 5));
+    }
+
+    @Test
+    public void testEmpty() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "");
+
+        Search search = blah.search(document);
+        assertTrue(search.foundMatch());
+        assertEquals(search.getSpan().get(), new Span(0, 0));
+    }
+
+    @Test
+    public void testLabelVariable() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); result = Optional.of(label);
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "instance:Blah");
+
+        Search search = blah.search(document);
+
+        assertEquals(search.getLabel("instance").get(), label);
+    }
+
+    @Test
+    public void testLabelGroup() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); result = Optional.of(label);
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "(?<instance>Blah)");
+
+        Search search = blah.search(document);
+
+        assertEquals(search.getSpan("instance").get(), label.toSpan());
     }
 }

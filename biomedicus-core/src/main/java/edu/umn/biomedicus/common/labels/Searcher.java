@@ -20,6 +20,7 @@ import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
 
 import javax.annotation.Nullable;
+import javax.swing.text.html.Option;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -219,6 +220,7 @@ public class Searcher {
                 tail = tail.next = loadBegin;
             }
 
+            tail = tail.next = end;
             return new Chain(head, tail);
         }
 
@@ -530,6 +532,7 @@ public class Searcher {
             ch = peek();
             if (ch == ':') {
                 next();
+                ch = read();
                 variable = first;
                 type = readAlphanumeric(ch);
             } else {
@@ -546,8 +549,10 @@ public class Searcher {
             }
             int group = -1;
             if (variable != null) {
-                group = groupIndex++;
+                group = groupIndex;
                 groupTypes.put(group, aClass);
+                groupNames.put(variable, groupIndex);
+                groupIndex = groupIndex + 2;
             }
             node = new TypeMatch(aClass, seek, group);
             ch = peek();
@@ -555,14 +560,10 @@ public class Searcher {
                 next();
                 do {
                     parseProperty(node);
-                    if (peek() == ',') {
-                        read();
-                        parseProperty(node);
-                    } else {
-                        break;
-                    }
-                } while (true);
+                } while (consumePastWhiteSpace(','));
+                expect('}', "Unclosed properties group");
             }
+
             return node;
         }
 
@@ -608,19 +609,22 @@ public class Searcher {
 
         Object parseNumber(int ch) {
             StringBuilder nb = new StringBuilder();
-            nb.append(ch);
+            nb.append((char) ch);
             boolean isDouble = false;
             while (Character.isDigit(ch = peek()) || (!isDouble && ch == '.')) {
                 if (ch == '.') {
                     isDouble = true;
                 }
-                nb.append(ch);
+                nb.append((char) ch);
                 read();
             }
 
             String digitString = nb.toString();
-            return isDouble ? Double.parseDouble(digitString)
-                    : Long.parseLong(digitString);
+            if (isDouble) {
+                return Double.parseDouble(digitString);
+            } else {
+                return Long.parseLong(digitString);
+            }
         }
 
         String parseBackreferenceGroupName() {
@@ -639,7 +643,7 @@ public class Searcher {
             StringBuilder pnsb = new StringBuilder();
             int ch;
             while (Character.isAlphabetic(ch = read()) || Character.isDigit(ch))
-                pnsb.append(ch);
+                pnsb.append((char) ch);
             if (ch != '=') throw error("Invalid property value format");
             String propertyName = pnsb.toString();
             ch = read();
@@ -647,7 +651,7 @@ public class Searcher {
                 typeMatch.addPropertyMatch(propertyName,
                         parsePropertyStringValue());
             } else if (Character.isDigit(ch)) {
-                typeMatch.addPropertyMatch(propertyName, parseNumber(ch));
+                typeMatch.addNumberPropertyMatch(propertyName, parseNumber(ch));
             } else if (Character.isAlphabetic(ch)) {
                 Object value;
                 if (ch == 't' || ch == 'T' || ch == 'y' || ch == 'Y') {
@@ -1266,6 +1270,7 @@ public class Searcher {
                 if (group != -1) {
                     search.groups[group * 2] = label.getBegin();
                     search.groups[group * 2 + 1] = label.getEnd();
+                    search.labels[group] = label;
                 }
                 if (next.search(search)) {
                     search.lastBegin = label.getBegin();
@@ -1295,7 +1300,7 @@ public class Searcher {
             return labelType;
         }
 
-        boolean propertiesMatch(Search search, Label label) {
+        boolean propertiesMatch(DefaultSearch search, Label label) {
             for (PropertyMatch requiredProperty : requiredProperties) {
                 if (!requiredProperty.doesMatch(search, label)) return false;
             }
@@ -1311,6 +1316,10 @@ public class Searcher {
                                            Method backrefMethod) {
             requiredProperties.add(new PropertyValueBackReference(name, group,
                     backrefMethod));
+        }
+
+        void addNumberPropertyMatch(String name, Object value) {
+            requiredProperties.add(new NumberPropertyMatch(name, value));
         }
 
         void addSpanBackReference(String name, String group) {
@@ -1331,9 +1340,29 @@ public class Searcher {
                 }
             }
 
-            abstract boolean doesMatch(Search search, Label<?> label);
+            abstract boolean doesMatch(DefaultSearch search, Label<?> label);
         }
 
+        class NumberPropertyMatch extends PropertyMatch {
+            final Object value;
+
+            NumberPropertyMatch(String name, Object value) {
+                super(name);
+                this.value = value;
+            }
+
+            @Override
+            boolean doesMatch(DefaultSearch search, Label<?> label) {
+                try {
+                    Object invoke = readMethod.invoke(label.getValue());
+                    double first = ((Number) invoke).doubleValue();
+                    double second = ((Number) value).doubleValue();
+                    return Math.abs(first - second) < 1e-10;
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException("");
+                }
+            }
+        }
 
         class ValuedPropertyMatch extends PropertyMatch {
             final Object value;
@@ -1344,7 +1373,7 @@ public class Searcher {
             }
 
             @Override
-            boolean doesMatch(Search search, Label<?> label) {
+            boolean doesMatch(DefaultSearch search, Label<?> label) {
                 try {
                     return value.equals(readMethod.invoke(label.getValue()));
                 } catch (IllegalAccessException | InvocationTargetException e) {
@@ -1366,8 +1395,10 @@ public class Searcher {
             }
 
             @Override
-            boolean doesMatch(Search search, Label<?> label) {
-                Label<?> groupLabel = search.getLabel(group);
+            boolean doesMatch(DefaultSearch search, Label<?> label) {
+                Label<?> groupLabel = search.getLabel(group)
+                        .orElseThrow(
+                                () -> new IllegalStateException("Not set"));
                 try {
                     Object value = backrefMethod.invoke(groupLabel.getValue());
                     return value.equals(readMethod.invoke(label.getValue()));
@@ -1386,8 +1417,10 @@ public class Searcher {
             }
 
             @Override
-            boolean doesMatch(Search search, Label<?> label) {
-                Span span = search.getSpan(group);
+            boolean doesMatch(DefaultSearch search, Label<?> label) {
+                Span span = search.getSpan(group)
+                        .orElseThrow(
+                                () -> new IllegalStateException("Not set"));
                 try {
                     return span.equals(readMethod.invoke(label.getValue()));
                 } catch (IllegalAccessException | InvocationTargetException e) {
@@ -1423,17 +1456,21 @@ public class Searcher {
         }
 
         @Override
-        public Label<?> getLabel(String name) {
-            return labels[groupNames.get(name)];
+        public Optional<Label<?>> getLabel(String name) {
+            Integer integer = groupNames.get(name);
+            if (integer == null) {
+                return Optional.empty();
+            }
+            return Optional.of(labels[integer]);
         }
 
         @Override
-        public Span getSpan(String name) {
+        public Optional<Span> getSpan(String name) {
             Integer integer = groupNames.get(name);
             if (integer == null) {
-                throw new IllegalArgumentException("Name not found");
+                return Optional.empty();
             }
-            return new Span(groups[integer * 2], groups[integer * 2 + 1]);
+            return Optional.of(new Span(groups[integer * 2], groups[integer * 2 + 1]));
         }
 
         @Override
@@ -1454,8 +1491,9 @@ public class Searcher {
         }
 
         @Override
-        public Span getSpan() {
-            return new Span(lastBegin, lastEnd);
+        public Optional<Span> getSpan() {
+            return Optional.of(new Span(lastBegin, lastEnd))
+                    .filter(blah -> found);
         }
     }
 }

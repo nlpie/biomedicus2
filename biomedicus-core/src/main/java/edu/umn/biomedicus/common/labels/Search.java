@@ -21,16 +21,23 @@ import edu.umn.biomedicus.common.types.text.Span;
 import java.util.Optional;
 
 /**
+ * Results from {@link Searcher}.
+ *
  *
  */
 public interface Search {
-    Label<?> getLabel(String name);
+    /**
+     * Returns the named label if it matched against anything.
+     * @param name
+     * @return
+     */
+    Optional<Label<?>> getLabel(String name);
 
-    Span getSpan(String name);
+    Optional<Span> getSpan(String name);
 
     boolean foundMatch();
 
     boolean findNext();
 
-    Span getSpan();
+    Optional<Span> getSpan();
 }
