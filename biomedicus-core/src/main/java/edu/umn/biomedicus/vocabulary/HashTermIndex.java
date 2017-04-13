@@ -81,6 +81,7 @@ public class HashTermIndex extends AbstractTermIndex {
 
     @Override
     protected int getIdentifier(CharSequence term) {
-        return map.get(term.toString());
+        Integer integer = map.get(term.toString());
+        return integer != null ? integer : -1;
     }
 }

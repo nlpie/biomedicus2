@@ -18,9 +18,9 @@ package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.swing.text.html.Option;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -429,9 +429,8 @@ public class Searcher {
                 switch (ch) {
                     case '=':
                     case '!':
-                        tail = new GroupTail(groupIndex);
+                        tail = createGroupTail();
                         head = alts(tail);
-                        groupIndex = groupIndex + 2;
                         if (ch == '=') {
                             head = tail = new PositiveLookahead(head);
                         } else {
@@ -439,9 +438,8 @@ public class Searcher {
                         }
                         break;
                     case '>':
-                        tail = new GroupTail(groupIndex);
+                        tail = createGroupTail();
                         head = alts(tail);
-                        groupIndex = groupIndex + 2;
                         head = tail = new Independent(head);
                         break;
                     case '<':
@@ -450,29 +448,32 @@ public class Searcher {
                             throw error("Duplicate capturing group name: \""
                                     + name + "\"");
                         }
-                        tail = new GroupTail(groupIndex);
+                        GroupTail groupTail = createGroupTail();
+                        tail = groupTail;
+                        groupNames.put(name, groupTail.groupIndex);
                         head = alts(tail);
-                        groupNames.put(name, groupIndex);
-                        groupIndex = groupIndex + 2;
                         break;
                     default:
                         unread();
-                        tail = new GroupTail(groupIndex);
+                        tail = createGroupTail();
                         head = alts(tail);
-                        tail.next = new GroupTail(groupIndex);
-                        groupIndex = groupIndex + 2;
                         break;
                 }
             } else {
-                tail = new GroupTail(groupIndex);
+                tail = createGroupTail();
                 head = alts(tail);
-                tail.next = new GroupTail(groupIndex);
-                groupIndex = groupIndex + 2;
             }
             peekPastWhiteSpace();
             expect(')', "Unclosed group");
 
             return new Chain(head, tail);
+        }
+
+        @NotNull
+        private GroupTail createGroupTail() {
+            GroupTail tail = new GroupTail(groupIndex);
+            groupIndex = groupIndex + 2;
+            return tail;
         }
 
         private String readGroupName() {
@@ -494,7 +495,8 @@ public class Searcher {
         }
 
         private Chain pinning() {
-            int ch = readPastWhitespace();
+            next();
+            int ch = peekPastWhiteSpace();
             boolean seek = false;
             if (ch == '?') {
                 seek = true;
@@ -516,12 +518,14 @@ public class Searcher {
                 peekPastWhiteSpace();
             } while (accept('&'));
 
+            expect(']', "Unclosed pinning group");
+
             pinned.next = innerConditions;
             return new Chain(pinned, innerConditions);
         }
 
         private Node type(boolean seek) {
-            TypeMatch node;
+
             int ch = read();
             if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
                 throw error("Illegal identifier");
@@ -554,17 +558,26 @@ public class Searcher {
                 groupNames.put(variable, groupIndex);
                 groupIndex = groupIndex + 2;
             }
-            node = new TypeMatch(aClass, seek, group);
             ch = peek();
-            if (ch == '{') {
+            if (ch == '=') {
                 next();
-                do {
-                    parseProperty(node);
-                } while (consumePastWhiteSpace(','));
-                expect('}', "Unclosed properties group");
-            }
+                ch = read();
+                String enumValue = readAlphanumeric(ch);
+                Enum t = Enum.valueOf((Class<Enum>) aClass, enumValue);
+                return new EnumMatch((Class<Enum>) aClass, t, seek, group);
+            } else {
+                TypeMatch node = new TypeMatch(aClass, seek, group);
+                if (ch == '{') {
+                    next();
+                    do {
+                        parseProperty(node);
+                    } while (consumePastWhiteSpace(','));
+                    peekPastWhiteSpace();
+                    expect('}', "Unclosed properties group");
+                }
 
-            return node;
+                return node;
+            }
         }
 
         String readAlphanumeric(int ch) {
@@ -1225,12 +1238,12 @@ public class Searcher {
             for (int i = 0; i < size; i++) {
                 save.pin(search);
                 if (!conditions[i].search(search)) {
+                    save.apply(search);
                     return false;
                 }
             }
 
             save.apply(search);
-
             return next.search(search);
         }
 
@@ -1241,6 +1254,61 @@ public class Searcher {
                 conditions = tmp;
             }
             conditions[size++] = node;
+        }
+    }
+
+    static class EnumMatch extends Node {
+        final Class<? extends Enum> enumType;
+        final Enum<?> value;
+        final boolean seek;
+        final int group;
+
+        EnumMatch(Class<? extends Enum> enumType,
+                  Enum<?> value,
+                  boolean seek,
+                  int group) {
+            this.enumType = enumType;
+            this.value = value;
+            this.seek = seek;
+            this.group = group;
+        }
+
+        @Override
+        boolean search(DefaultSearch search) {
+            LabelIndex<?> labelIndex = search.document.getLabelIndex(enumType)
+                    .insideSpan(new Span(search.lastEnd, search.limit));
+            if (!seek) {
+                Optional<? extends Label<?>> labelOp = labelIndex.first();
+                if (!labelOp.isPresent()) return false;
+                Label<?> label = labelOp.get();
+                if (!value.equals(label.getValue())) return false;
+                search.lastBegin = label.getBegin();
+                search.lastEnd = label.getEnd();
+                if (group != -1) {
+                    search.groups[group] = label.getBegin();
+                    search.groups[group + 1] = label.getEnd();
+                    search.labels[group] = label;
+                }
+                if (next.search(search)) {
+                    search.lastBegin = label.getBegin();
+                    return true;
+                }
+            }
+            for (Label<?> label : labelIndex) {
+                if (!value.equals(label.getValue())) continue;
+                Span span = label.toSpan();
+                search.lastBegin = span.getBegin();
+                search.lastEnd = span.getEnd();
+                if (group != -1) {
+                    search.groups[group] = label.getBegin();
+                    search.groups[group + 1] = label.getEnd();
+                }
+                if (next.search(search)) {
+                    search.lastBegin = span.getBegin();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -1268,8 +1336,8 @@ public class Searcher {
                 search.lastBegin = label.getBegin();
                 search.lastEnd = label.getEnd();
                 if (group != -1) {
-                    search.groups[group * 2] = label.getBegin();
-                    search.groups[group * 2 + 1] = label.getEnd();
+                    search.groups[group] = label.getBegin();
+                    search.groups[group + 1] = label.getEnd();
                     search.labels[group] = label;
                 }
                 if (next.search(search)) {
@@ -1283,8 +1351,9 @@ public class Searcher {
                 search.lastBegin = span.getBegin();
                 search.lastEnd = span.getEnd();
                 if (group != -1) {
-                    search.groups[group * 2] = label.getBegin();
-                    search.groups[group * 2 + 1] = label.getEnd();
+                    search.groups[group] = label.getBegin();
+                    search.groups[group + 1] = label.getEnd();
+                    search.labels[group] = label;
                 }
                 if (next.search(search)) {
                     search.lastBegin = span.getBegin();
@@ -1375,7 +1444,8 @@ public class Searcher {
             @Override
             boolean doesMatch(DefaultSearch search, Label<?> label) {
                 try {
-                    return value.equals(readMethod.invoke(label.getValue()));
+                    Object invoke = readMethod.invoke(label.getValue());
+                    return value.equals(invoke);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new IllegalStateException("");
                 }
@@ -1448,7 +1518,7 @@ public class Searcher {
         DefaultSearch(Document document, Span span) {
             this.document = document;
             labels = new Label[numberGroups];
-            groups = new int[numberGroups];
+            groups = new int[numberGroups * 2];
             locals = new int[numberLocals];
             lastEnd = lastBegin = span.getBegin();
             limit = span.getEnd();
@@ -1461,7 +1531,7 @@ public class Searcher {
             if (integer == null) {
                 return Optional.empty();
             }
-            return Optional.of(labels[integer]);
+            return Optional.ofNullable(labels[integer]);
         }
 
         @Override
@@ -1470,7 +1540,8 @@ public class Searcher {
             if (integer == null) {
                 return Optional.empty();
             }
-            return Optional.of(new Span(groups[integer * 2], groups[integer * 2 + 1]));
+            return Optional
+                    .of(new Span(groups[integer], groups[integer + 1]));
         }
 
         @Override
@@ -1494,6 +1565,11 @@ public class Searcher {
         public Optional<Span> getSpan() {
             return Optional.of(new Span(lastBegin, lastEnd))
                     .filter(blah -> found);
+        }
+
+        @Override
+        public Collection<String> getGroups() {
+            return groupNames.keySet();
         }
     }
 }

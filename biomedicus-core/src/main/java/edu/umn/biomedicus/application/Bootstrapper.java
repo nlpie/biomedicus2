@@ -21,6 +21,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.vocabulary.VocabularyModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -48,6 +49,10 @@ public final class Bootstrapper {
     @Nullable private String home = null;
     @Nullable private Injector injector = null;
     @Nullable private Map<String, Object> overloadedSettings = null;
+
+    public Bootstrapper() {
+        modules.add(new VocabularyModule());
+    }
 
     /**
      * Creates an instance of the Biomedicus application class using a

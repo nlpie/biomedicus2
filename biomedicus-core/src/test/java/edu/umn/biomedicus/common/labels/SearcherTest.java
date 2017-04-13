@@ -247,4 +247,25 @@ public class SearcherTest {
 
         assertEquals(search.getSpan("instance").get(), label.toSpan());
     }
+
+    enum AnEnum {
+        VALUE;
+    }
+
+    @Test
+    public void testAnEnum() throws Exception {
+        Label<AnEnum> label = new Label<>(new Span(0,5), AnEnum.VALUE);
+
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); result = Optional.of(label);
+            labelAliases.getLabelable("AnEnum"); result = AnEnum.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "(instance:AnEnum=VALUE)");
+
+        Search search = blah.search(document);
+
+        assertEquals(search.getSpan("instance").get(), label.toSpan());
+    }
 }

@@ -17,12 +17,14 @@
 package edu.umn.biomedicus.common.labels;
 
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  *
  */
+@Singleton
 public class LabelAliases {
     private final Map<String, Class<?>> aliases = new HashMap<>();
 

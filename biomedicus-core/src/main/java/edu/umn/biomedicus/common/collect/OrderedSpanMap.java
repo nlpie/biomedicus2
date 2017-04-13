@@ -294,7 +294,7 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
         private void advance() {
             next = null;
-            if (endIterator == null || !endIterator.hasNext()) {
+            while (endIterator == null || !endIterator.hasNext()) {
                 if (!beginIterator.hasNext()) {
                     return;
                 }

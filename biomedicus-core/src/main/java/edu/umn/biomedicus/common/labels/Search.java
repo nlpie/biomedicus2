@@ -18,6 +18,7 @@ package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.types.text.Span;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -40,4 +41,6 @@ public interface Search {
     boolean findNext();
 
     Optional<Span> getSpan();
+
+    Collection<String> getGroups();
 }
