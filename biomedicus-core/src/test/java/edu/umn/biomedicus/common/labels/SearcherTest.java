@@ -19,9 +19,7 @@ package edu.umn.biomedicus.common.labels;
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
 import mockit.Expectations;
-import mockit.Mock;
 import mockit.Mocked;
-import mockit.Verifications;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
@@ -84,7 +82,9 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "Blah");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
+
         assertEquals(search.getSpan().get(), span);
     }
 
@@ -98,8 +98,10 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "Blah");
 
-        Search search = blah.search(document);
-        assertFalse(search.foundMatch());
+        Search search = blah.createSearcher(document);
+        search.search();
+
+        assertFalse(search.found());
     }
 
     @Test
@@ -113,7 +115,9 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "[Blah Blah Blah]");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
+
         assertEquals(search.getSpan().get(), span);
     }
 
@@ -127,8 +131,11 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "[Blah Blah]");
 
-        Search search = blah.search(document);
-        assertFalse(search.foundMatch());
+
+        Search search = blah.createSearcher(document);
+        search.search();
+
+        assertFalse(search.found());
     }
 
     @Test
@@ -145,7 +152,9 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases,
                 "Foo{value=\"bar\"}");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
+
         assertEquals(search.getSpan().get(), new Span(0, 5));
     }
 
@@ -163,8 +172,10 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases,
                 "Foo{value=\"bar\"}");
 
-        Search search = blah.search(document);
-        assertFalse(search.foundMatch());
+        Search search = blah.createSearcher(document);
+        search.search();
+
+        assertFalse(search.found());
     }
 
     @Test
@@ -182,7 +193,9 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases,
                 "Foo{value=\"baz\",baz=42}");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
+
         assertEquals(search.getSpan().get(), new Span(0, 5));
     }
 
@@ -201,7 +214,9 @@ public class SearcherTest {
         Searcher blah = Searcher.parse(labelAliases,
                 "Foo | Blah");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
+
         assertEquals(search.getSpan().get(), new Span(0, 5));
     }
 
@@ -213,8 +228,10 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "");
 
-        Search search = blah.search(document);
-        assertTrue(search.foundMatch());
+        Search search = blah.createSearcher(document);
+        search.search();
+
+        assertTrue(search.found());
         assertEquals(search.getSpan().get(), new Span(0, 0));
     }
 
@@ -228,7 +245,8 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "instance:Blah");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
 
         assertEquals(search.getLabel("instance").get(), label);
     }
@@ -243,7 +261,8 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "(?<instance>Blah)");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
 
         assertEquals(search.getSpan("instance").get(), label.toSpan());
     }
@@ -264,8 +283,25 @@ public class SearcherTest {
 
         Searcher blah = Searcher.parse(labelAliases, "(instance:AnEnum=VALUE)");
 
-        Search search = blah.search(document);
+        Search search = blah.createSearcher(document);
+        search.search();
 
         assertEquals(search.getSpan("instance").get(), label.toSpan());
+    }
+
+    @Test
+    public void testOptionMissing() throws Exception {
+        new Expectations() {{
+            document.getDocumentSpan(); result = new Span(0, 10);
+            labelIndex.first(); result = Optional.empty();
+            labelAliases.getLabelable("Blah"); result = Blah.class;
+        }};
+
+        Searcher blah = Searcher.parse(labelAliases, "Blah?");
+
+        Search search = blah.createSearcher(document);
+        search.search();
+
+        assertTrue(search.found());
     }
 }

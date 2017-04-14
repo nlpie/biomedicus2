@@ -36,9 +36,19 @@ public interface Search {
 
     Optional<Span> getSpan(String name);
 
-    boolean foundMatch();
+    boolean found();
 
-    boolean findNext();
+    boolean search();
+
+    boolean search(int begin, int end);
+
+    boolean search(Span span);
+
+    boolean match();
+
+    boolean match(int begin, int end);
+
+    boolean match(Span span);
 
     Optional<Span> getSpan();
 

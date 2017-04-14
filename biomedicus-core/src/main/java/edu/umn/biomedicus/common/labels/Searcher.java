@@ -18,6 +18,7 @@ package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.common.types.text.TextLocation;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -38,20 +39,29 @@ public class Searcher {
         Class<?> firstType() {
             return null;
         }
+
+        @Override
+        void swapNext(Node next) {
+            throw new IllegalStateException(
+                    "Should never swap next on the accept node");
+        }
     };
 
     static final int LOOP_LIMIT = 10_000;
 
     private final Node root;
+    private final Node searchRoot;
     private final int numberGroups;
     private final int numberLocals;
     private final Map<String, Integer> groupNames;
 
     Searcher(Node root,
+             Node searchRoot,
              int numberGroups,
              int numberLocals,
              Map<String, Integer> groupNames) {
         this.root = root;
+        this.searchRoot = searchRoot;
         this.numberGroups = numberGroups;
         this.numberLocals = numberLocals;
         this.groupNames = groupNames;
@@ -61,11 +71,11 @@ public class Searcher {
         return new Parser(labelAliases, pattern).compile();
     }
 
-    public Search search(Document document) {
+    public Search createSearcher(Document document) {
         return new DefaultSearch(document, document.getDocumentSpan());
     }
 
-    public Search search(Document document, Span span) {
+    public Search createSearcher(Document document, Span span) {
         return new DefaultSearch(document, span);
     }
 
@@ -85,29 +95,6 @@ public class Searcher {
         Chain(Node head, Node tail) {
             this.head = head;
             this.tail = tail;
-        }
-    }
-
-    static class Save {
-        final int begin;
-        final int end;
-        final int limit;
-
-        Save(DefaultSearch search) {
-            begin = search.lastBegin;
-            end = search.lastEnd;
-            limit = search.limit;
-        }
-
-        void apply(DefaultSearch search) {
-            search.lastBegin = begin;
-            search.lastEnd = end;
-            search.limit = limit;
-        }
-
-        void pin(DefaultSearch search) {
-            search.limit = search.lastEnd;
-            search.lastBegin = search.lastEnd = begin;
         }
     }
 
@@ -134,8 +121,29 @@ public class Searcher {
         }
 
         private Searcher compile() {
-            return new Searcher(alts(ACCEPT), groupIndex,
-                    localsCount, groupNames);
+            LoadBegin end = new LoadBegin(localsCount++);
+            Node root = alts(end);
+            Class<?> aClass = root.firstType();
+
+            Node searchRoot;
+            if (aClass == null) {
+                searchRoot = new CharacterStepping();
+                searchRoot.swapNext(root);
+            } else {
+                Node join = new Noop();
+                join.swapNext(new SaveBegin(end.local));
+                join.next.swapNext(root);
+                Branch branch = new Branch();
+                TypeMatch typeMatch = new TypeMatch(aClass, true,
+                        true, -1);
+                typeMatch.swapNext(join);
+                branch.add(join);
+                branch.add(typeMatch);
+                searchRoot = branch;
+            }
+
+            return new Searcher(root, searchRoot, groupIndex, localsCount,
+                    groupNames);
         }
 
         private Node alts(Node end) {
@@ -145,12 +153,13 @@ public class Searcher {
                 return concat.head;
             }
             Node join = new Noop();
+            join.swapNext(end);
             Branch branch = new Branch();
             if (concat.head == end) {
                 branch.add(join);
             } else {
                 branch.add(concat.head);
-                concat.tail.next = join;
+                concat.tail.swapNext(join);
             }
             do {
                 Chain next = concat(join);
@@ -171,21 +180,16 @@ public class Searcher {
                     case '(':
                     case '[':
                         Chain chain = ch == '(' ? group() : pinning();
-                        node = chain.head;
-                        if (node == null) {
-                            continue;
-                        }
+                        Chain repetition = groupRepetition(chain.head,
+                                chain.tail);
+
                         if (head == null) {
-                            head = node;
+                            head = repetition.head;
+                            tail = repetition.tail;
                         } else {
-                            tail.next = node;
+                            tail.next = repetition.head;
+                            tail = repetition.tail;
                         }
-                        tail = chain.tail;
-
-                        Chain repetition = groupRepetition(head, tail);
-
-                        head = repetition.head;
-                        tail = repetition.tail;
 
                         continue;
                     case '|':
@@ -203,7 +207,7 @@ public class Searcher {
                 if (head == null) {
                     head = tail = node;
                 } else {
-                    tail.next = node;
+                    tail.swapNext(node);
                     tail = node;
                 }
             }
@@ -213,14 +217,15 @@ public class Searcher {
             if (head != tail) {
                 Node tmp = head.next;
                 int local = localsCount++;
-                head.next = new SaveBegin(local);
-                head.next.next = tmp;
+                head.swapNext(new SaveBegin(local));
+                head.next.swapNext(tmp);
 
                 LoadBegin loadBegin = new LoadBegin(local);
-                tail = tail.next = loadBegin;
+                tail.swapNext(loadBegin);
+                tail = loadBegin;
             }
 
-            tail = tail.next = end;
+            tail.swapNext(end);
             return new Chain(head, tail);
         }
 
@@ -234,7 +239,7 @@ public class Searcher {
                         head = new PossessiveOptional(head);
                         return new Chain(head, head);
                     } else {
-                        tail.next = new Noop();
+                        tail.swapNext(new Noop());
                         tail = tail.next;
                         Branch branch = new Branch();
                         if (ch == '?') {
@@ -260,10 +265,10 @@ public class Searcher {
                         recursiveLoop = new LazyLoop(head, localsCount++,
                                 localsCount++, 0, LOOP_LIMIT);
                     } else {
-                        next();
                         recursiveLoop = new GreedyLoop(head, localsCount++,
                                 localsCount++, 0, LOOP_LIMIT);
                     }
+                    tail.next = recursiveLoop;
                     return new Chain(new LoopHead(recursiveLoop,
                             recursiveLoop.beginLocal), recursiveLoop);
                 case '+':
@@ -277,10 +282,10 @@ public class Searcher {
                         recursiveLoop = new LazyLoop(head, localsCount++,
                                 localsCount++, 1, LOOP_LIMIT);
                     } else {
-                        next();
                         recursiveLoop = new GreedyLoop(head, localsCount++,
                                 localsCount++, 1, LOOP_LIMIT);
                     }
+                    tail.next = recursiveLoop;
                     return new Chain(new LoopHead(recursiveLoop,
                             recursiveLoop.beginLocal), recursiveLoop);
 
@@ -299,10 +304,10 @@ public class Searcher {
                         recursiveLoop = new LazyLoop(head, localsCount++,
                                 localsCount++, min, max);
                     } else {
-                        next();
                         recursiveLoop = new GreedyLoop(head, localsCount++,
                                 localsCount++, min, max);
                     }
+                    tail.next = recursiveLoop;
                     return new Chain(new LoopHead(recursiveLoop,
                             recursiveLoop.beginLocal), recursiveLoop);
 
@@ -338,7 +343,6 @@ public class Searcher {
                         loop = new LazyLoop(node, localsCount++,
                                 localsCount++, 0, LOOP_LIMIT);
                     } else {
-                        next();
                         loop = new GreedyLoop(node, localsCount++,
                                 localsCount++, 0, LOOP_LIMIT);
                     }
@@ -354,7 +358,6 @@ public class Searcher {
                         loop = new LazyLoop(node, localsCount++,
                                 localsCount++, 1, LOOP_LIMIT);
                     } else {
-                        next();
                         loop = new GreedyLoop(node, localsCount++,
                                 localsCount++, 1, LOOP_LIMIT);
                     }
@@ -375,7 +378,6 @@ public class Searcher {
                         loop = new LazyLoop(node, localsCount++,
                                 localsCount++, min, max);
                     } else {
-                        next();
                         loop = new GreedyLoop(node, localsCount++,
                                 localsCount++, min, max);
                     }
@@ -498,8 +500,13 @@ public class Searcher {
             next();
             int ch = peekPastWhiteSpace();
             boolean seek = false;
+            boolean covered = false;
             if (ch == '?') {
                 seek = true;
+                read();
+            }
+            if (ch == '!') {
+                covered = true;
                 read();
             }
 
@@ -509,8 +516,8 @@ public class Searcher {
                 return new Chain(pinned);
             }
 
-            InnerConditions innerConditions = new InnerConditions(
-                    localsCount++);
+            InnerConditions innerConditions
+                    = new InnerConditions(localsCount++, covered);
 
             do {
                 Node inner = alts(ACCEPT);
@@ -520,7 +527,7 @@ public class Searcher {
 
             expect(']', "Unclosed pinning group");
 
-            pinned.next = innerConditions;
+            pinned.swapNext(innerConditions);
             return new Chain(pinned, innerConditions);
         }
 
@@ -564,9 +571,10 @@ public class Searcher {
                 ch = read();
                 String enumValue = readAlphanumeric(ch);
                 Enum t = Enum.valueOf((Class<Enum>) aClass, enumValue);
-                return new EnumMatch((Class<Enum>) aClass, t, seek, group);
+                return new EnumMatch(aClass, seek, false, group,
+                        t);
             } else {
-                TypeMatch node = new TypeMatch(aClass, seek, group);
+                TypeMatch node = new TypeMatch(aClass, seek, false, group);
                 if (ch == '{') {
                     next();
                     do {
@@ -778,19 +786,37 @@ public class Searcher {
     }
 
     static class Node {
-        Node next;
+        protected Node next;
 
         Node() {
             next = ACCEPT;
         }
 
-        boolean search(DefaultSearch search) {
-            return true;
+        State search(DefaultSearch search, State state) {
+            return state;
         }
 
         @Nullable
         Class<?> firstType() {
             return next.firstType();
+        }
+
+        void swapNext(Node next) {
+            this.next = next;
+        }
+    }
+
+    static class CharacterStepping extends Node {
+        @Override
+        State search(DefaultSearch search, State state) {
+            for (int i = state.end; i < state.limit; i++) {
+                State res = next
+                        .search(search, new State(i, i, state.limit));
+                if (res.isHit()) {
+                    return res;
+                }
+            }
+            return State.miss();
         }
     }
 
@@ -802,9 +828,9 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            search.locals[local] = search.lastBegin;
-            return next.search(search);
+        State search(DefaultSearch search, State state) {
+            search.locals[local] = state.begin;
+            return next.search(search, state);
         }
     }
 
@@ -816,9 +842,8 @@ public class Searcher {
         }
 
         @Override
-        public boolean search(DefaultSearch search) {
-            search.lastBegin = search.locals[local];
-            return next.search(search);
+        public State search(DefaultSearch search, State state) {
+            return next.search(search, state.setBegin(search.locals[local]));
         }
     }
 
@@ -830,10 +855,10 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            search.groups[groupIndex] = search.lastBegin;
-            search.groups[groupIndex + 1] = search.lastEnd;
-            return next.search(search);
+        State search(DefaultSearch search, State state) {
+            search.groups[groupIndex] = state.begin;
+            search.groups[groupIndex + 1] = state.end;
+            return next.search(search, state);
         }
     }
 
@@ -851,24 +876,21 @@ public class Searcher {
         }
 
         @Override
-        public boolean search(DefaultSearch search) {
-            int begin = search.lastBegin;
-            int end = search.lastEnd;
+        public State search(DefaultSearch search, State state) {
             for (int i = 0; i < size; i++) {
-                search.lastBegin = begin;
-                search.lastEnd = end;
-                if (paths[i].search(search)) {
-                    return true;
+                State res = paths[i].search(search, state);
+                if (res.isHit()) {
+                    return res;
                 }
             }
-            return false;
+            return State.miss();
         }
     }
 
     static class Noop extends Node {
         @Override
-        public boolean search(DefaultSearch search) {
-            return next.search(search);
+        public State search(DefaultSearch search, State state) {
+            return next.search(search, state);
         }
     }
 
@@ -880,15 +902,12 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            int begin = search.lastBegin;
-            int end = search.lastEnd;
-            if (!condition.search(search)) {
-                return false;
+        State search(DefaultSearch search, State state) {
+            State res = condition.search(search, state);
+            if (res.isMiss()) {
+                return res;
             }
-            search.lastBegin = begin;
-            search.lastEnd = end;
-            return next.search(search);
+            return next.search(search, state);
         }
     }
 
@@ -900,16 +919,12 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            int begin = search.lastBegin;
-            int end = search.lastEnd;
-
-            if (condition.search(search)) {
-                return false;
+        State search(DefaultSearch search, State state) {
+            State res = condition.search(search, state);
+            if (res.isMiss()) {
+                return res;
             }
-            search.lastBegin = begin;
-            search.lastEnd = end;
-            return next.search(search);
+            return next.search(search, state);
         }
     }
 
@@ -921,27 +936,34 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            return node.search(search) && next.search(search);
+        State search(DefaultSearch search, State state) {
+            State res = node.search(search, state);
+            if (res.isHit()) {
+                return next.search(search, res);
+            } else {
+                return res;
+            }
         }
     }
 
     static class GreedyOptional extends Node {
-        final Node node;
+        final Node option;
 
-        GreedyOptional(Node node) {
-            this.node = node;
+        GreedyOptional(Node option) {
+            this.option = option;
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            Save save = new Save(search);
-            if (node.search(search) && next.search(search)) {
-                return true;
+        State search(DefaultSearch search, State state) {
+            State res = option.search(search, state);
+            if (res.isHit()) {
+                State nextRes = next.search(search, res);
+                if (nextRes.isHit()) {
+                    return nextRes;
+                }
             }
-            save.apply(search);
 
-            return next.search(search);
+            return next.search(search, state);
         }
     }
 
@@ -953,14 +975,17 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            Save save = new Save(search);
-            if (next.search(search)) {
-                return true;
+        State search(DefaultSearch search, State state) {
+            State res = next.search(search, state);
+            if (res.isHit()) {
+                return res;
             }
-            save.apply(search);
 
-            return node.search(search) && next.search(search);
+            res = node.search(search, state);
+            if (res.isMiss()) {
+                return res;
+            }
+            return next.search(search, res);
         }
     }
 
@@ -972,12 +997,14 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            Save save = new Save(search);
-            if (!node.search(search)) {
-                save.apply(search);
+        State search(DefaultSearch search, State state) {
+            State res = node.search(search, state);
+
+            if (res.isHit()) {
+                return next.search(search, res);
+            } else {
+                return next.search(search, state);
             }
-            return next.search(search);
         }
     }
 
@@ -999,7 +1026,8 @@ public class Searcher {
             this.max = max;
         }
 
-        abstract boolean enterLoop(DefaultSearch search);
+        abstract State enterLoop(DefaultSearch search,
+                                 State state);
 
         @Nullable
         @Override
@@ -1019,57 +1047,60 @@ public class Searcher {
         }
 
         @Override
-        boolean enterLoop(DefaultSearch search) {
+        State enterLoop(DefaultSearch search, State state) {
             int save = search.locals[countLocal];
-            boolean found;
+
+            State result;
             if (0 < min) {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
+                result = body.search(search, state);
             } else if (0 < max) {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
-                if (!found) {
-                    found = next.search(search);
+                result = body.search(search, state);
+                if (result.isMiss()) {
+                    result = next.search(search, state);
                 }
             } else {
-                found = next.search(search);
+                result = next.search(search, state);
             }
 
             search.locals[countLocal] = save;
-            return found;
+            return result;
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            if (search.lastEnd == search.locals[beginLocal]) {
+        State search(DefaultSearch search, State state) {
+            if (state.end == search.locals[beginLocal]) {
                 // our loop is not actually going anywhere but  theoretically it
                 // would match an infinite number of times and then back off
                 // to something under the max
-                return next.search(search);
+                return next.search(search, state);
             }
             int count = search.locals[countLocal];
 
             if (count < min) {
                 // increment and loop
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (!bodyFound) {
+                State result = body.search(search, state);
+                if (result.isMiss()) {
                     // loop failed, de-increment
                     search.locals[countLocal] = count;
                 }
-                return bodyFound;
+                return result;
             }
 
             if (count < max) {
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (!bodyFound) {
+                State result = body.search(search, state);
+                if (result.isMiss()) {
                     search.locals[countLocal] = count;
                 } else {
-                    return true;
+                    // Since body loops back to next we don't need to call next
+                    // before returning this result
+                    return result;
                 }
             }
-            return next.search(search);
+            return next.search(search, state);
         }
     }
 
@@ -1079,53 +1110,55 @@ public class Searcher {
         }
 
         @Override
-        boolean enterLoop(DefaultSearch search) {
+        State enterLoop(DefaultSearch search, State state) {
             int save = search.locals[countLocal];
-            boolean found = false;
+            State result;
             if (0 < min) {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
-            } else if (next.search(search)) {
-                found = true;
-            } else if (0 < max) {
-                search.locals[countLocal] = 1;
-                found = body.search(search);
+                result = body.search(search, state);
+            } else {
+                result = next.search(search, state);
+                if (result.isMiss() && 0 < max) {
+                    search.locals[countLocal] = 1;
+                    result = body.search(search, state);
+                }
             }
 
             search.locals[countLocal] = save;
-            return found;
+            return result;
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            if (search.lastEnd == search.locals[beginLocal]) {
+        State search(DefaultSearch search, State state) {
+            if (state.end == search.locals[beginLocal]) {
                 // our loop is not actually going anywhere but theoretically it
                 // would match the minimum number of times then find the next.
-                return next.search(search);
+                return next.search(search, state);
             }
 
             int count = search.locals[countLocal];
             if (count < min) {
                 search.locals[countLocal] = count + 1;
-                boolean found = body.search(search);
-                if (!found) {
+                State result = body.search(search, state);
+                if (result.isMiss()) {
                     search.locals[countLocal] = count;
                 }
-                return found;
+                return result;
             }
-            if (next.search(search)) {
-                return true;
+            State result = next.search(search, state);
+            if (result.isHit()) {
+                return result;
             }
             if (count < max) {
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (!bodyFound) {
+                result = body.search(search, state);
+                if (result.isMiss()) {
                     search.locals[countLocal] = count;
                 }
-                return bodyFound;
+                return result;
             }
 
-            return false;
+            return State.miss();
         }
     }
 
@@ -1139,62 +1172,64 @@ public class Searcher {
         }
 
         @Override
-        boolean enterLoop(DefaultSearch search) {
+        State enterLoop(DefaultSearch search, State state) {
             int save = search.locals[countLocal];
-            boolean found;
+            State result;
             if (0 < min) {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
+                result = body.search(search, state);
             } else if (0 < max) {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
-                if (!found) {
-                    found = next.search(search);
+                result = body.search(search, state);
+                if (result.isMiss()) {
+                    result = next.search(search, state);
                 }
             } else {
                 search.locals[countLocal] = 1;
-                found = body.search(search);
-                found = !found && next.search(search);
+                result = body.search(search, state);
+                if (result.isMiss()) {
+                    result = next.search(search, state);
+                }
             }
 
             search.locals[countLocal] = save;
-            return found;
+            return result;
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            if (search.lastEnd == search.locals[beginLocal]) {
-                return next.search(search);
+        State search(DefaultSearch search, State state) {
+            if (state.end == search.locals[beginLocal]) {
+                return next.search(search, state);
             }
             int count = search.locals[countLocal];
 
             if (count < min) {
                 // increment and loop
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (!bodyFound) {
+                State result = body.search(search, state);
+                if (result.isMiss()) {
                     // loop failed, de-increment
                     search.locals[countLocal] = count;
                 }
-                return bodyFound;
+                return result;
             } else if (count < max) {
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (!bodyFound) {
+                State result = body.search(search, state);
+                if (result.isMiss()) {
                     search.locals[countLocal] = count;
-                    return next.search(search);
+                    return next.search(search, state);
                 } else {
-                    return true;
+                    return result;
                 }
             } else {
                 search.locals[countLocal] = count + 1;
-                boolean bodyFound = body.search(search);
-                if (bodyFound) {
+                State result = body.search(search, state);
+                if (result.isHit()) {
                     // possessive over maximum
-                    return false;
+                    return State.miss();
                 } else {
                     search.locals[countLocal] = count;
-                    return next.search(search);
+                    return next.search(search, state);
                 }
             }
         }
@@ -1210,9 +1245,9 @@ public class Searcher {
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            search.locals[beginLocal] = search.lastEnd;
-            return recursiveLoop.enterLoop(search);
+        State search(DefaultSearch search, State state) {
+            search.locals[beginLocal] = state.end;
+            return recursiveLoop.enterLoop(search, state);
         }
 
         @Nullable
@@ -1224,27 +1259,27 @@ public class Searcher {
 
     static class InnerConditions extends Node {
         final int localAddr;
+        private final boolean covered;
         Node[] conditions = new Node[2];
         int size = 0;
 
-        InnerConditions(int localAddr) {
+        InnerConditions(int localAddr, boolean covered) {
             this.localAddr = localAddr;
+            this.covered = covered;
         }
 
         @Override
-        public boolean search(DefaultSearch search) {
-            Save save = new Save(search);
-
+        public State search(DefaultSearch search, State state) {
+            State pin = state.pin();
             for (int i = 0; i < size; i++) {
-                save.pin(search);
-                if (!conditions[i].search(search)) {
-                    save.apply(search);
-                    return false;
+                State result = conditions[i].search(search, pin);
+
+                if (result.isMiss() || (covered && !state.isCovered(result))) {
+                    return State.miss();
                 }
             }
 
-            save.apply(search);
-            return next.search(search);
+            return next.search(search, state);
         }
 
         void addCondition(Node node) {
@@ -1257,58 +1292,21 @@ public class Searcher {
         }
     }
 
-    static class EnumMatch extends Node {
-        final Class<? extends Enum> enumType;
+    static class EnumMatch extends TypeMatch {
         final Enum<?> value;
-        final boolean seek;
-        final int group;
 
-        EnumMatch(Class<? extends Enum> enumType,
-                  Enum<?> value,
+        EnumMatch(Class labelType,
                   boolean seek,
-                  int group) {
-            this.enumType = enumType;
+                  boolean anonymous,
+                  int group,
+                  Enum<?> value) {
+            super(labelType, seek, anonymous, group);
             this.value = value;
-            this.seek = seek;
-            this.group = group;
         }
 
         @Override
-        boolean search(DefaultSearch search) {
-            LabelIndex<?> labelIndex = search.document.getLabelIndex(enumType)
-                    .insideSpan(new Span(search.lastEnd, search.limit));
-            if (!seek) {
-                Optional<? extends Label<?>> labelOp = labelIndex.first();
-                if (!labelOp.isPresent()) return false;
-                Label<?> label = labelOp.get();
-                if (!value.equals(label.getValue())) return false;
-                search.lastBegin = label.getBegin();
-                search.lastEnd = label.getEnd();
-                if (group != -1) {
-                    search.groups[group] = label.getBegin();
-                    search.groups[group + 1] = label.getEnd();
-                    search.labels[group] = label;
-                }
-                if (next.search(search)) {
-                    search.lastBegin = label.getBegin();
-                    return true;
-                }
-            }
-            for (Label<?> label : labelIndex) {
-                if (!value.equals(label.getValue())) continue;
-                Span span = label.toSpan();
-                search.lastBegin = span.getBegin();
-                search.lastEnd = span.getEnd();
-                if (group != -1) {
-                    search.groups[group] = label.getBegin();
-                    search.groups[group + 1] = label.getEnd();
-                }
-                if (next.search(search)) {
-                    search.lastBegin = span.getBegin();
-                    return true;
-                }
-            }
-            return false;
+        boolean propertiesMatch(DefaultSearch search, Label label) {
+            return label.getValue().equals(value);
         }
     }
 
@@ -1316,51 +1314,58 @@ public class Searcher {
         final Class<?> labelType;
         final List<PropertyMatch> requiredProperties = new ArrayList<>();
         final boolean seek;
+        final boolean anonymous;
         final int group;
 
-        TypeMatch(Class labelType, boolean seek, int group) {
+        TypeMatch(Class labelType, boolean seek, boolean anonymous, int group) {
             this.labelType = labelType;
             this.seek = seek;
+            this.anonymous = anonymous;
             this.group = group;
         }
 
         @Override
-        public boolean search(DefaultSearch search) {
+        public State search(DefaultSearch search, State state) {
             LabelIndex<?> labelIndex = search.document.getLabelIndex(labelType)
-                    .insideSpan(new Span(search.lastEnd, search.limit));
+                    .insideSpan(state.getUncovered());
             if (!seek) {
                 Optional<? extends Label<?>> labelOp = labelIndex.first();
-                if (!labelOp.isPresent()) return false;
+                if (!labelOp.isPresent()) return State.miss();
                 Label<?> label = labelOp.get();
-                if (!propertiesMatch(search, label)) return false;
-                search.lastBegin = label.getBegin();
-                search.lastEnd = label.getEnd();
+                if (!propertiesMatch(search, label)) return State.miss();
                 if (group != -1) {
                     search.groups[group] = label.getBegin();
                     search.groups[group + 1] = label.getEnd();
                     search.labels[group] = label;
                 }
-                if (next.search(search)) {
-                    search.lastBegin = label.getBegin();
-                    return true;
+                State advance = state.advance(label.getBegin(), label.getEnd());
+                State result = next.search(search, advance);
+                if (result.isHit()) {
+                    if (anonymous) {
+                        return result;
+                    }
+                    return result.setBegin(label.getBegin());
                 }
+
+                return result;
             }
             for (Label<?> label : labelIndex) {
                 if (!propertiesMatch(search, label)) continue;
-                Span span = label.toSpan();
-                search.lastBegin = span.getBegin();
-                search.lastEnd = span.getEnd();
                 if (group != -1) {
                     search.groups[group] = label.getBegin();
                     search.groups[group + 1] = label.getEnd();
                     search.labels[group] = label;
                 }
-                if (next.search(search)) {
-                    search.lastBegin = span.getBegin();
-                    return true;
+                State advance = state.advance(label.getBegin(), label.getEnd());
+                State result = next.search(search, advance);
+                if (result.isHit()) {
+                    if (anonymous) {
+                        return result;
+                    }
+                    return result.setBegin(label.getBegin());
                 }
             }
-            return false;
+            return State.miss();
         }
 
         @Nullable
@@ -1500,6 +1505,54 @@ public class Searcher {
         }
     }
 
+    static class State {
+        final int begin;
+        final int end;
+        final int limit;
+
+        State(int begin, int end, int limit) {
+            this.begin = begin;
+            this.end = end;
+            this.limit = limit;
+        }
+
+        static State miss() {
+            return new State(-1, -1, -1);
+        }
+
+        State advance(int begin, int end) {
+            return new State(begin, end, limit);
+        }
+
+        State setBegin(int begin) {
+            return new State(begin, end, limit);
+        }
+
+        State pin() {
+            return new State(begin, begin, end);
+        }
+
+        boolean isMiss() {
+            return begin == -1;
+        }
+
+        boolean isHit() {
+            return begin != -1;
+        }
+
+        boolean isCovered(State other) {
+            return begin == other.begin && end == other.end;
+        }
+
+        Span getUncovered() {
+            return new Span(end, limit);
+        }
+
+        Span getCovered() {
+            return new Span(begin, end);
+        }
+    }
+
     /**
      *
      */
@@ -1509,20 +1562,16 @@ public class Searcher {
         final int[] groups;
         final int[] locals;
         boolean found;
-
-        int lastBegin;
-        int lastEnd;
-
-        int limit;
+        int from, to;
+        State result;
 
         DefaultSearch(Document document, Span span) {
             this.document = document;
             labels = new Label[numberGroups];
             groups = new int[numberGroups * 2];
             locals = new int[numberLocals];
-            lastEnd = lastBegin = span.getBegin();
-            limit = span.getEnd();
-            found = root.search(this);
+            from = span.getBegin();
+            to = span.getEnd();
         }
 
         @Override
@@ -1544,27 +1593,63 @@ public class Searcher {
                     .of(new Span(groups[integer], groups[integer + 1]));
         }
 
+        public boolean matches() {
+            return found && from == result.begin && to == result.end;
+        }
+
         @Override
-        public boolean foundMatch() {
+        public boolean found() {
             return found;
         }
 
         @Override
-        public boolean findNext() {
-            if (!found) {
-                throw new IllegalStateException();
-            }
-
+        public boolean search() {
             Arrays.fill(groups, -1);
             Arrays.fill(labels, null);
 
-            return found = root.search(this);
+            result = searchRoot.search(this, new State(from, from, to));
+            from = result.end;
+            return found = result.isHit();
         }
 
         @Override
+        public boolean search(int begin, int end) {
+            from = begin;
+            to = end;
+            return search();
+        }
+
+        @Override
+        public boolean search(Span span) {
+            return search(span.getBegin(), span.getEnd());
+        }
+
+        @Override
+        public boolean match() {
+            Arrays.fill(groups, -1);
+            Arrays.fill(labels, null);
+
+            result = root.search(this, new State(from, from, to));
+            from = result.end;
+            return found = result.isHit();
+        }
+
+        @Override
+        public boolean match(int begin, int end) {
+            from = begin;
+            to = end;
+            return match();
+        }
+
+        @Override
+        public boolean match(Span span) {
+            return match(span.getBegin(), span.getEnd());
+        }
+
+
+        @Override
         public Optional<Span> getSpan() {
-            return Optional.of(new Span(lastBegin, lastEnd))
-                    .filter(blah -> found);
+            return Optional.of(result.getCovered()).filter(blah -> found);
         }
 
         @Override
@@ -1572,4 +1657,5 @@ public class Searcher {
             return groupNames.keySet();
         }
     }
+
 }

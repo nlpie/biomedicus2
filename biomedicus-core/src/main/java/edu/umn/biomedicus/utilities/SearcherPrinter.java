@@ -47,9 +47,13 @@ public class SearcherPrinter implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        Search search = searcher.search(document);
+        Search search = searcher.createSearcher(document);
 
-        while (search.foundMatch()) {
+        while (true) {
+            boolean found = search.search();
+            if (!found) {
+                break;
+            }
             System.out.println("Matching Text: " + search.getSpan().get().getCovered(document.getText()));
 
             for (String group : search.getGroups()) {
@@ -65,8 +69,6 @@ public class SearcherPrinter implements DocumentProcessor {
                     System.out.println("\t\tStored Label: " + label.getValue().toString());
                 }
             }
-
-            search.findNext();
         }
     }
 }
