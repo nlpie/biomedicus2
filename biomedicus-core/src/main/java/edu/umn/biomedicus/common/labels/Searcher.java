@@ -18,7 +18,6 @@ package edu.umn.biomedicus.common.labels;
 
 import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TextLocation;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -531,8 +530,8 @@ public class Searcher {
             return new Chain(pinned, innerConditions);
         }
 
+        @SuppressWarnings("unchecked")
         private Node type(boolean seek) {
-
             int ch = read();
             if (!Character.isAlphabetic(ch) && !Character.isDigit(ch))
                 throw error("Illegal identifier");
@@ -570,7 +569,8 @@ public class Searcher {
                 next();
                 ch = read();
                 String enumValue = readAlphanumeric(ch);
-                Enum t = Enum.valueOf((Class<Enum>) aClass, enumValue);
+
+                Enum<?> t = Enum.valueOf((Class<Enum>) aClass, enumValue);
                 return new EnumMatch(aClass, seek, false, group,
                         t);
             } else {
@@ -712,20 +712,8 @@ public class Searcher {
             return new PatternSyntaxException(desc, pattern, index);
         }
 
-        boolean atEnd() {
-            return index == arr.length;
-        }
-
         int read() {
             return arr[index++];
-        }
-
-        int readPastWhitespace() {
-            int ch;
-            do {
-                ch = read();
-            } while (Character.isWhitespace(ch));
-            return ch;
         }
 
         int peekPastWhiteSpace() {
@@ -1563,7 +1551,7 @@ public class Searcher {
         final int[] locals;
         boolean found;
         int from, to;
-        State result;
+        State result = State.miss();
 
         DefaultSearch(Document document, Span span) {
             this.document = document;
@@ -1574,6 +1562,7 @@ public class Searcher {
             to = span.getEnd();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Optional<Label<?>> getLabel(String name) {
             Integer integer = groupNames.get(name);
