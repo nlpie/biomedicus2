@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  *
  */
 @ProvidedBy(AcronymExpansionsModel.Loader.class)
-class AcronymExpansionsModel {
+public class AcronymExpansionsModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymExpansionsModel.class);
 
     private final Map<String, Collection<String>> expansions;
@@ -49,7 +49,7 @@ class AcronymExpansionsModel {
         return expansions.get(acronym);
     }
 
-    Set<String> getAcronyms() {
+    public Set<String> getAcronyms() {
         return expansions.keySet();
     }
 

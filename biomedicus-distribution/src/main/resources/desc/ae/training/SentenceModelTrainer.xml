@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
+  ~ Unauthorized Copying of this file, via any medium is strictly prohibited
+  ~ Proprietary and Confidential
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
@@ -22,14 +12,19 @@
     <annotatorImplementationName>
         edu.umn.biomedicus.uima.adapter.DocumentProcessorRunnerAnnotator
     </annotatorImplementationName>
-    <!-- Biomedicus document processors are all run using the
-    DocumentProcessorRunnerAnnotator -->
+    <!-- Biomedicus document processors are all run using the DocumentProcessorRunnerAnnotator -->
     <analysisEngineMetaData>
-        <name>Sentence Detector</name>
-        <description>Detects sentences in text.</description>
+        <name>Sentence Model Trainer</name>
+        <description>Uses Open NLP to train a sentence model</description>
         <version>${project.version}</version>
         <vendor>${organization.name}</vendor>
         <configurationParameters>
+            <configurationParameter>
+                <name>opennlp.sentence.trainerOutput.path</name>
+                <description>Path where to write the trainer output
+                </description>
+                <type>String</type>
+            </configurationParameter>
             <configurationParameter>
                 <name>documentProcessor</name>
                 <description>The document processor class to instantiate.
@@ -67,10 +62,16 @@
         </configurationParameters>
         <configurationParameterSettings>
             <nameValuePair>
+                <name>opennlp.sentence.trainerOutput.path</name>
+                <value>
+                    <string/>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
                 <name>documentProcessor</name>
                 <value>
                     <string>
-                        edu.umn.biomedicus.sentence.ONLPSentenceDetector
+                        edu.umn.biomedicus.sentence.ONLPSentenceTrainingProcessor
                     </string>
                 </value>
             </nameValuePair>
@@ -78,6 +79,16 @@
                 <name>viewName</name>
                 <value>
                     <string>SystemView</string>
+                </value>
+            </nameValuePair>
+            <nameValuePair>
+                <name>postProcessors</name>
+                <value>
+                    <array>
+                        <string>
+                            edu.umn.biomedicus.sentence.ONLPSentenceTrainer
+                        </string>
+                    </array>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>
@@ -91,21 +102,9 @@
                 <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
             </imports>
         </typePriorities>
-        <capabilities>
-            <capability>
-                <outputs>
-                    <type allAnnotatorFeatures="true">
-                        edu.umn.biomedicus.uima.type1_6.Sentence
-                    </type>
-                </outputs>
-                <inputSofas>
-                    <sofaName>SystemView</sofaName>
-                </inputSofas>
-            </capability>
-        </capabilities>
         <operationalProperties>
             <modifiesCas>true</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+            <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
             <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
     </analysisEngineMetaData>

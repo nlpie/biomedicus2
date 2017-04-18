@@ -47,9 +47,10 @@ settings:
       tui.path: conceptFilters/filteredTuis.txt
   sections.headers.path: sections/headers.txt
   parser.implementation: opennlp
-  sentenceDetectorFactory.implementation: opennlp
   opennlp:
-    sentence.model.path: opennlp/sentenceME.bin
+    sentence:
+      model.path: opennlp/sentenceME.bin
+      trainerOutput.path: opennlp/sentence-out.bin
   syntaxnet:
     installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface
@@ -60,14 +61,11 @@ settings:
     probability.path: modification/probability.yml
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
-  sentenceDetectorFactory.implementation: edu.umn.biomedicus.sentence.SentenceDetectorFactory
   acronym.model: edu.umn.biomedicus.acronym.AcronymModel
   stopwords.model: edu.umn.biomedicus.stopwords.Stopwords
 # these indicate the options for the bindings above
 interfaceImplementations:
   edu.umn.biomedicus.acronym.AcronymModel:
     vector: edu.umn.biomedicus.acronym.AcronymVectorModel
-  edu.umn.biomedicus.sentence.SentenceDetectorFactory:
-    opennlp: edu.umn.biomedicus.opennlp.OpenNlpSentenceDetectorFactory
   edu.umn.biomedicus.stopwords.Stopwords:
     fileBased: edu.umn.biomedicus.stopwords.StopwordsModel
