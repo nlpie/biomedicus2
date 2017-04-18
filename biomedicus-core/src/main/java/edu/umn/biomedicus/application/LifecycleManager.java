@@ -22,17 +22,25 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Service responsible for calling all of the lifecycle managed objects and
+ * telling them to shut down. Lifecycle manageds should be injected with this
+ * service and add themselves using the register method.
+ *
+ * @since 1.6.0
+ */
 @Singleton
 public class LifecycleManager {
-    private final Collection<LifecycleManaged> lifecycleComponents = new ArrayList<>();
+    private final Collection<LifecycleManaged> lifecycleManageds
+            = new ArrayList<>();
 
-    public void register(LifecycleManaged lifecycleComponentProvider) {
-        lifecycleComponents.add(lifecycleComponentProvider);
+    public void register(LifecycleManaged lifecycleManaged) {
+        lifecycleManageds.add(lifecycleManaged);
     }
 
     public void triggerShutdown() throws BiomedicusException {
-        for (LifecycleManaged lifecycleComponent : lifecycleComponents) {
-            lifecycleComponent.doShutdown();
+        for (LifecycleManaged lifecycleManaged : lifecycleManageds) {
+            lifecycleManaged.doShutdown();
         }
     }
 }

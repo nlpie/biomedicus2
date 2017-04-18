@@ -24,7 +24,6 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,18 +82,6 @@ public final class Biomedicus {
 
     public Path getDataFolder() {
         return dataFolder;
-    }
-
-    /**
-     * Gets
-     * @return
-     */
-    public Vocabulary getVocabulary() {
-        return injector.getInstance(Vocabulary.class);
-    }
-
-    public Vocabulary vocabulary() {
-        return injector.getInstance(Vocabulary.class);
     }
 
     public static Stream<Span> standardTokenCandidatesForSentence(CharSequence sentenceText) {

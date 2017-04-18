@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
+package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
+import com.google.inject.AbstractModule;
 
-/**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
- *
- * @since 1.6.0
- */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+public class VocabularyModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
+        bind(VocabularyStore.class).to(MapDbVocabStore.class);
+    }
 }

@@ -16,22 +16,49 @@
 
 package edu.umn.biomedicus.common.tuples;
 
+import javax.annotation.Nonnull;
 import java.util.function.BiConsumer;
 
+/**
+ * A 2-tuple, sequence of two objects, of different or the same type.
+ * The two objects can not be null.
+ *
+ * @param <T> Type of the first object
+ * @param <U> Type of the second object
+ */
 public class Pair<T, U> {
     private final T first;
 
     private final U second;
 
-    public Pair(T first, U second) {
+    /**
+     * Creates a Pair with the passed arguments. Passing null objects will break
+     * this class.
+     *
+     * @param first a non-null first object.
+     * @param second a non-null second object.
+     */
+    public Pair(@Nonnull T first, @Nonnull U second) {
         this.first = first;
         this.second = second;
     }
 
+    @Nonnull
+    public T getFirst() {
+        return first;
+    }
+
+    @Nonnull
     public T first() {
         return first;
     }
 
+    @Nonnull
+    public U getSecond() {
+        return second;
+    }
+
+    @Nonnull
     public U second() {
         return second;
     }
@@ -40,6 +67,11 @@ public class Pair<T, U> {
         return new Pair<>(second, first);
     }
 
+    /**
+     * Calls the BiFunction on the two elements of this Pair.
+     *
+     * @param function function to call
+     */
     public void call(BiConsumer<T, U> function) {
         function.accept(first, second);
     }

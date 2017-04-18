@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
-
-import edu.umn.biomedicus.exc.BiomedicusException;
+package edu.umn.biomedicus.common.labels;
 
 /**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
- *
- * @since 1.6.0
+ * Created by benknoll on 3/22/17.
  */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+public class SearcherParseException {
 }

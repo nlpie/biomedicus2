@@ -53,4 +53,11 @@ public final class DictionaryTerm {
             return new DictionaryTerm(concepts);
         }
     }
+
+    @Override
+    public String toString() {
+        return "DictionaryTerm{" +
+                "concepts=" + concepts +
+                '}';
+    }
 }

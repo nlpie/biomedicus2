@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
-
-import edu.umn.biomedicus.exc.BiomedicusException;
-
 /**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
  *
- * @since 1.6.0
  */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
-}
+@ReturnTypesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+package edu.umn.biomedicus.common.collect;
+
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

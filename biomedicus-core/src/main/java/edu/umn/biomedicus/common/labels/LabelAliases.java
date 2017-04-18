@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
+package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
  *
- * @since 1.6.0
  */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+@Singleton
+public class LabelAliases {
+    private final Map<String, Class<?>> aliases = new HashMap<>();
+
+    public void addAlias(String alias, Class<?> labelableClass) {
+        aliases.put(alias, labelableClass);
+    }
+
+    @Nullable
+    public Class<?> getLabelable(String alias) {
+        return aliases.get(alias);
+    }
 }

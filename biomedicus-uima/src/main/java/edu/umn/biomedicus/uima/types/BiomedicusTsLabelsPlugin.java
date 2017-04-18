@@ -98,6 +98,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         protected Sentence createLabelValue(FeatureStructure featureStructure) {
             return new Sentence();
         }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
+        }
     }
 
     public static class TextSegmentLabelAdapter extends AbstractLabelAdapter<TextSegment> {
@@ -109,6 +114,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         @Override
         protected TextSegment createLabelValue(FeatureStructure featureStructure) {
             return new TextSegment();
+        }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
         }
     }
 
@@ -130,6 +140,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         @Override
         protected DependencyParse createLabelValue(FeatureStructure featureStructure) {
             return new DependencyParse(featureStructure.getStringValue(parseTreeFeature));
+        }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
         }
     }
 
@@ -239,6 +254,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         protected ParseToken createToken(String text, boolean hasSpaceAfter) {
             return new ParseToken(text, hasSpaceAfter);
         }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
+        }
     }
 
     public static class PartOfSpeechLabelAdapter extends AbstractLabelAdapter<PartOfSpeech> {
@@ -259,6 +279,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         @Override
         protected PartOfSpeech createLabelValue(FeatureStructure featureStructure) {
             return PartsOfSpeech.forTag(featureStructure.getStringValue(partOfSpeechFeature));
+        }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
         }
     }
 
@@ -281,6 +306,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
             IndexedTerm indexedTerm = new IndexedTerm(featureStructure.getIntValue(indexFeature));
             return new WordIndex(indexedTerm);
         }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
+        }
     }
 
     public static class NormFormLabelAdapter extends AbstractLabelAdapter<NormForm> {
@@ -302,6 +332,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         protected NormForm createLabelValue(FeatureStructure featureStructure) {
             return new NormForm(featureStructure.getStringValue(normFormFeature));
         }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
+        }
     }
 
     public static class NormIndexLabelAdapter extends AbstractLabelAdapter<NormIndex> {
@@ -322,6 +357,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         protected NormIndex createLabelValue(FeatureStructure featureStructure) {
             IndexedTerm indexedTerm = new IndexedTerm(featureStructure.getIntValue(indexFeature));
             return new NormIndex(indexedTerm);
+        }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
         }
     }
 

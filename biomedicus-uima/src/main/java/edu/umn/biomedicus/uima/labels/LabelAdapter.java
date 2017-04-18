@@ -21,6 +21,8 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
 public interface LabelAdapter<T> {
+    boolean isDistinct();
+
     Type getType();
 
     AnnotationFS labelToAnnotation(Label<T> label);

@@ -19,22 +19,22 @@ package edu.umn.biomedicus.common.labels;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static java.util.Spliterator.*;
 
 /**
- * A collection of {@link Label} objects. By default, a typed injectable of labels should map to the collection of all
- * such labels for a document. Labels are unique per span, meaning that for each unique span at most one instance of T
- * will be labeled.
+ * A collection of {@link Label} objects. By default, a typed injectable of
+ * labels should map to the collection of all such labels for a document. Labels
+ * are unique per span, meaning that for each unique span at most one instance
+ * of T will be labeled.
  * <br />
- * Most transformations, functions which return another instance of LabelIndex, should be performed lazily, meaning that the
- * computation involved isn't performed until the labels are iterated, and in many cases, their limits can be combined,
- * for example {@link #insideSpan(TextLocation)} and {@link #rightwardsFrom(TextLocation)} chained should only cost as much as
+ * Most transformations, functions which return another instance of LabelIndex,
+ * should be performed lazily, meaning that the computation involved isn't
+ * performed until the labels are iterated, and in many cases, their limits can
+ * be combined, for example {@link #insideSpan(TextLocation)} and
+ * {@link #rightwardsFrom(TextLocation)} chained should only cost as much as
  * one insideSpan call.
  *
  * @param <T> the type that is labeled
@@ -42,16 +42,20 @@ import static java.util.Spliterator.*;
  */
 public interface LabelIndex<T> extends Iterable<Label<T>> {
     /**
-     * Returns a collection of all the labels that contain the specified {@link TextLocation} parameter.
+     * Returns a collection of all the labels that contain the specified
+     * {@link TextLocation} parameter.
      *
-     * @param textLocation the text location which should be contained by any label returned.
-     * @return new LabelIndex in which all labels contain the specified text location.
+     * @param textLocation the text location which should be contained by any
+     *                     label returned.
+     * @return new LabelIndex in which all labels contain the specified text
+     * location.
      */
     LabelIndex<T> containing(TextLocation textLocation);
 
     /**
-     * Returns a collection of these labels only inside the span parameter. All labels in the returned objects will have
-     * a begin greater than or equal to the argument's begin and an end less than or equal to the arguments end.
+     * Returns a collection of these labels only inside the span parameter. All
+     * labels in the returned objects will have a begin greater than or equal to
+     * the argument's begin and an end less than or equal to the arguments end.
      *
      * @param textLocation the boundaries.
      * @return LabelIndex object filtered down so that all labels meet the requirement
@@ -59,8 +63,9 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
     LabelIndex<T> insideSpan(TextLocation textLocation);
 
     /**
-     * The collection of labels where the begin and end are less than or equal to the begin of the span argument.
-     * Iterator order is such that we start with the first to the immediate left of the span, and continue onwards.
+     * The collection of labels where the begin and end are less than or equal
+     * to the begin of the span argument. Iterator order is such that we start
+     * with the first to the immediate left of the span, and continue onwards.
      *
      * @param span span to work leftwards from
      * @return labels leftwards from the specified span.
@@ -68,7 +73,8 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
     LabelIndex<T> leftwardsFrom(TextLocation span);
 
     /**
-     * The collection of labels where the begin and end are greater than or equal to the end of the span argument.
+     * The collection of labels where the begin and end are greater than or
+     * equal to the end of the span argument.
      *
      * @param span span to work rightwards from
      * @return labels rightwards after the specified span.
@@ -90,29 +96,27 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
     LabelIndex<T> ascendingBegin();
 
     /**
-     * Returns a LabelIndex which descends based on the begin value of label objects.
+     * Returns a LabelIndex which descends based on the begin value of label
+     * objects.
      *
      * @return a view of this label index
      */
     LabelIndex<T> descendingBegin();
 
     /**
-     * Returns a LabelIndex which ascends based on size after the begin policy.
+     * Returns a LabelIndex which, after the begin behavior, ascends based on
+     * the end value of the labels.
      *
-     * @return a view of this label index
+     * @return
      */
-    LabelIndex<T> increasingSize();
+    LabelIndex<T> ascendingEnd();
+
+    LabelIndex<T> descendingEnd();
 
     /**
-     * Returns a LabelIndex which descends based on size after the begin policy.
-     *
-     * @return a view of this label index
-     */
-    LabelIndex<T> decreasingSize();
-
-    /**
-     * Limits the the number of labels returned to a specific count. Should be used as close as possible to the
-     * consumption of the stream, since limiting forces segmentation between transformation calls.
+     * Limits the the number of labels returned to a specific count. Should be
+     * used as close as possible to the consumption of the stream, since
+     * limiting forces segmentation between transformation calls.
      *
      * @param max the number of labels to limit to
      * @return a view of this label index
@@ -132,7 +136,7 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      *
      * @return an optional of the first label, empty if there are no labels in this label index.
      */
-    Optional<Label<T>> firstOptionally();
+    Optional<Label<T>> first();
 
     /**
      * Returns optionally a label with the specified text location.
@@ -179,4 +183,6 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      * @return list of all the label values
      */
     List<T> values();
+
+    LabelIndex<T> inflate();
 }

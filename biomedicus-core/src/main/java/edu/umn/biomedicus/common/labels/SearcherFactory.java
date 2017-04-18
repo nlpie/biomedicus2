@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
+package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
  *
- * @since 1.6.0
  */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+@Singleton
+public class SearcherFactory {
+    private final LabelAliases labelAliases;
+
+    @Inject
+    public SearcherFactory(LabelAliases labelAliases) {
+        this.labelAliases = labelAliases;
+    }
+
+    public Searcher searcher(String pattern) {
+        return Searcher.parse(labelAliases, pattern);
+    }
 }

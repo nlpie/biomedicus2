@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.application;
+package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.common.terms.TermIndex;
 
-/**
- * Indicates a class that has some kind of resource that needs to be shut-down
- * or closed or freed at the end of the lifecycle of the application.
- *
- * @since 1.6.0
- */
-public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+import java.io.Closeable;
+
+abstract class VocabularyStore implements Closeable {
+    abstract void open();
+
+    abstract TermIndex getWords();
+
+    abstract TermIndex getTerms();
+
+    abstract TermIndex getNorms();
 }

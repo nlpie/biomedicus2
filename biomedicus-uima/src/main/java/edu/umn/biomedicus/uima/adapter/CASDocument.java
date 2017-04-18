@@ -19,6 +19,7 @@ package edu.umn.biomedicus.uima.adapter;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
@@ -168,5 +169,10 @@ final class CASDocument implements Document {
     public <T> Labeler<T> getLabeler(Class<T> labelClass) {
         LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view);
         return new UimaLabeler<>(labelAdapter);
+    }
+
+    @Override
+    public Span getDocumentSpan() {
+        return new Span(0, getText().length());
     }
 }

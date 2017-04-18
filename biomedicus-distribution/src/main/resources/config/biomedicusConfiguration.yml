@@ -6,6 +6,7 @@ paths:
 settings:
   vocabulary:
     db.path: vocabulary.db
+    inMemory: yes
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4

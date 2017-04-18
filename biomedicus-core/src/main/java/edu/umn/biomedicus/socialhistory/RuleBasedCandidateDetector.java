@@ -54,7 +54,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
     public void process() throws BiomedicusException {
         for (Label<Section> sectionLabel : sectionLabelIndex) {
             Label<SectionTitle> sectionTitleLabel = sectionTitleLabelIndex.insideSpan(sectionLabel)
-                    .firstOptionally()
+                    .first()
                     .orElseThrow(() -> new BiomedicusException("Section did not have a title"));
 
             List<TermToken> titleTokens = termTokenLabelIndex.insideSpan(sectionTitleLabel).values();
@@ -69,7 +69,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                 continue;
             }
 
-            Label<SectionContent> sectionContentLabel = sectionContentLabelIndex.insideSpan(sectionLabel).firstOptionally()
+            Label<SectionContent> sectionContentLabel = sectionContentLabelIndex.insideSpan(sectionLabel).first()
                     .orElseThrow(() -> new BiomedicusException("No section content"));
             LabelIndex<Sentence> sentenceLabelIndex = this.sentenceLabelIndex.insideSpan(sectionContentLabel);
             for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {

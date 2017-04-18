@@ -57,4 +57,9 @@ public abstract class AbstractLabelAdapter<T> implements LabelAdapter<T> {
     }
 
     protected abstract T createLabelValue(FeatureStructure featureStructure);
+
+    @Override
+    public boolean isDistinct() {
+        return false;
+    }
 }

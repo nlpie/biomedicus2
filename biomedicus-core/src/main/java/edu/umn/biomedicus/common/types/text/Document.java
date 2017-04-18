@@ -69,4 +69,6 @@ public interface Document {
     <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
 
     <T> Labeler<T> getLabeler(Class<T> labelClass);
+
+    Span getDocumentSpan();
 }
