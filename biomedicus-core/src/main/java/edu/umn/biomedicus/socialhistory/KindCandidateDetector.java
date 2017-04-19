@@ -17,14 +17,16 @@
 package edu.umn.biomedicus.socialhistory;
 
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.TermToken;
 
 import java.util.List;
 
 public interface KindCandidateDetector {
-    boolean isSocialHistoryHeader(List<TermToken> headerTokens);
 
-    boolean isSocialHistorySentence(List<TermToken> sectionTitleTokens, List<TermToken> sentenceTokens);
+    boolean isSocialHistoryHeader(List<ParseToken> headerTokens);
+
+    boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens, List<ParseToken> sentenceTokens);
 
     SubstanceUsageKind getSocialHistoryKind();
 }

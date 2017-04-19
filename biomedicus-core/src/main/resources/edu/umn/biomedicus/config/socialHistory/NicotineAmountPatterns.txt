@@ -1,0 +1,47 @@
+(a|one|two|three|four|five|six|seven|eitht|nine|ten)+ +$nicotine_unit[s]*
+\.\d+ *- *\d+ *$nicotine_unit[s]*
+\.\d+ +$nicotine_unit[s]*
+\d+ +$nicotine_unit[s]*
+\d+-$nicotine_unit[s]*
+\d+ on average
+\d+-\d+ +$nicotine_unit[s]*
+\d+-\d+$nicotine_unit[s]*
+\d+\/\d+ +$nicotine_unit[s]*
+\d+\/\d+-\d+ +$nicotine_unit[s]*
+\d+$nicotine_unit[s]*
+>\d+ +$nicotine_unit[s]*pack-years
+>\d+ +$nicotine_unit[s]*
+~\d+ +$nicotine_unit[s]*
+at least +\d+ +$nicotine_unit[s]*
+at least +\d+ +or +\d+ +$nicotine_unit[s]*
+couple of $nicotine_unit[s]*
+few $nicotine_unit[s]*
+half +a +pack[s]*
+heavy
+just +under +\d+ +$nicotine_unit
+less +than +\d+
+less +than +\d+/\d+ +$nicotine_unit
+minimal
+no more than +\d+/\d+ +$nicotine_unit
+none
+not +a +pack[s]*
+one +right +after +the +other
+over +\d+ +$nicotine_unit
+significant
+significantly
+once
+(one|two|three) +and +a +half pack[s]*
+(Half|quarter) +pack[s]*
+\d+\-\d+\/\d+ +packs
+a (half|quarter|third) of a pack[s]*
+a thirteen and a half pack year
+a (half|quarter) of a pack[s]*
+one half pack[s]*
+\d+ +pack-year
+\d+ +pack year[s]*
+\d+ +to +\d+ +$nicotine_unit[s]
+less than (a|one|two|three|four|five|six|seven|eitht|nine|ten) pack[s]*
+a +pack +and +a +half
+\d+\-pack\-(year|yr)
+\d+pk-(year|yr)
+one-and-one-half-pack[s]*

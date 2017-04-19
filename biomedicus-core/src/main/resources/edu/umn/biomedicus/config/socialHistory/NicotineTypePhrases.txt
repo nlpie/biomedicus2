@@ -1,0 +1,52 @@
+Cigarettes *- *roll-your-own
+Cigarettes *- *manufactured
+electronic cigarette
+Dissolvable tobacco
+Second hand tobacco
+nictotine patches
+second ahnd smoke
+second hand smoke
+Smokeless tobacco
+second han smoke
+secondhand smoke
+2nd house smoke
+Dipping tobacco
+electronic cigs
+2nd hand smoke
+NICOTINE PATCH
+Passive smoker
+passive smoke
+Roll-Your-Own
+Cigar smoker
+E-cigarettes
+nicotine gum
+Pipe tobacco
+cigarrettes
+E-Cigarette
+second hand
+cigarettes
+cigarretts
+Nicorette
+Snuff user
+Cigarette
+Waterpipe
+2nd hand
+\d+ mg gum
+cigar's
+tobacco
+cigars
+hookah
+Cigar
+Gutka
+patch
+pipes
+snuff
+chew
+cig.
+cigs
+pipe
+snus
+cig
+smokeless
+Newport
+Nicorette gum
