@@ -19,14 +19,12 @@ package edu.umn.biomedicus.socialhistory;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
+import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +32,12 @@ import java.util.List;
 
 public class RuleBasedCandidateDetector implements DocumentProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TobaccoKindCandidateDetector.class);
-
-    private final List<? extends KindCandidateDetector> candidateDetectors = Arrays.asList(new DrugKindCandidateDetector(),
-            new AlcoholKindCandidateDetector(), new TobaccoKindCandidateDetector());
+    private final List<? extends KindCandidateDetector> candidateDetectors
+            = Arrays.asList(
+            new DrugKindCandidateDetector(),
+            new AlcoholKindCandidateDetector(),
+            new TobaccoKindCandidateDetector()
+    );
     private final LabelIndex<SectionTitle> sectionTitleLabels;
     private final LabelIndex<ParseToken> parseTokenLabels;
     private final LabelIndex<SectionContent> sectionContentLabels;
@@ -58,12 +58,15 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        for (Label<Section> sectionLabel : sectionLabelIndex) {
-            Label<SectionTitle> sectionTitleLabel = sectionTitleLabelIndex.insideSpan(sectionLabel)
+        for (Label<Section> sectionLabel : sectionLabels) {
+            Label<SectionTitle> sectionTitleLabel = sectionTitleLabels
+                    .insideSpan(sectionLabel)
                     .first()
-                    .orElseThrow(() -> new BiomedicusException("Section did not have a title"));
+                    .orElseThrow(() -> new BiomedicusException(
+                            "Section did not have a title"));
 
-            List<ParseToken> titleParseTokens = parseTokenLabels.insideSpan(sectionTitleLabel).values();
+            List<ParseToken> titleParseTokens = parseTokenLabels
+                    .insideSpan(sectionTitleLabel).values();
 
             List<KindCandidateDetector> headerMatches = new ArrayList<>();
             for (KindCandidateDetector candidateDetector : candidateDetectors) {
@@ -74,21 +77,30 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
 
             if (!headerMatches.isEmpty()) {
 
-                Label<SectionContent> sectionContentLabel = sectionContentLabels.insideSpan(sectionLabel).firstOptionally()
-                        .orElseThrow(() -> new BiomedicusException("No section content"));
-                LabelIndex<Sentence> sentenceLabels = this.sentenceLabels.insideSpan(sectionContentLabel);
+                Label<SectionContent> sectionContentLabel = sectionContentLabels
+                        .insideSpan(sectionLabel).first()
+                        .orElseThrow(() -> new BiomedicusException(
+                                "No section content"));
+                LabelIndex<Sentence> sentenceLabels = this.sentenceLabels
+                        .insideSpan(sectionContentLabel);
 
                 for (Label<Sentence> sentenceLabel : sentenceLabels) {
 
-                    List<ParseToken> sentenceParseTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
-                    String strSentence = Helpers.toTokensString(sentenceParseTokens);
+                    List<ParseToken> sentenceParseTokens = parseTokenLabels
+                            .insideSpan(sentenceLabel).values();
                     for (KindCandidateDetector headerMatch : headerMatches) {
 
-                        if (headerMatch.isSocialHistorySentence(titleParseTokens, sentenceParseTokens)) {
+                        if (headerMatch
+                                .isSocialHistorySentence(titleParseTokens,
+                                        sentenceParseTokens)) {
 
-                            SubstanceUsageKind socialHistoryKind = headerMatch.getSocialHistoryKind();
-                            SocialHistoryCandidate labelValue = new SocialHistoryCandidate(socialHistoryKind);
-                            candidateLabeler.value(labelValue).label(sentenceLabel);
+                            SubstanceUsageKind socialHistoryKind = headerMatch
+                                    .getSocialHistoryKind();
+                            SocialHistoryCandidate labelValue
+                                    = new SocialHistoryCandidate(
+                                    socialHistoryKind);
+                            candidateLabeler.value(labelValue)
+                                    .label(sentenceLabel);
 
                         }
 
