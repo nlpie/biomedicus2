@@ -21,7 +21,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.Span;
@@ -30,12 +30,12 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import java.util.Iterator;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
-    private final Document document;
+    private final TextView document;
     private final LabelIndex<Sentence> sentenceLabelIndex;
     private final Labeler<ParseToken> parseTokenLabeler;
 
     @Inject
-    public PennLikeTokenizer(Document document) {
+    public PennLikeTokenizer(TextView document) {
         this.document = document;
         sentenceLabelIndex = document.getLabelIndex(Sentence.class);
         parseTokenLabeler = document.getLabeler(ParseToken.class);

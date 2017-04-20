@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -179,7 +180,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
 
     @Override
-    public void processCandidate(Document document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
+    public void processCandidate(TextView document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
 
         sectionLabels = document.getLabelIndex(Section.class);
         sectionTitleLabels = document.getLabelIndex(SectionTitle.class);
@@ -646,7 +647,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
         }
     }
 
-    private void extractType(Label<Sentence> sentenceLabel,Document document ) throws BiomedicusException {
+    private void extractType(Label<Sentence> sentenceLabel,TextView document ) throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);

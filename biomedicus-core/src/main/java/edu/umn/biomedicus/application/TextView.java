@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.text;
+package edu.umn.biomedicus.application;
 
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.common.types.text.Span;
 
-import javax.annotation.Nullable;
 import java.io.Reader;
 
 /**
- * A biomedicus basic unit for a document of text.
- * <p>This class will be implemented for each backend, so the biomedicus pipeline is designed to be agnostic
- * about how the data is stored. The UIMA example is edu.umn.biomedicus.adapter.JCasDocument</p>
+ * A biomedicus basic unit for document text.
+ *
+ * @since 1.6.0
  */
-public interface Document {
-
+public interface TextView {
     /**
      * Returns a reader for the document text
      *
@@ -44,31 +42,25 @@ public interface Document {
      */
     String getText();
 
-    @Nullable
-    String getDocumentId();
-
-    void setDocumentId(String documentId);
-
     /**
      *
-     * @param key
+     * @param labelClass
+     * @param <T>
      * @return
      */
-    @Nullable
-    String getMetadata(String key) throws BiomedicusException;
+    <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
 
     /**
      *
-     * @param key
-     * @param value
+     * @param labelClass
+     * @param <T>
+     * @return
      */
-    void setMetadata(String key, String value) throws BiomedicusException;
-
-    Document getSiblingDocument(String identifier) throws BiomedicusException;
-
-    <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
-
     <T> Labeler<T> getLabeler(Class<T> labelClass);
 
+    /**
+     *
+     * @return
+     */
     Span getDocumentSpan();
 }

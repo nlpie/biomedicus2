@@ -18,6 +18,7 @@ package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -67,7 +68,7 @@ class AcronymProcessor implements DocumentProcessor {
     @Inject
     public AcronymProcessor(@Setting("acronym.model") AcronymModel model,
                             @Nullable OrthographicAcronymModel orthographicModel,
-                            Document document) {
+                            TextView document) {
         this.orthographicModel = orthographicModel;
         this.model = model;
         this.termTokenLabels = document.getLabelIndex(TermToken.class);

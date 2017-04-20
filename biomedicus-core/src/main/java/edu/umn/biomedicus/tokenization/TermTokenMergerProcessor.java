@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.tokenization;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -31,7 +32,7 @@ public final class TermTokenMergerProcessor implements DocumentProcessor {
     private final Labeler<TermToken> termTokenLabeler;
 
     @Inject
-    public TermTokenMergerProcessor(Document document) {
+    public TermTokenMergerProcessor(TextView document) {
         parseTokens = document.getLabelIndex(ParseToken.class);
         sentenceLabelIndex = document.getLabelIndex(Sentence.class);
         termTokenLabeler = document.getLabeler(TermToken.class);

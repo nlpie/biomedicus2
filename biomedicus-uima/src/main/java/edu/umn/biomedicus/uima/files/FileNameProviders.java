@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.type1_5.DocumentId;
@@ -106,13 +106,13 @@ public final class FileNameProviders {
     }
 
     /**
-     * Creates a file name provider from a biomedicus {@link Document} type.
+     * Creates a file name provider from a biomedicus {@link TextView} type.
      *
      * @param document  the document to pull the document identifier from.
      * @param extension the extension to give the file name
      * @return the file name provider which gives the file name.
      */
-    public static String fromDocument(Document document, String extension) {
+    public static String fromDocument(TextView document, String extension) {
         String documentIdentifier = document.getDocumentId();
         return FileNameProviders.withPotentiallyNullIdentifier(documentIdentifier, extension);
     }

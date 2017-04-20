@@ -19,13 +19,13 @@ package edu.umn.biomedicus.spelling;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
-import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -45,7 +45,7 @@ public final class MisspellingCorrector implements DocumentProcessor {
 
     @Inject
     public MisspellingCorrector(SpellingModel spellingModel,
-                                Document document) {
+                                TextView document) {
         this.spellingModel = spellingModel;
         this.sentence2LabelIndex = document.getLabelIndex(Sentence.class);
         this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);

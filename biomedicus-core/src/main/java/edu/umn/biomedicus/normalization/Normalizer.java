@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.normalization;
 
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -41,7 +41,7 @@ public class Normalizer implements DocumentProcessor {
     private final Labeler<NormForm> normFormLabeler;
 
     @Inject
-    Normalizer(NormalizerModel normalizerModel, Document document) {
+    Normalizer(NormalizerModel normalizerModel, TextView document) {
         this.normalizerModel = normalizerModel;
         parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);

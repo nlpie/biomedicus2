@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.Span;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -56,7 +56,7 @@ public class SearcherTest {
     }
 
     @Mocked
-    Document document;
+    TextView document;
 
     @Mocked
     LabelAliases labelAliases;

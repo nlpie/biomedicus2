@@ -24,7 +24,7 @@ import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
@@ -72,7 +72,7 @@ public final class HistoryModificationDetector implements DocumentProcessor {
     private final Labeler<Historical> labeler;
 
     @Inject
-    public HistoryModificationDetector(Document document) {
+    public HistoryModificationDetector(TextView document) {
         this.sentences = document.getLabelIndex(Sentence.class);
         this.dictionaryTerms = document.getLabelIndex(DictionaryTerm.class);
         this.termTokens = document.getLabelIndex(TermToken.class);

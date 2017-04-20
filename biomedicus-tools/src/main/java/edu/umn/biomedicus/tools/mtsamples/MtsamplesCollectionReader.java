@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.tools.mtsamples;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.files.InputFileAdapter;
@@ -145,7 +146,7 @@ public class MtsamplesCollectionReader implements InputFileAdapter {
         systemView.setDocumentText(text);
 
         try {
-            edu.umn.biomedicus.common.types.text.Document document = UimaAdapters.documentFromView(systemView, labelAdapters);
+            TextView document = UimaAdapters.documentFromView(systemView, labelAdapters);
             document.setDocumentId(path.getFileName().toString());
             document.setMetadata("docTypeId", docTypeId);
             document.setMetadata("docType", docType);

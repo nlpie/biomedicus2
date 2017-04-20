@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.Span;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,11 +70,11 @@ public class Searcher {
         return new Parser(labelAliases, pattern).compile();
     }
 
-    public Search createSearcher(Document document) {
+    public Search createSearcher(TextView document) {
         return new DefaultSearch(document, document.getDocumentSpan());
     }
 
-    public Search createSearcher(Document document, Span span) {
+    public Search createSearcher(TextView document, Span span) {
         return new DefaultSearch(document, span);
     }
 
@@ -1545,7 +1545,7 @@ public class Searcher {
      *
      */
     class DefaultSearch implements Search {
-        final Document document;
+        final TextView document;
         final Label[] labels;
         final int[] groups;
         final int[] locals;
@@ -1553,7 +1553,7 @@ public class Searcher {
         int from, to;
         State result = State.miss();
 
-        DefaultSearch(Document document, Span span) {
+        DefaultSearch(TextView document, Span span) {
             this.document = document;
             labels = new Label[numberGroups];
             groups = new int[numberGroups * 2];

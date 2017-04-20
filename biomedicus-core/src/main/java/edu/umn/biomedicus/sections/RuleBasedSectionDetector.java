@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -54,7 +55,7 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
      * @param ruleBasedSectionDetectorModel patterns.
      */
     @Inject
-    RuleBasedSectionDetector(Document document,
+    RuleBasedSectionDetector(TextView document,
                              RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
         this.headers = ruleBasedSectionDetectorModel.getSectionHeaderPattern();
         sentenceLabelIndex = document.getLabelIndex(Sentence.class);

@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -168,7 +169,7 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
 
 
     @Override
-    public void processCandidate(Document document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
+    public void processCandidate(TextView document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
 
         sectionLabels = document.getLabelIndex(Section.class);
         sectionTitleLabels = document.getLabelIndex(SectionTitle.class);

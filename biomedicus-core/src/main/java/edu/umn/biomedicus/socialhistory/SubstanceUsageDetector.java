@@ -22,7 +22,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -36,13 +36,13 @@ public class SubstanceUsageDetector implements DocumentProcessor {
     private final TobaccoKindSubstanceUsageDetector tobaccoKindSubstanceUsageDetector;
     private final AlcoholKindSubstanceUsageDetector alcoholKindSubstanceUsageDetector;
     private final DrugKindSubstanceUsageDetector drugKindSubstanceUsageDetector;
-    private final Document document;
+    private final TextView document;
     private final Map<SubstanceUsageKind, KindSubstanceUsageDetector> kindMap;
     private Helpers helper = new Helpers();
     private LabelIndex<ParseToken> parseTokenLabels;
 
     @Inject
-    public SubstanceUsageDetector(Document document, TobaccoKindSubstanceUsageDetector tobaccoKindSubstanceUsageDetector, AlcoholKindSubstanceUsageDetector alcoholKindSubstanceUsageDetector, DrugKindSubstanceUsageDetector drugKindSubstanceUsageDetector) {
+    public SubstanceUsageDetector(TextView document, TobaccoKindSubstanceUsageDetector tobaccoKindSubstanceUsageDetector, AlcoholKindSubstanceUsageDetector alcoholKindSubstanceUsageDetector, DrugKindSubstanceUsageDetector drugKindSubstanceUsageDetector) {
 
         termTokenLabels = document.getLabelIndex(TermToken.class);
         this.document = document;

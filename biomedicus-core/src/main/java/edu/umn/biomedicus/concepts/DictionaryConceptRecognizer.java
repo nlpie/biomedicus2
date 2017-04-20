@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -53,7 +54,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     private final ConceptDictionary conceptDictionary;
     private final LabelIndex<Sentence> sentences;
     private final LabelIndex<NormIndex> normIndexes;
-    private final Document document;
+    private final TextView document;
     private final Labeler<DictionaryTerm> termLabeler;
     private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
     private final LabelIndex<TermToken> termTokenLabelIndex;
@@ -65,7 +66,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * @param conceptDictionary the dictionary to get concepts from.
      */
     @Inject
-    DictionaryConceptRecognizer(ConceptDictionary conceptDictionary, Document document) {
+    DictionaryConceptRecognizer(ConceptDictionary conceptDictionary, TextView document) {
         this.conceptDictionary = conceptDictionary;
         this.document = document;
         sentences = document.getLabelIndex(Sentence.class);

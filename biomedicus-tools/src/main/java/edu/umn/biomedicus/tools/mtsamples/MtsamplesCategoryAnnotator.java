@@ -18,7 +18,7 @@ package edu.umn.biomedicus.tools.mtsamples;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MtsamplesCategoryAnnotator implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MtsamplesCategoryAnnotator.class);
-    private final Document document;
+    private final TextView document;
 
     @Inject
-    public MtsamplesCategoryAnnotator(Document document) {
+    public MtsamplesCategoryAnnotator(TextView document) {
         this.document = document;
     }
 

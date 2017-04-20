@@ -23,7 +23,7 @@ import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.NormIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -40,7 +40,7 @@ public final class NormLabeler implements DocumentProcessor {
     private final Labeler<NormIndex> normIndexLabeler;
 
     @Inject
-    public NormLabeler(Vocabulary vocabulary, Document document) {
+    public NormLabeler(Vocabulary vocabulary, TextView document) {
         this.wordIndex = vocabulary.getNormsIndex();
         normFormLabelIndex = document.getLabelIndex(NormForm.class);
         normIndexLabeler = document.getLabeler(NormIndex.class);

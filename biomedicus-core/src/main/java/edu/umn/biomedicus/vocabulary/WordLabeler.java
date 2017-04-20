@@ -18,12 +18,12 @@ package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -42,7 +42,7 @@ public final class WordLabeler implements DocumentProcessor {
     private final Labeler<WordIndex> wordIndexLabeler;
 
     @Inject
-    public WordLabeler(Vocabulary vocabulary, Document document) {
+    public WordLabeler(Vocabulary vocabulary, TextView document) {
         wordIndex = vocabulary.getWordsIndex();
         parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         wordIndexLabeler = document.getLabeler(WordIndex.class);

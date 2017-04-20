@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
@@ -35,31 +35,31 @@ public final class UimaAdapters {
     }
 
     /**
-     * Creates a Biomedicus {@link Document} implementation using the data stored in the
+     * Creates a Biomedicus {@link TextView} implementation using the data stored in the
      * UIMA "SystemView" view {@link Views#SYSTEM_VIEW}.
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @return newly instantiated {@code Document} object from the data stored in the SystemView.
      * @throws BiomedicusException
      */
-    public static Document documentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
+    public static TextView documentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
         return documentFromView(initialView, Views.SYSTEM_VIEW, labelAdapters);
     }
 
     /**
-     * Creates a Biomedicus {@link Document} implementation using the data stored in the
+     * Creates a Biomedicus {@link TextView} implementation using the data stored in the
      * UIMA "GoldView" view {@link Views#GOLD_VIEW}.
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
      * @return newly instantiated {@code Document} object from the data stored in the GoldView.
      * @throws BiomedicusException
      */
-    public static Document goldDocumentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
+    public static TextView goldDocumentFromInitialView(CAS initialView, LabelAdapters labelAdapters) throws BiomedicusException {
         return documentFromView(initialView, Views.SYSTEM_VIEW, labelAdapters);
     }
 
     /**
-     * Creates a Biomedicus {@link Document} implementation using the data stored in the
+     * Creates a Biomedicus {@link TextView} implementation using the data stored in the
      * an arbitrary UIMA view.
      *
      * @param initialView the _initialView, i.e. the JCas first passed to an annotator
@@ -67,23 +67,23 @@ public final class UimaAdapters {
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
      * @throws BiomedicusException
      */
-    public static Document documentFromView(CAS initialView, String viewName, LabelAdapters labelAdapters) throws BiomedicusException {
+    public static TextView documentFromView(CAS initialView, String viewName, LabelAdapters labelAdapters) throws BiomedicusException {
         if (CAS.NAME_DEFAULT_SOFA.equals(viewName)) {
             throw new IllegalArgumentException("Cannot create document from _initialView");
         }
         CAS view = initialView.getView(viewName);
-        return new CASDocument(view, labelAdapters);
+        return new CASTextView(view, labelAdapters);
     }
 
     /**
-     * Creates a Biomedicus {@link Document} implementation using the data stored in the
+     * Creates a Biomedicus {@link TextView} implementation using the data stored in the
      * an arbitrary UIMA view.
      *
      * @param view the view to create a document from
      * @return newly instantiated {@code Document} object from the data stored in the specified view.
      * @throws BiomedicusException
      */
-    public static Document documentFromView(CAS view, LabelAdapters labelAdapters) throws BiomedicusException {
-        return new CASDocument(view, labelAdapters);
+    public static TextView documentFromView(CAS view, LabelAdapters labelAdapters) throws BiomedicusException {
+        return new CASTextView(view, labelAdapters);
     }
 }

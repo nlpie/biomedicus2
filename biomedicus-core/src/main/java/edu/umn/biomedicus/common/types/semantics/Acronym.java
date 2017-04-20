@@ -19,9 +19,8 @@ package edu.umn.biomedicus.common.types.semantics;
 import edu.umn.biomedicus.common.types.text.Token;
 
 public final class Acronym implements Token {
-    private final String text;
-
-    private final boolean hasSpaceAfter;
+    public final String text;
+    public final boolean hasSpaceAfter;
 
     public Acronym(String text, boolean hasSpaceAfter) {
         this.text = text;

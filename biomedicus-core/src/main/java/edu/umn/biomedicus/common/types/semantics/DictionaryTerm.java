@@ -26,7 +26,7 @@ public final class DictionaryTerm {
         this.concepts = concepts;
     }
 
-    public List<DictionaryConcept> getConcepts() {
+    public List<DictionaryConcept> concepts() {
         return concepts;
     }
 

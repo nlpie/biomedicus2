@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -46,7 +47,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
     private final Labeler<SocialHistoryCandidate> candidateLabeler;
 
     @Inject
-    public RuleBasedCandidateDetector(Document document) {
+    public RuleBasedCandidateDetector(TextView document) {
 
         sectionLabels = document.getLabelIndex(Section.class);
         sectionTitleLabels = document.getLabelIndex(SectionTitle.class);

@@ -21,7 +21,6 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +131,7 @@ public final class DocumentProcessorRunner {
         }
     }
 
-    public void processDocument(Document document,
+    public void processDocument(TextView document,
                                 @Nullable Map<Key<?>, Object> documentScopedObjects) throws BiomedicusException {
         if (processorContext == null) {
             throw new IllegalStateException("Processor context is null, initialize not ran");
@@ -144,7 +143,7 @@ public final class DocumentProcessorRunner {
         try {
             processorContext.call(() -> {
                 Map<Key<?>, Object> seededObjects = new HashMap<>();
-                seededObjects.put(Key.get(Document.class), document);
+                seededObjects.put(Key.get(TextView.class), document);
                 if (documentScopedObjects != null) {
                     seededObjects.putAll(documentScopedObjects);
                 }

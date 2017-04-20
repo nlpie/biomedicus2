@@ -21,20 +21,20 @@ import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public final class SentenceProcessor implements DocumentProcessor {
     private final SentenceDetectorFactory sentenceDetectorFactory;
-    private final Document document;
+    private final TextView document;
     private final LabelIndex<TextSegment> textSegmentLabelIndex;
     private final Labeler<Sentence> sentenceLabeler;
 
     @Inject
     public SentenceProcessor(@Setting("sentenceDetectorFactory.implementation") SentenceDetectorFactory sentenceDetectorFactory,
-                             Document document) {
+                             TextView document) {
         this.sentenceDetectorFactory = sentenceDetectorFactory;
         this.document = document;
         textSegmentLabelIndex = document.getLabelIndex(TextSegment.class);

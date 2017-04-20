@@ -119,7 +119,7 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
             HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
             additionalSeeded.put(Key.get(CAS.class), view);
 
-            CASDocument casDocument = new CASDocument(view, labelAdapters);
+            CASTextView casDocument = new CASTextView(view, labelAdapters);
             documentProcessorRunner.processDocument(casDocument, additionalSeeded);
         } catch (BiomedicusException e) {
             LOGGER.error("error while processing document");

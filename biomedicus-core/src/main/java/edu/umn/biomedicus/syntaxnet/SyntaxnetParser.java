@@ -18,6 +18,7 @@ package edu.umn.biomedicus.syntaxnet;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
@@ -42,7 +43,7 @@ public final class SyntaxnetParser implements DocumentProcessor {
     @Inject
     SyntaxnetParser(@Setting("syntaxnet.installationDir.path") Path installationDir,
                     @Setting("syntaxnet.modelDir") String modelDirString,
-                    Document document) {
+                    TextView document) {
         this.installationDir = installationDir;
         this.modelDirString = modelDirString;
         sentenceLabelIndex = document.getLabelIndex(Sentence.class);

@@ -22,7 +22,7 @@ import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -34,12 +34,12 @@ import java.nio.file.Path;
 public class PtbTagsWriter implements DocumentProcessor {
 
     private final Path outputDir;
-    private final Document document;
+    private final TextView document;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
 
     @Inject
-    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, Document document) {
+    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, TextView document) {
         this.outputDir = outputDir;
         this.document = document;
         parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);

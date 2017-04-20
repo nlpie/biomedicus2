@@ -24,7 +24,6 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorScoped;
-import edu.umn.biomedicus.common.types.text.Document;
 
 /**
  *
@@ -36,6 +35,9 @@ final class BiomedicusModule extends AbstractModule {
         bindScope(ProcessorScoped.class, BiomedicusScopes.PROCESSOR_SCOPE);
 
         bind(Document.class).toProvider(BiomedicusScopes.providedViaSeeding())
+                .in(BiomedicusScopes.DOCUMENT_SCOPE);
+
+        bind(TextView.class).toProvider(BiomedicusScopes.providedViaSeeding())
                 .in(BiomedicusScopes.DOCUMENT_SCOPE);
 
         LifecycleManager lifecycleManager = new LifecycleManager();

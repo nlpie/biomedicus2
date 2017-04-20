@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,79 +16,74 @@
 
 package edu.umn.biomedicus.common.standard;
 
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.application.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
-import javax.annotation.Nullable;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  *
  */
 public class StandardDocument implements Document {
-    private final Map<String, String> metadata = new HashMap<>();
-    private final String text;
-    private String documentId;
+    private final Map<String, String> metadata;
+    private final Map<String, StandardTextView> views;
 
-    public StandardDocument(String text) {
-        this.text = text;
+    private final String documentId;
+
+    public StandardDocument(Map<String, String> metadata,
+                            Map<String, StandardTextView> views,
+                            String documentId) {
+        this.metadata = metadata;
+        this.views = views;
+        this.documentId = documentId;
     }
 
-    @Override
-    public Reader getReader() {
-        return new StringReader(text);
+    public StandardDocument(String documentId) {
+        this.documentId = documentId;
+        metadata = new HashMap<>();
+        views = new HashMap<>();
     }
 
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    @Nullable
     @Override
     public String getDocumentId() {
         return documentId;
     }
 
     @Override
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
-
-    @Nullable
-    @Override
-    public String getMetadata(String key) throws BiomedicusException {
-        return metadata.get(key);
+    public Optional<String> getMetadata(String key) throws BiomedicusException {
+        return Optional.ofNullable(metadata.get(key));
     }
 
     @Override
-    public void setMetadata(String key, String value) throws BiomedicusException {
+    public Map<String, String> getAllMetadata() {
+        return new HashMap<>(metadata);
+    }
+
+    @Override
+    public void putMetadata(String key, String value)
+            throws BiomedicusException {
         metadata.put(key, value);
     }
 
     @Override
-    public Document getSiblingDocument(String identifier) throws BiomedicusException {
-        return null;
+    public void putAllMetadata(Map<String, String> metadata)
+            throws BiomedicusException {
+        this.metadata.putAll(metadata);
     }
 
     @Override
-    public <T> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
-        return null;
+    public TextView createTextView(String name, String text)
+            throws BiomedicusException {
+        StandardTextView textView = new StandardTextView(text);
+        views.put(name, textView);
+        return textView;
     }
 
     @Override
-    public <T> Labeler<T> getLabeler(Class<T> labelClass) {
+    public TextView getTextView(String name) throws BiomedicusException {
         return null;
-    }
-
-    @Override
-    public Span getDocumentSpan() {
-        return new Span(0, text.length());
     }
 }

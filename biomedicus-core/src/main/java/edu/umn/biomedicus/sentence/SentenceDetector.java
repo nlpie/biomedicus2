@@ -20,7 +20,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextSegment;
@@ -86,13 +86,13 @@ public final class SentenceDetector {
     }
 
     /**
-     * Adds all sentences in the {@link Document}.
+     * Adds all sentences in the {@link TextView}.
      *
      * @param document          the document to process
      * @param sentenceLabeler  labeler to use
      * @param textSegmentLabelIndex the labels for the text segments
      */
-    public void processDocument(Document document,
+    public void processDocument(TextView document,
                                 LabelIndex<TextSegment> textSegmentLabelIndex,
                                 Labeler<Sentence> sentenceLabeler) throws BiomedicusException {
         String documentText = document.getText();

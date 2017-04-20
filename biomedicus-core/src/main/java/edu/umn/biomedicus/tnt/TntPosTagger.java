@@ -24,7 +24,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.tuples.PosCap;
@@ -73,7 +73,7 @@ public class TntPosTagger implements DocumentProcessor {
     private final TntModel tntModel;
     private final LabelIndex<Sentence> sentenceLabelIndex;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
-    private final Document document;
+    private final TextView document;
     private final Labeler<PartOfSpeech> partOfSpeechLabeler;
 
     /**
@@ -85,7 +85,7 @@ public class TntPosTagger implements DocumentProcessor {
     @Inject
     public TntPosTagger(TntModel tntModel,
                         @Setting("tnt.beam.threshold") Double beamThreshold,
-                        Document document) {
+                        TextView document) {
         this.tntModel = tntModel;
         this.beamThreshold = beamThreshold;
         this.document = document;
