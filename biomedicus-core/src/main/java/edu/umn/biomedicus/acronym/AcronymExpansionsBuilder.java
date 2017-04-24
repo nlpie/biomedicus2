@@ -179,24 +179,20 @@ public class AcronymExpansionsBuilder {
 
         // finally, override any previous abbrs/senses with mappings derived from the manually annotated set
         if (manualSensesPath.toFile().exists()) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(manualSensesPath.toFile()));
-                Pattern tab = Pattern.compile("\\t");
-                String nextLine;
-                while ((nextLine = reader.readLine()) != null) {
-                    String[] fields = tab.split(nextLine);
-                    Set<String> senses = new HashSet<>();
-                    for (int i = 1; i < fields.length; i++) {
-                        senses.add(fields[i]);
-                    }
-                    expansions.put(fields[0], senses);
+            String contents = new Scanner(new FileInputStream(manualSensesPath.toFile())).useDelimiter("\\Z").next();
+            String[] groups = contents.split("\n\\s*\n");
+            for (String group : groups) {
+                String[] lines = group.split("\n");
+                Set<String> senses = new HashSet<>();
+                Collections.addAll(senses, Arrays.copyOfRange(lines, 1, lines.length));
+                if (expansions.containsKey(lines[0]) && !expansions.get(lines[0]).equals(senses)) {
+                    LOGGER.info(String.format("Replacing acronym '%s' having senses '%s' with senses '%s'", lines[0],
+                            expansions.get(lines[0]).toString(), senses.toString()));
                 }
-            } catch (IOException exc) {
-                exc.printStackTrace();
-                LOGGER.warn("Could not load manual inventory.");
+                expansions.put(lines[0], senses);
             }
         } else {
-            LOGGER.warn("Not using manual sense inventory; using ontology sources only.");
+            LOGGER.warn("Not using manual sense inventory.");
         }
 
         LOGGER.info("Writing expansions: {}", outPath);
