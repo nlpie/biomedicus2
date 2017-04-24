@@ -1,0 +1,33 @@
+(almost|around|about|over|approximately|roughly|approx)* a \d+\/\d+ $units
+$number_names +drinks +on +average +on +a +day +experiencer +drank
+$number_names +$units
+$arround_words*$number_names +$units +to +$number_names +$units
+Maximum +$number_names +of +drinks +on +any +one +occasion
+$number_names +or +more +drinks +(no +gender +difference)
+\d+ +drinks +on +average +on +a +day +experiencer +drank
+$arround_words*$number_names +to +$number_names +$units
+$arround_words*$number_names +(gm|ml)
+$arround_words*$number_names +$units
+$arround_words*$number_names-$number_names +$units
+$arround_words*$number_names/$number_names +$units
+Maximum +\d+ +of +drinks +on +any +one +occasion
+\d+ +or +more +drinks +(no +gender +difference)
+$arround_words*$number_names +drink[s]*
+$arround_words*$number_names +or +more +$units
+$arround_words*$number_names +drink[s]*
+$arround_words*$number_names +or +more +$units
+$arround_words*$number_names +to +\d+ +$units
+$arround_words*$number_names +large +bottle[s]*
+$arround_words*\d+ +$units +to +\d+ +$units
+$arround_words*$number_names +(gm|ml)
+$arround_words*$number_names +$units
+$arround_words*\d+ +or +more +$units
+$arround_words*\d+ +drink[s]*
+$arround_words*\d+ +to +\d+ +$units
+$arround_words*\d+ +large +bottles*
+$arround_words*\d+-\d+ +$units
+$arround_words*\d+/\d+ +$units
+$arround_words*\d+ +(gm|ml)
+$arround_words*\d+ +$units
+$arround_words*\d$units
+\d+ +to +\d+ +$units

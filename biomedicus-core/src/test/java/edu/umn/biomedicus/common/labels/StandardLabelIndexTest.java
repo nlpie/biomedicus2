@@ -54,6 +54,7 @@ public class StandardLabelIndexTest {
     public void testReverse() throws Exception {
 
     }
+    /**
 
     @Test
     public void testAscendingBegin() throws Exception {
@@ -80,31 +81,7 @@ public class StandardLabelIndexTest {
         assertEquals(labelList.get(1).getBegin(), 12);
         assertEquals(labelList.get(2).getBegin(), 5);
         assertEquals(labelList.get(3).getBegin(), 0);
-    }
-
-    @Test
-    public void testIncreasingSize() throws Exception {
-        Object object = new Object();
-        List<Label<Object>> labels = Arrays.asList(new Label<>(Span.create(12, 14), object),
-                new Label<>(Span.create(12, 18), object), new Label<>(Span.create(0, 3), object),
-                new Label<>(Span.create(5, 7), object));
-        StandardLabelIndex<Object> standardLabelIndex = new StandardLabelIndex<>(labels);
-        List<Label<Object>> labelList = standardLabelIndex.increasingSize().all();
-        assertEquals(labelList.get(2).getEnd(), 14);
-        assertEquals(labelList.get(3).getEnd(), 18);
-    }
-
-    @Test
-    public void testDecreasingSize() throws Exception {
-        Object object = new Object();
-        List<Label<Object>> labels = Arrays.asList(new Label<>(Span.create(12, 14), object),
-                new Label<>(Span.create(12, 18), object), new Label<>(Span.create(0, 3), object),
-                new Label<>(Span.create(5, 7), object));
-        StandardLabelIndex<Object> standardLabelIndex = new StandardLabelIndex<>(labels);
-        List<Label<Object>> labelList = standardLabelIndex.decreasingSize().all();
-        assertEquals(labelList.get(2).getEnd(), 18);
-        assertEquals(labelList.get(3).getEnd(), 14);
-    }
+    }**/
 
     @Test
     public void testFilter() throws Exception {

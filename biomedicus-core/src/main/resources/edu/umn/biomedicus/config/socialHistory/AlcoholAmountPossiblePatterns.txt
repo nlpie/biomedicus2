@@ -1,0 +1,65 @@
+$arround_words*$number_names +drinks +on +average +on +a +day +experiencer +drank
+$arround_words*$number_names +or +more +drinks +(no +gender +difference)
+$arround_words*\d+ +drinks +on +average +on +a +day +experiencer +drank
+$arround_words*$number_names +to +$number_names +(pack|packs)
+$arround_words*\d+ +or +more +drinks +(no +gender +difference)
+$arround_words*$number_names-$number_names +(pack|packs)
+Maximum +$number_names +of +drinks +on +any +one +occasion
+$arround_words*$number_names +or +more +(pack|packs)
+$arround_words* *$number_names *or *$number_names
+$arround_words*$number_names +to +\d+ +(pack|packs)
+$arround_words*$number_names +to +$number_names
+$arround_words*(up +to  )*$number_names +(gm|ml)
+$arround_words*$number_names *- *$number_names
+$arround_words*$number_names +drink[s]*
+Maximum +\d+ +of +drinks +on +any +one +occasion
+$arround_words*$number_names +large +bottle
+$arround_words*$number_names +(pack|packs)
+total +$number_names *- *$number_names
+$arround_words*\d+ +or +more +(pack|packs)
+$arround_words*\d+ +to +\d+ +(pack|packs)
+$arround_words*$number_names +or +more
+$arround_words*$number_names +(gm|ml)
+$arround_words*(up +to)* +\d+ +(gm|ml)
+$arround_words*\d+ +drink[s]*
+$arround_words*\d+-\d+ +(pack|packs)
+$arround_words*\d+/\d+ +(pack|packs)
+$arround_words*$number_names +max
+$arround_words*$number_names-$units
+$arround_words*\d+ +large +bottle
+$arround_words*\d+ +(pack|packs)
+$arround_words*\d+ +(pack|packs)
+$arround_words*\d+ +or +more
+less +than +$number_names
+$arround_words*\d+ *to *\d+
+$arround_words*\d+ *or *\d+
+$arround_words*\d+ *- *\d+
+$arround_words*\d+\-\d+
+$arround_words*\d+ +max
+about +$number_names
+significantly +more
+moderate +to +light
+total +\d+ *- *\d+
+less +than +\d*\.*\d+
+more +than +\d*\.*\d+
+sometimes +more
+in moderation
+significant
+about +\d+
+moderately
+moderate
+Remarkable
+variable
+mild
+moderate
+unknown
+heavily
+varies
+a +lot
+heavy
+light
+none
+once
+similiar amounts
+\d+ +to +\d+ +
+$arround_words*$number_names +to +$number_names

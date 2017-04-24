@@ -102,7 +102,8 @@ class ConceptDictionary {
                     }
                     return string;
                 });
-                TermsBag termsBag = vocabulary.getNormsIndex().getTermsBag(terms);
+                TermsBag termsBag = vocabulary.getNormsIndex()
+                        .getTermsBag(terms);
                 String concepts = normsReader.readLine();
                 List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
                         .collect(Collectors.toList());

@@ -36,47 +36,47 @@ import static java.util.Spliterator.*;
 public abstract class AbstractLabelIndex<T> implements LabelIndex<T> {
     @Override
     public LabelIndex<T> containing(TextLocation textLocation) {
-        return new StandardLabelIndex<>(this).containing(textLocation);
+        return inflate().containing(textLocation);
     }
 
     @Override
     public LabelIndex<T> insideSpan(TextLocation textLocation) {
-        return new StandardLabelIndex<>(new FilteredLabelIndex<>(this, textLocation::contains));
+        return new FilteredLabelIndex<>(this, textLocation::contains);
     }
 
     @Override
     public LabelIndex<T> leftwardsFrom(TextLocation span) {
-        return new StandardLabelIndex<>(this).leftwardsFrom(span);
+        return inflate().leftwardsFrom(span);
     }
 
     @Override
     public LabelIndex<T> rightwardsFrom(TextLocation span) {
-        return new StandardLabelIndex<>(this).leftwardsFrom(span);
+        return inflate().leftwardsFrom(span);
     }
 
     @Override
     public LabelIndex<T> reverse() {
-        return new StandardLabelIndex<>(this).reverse();
+        return inflate().reverse();
     }
 
     @Override
     public LabelIndex<T> ascendingBegin() {
-        return new StandardLabelIndex<>(this).ascendingBegin();
+        return inflate().ascendingBegin();
     }
 
     @Override
     public LabelIndex<T> descendingBegin() {
-        return new StandardLabelIndex<>(this).descendingBegin();
+        return inflate().descendingBegin();
     }
 
     @Override
-    public LabelIndex<T> increasingSize() {
-        return new StandardLabelIndex<>(this).increasingSize();
+    public LabelIndex<T> ascendingEnd() {
+        return inflate().ascendingEnd();
     }
 
     @Override
-    public LabelIndex<T> decreasingSize() {
-        return new StandardLabelIndex<>(this).decreasingSize();
+    public LabelIndex<T> descendingEnd() {
+        return inflate().descendingEnd();
     }
 
     @Override
@@ -127,11 +127,16 @@ public abstract class AbstractLabelIndex<T> implements LabelIndex<T> {
     }
 
     @Override
-    public Optional<Label<T>> firstOptionally() {
+    public Optional<Label<T>> first() {
         Iterator<Label<T>> iterator = iterator();
         if (iterator.hasNext()) {
             return Optional.of(iterator.next());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public LabelIndex<T> inflate() {
+        return new StandardLabelIndex<>(this);
     }
 }

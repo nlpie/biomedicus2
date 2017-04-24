@@ -17,12 +17,15 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.common.terms.AbstractTermIndex;
+import edu.umn.biomedicus.common.terms.TermIndex;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.IndexTreeList;
 import org.mapdb.Serializer;
 
 import javax.annotation.Nullable;
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * An index of String terms to and from integers.
@@ -30,17 +33,24 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.6.0
  */
-class MapDbTermIndex extends AbstractTermIndex {
+class MapDbTermIndex extends AbstractTermIndex
+        implements Closeable, TermIndexBuilder {
     private final IndexTreeList<String> instances;
     private final BTreeMap<String, Integer> indexes;
     private boolean open = true;
 
     MapDbTermIndex(DB db, String dbIdentifier) {
-        instances = db.indexTreeList(dbIdentifier + "Instances", Serializer.STRING).createOrOpen();
-        indexes = db.treeMap(dbIdentifier + "Indexes", Serializer.STRING_DELTA, Serializer.INTEGER).createOrOpen();
+        instances = db.indexTreeList(dbIdentifier + "Instances",
+                Serializer.STRING)
+                .createOrOpen();
+
+        indexes = db.treeMap(dbIdentifier + "Indexes",
+                Serializer.STRING_DELTA, Serializer.INTEGER)
+                .createOrOpen();
     }
 
-    void addTerm(String string) {
+    @Override
+    public void addTerm(String string) {
         if (!open) {
             throw new IllegalStateException("Term index has been closed");
         }
@@ -101,7 +111,12 @@ class MapDbTermIndex extends AbstractTermIndex {
         return instances.size();
     }
 
-    void close() {
+    @Override
+    public void close() throws IOException {
         open = false;
+    }
+
+    TermIndex inMemory(Boolean inMemory) {
+        return inMemory ? new HashTermIndex(this) : this;
     }
 }

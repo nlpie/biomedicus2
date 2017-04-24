@@ -111,4 +111,14 @@ public final class DictionaryConcept implements Concept {
             return new DictionaryConcept(identifier, source, type, confidence);
         }
     }
+
+    @Override
+    public String toString() {
+        return "DictionaryConcept{" +
+                "identifier='" + identifier + '\'' +
+                ", source='" + source + '\'' +
+                ", type='" + type + '\'' +
+                ", confidence=" + confidence +
+                '}';
+    }
 }

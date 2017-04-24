@@ -1,0 +1,110 @@
+$number_names *times *in *past *\d+ *$time_period_names[s]*
+$number_names *days *in *past *\d+ *$time_period_names[s]*
+q *$number_names-$number_names *$time_period_names[s]*
+every *$number_names *$time_period_names[s]*
+$number_names *days *in *entire *life
+$number_names +days +of +use +in +last +month
+on *a *(monthly|weekly|daily|yearly) *basis
+\d+ *days *in *entire *life
+$number_names +times +of +lifetime +use
+$number_names +days +in +last +month
+every *\d+ * *$time_period_names[s]*
+\d+ +days +of +use +in +last +month
+$number_names +of +joints +per +day
+four alcoholic beverages per night
+$number_names +times +per +month
+\d+ +times +of +lifetime +use
+every *$time_period_names[s]*
+less *than *once *per *month
+per *$time_period_names[s]*
+as *often *as *he *can *get
+\d+ +days +in +last +month
+\d+ +of +joints +per +day
+a *$time_period_names[s]*
+not *even *once *a *month
+once *or *twice *a *month
+\/$time_period_names[s]*
+daily *or *almost *daily
+once *every *[#] *months
+\d+ +times +per +month
+couple *times *a *week
+more +than +one +year
+less *than *monthly
+every *other *month
+on *rare *occasions
+once +a +week
+every *other *week
+once *in *a *while
+monthly *or *less
+every *other *day
+once +per +month
+in *the *evening
+very *infrequent
+very *occasional
+occasional *use
+once *per *week
+very *rare *use
+Irregular +use
+irregular *use
+now *and *then
+once *a *month
+almost *daily
+almost *never
+occassionally
+very +rarely
+infrequently
+intermittent
+ocassionally
+occasionally
+on *occasion
+very *rarely
+off +and +on
+times/month
+Weekly +use
+weekly *use
+occassional
+once *month
+occasional
+very +rare
+even +once
+Daily +use
+occasional
+daily *use
+infrequent
+ocassional
+occasional
+occational
+very *rare
+regularly
+at *night
+bi-weekly
+each *noc
+infrquent
+regularly
+sometimes
+socially
+regular
+No +use
+monthly
+limited
+minimal
+nightly
+occasio
+on *occ
+regular
+v *rare
+weekly
+yearly
+rarely
+occas.
+seldom
+daily
+daily
+never
+occas
+occ.
+occl
+rare
+occ
+reg
+qd

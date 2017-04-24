@@ -16,14 +16,17 @@
 
 package edu.umn.biomedicus.sections;
 
+import com.google.common.base.Charsets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.Biomedicus;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *

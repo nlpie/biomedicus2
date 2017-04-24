@@ -20,9 +20,9 @@ package edu.umn.biomedicus.common.types.text;
  *
  */
 public final class ParseToken implements Token {
-    private final String text;
+    private String text;
 
-    private final boolean hasSpaceAfter;
+    private boolean hasSpaceAfter;
 
     public ParseToken(String text, boolean hasSpaceAfter) {
         this.text = text;
@@ -34,10 +34,23 @@ public final class ParseToken implements Token {
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
+
     @Override
     public boolean hasSpaceAfter() {
         return hasSpaceAfter;
     }
 
-
+    @Override
+    public String toString() {
+        return "ParseToken('" + text + '\'' +
+                ", hasSpaceAfter=" + hasSpaceAfter +
+                ')';
+    }
 }

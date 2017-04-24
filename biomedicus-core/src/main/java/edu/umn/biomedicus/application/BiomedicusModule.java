@@ -17,6 +17,11 @@
 package edu.umn.biomedicus.application;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.AbstractMatcher;
+import com.google.inject.spi.InjectionListener;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorScoped;
 import edu.umn.biomedicus.common.types.text.Document;
@@ -30,6 +35,31 @@ final class BiomedicusModule extends AbstractModule {
         bindScope(DocumentScoped.class, BiomedicusScopes.DOCUMENT_SCOPE);
         bindScope(ProcessorScoped.class, BiomedicusScopes.PROCESSOR_SCOPE);
 
-        bind(Document.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(BiomedicusScopes.DOCUMENT_SCOPE);
+        bind(Document.class).toProvider(BiomedicusScopes.providedViaSeeding())
+                .in(BiomedicusScopes.DOCUMENT_SCOPE);
+
+        LifecycleManager lifecycleManager = new LifecycleManager();
+
+        bind(LifecycleManager.class).toInstance(lifecycleManager);
+
+        InjectionListener<LifecycleManaged> injectionListener
+                = lifecycleManager::register;
+
+        TypeListener listener = new TypeListener() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <I> void hear(TypeLiteral<I> typeLiteral,
+                                 TypeEncounter<I> typeEncounter) {
+                ((TypeEncounter<LifecycleManaged>) typeEncounter)
+                        .register(injectionListener);
+            }
+        };
+        bindListener(new AbstractMatcher<TypeLiteral<?>>() {
+            @Override
+            public boolean matches(TypeLiteral<?> typeLiteral) {
+                return LifecycleManaged.class
+                        .isAssignableFrom(typeLiteral.getRawType());
+            }
+        }, listener);
     }
 }

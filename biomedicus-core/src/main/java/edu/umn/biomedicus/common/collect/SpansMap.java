@@ -16,29 +16,51 @@
 
 package edu.umn.biomedicus.common.collect;
 
+import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.types.text.TextLocation;
-import edu.umn.biomedicus.common.tuples.Pair;
 
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 
 public interface SpansMap<T> {
-    SpansMap<T> toTheLeftOf(TextLocation textLocation);
+    Optional<T> get(TextLocation textLocation);
 
-    SpansMap<T> toTheRightOf(TextLocation textLocation);
+    SpansMap<T> toTheLeftOf(int index);
+
+    SpansMap<T> toTheRightOf(int index);
+
+    default SpansMap<T> toIncluding(TextLocation textLocation) {
+        return toTheLeftOf(textLocation.getEnd());
+    }
+
+    default SpansMap<T> fromIncluding(TextLocation textLocation) {
+        return toTheRightOf(textLocation.getBegin());
+    }
+
+    default SpansMap<T> toTheLeftOf(TextLocation textLocation) {
+        return toTheLeftOf(textLocation.getBegin());
+    }
+
+    default SpansMap<T> toTheRightOf(TextLocation textLocation) {
+        return toTheRightOf(textLocation.getEnd());
+    }
 
     SpansMap<T> insideSpan(TextLocation textLocation);
 
     SpansMap<T> containing(TextLocation textLocation);
 
-    Stream<TextLocation> spansStream();
+    SpansMap<T> ascendingBegin();
 
-    Stream<T> ascendingStartDecreasingSizeValuesStream();
+    SpansMap<T> descendingBegin();
 
-    Stream<T> descendingStartDecreasingSizeValuesStream();
+    SpansMap<T> ascendingEnd();
 
-    Stream<T> ascendingStartIncreasingSizeValueStream();
+    SpansMap<T> descendingEnd();
 
-    Stream<T> descendingStartIncreasingSizeValuesStream();
+    Collection<T> values();
 
-    Stream<Pair<TextLocation, T>> pairStream();
+    Set<Label<T>> entries();
+
+    boolean containsLabel(Label label);
 }
