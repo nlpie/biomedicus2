@@ -16,7 +16,9 @@
 
 package edu.umn.biomedicus.uima.labels;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.common.labels.LabelAliases;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,9 +26,16 @@ import java.util.Map;
 @Singleton
 public class LabelAdapters {
     private final Map<Class<?>, LabelAdapterFactory<?>> factoryMap = new HashMap<>();
+    private final LabelAliases labelAliases;
+
+    @Inject
+    public LabelAdapters(LabelAliases labelAliases) {
+        this.labelAliases = labelAliases;
+    }
 
     public void addLabelAdapter(Class tClass, LabelAdapterFactory labelAdapterFactory) {
         factoryMap.put(tClass, labelAdapterFactory);
+        labelAliases.addAlias(tClass.getSimpleName(), tClass);
     }
 
     public <T> LabelAdapterFactory<T> getLabelAdapterFactory(Class<T> tClass) {

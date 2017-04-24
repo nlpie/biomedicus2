@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,166 +16,26 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import com.google.inject.Inject;
-import com.google.inject.ProvidedBy;
-import com.google.inject.Singleton;
-import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.application.LifecycleManaged;
-import edu.umn.biomedicus.application.LifecycleManager;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelsUtilities;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
-import edu.umn.biomedicus.tokenization.TermTokenMerger;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
-import javax.annotation.Nullable;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+/**
+ * Retrieves the system-wide term indexes used by BioMedICUS.
+ *
+ * @since 1.6.0
+ */
+public interface Vocabulary {
+    /**
+     * The words that would appear in parse tokens.
+     */
+    TermIndex getWordsIndex();
 
-@Singleton
-@ProvidedBy(Vocabulary.Loader.class)
-public class Vocabulary implements LifecycleManaged {
-    private final Path dbPath;
-    private boolean isOpen = false;
-    @Nullable
-    private DB db;
-    @Nullable
-    private MapDbTermIndex wordsIndex;
-    @Nullable
-    private MapDbTermIndex termsIndex;
-    @Nullable
-    private MapDbTermIndex normsIndex;
+    /**
+     * The words that would occur in term tokens.
+     */
+    TermIndex getTermsIndex();
 
-    Vocabulary(Path dbPath) {
-        this.dbPath = dbPath;
-    }
-
-    public TermIndex getWordsIndex() {
-        checkOpen();
-        return wordsIndex;
-    }
-
-    public TermIndex getTermsIndex() {
-        checkOpen();
-        return termsIndex;
-    }
-
-    public TermIndex getNormsIndex() {
-        checkOpen();
-        return normsIndex;
-    }
-
-    void addPhrase(String phrase) {
-        checkOpen();
-        Iterator<Span> tokensIterator = PennLikePhraseTokenizer.tokenizePhrase(phrase).iterator();
-        List<Label<Token>> parseTokens = new ArrayList<>();
-        Span prev = null;
-        while (tokensIterator.hasNext() || prev != null) {
-            Span span = null;
-            if (tokensIterator.hasNext()) {
-                span = tokensIterator.next();
-            }
-            if (prev != null) {
-                String term = prev.getCovered(phrase).toString();
-                wordsIndex.addTerm(term);
-                boolean hasSpaceAfter = span != null && prev.getEnd() != span.getBegin();
-                ParseToken parseToken = new ParseToken(term, hasSpaceAfter);
-                Label<ParseToken> parseTokenLabel = new Label<>(prev, parseToken);
-                parseTokens.add(LabelsUtilities.cast(parseTokenLabel));
-            }
-            prev = span;
-        }
-
-        TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens);
-        while (termTokenMerger.hasNext()) {
-            Label<TermToken> termToken = termTokenMerger.next();
-            termsIndex.addTerm(termToken.value().text());
-        }
-    }
-
-    void addNormPhrase(String phrase) {
-        checkOpen();
-        Iterator<Span> normsIt = PennLikePhraseTokenizer.tokenizePhrase(phrase).iterator();
-        while (normsIt.hasNext()) {
-            Span span = normsIt.next();
-            CharSequence norm = span.getCovered(phrase);
-            normsIndex.addTerm(norm);
-        }
-    }
-
-    private void checkOpen() {
-        if (!isOpen) {
-            throw new IllegalStateException("Vocabulary DB is not open.");
-        }
-    }
-
-    private void openIndexes() {
-        wordsIndex = new MapDbTermIndex(db, "words");
-        termsIndex = new MapDbTermIndex(db, "terms");
-        normsIndex = new MapDbTermIndex(db, "norms");
-        isOpen = true;
-    }
-
-    void openForWriting() {
-        db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().make();
-        openIndexes();
-    }
-
-    @Override
-    public void doStartup() throws BiomedicusException {
-        db = DBMaker.fileDB(dbPath.toFile()).fileMmapEnableIfSupported().readOnly().make();
-        openIndexes();
-    }
-
-    @Override
-    public void doShutdown() throws BiomedicusException {
-        if (wordsIndex != null) {
-            wordsIndex.close();
-            wordsIndex = null;
-        }
-        if (termsIndex != null) {
-            termsIndex.close();
-            termsIndex = null;
-        }
-        if (normsIndex != null) {
-            normsIndex.close();
-            normsIndex = null;
-        }
-        if (db != null) {
-            db.close();
-        }
-        isOpen = false;
-    }
-
-    @Singleton
-    public static class Loader extends DataLoader<Vocabulary> {
-
-        private final Path dbPath;
-        private final LifecycleManager lifecycleManager;
-
-        @Inject
-        public Loader(@Setting("vocabulary.db.path") Path dbPath,
-                      LifecycleManager lifecycleManager) {
-            this.dbPath = dbPath;
-            this.lifecycleManager = lifecycleManager;
-        }
-
-        @Override
-        protected Vocabulary loadModel() throws BiomedicusException {
-            Vocabulary vocabulary = new Vocabulary(dbPath);
-            vocabulary.doStartup();
-            lifecycleManager.register(vocabulary);
-            return vocabulary;
-        }
-    }
+    /**
+     * The words that would occur as normalized forms of term tokens.
+     */
+    TermIndex getNormsIndex();
 }

@@ -17,9 +17,14 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.common.collect.ImmutableDistinctSpanMap;
+import edu.umn.biomedicus.common.collect.ImmutableSpanMap;
+import edu.umn.biomedicus.common.collect.OrderedSpanMap;
+import edu.umn.biomedicus.common.collect.SpansMap;
 import edu.umn.biomedicus.common.labels.AbstractLabelIndex;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
+import edu.umn.biomedicus.common.labels.StandardLabelIndex;
 import edu.umn.biomedicus.common.types.text.TextLocation;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
@@ -35,36 +40,61 @@ public final class UimaLabelIndex<T> extends AbstractLabelIndex<T> {
     private Type annotationType;
     private Type type;
 
-    private UimaLabelIndex(CAS cas, LabelAdapter<T> labelAdapter, Iterable<Label<T>> iterable) {
+    private UimaLabelIndex(CAS cas,
+                           LabelAdapter<T> labelAdapter,
+                           Iterable<Label<T>> iterable) {
         this.cas = cas;
         this.labelAdapter = labelAdapter;
         this.iterable = iterable;
         type = labelAdapter.getType();
-        annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
+        annotationType = cas.getTypeSystem()
+                .getType("uima.tcas.Annotation");
     }
 
     @Inject
     public UimaLabelIndex(CAS cas, LabelAdapter<T> labelAdapter) {
         this.cas = cas;
         this.labelAdapter = labelAdapter;
-        annotationType = cas.getTypeSystem().getType("uima.tcas.Annotation");
+        annotationType = cas.getTypeSystem()
+                .getType("uima.tcas.Annotation");
         type = labelAdapter.getType();
-        AnnotationIndex<AnnotationFS> annotationIndex = cas.getAnnotationIndex(type);
-        iterable = () -> new FSIteratorAdapter<>(annotationIndex, labelAdapter::annotationToLabel);
+        iterable = () -> new FSIteratorAdapter<>(cas.getAnnotationIndex(type),
+                labelAdapter::annotationToLabel);
     }
 
     @Override
     public LabelIndex<T> insideSpan(TextLocation textLocation) {
-        AnnotationIndex<AnnotationFS> annotationIndex = cas.getAnnotationIndex(type);
-        AnnotationFS bound = cas.createAnnotation(annotationType, textLocation.getBegin() - 1,
-                textLocation.getEnd() + 1);
-        Iterable<Label<T>> iterable = () -> FSIteratorAdapter.coveredIteratorAdapter(annotationIndex, bound,
-                labelAdapter::annotationToLabel);
-        return new UimaLabelIndex<>(cas, labelAdapter, iterable).filter(textLocation::contains);
+        AnnotationIndex<AnnotationFS> annotationIndex = cas
+                .getAnnotationIndex(type);
+        AnnotationFS bound = cas
+                .createAnnotation(annotationType, textLocation.getBegin() - 1,
+                        textLocation.getEnd() + 1);
+        Iterable<Label<T>> iterable = () -> FSIteratorAdapter
+                .coveredIteratorAdapter(annotationIndex, bound,
+                        labelAdapter::annotationToLabel);
+        return new UimaLabelIndex<>(cas, labelAdapter, iterable)
+                .filter(textLocation::contains);
     }
 
     @Override
     public Iterator<Label<T>> iterator() {
         return iterable.iterator();
+    }
+
+    @Override
+    public LabelIndex<T> inflate() {
+        SpansMap<T> spansMap;
+        if (labelAdapter.isDistinct()) {
+            spansMap = ImmutableDistinctSpanMap.<T>builder()
+                    .addAll(this)
+                    .build();
+        } else {
+            OrderedSpanMap<T> orderedSpanMap = new OrderedSpanMap<>();
+            for (Label<T> tLabel : this) {
+                orderedSpanMap.put(tLabel, tLabel.getValue());
+            }
+            spansMap = new ImmutableSpanMap<>(orderedSpanMap);
+        }
+        return new StandardLabelIndex<>(spansMap, (unused) -> true);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,16 @@ package edu.umn.biomedicus.application;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
 
+/**
+ * Indicates a class that has some kind of resource that needs to be shut-down
+ * or closed or freed at the end of the lifecycle of the application.
+ *
+ * @since 1.6.0
+ */
 public interface LifecycleManaged {
-    void doStartup() throws BiomedicusException;
-
+    /**
+     *
+     * @throws BiomedicusException
+     */
     void doShutdown() throws BiomedicusException;
 }

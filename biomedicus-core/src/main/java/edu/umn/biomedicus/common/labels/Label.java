@@ -34,6 +34,15 @@ public final class Label<T> implements TextLocation {
         this.value = Objects.requireNonNull(value, "Value must not be null");
     }
 
+    public Label(int begin, int end, T value) {
+        this.span = new Span(begin, end);
+        this.value = Objects.requireNonNull(value, "Value must not be null");
+    }
+
+    public T getValue() {
+        return value;
+    }
+
     public T value() {
         return value;
     }
@@ -70,7 +79,11 @@ public final class Label<T> implements TextLocation {
 
         if (!span.equals(label.span)) return false;
         return value.equals(label.value);
+    }
 
+    @Override
+    public Span toSpan() {
+        return span;
     }
 
     @Override
