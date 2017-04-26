@@ -91,32 +91,34 @@ public class AcronymExpansionsBuilder {
         Map<String, Integer> casiSenseCounts = new HashMap<>();
         Pattern splitter = Pattern.compile("\\|");
 
-        LOGGER.info("Loading CASI data set: {}", dataSet);
-        Files.lines(dataSet, StandardCharsets.ISO_8859_1)
-                .filter(line -> line.length() > 0)
-                .map(splitter::split)
-                .forEach(splits -> {
-                            String sense = splits[1];
-                            if ("GENERAL ENGLISH".equals(sense)) {
-                                sense = splits[0].toLowerCase();
-                            }
-                            casiSenseCounts.put(sense, casiSenseCounts.getOrDefault(sense, 0) + 1);
-                        });
-        Files.lines(dataSet, StandardCharsets.ISO_8859_1)
-                .filter(line -> line.length() > 0)
-                .map(splitter::split)
-                .forEach(splits -> {
-                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
-                    String sense = splits[1];
-                    if ("GENERAL ENGLISH".equals(sense)) {
-                        sense = abbreviation.toLowerCase();
-                    }
-                    Set<String> senses = getOrAdd(abbreviation);
-                    casiOverride.add(abbreviation);
-                    if (!senses.contains(sense) && !"UNSURED SENSE".equals(sense) && casiSenseCounts.get(sense) >= 5) {
-                        senses.add(sense);
-                    }
-                });
+        if (dataSet != null && dataSet.toFile().exists()) {
+            LOGGER.info("Loading CASI data set: {}", dataSet);
+            Files.lines(dataSet, StandardCharsets.ISO_8859_1)
+                    .filter(line -> line.length() > 0)
+                    .map(splitter::split)
+                    .forEach(splits -> {
+                        String sense = splits[1];
+                        if ("GENERAL ENGLISH".equals(sense)) {
+                            sense = splits[0].toLowerCase();
+                        }
+                        casiSenseCounts.put(sense, casiSenseCounts.getOrDefault(sense, 0) + 1);
+                    });
+            Files.lines(dataSet, StandardCharsets.ISO_8859_1)
+                    .filter(line -> line.length() > 0)
+                    .map(splitter::split)
+                    .forEach(splits -> {
+                        String abbreviation = Acronyms.standardAcronymForm(splits[0]);
+                        String sense = splits[1];
+                        if ("GENERAL ENGLISH".equals(sense)) {
+                            sense = abbreviation.toLowerCase();
+                        }
+                        Set<String> senses = getOrAdd(abbreviation);
+                        casiOverride.add(abbreviation);
+                        if (!senses.contains(sense) && !"UNSURED SENSE".equals(sense) && casiSenseCounts.get(sense) >= 5) {
+                            senses.add(sense);
+                        }
+                    });
+        }
 
         LOGGER.info("Loading LRABR file from SPECIALIST: {}", specialistLrabrPath);
         Files.lines(specialistLrabrPath)
@@ -142,43 +144,45 @@ public class AcronymExpansionsBuilder {
                     }
                 });
 
-        LOGGER.info("Loading CASI master file: {}", masterFile);
-        Files.lines(masterFile)
-                .map(splitter::split)
-                .forEach(splits -> {
-                    String abbreviation = Acronyms.standardAcronymForm(splits[0]);
-                    String sense = splits[1];
-                    double frequency;
-                    try {
-                        frequency = Double.parseDouble(splits[4]);
-                    } catch (NumberFormatException e) {
-                        return;
-                    }
+        if (masterFile != null && masterFile.toFile().exists()) {
+            LOGGER.info("Loading CASI master file: {}", masterFile);
+            Files.lines(masterFile)
+                    .map(splitter::split)
+                    .forEach(splits -> {
+                        String abbreviation = Acronyms.standardAcronymForm(splits[0]);
+                        String sense = splits[1];
+                        double frequency;
+                        try {
+                            frequency = Double.parseDouble(splits[4]);
+                        } catch (NumberFormatException e) {
+                            return;
+                        }
 
-                    if (frequency >= 0.95 && !"UNSURED SENSE".equals(sense)) {
-                        Set<String> senses = expansions.get(abbreviation);
-                        if (senses == null) {
-                            senses = new HashSet<>();
-                            expansions.put(abbreviation, senses);
-                        } else {
-                            senses.clear();
-                        }
-                        // Many senses in CASI, for some reason, are many redundant sense joined by semicolons
-                        if (sense.contains(";")) {
-                            String[] senseVersions = sense.split(";");
-                            // Sometimes the first sense restates or simply is the abbreviation
-                            if (senseVersions[0].startsWith(abbreviation)) {
-                                sense = senseVersions[1];
+                        if (frequency >= 0.95 && !"UNSURED SENSE".equals(sense)) {
+                            Set<String> senses = expansions.get(abbreviation);
+                            if (senses == null) {
+                                senses = new HashSet<>();
+                                expansions.put(abbreviation, senses);
                             } else {
-                                sense = senseVersions[0];
+                                senses.clear();
                             }
+                            // Many senses in CASI, for some reason, are many redundant sense joined by semicolons
+                            if (sense.contains(";")) {
+                                String[] senseVersions = sense.split(";");
+                                // Sometimes the first sense restates or simply is the abbreviation
+                                if (senseVersions[0].startsWith(abbreviation)) {
+                                    sense = senseVersions[1];
+                                } else {
+                                    sense = senseVersions[0];
+                                }
+                            }
+                            senses.add(sense);
                         }
-                        senses.add(sense);
-                    }
-                });
+                    });
+        }
 
         // finally, override any previous abbrs/senses with mappings derived from the manually annotated set
-        if (manualSensesPath.toFile().exists()) {
+        if (manualSensesPath != null && manualSensesPath.toFile().exists()) {
             String contents = new Scanner(new FileInputStream(manualSensesPath.toFile())).useDelimiter("\\Z").next();
             String[] groups = contents.split("\n\\s*\n");
             for (String group : groups) {
@@ -232,10 +236,10 @@ public class AcronymExpansionsBuilder {
         try {
             Biomedicus biomedicus = Bootstrapper.create();
             AcronymExpansionsBuilder acronymExpansionsBuilder = biomedicus.getInstance(AcronymExpansionsBuilder.class);
-            acronymExpansionsBuilder.setManualSensesPath(Paths.get(args[0]));
-            acronymExpansionsBuilder.setMasterFile(Paths.get(args[1]));
-            acronymExpansionsBuilder.setDataSet(Paths.get(args[2]));
-            acronymExpansionsBuilder.setOutPath(Paths.get(args[3]));
+            acronymExpansionsBuilder.setMasterFile(args.length > 0 ? Paths.get(args[0]) : null);
+            acronymExpansionsBuilder.setDataSet(args.length > 1 ? Paths.get(args[1]) : null);
+            acronymExpansionsBuilder.setManualSensesPath(args.length > 2 ? Paths.get(args[2]) : null);
+            acronymExpansionsBuilder.setOutPath(args.length > 3 ? Paths.get(args[3]) : Paths.get("expansions.txt"));
 
             acronymExpansionsBuilder.buildAcronymExpansions();
         } catch (IOException | BiomedicusException e) {
