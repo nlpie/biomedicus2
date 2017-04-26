@@ -25,9 +25,7 @@
 
     <modules>
         <module>biomedicus-core</module>
-        <module>biomedicus-opennlp</module>
         <module>biomedicus-rtf</module>
-        <module>biomedicus-tools</module>
         <module>biomedicus-uima</module>
         <module>biomedicus-distribution</module>
     </modules>

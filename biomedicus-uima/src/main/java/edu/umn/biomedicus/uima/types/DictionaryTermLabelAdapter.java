@@ -43,7 +43,7 @@ final class DictionaryTermLabelAdapter extends AbstractLabelAdapter<DictionaryTe
 
     @Override
     protected void fillAnnotation(Label<DictionaryTerm> label, AnnotationFS annotationFS) {
-        List<DictionaryConcept> concepts = label.value().getConcepts();
+        List<DictionaryConcept> concepts = label.value().concepts();
         int size = concepts.size();
         ArrayFS arrayFS = cas.createArrayFS(size);
         for (int i = 0; i < size; i++) {

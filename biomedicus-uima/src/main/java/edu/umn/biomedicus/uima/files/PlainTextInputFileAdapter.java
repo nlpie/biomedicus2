@@ -16,10 +16,13 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import edu.umn.biomedicus.application.Document;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
@@ -30,7 +33,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.util.Objects;
 
 /**
@@ -71,32 +73,21 @@ public class PlainTextInputFileAdapter implements InputFileAdapter {
     @Override
     public void adaptFile(CAS cas, Path path) throws CollectionException, IOException {
         LOGGER.info("Reading text into a CAS view.");
-        JCas defaultView;
-        try {
-            defaultView = cas.getJCas();
-        } catch (CASException e) {
-            throw new CollectionException(e);
-        }
-
-        JCas targetView;
-        try {
-            targetView = defaultView.createView(viewName);
-        } catch (CASException e) {
-            throw new CollectionException(e);
-        }
+        CAS targetView = cas.createView(viewName);
 
         byte[] bytes = Files.readAllBytes(path);
-        String documentText = new String(bytes, Objects.requireNonNull(encoding, "Encoding must not be null"));
+        String documentText = new String(bytes,
+                Objects.requireNonNull(encoding,
+                        "Encoding must not be null"));
         targetView.setDocumentText(documentText);
 
-        DocumentId documentAnnotation = new DocumentId(targetView);
         String fileName = path.getFileName().toString();
         int period = fileName.lastIndexOf('.');
         if (period == -1) {
             period = fileName.length();
         }
-        documentAnnotation.setDocumentId(fileName.substring(0, period));
-        documentAnnotation.addToIndexes();
+        String documentId = fileName.substring(0, period);
+        UimaAdapters.createDocument(cas, null, documentId);
     }
 
     @Override

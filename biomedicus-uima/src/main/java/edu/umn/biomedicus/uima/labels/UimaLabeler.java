@@ -41,8 +41,11 @@ public final class UimaLabeler<T> implements Labeler<T> {
             }
 
             @Override
-            public void label(TextLocation textLocation) throws BiomedicusException {
-                labelAdapter.labelToAnnotation(new Label<>(textLocation.toSpan(), value));
+            public void label(TextLocation textLocation)
+                    throws BiomedicusException {
+                labelAdapter
+                        .labelToAnnotation(new Label<>(textLocation.toSpan(),
+                                value));
             }
         };
     }
@@ -50,5 +53,10 @@ public final class UimaLabeler<T> implements Labeler<T> {
     @Override
     public void label(Label<T> label) {
         labelAdapter.labelToAnnotation(label);
+    }
+
+    @Override
+    public void finish() {
+
     }
 }

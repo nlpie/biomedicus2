@@ -16,23 +16,22 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
+import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
+import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
-import edu.umn.biomedicus.uima.labels.UimaLabeler;
 import edu.umn.biomedicus.uima.labels.UimaLabelIndex;
-import org.apache.uima.cas.*;
+import edu.umn.biomedicus.uima.labels.UimaLabeler;
+import org.apache.uima.cas.CAS;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Objects;
 
 /**
  *
@@ -42,12 +41,10 @@ import java.util.Objects;
  */
 final class CASTextView implements TextView {
     private final CAS view;
+    @Nullable
     private final LabelAdapters labelAdapters;
 
-    CASTextView(CAS view, LabelAdapters labelAdapters) {
-        if (labelAdapters == null) {
-            throw new IllegalArgumentException("labelAdapters was null.");
-        }
+    CASTextView(CAS view, @Nullable LabelAdapters labelAdapters) {
         this.view = view;
         this.labelAdapters = labelAdapters;
     }
@@ -81,6 +78,7 @@ final class CASTextView implements TextView {
 
     @Override
     public <T> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
+        Preconditions.checkNotNull(labelAdapters);
         LabelAdapter<T> labelAdapter = labelAdapters
                 .getLabelAdapterFactory(labelClass).create(view);
         return new UimaLabelIndex<>(view, labelAdapter);
@@ -88,6 +86,7 @@ final class CASTextView implements TextView {
 
     @Override
     public <T> Labeler<T> getLabeler(Class<T> labelClass) {
+        Preconditions.checkNotNull(labelAdapters);
         LabelAdapter<T> labelAdapter = labelAdapters
                 .getLabelAdapterFactory(labelClass).create(view);
         return new UimaLabeler<>(labelAdapter);

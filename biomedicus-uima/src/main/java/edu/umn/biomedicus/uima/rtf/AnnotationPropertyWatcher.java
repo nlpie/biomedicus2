@@ -17,22 +17,22 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtf.reader.State;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.JCas;
 
 import javax.annotation.Nullable;
 
 /**
- * Responsible for monitoring changes to properties and then creating annotations if properties match conditions in
- * the {@link PropertyCasMapping}.
+ * Responsible for monitoring changes to properties and then creating
+ * annotations if properties match conditions in the {@link PropertyCasMapping}.
  *
  * @author Ben Knoll
  * @since 1.3.0
  */
 class AnnotationPropertyWatcher {
     /**
-     * The property cas mapping object which determines which property is monitored and the condition for creating an
-     * annotation.
+     * The property cas mapping object which determines which property is
+     * monitored and the condition for creating an annotation.
      */
     private final PropertyCasMapping propertyCasMapping;
 
@@ -60,18 +60,20 @@ class AnnotationPropertyWatcher {
     /**
      * Handles changes to the properties in the state.
      *
-     * @param index the current index of the character output in the destination view.
+     * @param index the current index of the character output in the destination
+     *              view.
      * @param state the current state of the rtf document.
-     * @param jCas the destination view.
+     * @param jCas  the destination view.
      */
     @Nullable
-    AnnotationFS handleChanges(int index, State state, JCas jCas) {
+    AnnotationFS handleChanges(int index, State state, CAS jCas) {
         if (index < 0) {
             throw new IllegalArgumentException("Index less than 0");
         }
 
         if (begin != null && index < begin) {
-            throw new IllegalStateException("Index before the beginning of the currently tracked annotation.");
+            throw new IllegalStateException(
+                    "Index before the beginning of the currently tracked annotation.");
         }
 
         int propertyValue = propertyCasMapping.getPropertyValue(state);
@@ -79,7 +81,8 @@ class AnnotationPropertyWatcher {
         AnnotationFS finished = null;
         if (begin != null) {
             if (value != null && value != propertyValue) {
-                finished = propertyCasMapping.getAnnotation(jCas, begin, index, value);
+                finished = propertyCasMapping
+                        .getAnnotation(jCas, begin, index, value);
                 begin = null;
                 value = null;
             }

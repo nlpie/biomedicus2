@@ -17,9 +17,11 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.rtfuima.type.ViewIndex;
 import mockit.*;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.testng.annotations.Test;
 
 /**
@@ -28,20 +30,23 @@ import org.testng.annotations.Test;
 public class CasIndexListenerTest {
     @Tested CasIndexListener casIndexListener;
 
-    @Injectable JCas originalDocumentView;
+    @Injectable CAS originalDocumentView;
 
     @Test
-    public void testWroteToDestination(@Mocked ViewIndex viewIndex) throws Exception {
+    public void testWroteToDestination(@Mocked Type type,
+                                       @Mocked Feature feature,
+                                       @Mocked AnnotationFS annotationFS)
+            throws Exception {
         new Expectations() {{
-            new ViewIndex(originalDocumentView, 200, 201); result = viewIndex;
+            originalDocumentView.createAnnotation(type, 200, 201); result = annotationFS;
         }};
 
         casIndexListener.wroteToDestination("aDestination", 20, Span.create(200, 201));
 
         new Verifications() {{
-            viewIndex.setDestinationIndex(20);
-            viewIndex.setDestinationName("aDestination");
-            viewIndex.addToIndexes();
+            annotationFS.setIntValue(feature, 20);
+            annotationFS.setStringValue(feature, "aDestination");
+            originalDocumentView.addFsToIndexes(annotationFS);
         }};
     }
 }

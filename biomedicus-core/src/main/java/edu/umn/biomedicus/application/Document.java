@@ -16,8 +16,6 @@
 
 package edu.umn.biomedicus.application;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,19 +38,17 @@ public interface Document {
      * @param key
      * @return
      */
-    Optional<String> getMetadata(String key) throws BiomedicusException;
+    Optional<String> getMetadata(String key);
 
     Map<String, String> getAllMetadata();
 
     /**
-     *
-     * @param key
+     *  @param key
      * @param value
      */
-    void putMetadata(String key, String value) throws BiomedicusException;
+    void putMetadata(String key, String value);
 
-    void putAllMetadata(Map<String, String> metadata)
-            throws BiomedicusException;
+    void putAllMetadata(Map<String, String> metadata);
 
     /**
      *
@@ -60,13 +56,12 @@ public interface Document {
      * @param text
      * @return
      */
-    TextView createTextView(String name, String text)
-            throws BiomedicusException;
+    TextView createTextView(String name, String text);
 
     /**
      *
      * @param name
      * @return
      */
-    TextView getTextView(String name) throws BiomedicusException;
+    Optional<TextView> getTextView(String name);
 }

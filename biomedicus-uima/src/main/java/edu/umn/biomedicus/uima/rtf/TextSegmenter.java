@@ -16,12 +16,10 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.type.*;
-import edu.umn.biomedicus.uima.common.Views;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.TypeSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,31 +29,34 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class TextSegmenter extends JCasAnnotator_ImplBase {
+public class TextSegmenter extends CasAnnotator_ImplBase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextSegmenter.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TextSegmenter.class);
+
 
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    public void process(CAS aCAS) throws AnalysisEngineProcessException {
         LOGGER.info("Segmenting rtf text.");
-        JCas systemView;
-        try {
-            systemView = aJCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-        TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
+        CAS systemView = aCAS.getView("SystemView");
+        TextSegmentsBuilder textSegmentsBuilder
+                = new TextSegmentsBuilder(systemView);
 
-        textSegmentsBuilder.addAnnotations(ParagraphAnnotation.type);
-        textSegmentsBuilder.addAnnotations(RowAnnotation.type);
-        textSegmentsBuilder.addAnnotations(CellAnnotation.type);
-        textSegmentsBuilder.addAnnotations(NestedRowAnnotation.type);
-        textSegmentsBuilder.addAnnotations(NestedCellAnnotation.type);
+        TypeSystem typeSystem = systemView.getTypeSystem();
+
+        textSegmentsBuilder.addAnnotations(typeSystem
+                .getType("edu.umn.biomedicus.type.ParagraphAnnotation"));
+        textSegmentsBuilder.addAnnotations(typeSystem
+                .getType("edu.umn.biomedicus.type.RowAnnotation"));
+        textSegmentsBuilder.addAnnotations(typeSystem
+                .getType("edu.umn.biomedicus.type.CellAnnotation"));
+        textSegmentsBuilder.addAnnotations(typeSystem
+                .getType("edu.umn.biomedicus.type.NestedRowAnnotation"));
+        textSegmentsBuilder.addAnnotations(typeSystem
+                .getType("edu.umn.biomedicus.type.NestedCellAnnotation"));
 
         textSegmentsBuilder.buildInView();
     }
-
-
 }

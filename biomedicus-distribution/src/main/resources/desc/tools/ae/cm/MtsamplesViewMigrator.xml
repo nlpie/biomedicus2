@@ -71,7 +71,7 @@
             <nameValuePair>
                 <name>viewMigratorClass</name>
                 <value>
-                    <string>edu.umn.biomedicus.tools.mtsamples.MtsamplesViewMigrator</string>
+                    <string>edu.umn.biomedicus.uima.util.MtsamplesViewMigrator</string>
                 </value>
             </nameValuePair>
         </configurationParameterSettings>

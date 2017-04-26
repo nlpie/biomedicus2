@@ -16,17 +16,13 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.rtfuima.type.*;
-import edu.umn.biomedicus.type.CellAnnotation;
-import edu.umn.biomedicus.type.NestedCellAnnotation;
-import edu.umn.biomedicus.type.NestedRowAnnotation;
-import edu.umn.biomedicus.type.RowAnnotation;
-import edu.umn.biomedicus.uima.common.Views;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,37 +37,46 @@ import java.util.List;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class TableAnnotator extends JCasAnnotator_ImplBase {
+public class TableAnnotator extends CasAnnotator_ImplBase {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TableAnnotator.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TableAnnotator.class);
 
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    public void process(CAS aCAS) throws AnalysisEngineProcessException {
         LOGGER.info("Annotating rtf tables.");
-        JCas systemView;
-        try {
-            systemView = aJCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-        AnnotationIndex<Annotation> paragraphInTableIndex = systemView.getAnnotationIndex(ParagraphInTable.type);
+        TypeSystem typeSystem = aCAS.getTypeSystem();
+        Type paragraphInTableType = typeSystem
+                .getType("edu.umn.biomedicus.rtfuima.type.ParagraphInTable");
+
+        CAS systemView = aCAS.getView("SystemView");
+
+        AnnotationIndex<AnnotationFS> paragraphInTableIndex = systemView
+                .getAnnotationIndex(paragraphInTableType);
 
         List<Integer> inTable = new ArrayList<>();
-        for (Annotation annotation : paragraphInTableIndex) {
+        for (AnnotationFS annotation : paragraphInTableIndex) {
             for (int i = annotation.getBegin(); i <= annotation.getEnd(); i++) {
                 inTable.add(i);
             }
         }
-        int[] indexes = inTable.stream().mapToInt(i -> i).sorted().distinct().toArray();
+        int[] indexes = inTable.stream().mapToInt(i -> i).sorted().distinct()
+                .toArray();
 
         if (indexes.length == 0) {
             return;
         }
 
         // divide "in table" paragraphs into rows.
-        AnnotationIndex<Annotation> rowEndAnnotationIndex = systemView.getAnnotationIndex(RowEnd.type);
+        Type rowEndType = typeSystem
+                .getType("edu.umn.biomedicus.rtfuima.type.RowEnd");
+        Type rowType = typeSystem
+                .getType("edu.umn.biomedicus.type.RowAnnotation");
+
+        AnnotationIndex<Annotation> rowEndAnnotationIndex = systemView
+                .getAnnotationIndex(rowEndType);
         for (Annotation rowEnd : rowEndAnnotationIndex) {
             int rowEndIndex = rowEnd.getBegin();
             int insert = Arrays.binarySearch(indexes, rowEndIndex);
@@ -80,30 +85,46 @@ public class TableAnnotator extends JCasAnnotator_ImplBase {
             }
             int end = indexes[insert];
             int ptr = insert;
-            while (ptr > 0 && indexes[ptr] - indexes[ptr - 1] == 1){
-               --ptr;
+            while (ptr > 0 && indexes[ptr] - indexes[ptr - 1] == 1) {
+                --ptr;
             }
             int begin = indexes[ptr];
             Arrays.fill(indexes, ptr, insert, -2);
-            new RowAnnotation(systemView, begin, end).addToIndexes();
+
+            systemView.addFsToIndexes(systemView.createAnnotation(rowType,
+                    begin, end));
         }
 
-        TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(systemView);
-        tableAnnotationDivider.using(CellEnd.type)
-                .divide(RowAnnotation.type)
-                .into(CellAnnotation.type)
+        Type cellEndType = typeSystem
+                .getType("edu.umn.biomedicus.rtfuima.type.CellEnd");
+        Type cellType = typeSystem
+                .getType("edu.umn.biomedicus.type.CellAnnotation");
+
+        Type nestRowEndType = typeSystem
+                .getType("edu.umn.biomedicus.rtfuima.type.NestRowEnd");
+        Type nestedRowType = typeSystem
+                .getType("edu.umn.biomedicus.type.NestedRowAnnotation");
+
+        Type nestedCellEndType = typeSystem
+                .getType("edu.umn.biomedicus.rtfuima.type.NestCellEnd");
+        Type nestedCellType = typeSystem
+                .getType("edu.umn.biomedicus.type.NestedCellAnnotation");
+
+        TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider
+                .in(systemView);
+        tableAnnotationDivider.using(cellEndType)
+                .divide(rowType)
+                .into(cellType)
                 .execute();
 
-        tableAnnotationDivider.using(NestRowEnd.type)
-                .divide(CellAnnotation.type)
-                .into(NestedRowAnnotation.type)
+        tableAnnotationDivider.using(nestRowEndType)
+                .divide(cellType)
+                .into(nestedRowType)
                 .execute();
 
-        tableAnnotationDivider.using(NestCellEnd.type)
-                .divide(NestedRowAnnotation.type)
-                .into(NestedCellAnnotation.type)
+        tableAnnotationDivider.using(nestedCellEndType)
+                .divide(nestedRowType)
+                .into(nestedCellType)
                 .execute();
     }
-
-
 }

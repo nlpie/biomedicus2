@@ -19,11 +19,11 @@ package edu.umn.biomedicus.uima.rtf;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.OutputDestination;
 import edu.umn.biomedicus.rtf.reader.State;
-import edu.umn.biomedicus.type.IllegalXmlCharacter;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.JCas;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +41,7 @@ class CasOutputDestination implements OutputDestination {
     /**
      * The view to write to.
      */
-    private final JCas destinationView;
+    private final CAS destinationView;
 
     /**
      * The builder for the document.
@@ -54,9 +54,11 @@ class CasOutputDestination implements OutputDestination {
     private final Collection<AnnotationFS> completedAnnotations;
 
     /**
-     * The annotation property watchers, which are responsible for watching property changes and creating annotations.
+     * The annotation property watchers, which are responsible for watching
+     * property changes and creating annotations.
      */
-    private final Collection<AnnotationPropertyWatcher> annotationPropertyWatchers;
+    private final Collection<AnnotationPropertyWatcher>
+            annotationPropertyWatchers;
 
     /**
      * The annotation type to create for control words.
@@ -67,15 +69,18 @@ class CasOutputDestination implements OutputDestination {
      * The name of the output destination.
      */
     private final String name;
+    private final Type illegalCharType;
+    private final Feature valueFeat;
 
     /**
      * Default constructor, initializes all fields.
      *
      * @param destinationView              The view to write to.
      * @param casMappings                  The property cas mappings
-     * @param annotationTypeForControlWord The annotation type to create for control words.
+     * @param annotationTypeForControlWord The annotation type to create for
+     *                                     control words.
      */
-    CasOutputDestination(JCas destinationView,
+    CasOutputDestination(CAS destinationView,
                          List<PropertyCasMapping> casMappings,
                          Map<String, Type> annotationTypeForControlWord,
                          String name) {
@@ -87,12 +92,18 @@ class CasOutputDestination implements OutputDestination {
                 .collect(Collectors.toList());
         this.annotationTypeForControlWord = annotationTypeForControlWord;
         this.name = name;
+        TypeSystem typeSystem = destinationView.getTypeSystem();
+        illegalCharType = typeSystem
+                .getType("edu.umn.biomedicus.type.IllegalXmlCharacter");
+        valueFeat = illegalCharType.getFeatureByBaseName("value");
     }
 
     @Override
     public int writeChar(char ch, State state) {
         for (AnnotationPropertyWatcher propertyWatcher : annotationPropertyWatchers) {
-            AnnotationFS newAnnotation = propertyWatcher.handleChanges(sofaBuilder.length(), state, destinationView);
+            AnnotationFS newAnnotation = propertyWatcher
+                    .handleChanges(sofaBuilder.length(), state,
+                            destinationView);
             if (newAnnotation != null) {
                 completedAnnotations.add(newAnnotation);
             }
@@ -102,10 +113,11 @@ class CasOutputDestination implements OutputDestination {
             if (!isValidXml(ch)) {
                 // add zero-width space and annotate it as an illegal xml character.
                 sofaBuilder.append((char) 0x200B);
-                IllegalXmlCharacter illegalXmlCharacter = new IllegalXmlCharacter(destinationView,
-                        sofaBuilder.length() - 1, sofaBuilder.length());
-                illegalXmlCharacter.setValue((int) ch);
-                completedAnnotations.add(illegalXmlCharacter);
+                AnnotationFS annotation = destinationView
+                        .createAnnotation(illegalCharType,
+                                sofaBuilder.length() - 1, sofaBuilder.length());
+                annotation.setIntValue(valueFeat, (int) ch);
+                completedAnnotations.add(annotation);
             } else {
                 sofaBuilder.append(ch);
             }
@@ -116,7 +128,8 @@ class CasOutputDestination implements OutputDestination {
     }
 
     private boolean isValidXml(char ch) {
-        return (ch >= 0x0020 && ch <= 0xd7ff) || ch == 0x0009 || ch == 0x000a || ch == 0x000d || (ch >= 0xe000 && ch <= 0xfffd);
+        return (ch >= 0x0020 && ch <= 0xd7ff) || ch == 0x0009 || ch == 0x000a
+                || ch == 0x000d || (ch >= 0xe000 && ch <= 0xfffd);
     }
 
     @Override
@@ -137,7 +150,8 @@ class CasOutputDestination implements OutputDestination {
         } else {
             return;
         }
-        annotation = destinationView.getCas().createAnnotation(type, currentTextIndex, currentTextIndex);
+        annotation = destinationView.createAnnotation(type, currentTextIndex,
+                currentTextIndex);
         Feature paramFeature = type.getFeatureByBaseName("param");
         if (keywordAction.hasParameter()) {
             annotation.setIntValue(paramFeature, keywordAction.getParameter());

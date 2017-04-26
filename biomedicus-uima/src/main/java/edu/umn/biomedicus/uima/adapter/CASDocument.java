@@ -18,15 +18,11 @@ package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.application.Document;
 import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.cas.*;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  *
@@ -34,8 +30,8 @@ import java.util.Optional;
  * @author Ben Knoll
  * @since 1.6.0
  */
-public class CASDocument implements Document {
-    private final LabelAdapters labelAdapters;
+final class CASDocument implements Document {
+    @Nullable private final LabelAdapters labelAdapters;
 
     private final CAS view;
     private final CAS metadata;
@@ -46,7 +42,7 @@ public class CASDocument implements Document {
 
     private final String documentId;
 
-    CASDocument(LabelAdapters labelAdapters, CAS view) {
+    CASDocument(@Nullable LabelAdapters labelAdapters, CAS view) {
         this.labelAdapters = labelAdapters;
         this.view = view;
 
@@ -66,7 +62,7 @@ public class CASDocument implements Document {
                 .getStringValue(idFeat);
     }
 
-    CASDocument(LabelAdapters labelAdapters,
+    CASDocument(@Nullable LabelAdapters labelAdapters,
                 CAS view,
                 String documentId) {
         this.labelAdapters = labelAdapters;
@@ -108,7 +104,7 @@ public class CASDocument implements Document {
     }
 
     @Override
-    public Optional<String> getMetadata(String key) throws BiomedicusException {
+    public Optional<String> getMetadata(String key) {
         FeatureStructure mapEntry = getMapEntry(key);
         if (mapEntry == null) {
             return Optional.empty();
@@ -132,8 +128,7 @@ public class CASDocument implements Document {
     }
 
     @Override
-    public void putMetadata(String key, String value)
-            throws BiomedicusException {
+    public void putMetadata(String key, String value) {
         FeatureStructure mapEntry = getMapEntry(key);
         if (mapEntry != null) {
             view.removeFsFromIndexes(mapEntry);
@@ -146,8 +141,7 @@ public class CASDocument implements Document {
     }
 
     @Override
-    public void putAllMetadata(Map<String, String> metadata)
-            throws BiomedicusException {
+    public void putAllMetadata(Map<String, String> metadata) {
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             putMetadata(entry.getKey(), entry.getValue());
         }
@@ -161,8 +155,14 @@ public class CASDocument implements Document {
     }
 
     @Override
-    public TextView getTextView(String name) {
-        CAS textView = view.getView(name);
-        return new CASTextView(textView, labelAdapters);
+    public Optional<TextView> getTextView(String name) {
+        Iterator<CAS> it = view.getViewIterator();
+        while (it.hasNext()) {
+            CAS view = it.next();
+            if (view.getViewName().equals(name)) {
+                return Optional.of(new CASTextView(view, labelAdapters));
+            }
+        }
+        return Optional.empty();
     }
 }

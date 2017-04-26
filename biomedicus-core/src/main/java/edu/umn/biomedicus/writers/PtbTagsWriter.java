@@ -18,11 +18,12 @@ package edu.umn.biomedicus.writers;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.application.Document;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -34,27 +35,34 @@ import java.nio.file.Path;
 public class PtbTagsWriter implements DocumentProcessor {
 
     private final Path outputDir;
-    private final TextView document;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
+    private final String text;
+    private final String documentId;
 
     @Inject
-    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, TextView document) {
+    public PtbTagsWriter(
+            @ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir,
+            TextView systemView,
+            Document document
+    ) {
         this.outputDir = outputDir;
-        this.document = document;
-        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
-        partOfSpeechLabelIndex = document.getLabelIndex(PartOfSpeech.class);
+        text = systemView.getText();
+        documentId = document.getDocumentId();
+        parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+        partOfSpeechLabelIndex = systemView.getLabelIndex(PartOfSpeech.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        String text = document.getText();
         StringBuilder rewriter = new StringBuilder(text);
         int added = 0;
-        for (Label<ParseToken> parseTokenLabel: parseTokenLabelIndex) {
+        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
             int end = parseTokenLabel.getEnd() + added;
-            String insertion = "/" + partOfSpeechLabelIndex.withTextLocation(parseTokenLabel)
-                    .orElseThrow(() -> new BiomedicusException("No part of speech for parse token."))
+            String insertion = "/" + partOfSpeechLabelIndex
+                    .withTextLocation(parseTokenLabel)
+                    .orElseThrow(() -> new BiomedicusException(
+                            "No part of speech for parse token."))
                     .value()
                     .toString();
             rewriter.insert(end, insertion);
@@ -66,8 +74,9 @@ public class PtbTagsWriter implements DocumentProcessor {
         }
 
         try {
-            Path fileName = outputDir.resolve(document.getDocumentId());
-            Files.write(fileName, rewriter.toString().getBytes(StandardCharsets.UTF_8));
+            Path fileName = outputDir.resolve(documentId);
+            Files.write(fileName,
+                    rewriter.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }

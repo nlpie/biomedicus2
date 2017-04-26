@@ -18,7 +18,6 @@ package edu.umn.biomedicus.common.standard;
 
 import edu.umn.biomedicus.application.Document;
 import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class StandardDocument implements Document {
     }
 
     @Override
-    public Optional<String> getMetadata(String key) throws BiomedicusException {
+    public Optional<String> getMetadata(String key) {
         return Optional.ofNullable(metadata.get(key));
     }
 
@@ -63,27 +62,24 @@ public class StandardDocument implements Document {
     }
 
     @Override
-    public void putMetadata(String key, String value)
-            throws BiomedicusException {
+    public void putMetadata(String key, String value) {
         metadata.put(key, value);
     }
 
     @Override
-    public void putAllMetadata(Map<String, String> metadata)
-            throws BiomedicusException {
+    public void putAllMetadata(Map<String, String> metadata) {
         this.metadata.putAll(metadata);
     }
 
     @Override
-    public TextView createTextView(String name, String text)
-            throws BiomedicusException {
+    public TextView createTextView(String name, String text) {
         StandardTextView textView = new StandardTextView(text);
         views.put(name, textView);
         return textView;
     }
 
     @Override
-    public TextView getTextView(String name) throws BiomedicusException {
-        return null;
+    public Optional<TextView> getTextView(String name) {
+        return Optional.ofNullable(views.get(name));
     }
 }

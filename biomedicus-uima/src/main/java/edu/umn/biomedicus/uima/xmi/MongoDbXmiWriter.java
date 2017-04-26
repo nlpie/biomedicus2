@@ -20,16 +20,13 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSInputFile;
-import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
 import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.apache.uima.cas.impl.XmiCasSerializer;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.xml.sax.SAXException;
 
@@ -41,7 +38,7 @@ import java.util.UUID;
 /**
  *
  */
-public class MongoDbXmiWriter extends JCasAnnotator_ImplBase {
+public class MongoDbXmiWriter extends CasAnnotator_ImplBase {
 
     /**
      * The mongo server to connect to.
@@ -81,23 +78,22 @@ public class MongoDbXmiWriter extends JCasAnnotator_ImplBase {
     }
 
     @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
-        JCas systemView;
-        try {
-            systemView = jCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+    public void destroy() {
+        super.destroy();
 
-        String documentId = null;
-        JFSIndexRepository jfsIndexRepository = systemView.getJFSIndexRepository();
-        if (jfsIndexRepository != null) {
-            FSIterator<DocumentId> it = jfsIndexRepository.getAllIndexedFS(DocumentId.type);
-            if (it.hasNext()) {
-                DocumentId documentAnnotation = it.next();
-                documentId = documentAnnotation.getDocumentId();
-            }
-        }
+        mongoClient.close();
+    }
+
+    @Override
+    public void process(CAS aCAS) throws AnalysisEngineProcessException {
+        Type documentIdType = aCAS.getTypeSystem()
+                .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
+        Feature docIdFeat = documentIdType.getFeatureByBaseName("documentId");
+
+        String documentId = aCAS.getIndexRepository()
+                .getAllIndexedFS(documentIdType)
+                .get()
+                .getStringValue(docIdFeat);
 
         if (documentId == null) {
             documentId = UUID.randomUUID().toString();
@@ -106,17 +102,9 @@ public class MongoDbXmiWriter extends JCasAnnotator_ImplBase {
         GridFSInputFile file = gridFS.createFile(documentId + ".xmi");
 
         try (OutputStream outputStream = file.getOutputStream()) {
-            XmiCasSerializer.serialize(jCas.getCas(), outputStream);
+            XmiCasSerializer.serialize(aCAS, outputStream);
         } catch (IOException | SAXException e) {
             throw new AnalysisEngineProcessException(e);
         }
-
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        mongoClient.close();
     }
 }

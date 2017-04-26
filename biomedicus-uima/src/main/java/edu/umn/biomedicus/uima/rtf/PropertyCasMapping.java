@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtf.reader.State;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.JCas;
 
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -66,7 +66,7 @@ public class PropertyCasMapping {
     }
 
     @Nullable
-    AnnotationFS getAnnotation(JCas cas, int begin, int end, int value) {
+    AnnotationFS getAnnotation(CAS cas, int begin, int end, int value) {
         if (begin < 0) {
             throw new IllegalArgumentException("Begin: " + begin + "before 0.");
         }
@@ -82,7 +82,7 @@ public class PropertyCasMapping {
 
         TypeSystem typeSystem = cas.getTypeSystem();
         Type type = typeSystem.getType(annotationClassName);
-        AnnotationFS annotation = cas.getCas().createAnnotation(type, begin, end);
+        AnnotationFS annotation = cas.createAnnotation(type, begin, end);
         if (valueIncluded) {
             Feature valueFeature = type.getFeatureByBaseName("value");
             annotation.setIntValue(valueFeature, value);
