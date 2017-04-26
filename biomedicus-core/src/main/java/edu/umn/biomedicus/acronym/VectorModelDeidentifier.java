@@ -17,8 +17,8 @@ public class VectorModelDeidentifier {
 
     /**
      * Remove all words from an acronym vector model not present in a file of words to keep (one word per line).
-     * @param args path to expansions model; path to vector space; path to sense map; path to a file of words to keep;
-     *             directory to export model components to
+     * @param args path to expansions model; path to vector space; path to sense map; path to a file of words to keep
+     *             (one word per line); directory to export model components to
      * @throws BiomedicusException
      * @throws IOException
      */

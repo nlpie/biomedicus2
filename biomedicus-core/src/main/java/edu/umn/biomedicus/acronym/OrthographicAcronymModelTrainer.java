@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.collect.IndexMap;
+import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileNotFoundException;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  *
  */
 public class OrthographicAcronymModelTrainer {
+
     public static void main(String[] args) {
         Path abbrevsPath = Paths.get(args[0]);
         Path longformsPath = Paths.get(args[1]);
@@ -52,15 +54,10 @@ public class OrthographicAcronymModelTrainer {
     private static final double discounting = .9;
 
     private final boolean caseSensitive;
-
     private final transient IndexMap<Character> symbols;
-
     private final transient int symbolsCount;
-
     private final transient Set<Character> chars;
-
     private final double[][][] longformProbs;
-
     private final double[][][] abbrevProbs;
 
     /**
@@ -164,7 +161,7 @@ public class OrthographicAcronymModelTrainer {
      * @param w1     an integer indicating the first word in the bigram
      * @param w      an integer indicating the second word in the bigram
      * @param counts a matrix of trigram counts
-     * @return the probability (not log) of this bigram, with discounting and  interpolated backoff to unigram counts
+     * @return the probability (not log) of this bigram, with discounting and interpolated backoff to unigram counts
      */
     private double getBigramProbability(int w1, int w, int[][][] counts) {
         if (tensorSum(counts[w1]) == 0)
@@ -179,6 +176,12 @@ public class OrthographicAcronymModelTrainer {
         return prob;
     }
 
+    /**
+     * Fetches the probability of this character. No probability allocated for never-before-seen characters.
+     * @param w the integer index of this character
+     * @param counts a 3-d matrix of trigram counts
+     * @return the frequency of this character among all characters in all exemplars.
+     */
     private double getUnigramProbability(int w, int[][][] counts) {
         return ((double) tensorSum(counts[w])) / tensorSum(counts);
     }
@@ -273,7 +276,7 @@ public class OrthographicAcronymModelTrainer {
     }
 
     private void write(Path out) throws IOException {
-        Yaml yaml = new Yaml();
+        Yaml yaml = YamlSerialization.createYaml();
 
         Map<String, Object> serObj = new TreeMap<>();
         serObj.put("abbrevProbs", collapseProbs(abbrevProbs));

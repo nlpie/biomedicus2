@@ -211,7 +211,9 @@ class AcronymVectorModel implements AcronymModel {
     void writeToDirectory(Path outputDir) throws IOException {
         Yaml yaml = YamlSerialization.createYaml();
 
-        yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
+        if (alignmentModel != null) {
+            yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
+        }
         yaml.dump(wordVectorSpace, Files.newBufferedWriter(outputDir.resolve("vectorSpace.yml")));
         serializeSenseMap(outputDir.resolve("senseMap.ser"));
     }

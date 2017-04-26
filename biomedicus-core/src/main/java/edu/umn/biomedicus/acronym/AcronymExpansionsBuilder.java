@@ -25,8 +25,7 @@ import edu.umn.biomedicus.spelling.SpecialistAgreementModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,12 +53,10 @@ public class AcronymExpansionsBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymExpansionsBuilder.class);
 
     private Path masterFile;
-
     private SpecialistAgreementModel specialistAgreementModel;
-
     private Path dataSet;
-
     private Path specialistLrabrPath;
+    private Path manualSensesPath;
 
     private Path outPath;
     private Map<String, Set<String>> expansions;
@@ -81,6 +78,10 @@ public class AcronymExpansionsBuilder {
 
     private void setOutPath(Path outPath) {
         this.outPath = outPath;
+    }
+
+    private void setManualSensesPath(Path manualSensesPath) {
+        this.manualSensesPath = manualSensesPath;
     }
 
     private void buildAcronymExpansions() throws IOException {
@@ -176,6 +177,24 @@ public class AcronymExpansionsBuilder {
                     }
                 });
 
+        // finally, override any previous abbrs/senses with mappings derived from the manually annotated set
+        if (manualSensesPath.toFile().exists()) {
+            String contents = new Scanner(new FileInputStream(manualSensesPath.toFile())).useDelimiter("\\Z").next();
+            String[] groups = contents.split("\n\\s*\n");
+            for (String group : groups) {
+                String[] lines = group.split("\n");
+                Set<String> senses = new HashSet<>();
+                Collections.addAll(senses, Arrays.copyOfRange(lines, 1, lines.length));
+                if (expansions.containsKey(lines[0]) && !expansions.get(lines[0]).equals(senses)) {
+                    LOGGER.info(String.format("Replacing acronym '%s' having senses '%s' with senses '%s'", lines[0],
+                            expansions.get(lines[0]).toString(), senses.toString()));
+                }
+                expansions.put(lines[0], senses);
+            }
+        } else {
+            LOGGER.warn("Not using manual sense inventory.");
+        }
+
         LOGGER.info("Writing expansions: {}", outPath);
         try (BufferedWriter writer = Files.newBufferedWriter(outPath, CREATE, TRUNCATE_EXISTING)) {
             for (Map.Entry<String, Set<String>> abbrExpansion : expansions.entrySet()) {
@@ -213,9 +232,10 @@ public class AcronymExpansionsBuilder {
         try {
             Biomedicus biomedicus = Bootstrapper.create();
             AcronymExpansionsBuilder acronymExpansionsBuilder = biomedicus.getInstance(AcronymExpansionsBuilder.class);
-            acronymExpansionsBuilder.setMasterFile(Paths.get(args[0]));
-            acronymExpansionsBuilder.setDataSet(Paths.get(args[1]));
-            acronymExpansionsBuilder.setOutPath(Paths.get(args[2]));
+            acronymExpansionsBuilder.setManualSensesPath(Paths.get(args[0]));
+            acronymExpansionsBuilder.setMasterFile(Paths.get(args[1]));
+            acronymExpansionsBuilder.setDataSet(Paths.get(args[2]));
+            acronymExpansionsBuilder.setOutPath(Paths.get(args[3]));
 
             acronymExpansionsBuilder.buildAcronymExpansions();
         } catch (IOException | BiomedicusException e) {
