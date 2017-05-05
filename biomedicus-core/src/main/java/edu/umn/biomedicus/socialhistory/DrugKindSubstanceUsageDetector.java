@@ -19,52 +19,55 @@ package edu.umn.biomedicus.socialhistory;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.labels.LabelIndex;
+import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Matcher;
-import java.io.IOException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import java.util.List;
+import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.*;
+import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind.DRUG;
 
 @Singleton
 public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetector {
 
-    private  LabelIndex<SectionTitle> sectionTitleLabels;
-    private  LabelIndex<ParseToken> parseTokenLabels;
-    private  LabelIndex<SectionContent> sectionContentLabels;
-    private  LabelIndex<Sentence> sentenceLabels;
-    private  LabelIndex<Section> sectionLabels;
-    private  Labeler<SocialHistoryCandidate> candidateLabeler;
-    private  Labeler<SubstanceUsageElement> SubstanceUsageElementLabeler;
-    private Helpers helper = new Helpers();
-    private final Pattern typePattern ;
-    private final Pattern amountPattern ;
+    private final Pattern typePattern;
+    private final Pattern amountPattern;
+    private final Pattern methodPattern;
+    private final Pattern methodHintPattern;
+    private final Pattern statusPossiblePattern;
     List<Pattern> frequencyPatternsList;
-    private final Pattern methodPattern ;
-    private final Pattern methodHintPattern ;
-    private final Pattern  statusPossiblePattern;
     List<Pattern> temporalPatternsList;
+    Hashtable<Integer, Integer> allElementsSpanHash;
+    private LabelIndex<SectionTitle> sectionTitleLabels;
+    private LabelIndex<ParseToken> parseTokenLabels;
+    private LabelIndex<SectionContent> sectionContentLabels;
+    private LabelIndex<Sentence> sentenceLabels;
+    private LabelIndex<Section> sectionLabels;
+    private Labeler<SocialHistoryCandidate> candidateLabeler;
+    private Labeler<SubstanceUsageElement> SubstanceUsageElementLabeler;
+    private Helpers helper = new Helpers();
     private String strAlcoholPattern;
-    Hashtable<Integer, Integer> allElementsSpanHash ;
 
 
-    public DrugKindSubstanceUsageDetector() throws BiomedicusException{
+    public DrugKindSubstanceUsageDetector() throws BiomedicusException {
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = Thread.currentThread()
+                .getContextClassLoader();
 
         // Load number names, arround names;
         String strNumberNames = "(";
@@ -73,25 +76,36 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         String thisLine = null;
         try {
 
-            BufferedReader brNumberNames = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/NumberNames.txt")));
+            BufferedReader brNumberNames = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/NumberNames.txt")));
             while ((thisLine = brNumberNames.readLine()) != null) {
                 strNumberNames = strNumberNames + thisLine + "|";
             }
-            strNumberNames = strNumberNames.substring(0, strNumberNames.length() - 1);
+            strNumberNames = strNumberNames
+                    .substring(0, strNumberNames.length() - 1);
             strNumberNames += ")";
 
             // Load arround words
-            BufferedReader brAroundWords = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/AroundWords.txt")));
+            BufferedReader brAroundWords = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/AroundWords.txt")));
 
             while ((thisLine = brAroundWords.readLine()) != null) {
                 strAroundWords = strAroundWords + thisLine + " |";
             }
-            strAroundWords = strAroundWords.substring(0, strAroundWords.length() - 2);
+            strAroundWords = strAroundWords
+                    .substring(0, strAroundWords.length() - 2);
             strAroundWords += ")";
 
-            BufferedReader brTimePeriod = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/TimePeriodNames.txt")));
-            while ((thisLine = brTimePeriod.readLine()) != null) { strTimePeriod = strTimePeriod + thisLine + "|"; }
-            strTimePeriod = strTimePeriod.substring(0, strTimePeriod.length()-1);
+            BufferedReader brTimePeriod = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/TimePeriodNames.txt")));
+            while ((thisLine = brTimePeriod.readLine()) != null) {
+                strTimePeriod = strTimePeriod + thisLine + "|";
+            }
+            strTimePeriod = strTimePeriod
+                    .substring(0, strTimePeriod.length() - 1);
             strTimePeriod += ")";
 
 
@@ -100,22 +114,29 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         }
 
         // Load type patterns
-        BufferedReader readerType = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugTypePhrases.txt")));
-        typePattern = Pattern.compile("(?i)\\b(" + readerType.lines().collect(Collectors.joining("|")) + ")\\b", Pattern.MULTILINE);
+        BufferedReader readerType = new BufferedReader(new InputStreamReader(
+                classLoader.getResourceAsStream(
+                        "edu/umn/biomedicus/config/socialHistory/DrugTypePhrases.txt")));
+        typePattern = Pattern.compile(
+                "(?i)\\b(" + readerType.lines().collect(Collectors.joining("|"))
+                        + ")\\b", Pattern.MULTILINE);
 
         // Load amount patterns
         try {
 
-            BufferedReader brPatterns = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugAmountPatterns.txt")));
+            BufferedReader brPatterns = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/DrugAmountPatterns.txt")));
             String strPattern = "\\b(";
             while ((thisLine = brPatterns.readLine()) != null) {
-                strPattern = strPattern + thisLine.replaceAll("\\$number_names", strNumberNames) + "|";
+                strPattern = strPattern + thisLine
+                        .replaceAll("\\$number_names", strNumberNames) + "|";
             }
             strPattern = strPattern.substring(0, strPattern.length() - 1);
             strPattern += ")\\b";
 
             amountPattern = Pattern.compile(strPattern, Pattern.MULTILINE);
-        }catch ( IOException e){
+        } catch (IOException e) {
             throw new BiomedicusException(e);
         }
 
@@ -123,84 +144,115 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         try {
 
             frequencyPatternsList = new ArrayList<>();
-            BufferedReader brPatterns = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugFrequencyPhrases.txt")));
+            BufferedReader brPatterns = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/DrugFrequencyPhrases.txt")));
             while ((thisLine = brPatterns.readLine()) != null) {
 
-                frequencyPatternsList.add(Pattern.compile(thisLine, Pattern.MULTILINE));
+                frequencyPatternsList
+                        .add(Pattern.compile(thisLine, Pattern.MULTILINE));
             }
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }
 
 
-
         // Load method patterns and hint patterns
-        BufferedReader readerMethod = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugMethodWords.txt")));
-        methodPattern = Pattern.compile("(?i)\\b(" + readerMethod.lines().collect(Collectors.joining("|")) + ")\\b", Pattern.MULTILINE);
+        BufferedReader readerMethod = new BufferedReader(new InputStreamReader(
+                classLoader.getResourceAsStream(
+                        "edu/umn/biomedicus/config/socialHistory/DrugMethodWords.txt")));
+        methodPattern = Pattern.compile("(?i)\\b(" + readerMethod.lines()
+                .collect(Collectors.joining("|")) + ")\\b", Pattern.MULTILINE);
 
-        BufferedReader readerMethodHint = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugMethodHintWords.txt")));
-        methodHintPattern = Pattern.compile("(?i)\\b(" + readerMethodHint.lines().collect(Collectors.joining("|")) + ")\\b", Pattern.MULTILINE);
+        BufferedReader readerMethodHint = new BufferedReader(
+                new InputStreamReader(classLoader.getResourceAsStream(
+                        "edu/umn/biomedicus/config/socialHistory/DrugMethodHintWords.txt")));
+        methodHintPattern = Pattern.compile(
+                "(?i)\\b(" + readerMethodHint.lines()
+                        .collect(Collectors.joining("|")) + ")\\b",
+                Pattern.MULTILINE);
 
         // Load possible status patterns
-        BufferedReader readerStatusPossible = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/DrugStatusPossiblePhrases.txt")));
-        statusPossiblePattern = Pattern.compile("(?i)\\b(" + readerStatusPossible.lines().collect(Collectors.joining("|")) + ")\\b", Pattern.MULTILINE);
+        BufferedReader readerStatusPossible = new BufferedReader(
+                new InputStreamReader(classLoader.getResourceAsStream(
+                        "edu/umn/biomedicus/config/socialHistory/DrugStatusPossiblePhrases.txt")));
+        statusPossiblePattern = Pattern.compile(
+                "(?i)\\b(" + readerStatusPossible.lines()
+                        .collect(Collectors.joining("|")) + ")\\b",
+                Pattern.MULTILINE);
 
 
         // Load temporal patterns
         try {
 
             temporalPatternsList = new ArrayList<>();
-            BufferedReader brPatterns = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream("edu/umn/biomedicus/config/socialHistory/TemporalPatterns.txt")));
+            BufferedReader brPatterns = new BufferedReader(
+                    new InputStreamReader(classLoader.getResourceAsStream(
+                            "edu/umn/biomedicus/config/socialHistory/TemporalPatterns.txt")));
             while ((thisLine = brPatterns.readLine()) != null) {
 
-                String str = thisLine.replaceAll("\\$number_names", strNumberNames);
+                String str = thisLine
+                        .replaceAll("\\$number_names", strNumberNames);
                 str = str.replaceAll("\\$arround_words", strAroundWords);
                 str = str.replaceAll("\\$number_names", strNumberNames);
                 str = str.replaceAll("\\$time_period_names", strTimePeriod);
-                str = str.replaceAll("\\$month_names", "(" + strMonNames + ")" );
-                str = str.replaceAll("\\$day_names", "(" + strDayNames + ")" );
+                str = str.replaceAll("\\$month_names", "(" + strMonNames + ")");
+                str = str.replaceAll("\\$day_names", "(" + strDayNames + ")");
                 str = "(?i)\\b" + str + "\\b";
-                temporalPatternsList.add(Pattern.compile(str, Pattern.MULTILINE));
+                temporalPatternsList
+                        .add(Pattern.compile(str, Pattern.MULTILINE));
             }
-        }catch( IOException e){
+        } catch (IOException e) {
             throw new BiomedicusException(e);
         }
     }
 
 
     @Override
-    public void processCandidate(TextView document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException {
+    public void processCandidate(TextView document,
+                                 Label<SocialHistoryCandidate> socialHistoryCandidateLabel)
+            throws BiomedicusException {
 
         sectionLabels = document.getLabelIndex(Section.class);
         sectionTitleLabels = document.getLabelIndex(SectionTitle.class);
         candidateLabeler = document.getLabeler(SocialHistoryCandidate.class);
         sectionContentLabels = document.getLabelIndex(SectionContent.class);
         sentenceLabels = document.getLabelIndex(Sentence.class);
-        SubstanceUsageElementLabeler = document.getLabeler(SubstanceUsageElement.class);
+        SubstanceUsageElementLabeler = document
+                .getLabeler(SubstanceUsageElement.class);
         parseTokenLabels = document.getLabelIndex(ParseToken.class);
 
-        Label<Sentence> sentenceLabel = document.getLabelIndex(Sentence.class).withTextLocation(socialHistoryCandidateLabel)
-                .orElseThrow(() -> new BiomedicusException("SocialHistory Candidate does not have sentence"));
+        Label<Sentence> sentenceLabel = document.getLabelIndex(Sentence.class)
+                .withTextLocation(socialHistoryCandidateLabel)
+                .orElseThrow(() -> new BiomedicusException(
+                        "SocialHistory Candidate does not have sentence"));
 
-        Label<DependencyParse> dependencyParseLabel = document.getLabelIndex(DependencyParse.class).withTextLocation(sentenceLabel)
-                .orElseThrow(() -> new BiomedicusException("No parse for sentence."));
+        Label<DependencyParse> dependencyParseLabel = document
+                .getLabelIndex(DependencyParse.class)
+                .withTextLocation(sentenceLabel)
+                .orElseThrow(() -> new BiomedicusException(
+                        "No parse for sentence."));
 
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
-        Label<ConstituencyParse> consttParseLabel = document.getLabelIndex(ConstituencyParse.class).withTextLocation(sentenceLabel)
-                .orElseThrow(() -> new BiomedicusException("No constituency parse for sentence."));
-        String strConstt = consttParseLabel.value().getParse().toString();
+        Label<ConstituencyParse> consttParseLabel = document
+                .getLabelIndex(ConstituencyParse.class)
+                .withTextLocation(sentenceLabel)
+                .orElseThrow(() -> new BiomedicusException(
+                        "No constituency parse for sentence."));
+        String strConstt = consttParseLabel.value().parse();
 
-        String strDepen = dependencyParseLabel.value().parseTree().toString();
-        Hashtable<String, Object> googleRelationHash= new Hashtable<>();
-        googleRelationHash.put("DEP_STR",strDepen);
+        String strDepen = dependencyParseLabel.value().parseTree();
+        Hashtable<String, Object> googleRelationHash = new Hashtable<>();
+        googleRelationHash.put("DEP_STR", strDepen);
         Helpers.getGoogleDepenRelations(strDepen, googleRelationHash);
 
         allElementsSpanHash = new Hashtable<>();
         extractTemporal(sentenceLabel, googleRelationHash, strConstt);
         extractType(sentenceLabel);
-        extractAmount(sentenceLabel,googleRelationHash);
+        extractAmount(sentenceLabel, googleRelationHash);
         extractFrequency(sentenceLabel, googleRelationHash);
         extractMethod(sentenceLabel, googleRelationHash);
         extractStatus(sentenceLabel, googleRelationHash);
@@ -208,27 +260,30 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
 
     }
 
-    private void extractTemporal(Label<Sentence> sentenceLabel, Hashtable<String, Object> googleRelationHash, String strConstt ) throws BiomedicusException {
+    private void extractTemporal(Label<Sentence> sentenceLabel,
+                                 Hashtable<String, Object> googleRelationHash,
+                                 String strConstt) throws BiomedicusException {
 
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         // Get all possible longest frequency patterns
-        Hashtable<Integer, Integer> spanHash= new Hashtable<Integer, Integer>();
+        Hashtable<Integer, Integer> spanHash
+                = new Hashtable<Integer, Integer>();
         for (Pattern pattern : temporalPatternsList) {
 
             Matcher matcher = pattern.matcher(strSentence);
-            while (matcher.find()){
+            while (matcher.find()) {
 
                 int start = matcher.start(1);
                 int end = matcher.end(1);
 
                 boolean bClear = false;
-                if ( spanHash.isEmpty() ) {
+                if (spanHash.isEmpty()) {
                     // Empty match hash
                     bClear = true;
-                }
-                else {
+                } else {
                     // Non-empty hash, check if the span already included or there is already a longer label
                     Enumeration<Integer> enumKey = spanHash.keys();
                     while (enumKey.hasMoreElements()) {
@@ -239,20 +294,18 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                         if (key > end || value < start) {
                             // No overlap
                             bClear = true;
-                        }
-                        else if (start == key && end == value) {
+                        } else if (start == key && end == value) {
                             bClear = false;
                             break;
-                        }
-                        else{
-                            if (start <= key && end >= value ) {
+                        } else {
+                            if (start <= key && end >= value) {
                                 // compass an existing large match, then remove the old match
                                 spanHash.remove(key);
                                 bClear = true;
                                 break;
 
                             }
-                            if (start >= key && end <= value ) {
+                            if (start >= key && end <= value) {
                                 // within an existing large match,
                                 bClear = false;
                                 break;
@@ -260,27 +313,27 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                         }
                     }
                 }
-                if (bClear) spanHash.put(start,end);
+                if (bClear) spanHash.put(start, end);
             }
         }
 
 
         // Get constituent phrases from constituency parse
-        Hashtable<Integer,Integer> consttPPHash = new Hashtable<>();
-        helper.getTemporalSyntaxPhrases(strConstt, parseTokenLabels, consttPPHash, sentenceLabel);
+        Hashtable<Integer, Integer> consttPPHash = new Hashtable<>();
+        helper.getTemporalSyntaxPhrases(strConstt, parseTokenLabels,
+                consttPPHash, sentenceLabel);
 
 
         Enumeration<Integer> enumKey = consttPPHash.keys();
-        while ( enumKey.hasMoreElements()) {
+        while (enumKey.hasMoreElements()) {
 
             Integer start = enumKey.nextElement();
             Integer end = consttPPHash.get(start);
             boolean bClear = false;
-            if ( spanHash.isEmpty() ) {
+            if (spanHash.isEmpty()) {
                 // Empty match hash
                 bClear = true;
-            }
-            else {
+            } else {
                 // Non-empty hash, check if the span already included or there is already a longer label
                 Enumeration<Integer> enumSpanKey = spanHash.keys();
                 while (enumSpanKey.hasMoreElements()) {
@@ -291,20 +344,18 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                     if (key > end || value < start) {
                         // No overlap
                         bClear = true;
-                    }
-                    else if (start == key && end == value) {
+                    } else if (start == key && end == value) {
                         bClear = false;
                         break;
-                    }
-                    else{
-                        if (start <= key && end >= value ) {
+                    } else {
+                        if (start <= key && end >= value) {
                             // compass an existing large match, then remove the old match
                             spanHash.remove(key);
                             bClear = true;
                             break;
 
                         }
-                        if (start >= key && end <= value ) {
+                        if (start >= key && end <= value) {
                             // within an existing large match,
                             bClear = false;
                             break;
@@ -312,7 +363,7 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                     }
                 }
             }
-            if (bClear) spanHash.put(start,end);
+            if (bClear) spanHash.put(start, end);
         }
 
 
@@ -321,52 +372,72 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         // If so create a substance usage label for it
         //
         enumKey = spanHash.keys();
-        while ( enumKey.hasMoreElements())  {
+        while (enumKey.hasMoreElements()) {
 
             Integer start = enumKey.nextElement();
             Integer end = spanHash.get(start);
-            allElementsSpanHash.put(start,end);
-            Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
+            allElementsSpanHash.put(start, end);
+            Span substanceUsageSpan = sentenceLabel
+                    .derelativize(new Span(start, end));
             List<Integer> usageTokens = new ArrayList<>();
 
             // Get goggle tokens of the span
-            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
+            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+                    usageTokens);
 
-            String strAlcoholPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
-            String strTobaccoPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
+            String strAlcoholPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
+            String strTobaccoPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
 
-            if (!strSentence.toString().matches(strAlcoholPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
-                SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.TEMPORAL, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+            if (!strSentence.matches(strAlcoholPattern) && !strSentence
+                    .matches(strTobaccoPattern)) {
+                SubstanceUsageElementLabeler
+                        .value(ImmutableSubstanceUsageElement.builder()
+                                .type(TEMPORAL)
+                                .kind(DRUG)
+                                .build())
+                        .label(substanceUsageSpan);
             }
             // Check if ancesters of all matched tokens related to alcohol
             else {
-                if ( Helpers.checkSubstanceDepenRelated(usageTokens,KindSubstanceUsageDetector.strDrugKeywords, googleRelationHash)) {
-                    SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.TEMPORAL, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                if (Helpers.checkSubstanceDepenRelated(usageTokens,
+                        KindSubstanceUsageDetector.strDrugKeywords,
+                        googleRelationHash)) {
+                    SubstanceUsageElementLabeler
+                            .value(ImmutableSubstanceUsageElement.builder()
+                                    .type(TEMPORAL)
+                                    .kind(DRUG)
+                                    .build())
+                            .label(substanceUsageSpan);
                 }
             }
         }
     }
 
 
-    private void extractStatus(Label<Sentence> sentenceLabel, Hashtable<String, Object> googleRelationHash ) throws BiomedicusException {
+    private void extractStatus(Label<Sentence> sentenceLabel,
+                               Hashtable<String, Object> googleRelationHash)
+            throws BiomedicusException {
 
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         // Get all possible longest frequency patterns
-        Hashtable<Integer, Integer> spanHash= new Hashtable<Integer, Integer>();
+        Hashtable<Integer, Integer> spanHash
+                = new Hashtable<Integer, Integer>();
         Matcher matcher = statusPossiblePattern.matcher(strSentence);
-        while (matcher.find()){
+        while (matcher.find()) {
 
             int start = matcher.start();
             int end = matcher.end();
 
             boolean bClear = false;
-            if ( spanHash.isEmpty() ) {
+            if (spanHash.isEmpty()) {
                 // Empty match hash
                 bClear = true;
-            }
-            else {
+            } else {
                 // Non-empty hash, check if the span already included or there is already a longer label
                 Enumeration<Integer> enumKey = spanHash.keys();
                 while (enumKey.hasMoreElements()) {
@@ -377,20 +448,18 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                     if (key > end || value < start) {
                         // No overlap
                         bClear = true;
-                    }
-                    else if (start == key && end == value) {
+                    } else if (start == key && end == value) {
                         bClear = false;
                         break;
-                    }
-                    else{
-                        if (start <= key && end >= value ) {
+                    } else {
+                        if (start <= key && end >= value) {
                             // compass an existing large match, then remove the old match
                             spanHash.remove(key);
                             bClear = true;
                             break;
 
                         }
-                        if (start >= key && end <= value ) {
+                        if (start >= key && end <= value) {
                             // within an existing large match,
                             bClear = false;
                             break;
@@ -398,7 +467,7 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                     }
                 }
             }
-            if (bClear) spanHash.put(start,end);
+            if (bClear) spanHash.put(start, end);
         }
         //
         // Iterate each matched span, check if all matched text in the span hash are related to alcohol
@@ -406,47 +475,69 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         //
 
         Enumeration<Integer> enumKey = spanHash.keys();
-        while ( enumKey.hasMoreElements())  {
+        while (enumKey.hasMoreElements()) {
 
             Integer start = enumKey.nextElement();
             Integer end = spanHash.get(start);
-            Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
+            Span substanceUsageSpan = sentenceLabel
+                    .derelativize(new Span(start, end));
 
             // "no" in "no history" is not a status
-            if ( ( strSentence.substring(start, end).matches("(?i)no") && strSentence.matches(".*(?i)no history.*"))) {
+            if ((strSentence.substring(start, end).matches("(?i)no")
+                    && strSentence.matches(".*(?i)no history.*"))) {
                 continue;
             }
 
             // "no" in "no use" is not a status
-            if ( ( strSentence.substring(start, end).matches("(?i)no") && strSentence.matches(".*(?i)no use.*"))) {
+            if ((strSentence.substring(start, end).matches("(?i)no")
+                    && strSentence.matches(".*(?i)no use.*"))) {
                 continue;
             }
 
             // Get goggle tokens of the span
             List<Integer> usageTokens = new ArrayList<>();
-            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
+            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+                    usageTokens);
 
-            String strAlcoholPattern = ".*(?i)(" + KindSubstanceUsageDetector.strAlcoholKeywords + ").*";
-            String strTobaccoPattern = ".*(?i)(" + KindSubstanceUsageDetector.strTobaccoKeywords + ").*";
+            String strAlcoholPattern = ".*(?i)("
+                    + KindSubstanceUsageDetector.strAlcoholKeywords + ").*";
+            String strTobaccoPattern = ".*(?i)("
+                    + KindSubstanceUsageDetector.strTobaccoKeywords + ").*";
 
 
-            if (!strSentence.toString().matches(strAlcoholPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
-                SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.STATUS, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+            if (!strSentence.matches(strAlcoholPattern)
+                    && !strSentence.matches(strTobaccoPattern)) {
+                SubstanceUsageElementLabeler
+                        .value(ImmutableSubstanceUsageElement.builder()
+                                .type(STATUS)
+                                .kind(DRUG)
+                                .build())
+                        .label(substanceUsageSpan);
             }
             // Check if ancesters of all matched tokens related to alcohol
             else {
-                if ( Helpers.checkSubstanceDepenRelated(usageTokens,KindSubstanceUsageDetector.strDrugKeywords, googleRelationHash)) {
-                    SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.STATUS, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                if (Helpers.checkSubstanceDepenRelated(usageTokens,
+                        KindSubstanceUsageDetector.strDrugKeywords,
+                        googleRelationHash)) {
+                    SubstanceUsageElementLabeler
+                            .value(ImmutableSubstanceUsageElement.builder()
+                                    .type(STATUS)
+                                    .kind(DRUG)
+                                    .build())
+                            .label(substanceUsageSpan);
                 }
             }
         }
     }
 
 
-    private void extractMethod(Label<Sentence> sentenceLabel, Hashtable<String, Object> googleRelationHash ) throws BiomedicusException {
+    private void extractMethod(Label<Sentence> sentenceLabel,
+                               Hashtable<String, Object> googleRelationHash)
+            throws BiomedicusException {
 
         // Match method phrases that explicitly indicate alcohol drink method
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
 
@@ -454,8 +545,14 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-            SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.METHOD, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+            Span substanceUsageSpan = sentenceLabel
+                    .derelativize(new Span(start, end));
+            SubstanceUsageElementLabeler
+                    .value(ImmutableSubstanceUsageElement.builder()
+                            .type(METHOD)
+                            .kind(DRUG)
+                            .build())
+                    .label(substanceUsageSpan);
         }
 
 
@@ -464,8 +561,9 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-            String strMatch = strSentence.substring(start,end);
+            Span substanceUsageSpan = sentenceLabel
+                    .derelativize(new Span(start, end));
+            String strMatch = strSentence.substring(start, end);
 
             /*
             * Check if related to drug
@@ -473,60 +571,84 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
 
             // Get goggle tokens of the span
             List<Integer> usageTokens = new ArrayList<>();
-            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
+            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+                    usageTokens);
 
             //Check if the word is noun
-            if (usageTokens.size() == 1 ){
-                Hashtable<Integer, String> posHash = ( Hashtable<Integer, String>) googleRelationHash.get("POS");
+            if (usageTokens.size() == 1) {
+                Hashtable<Integer, String> posHash
+                        = (Hashtable<Integer, String>) googleRelationHash
+                        .get("POS");
                 //if (posHash.get(usageTokens.get(0)).toString().matches(".*NN.*")) continue;
             }
 
             // use in "used to" is not a method
-            if ( ( strSentence.substring(start, end).matches(".*(?i)use.*") && strSentence.substring(start, end).matches(".*(?i)to.*"))) {
+            if ((strSentence.substring(start, end).matches(".*(?i)use.*")
+                    && strSentence.substring(start, end)
+                    .matches(".*(?i)to.*"))) {
                 continue;
             }
 
             // "smoke" in "smoke cigatte" is not method
-            if ( strMatch.matches("(?i)smoke.*") && strSentence.matches(".*(?i)smoke(s|d)* +cig.*") ) {
+            if (strMatch.matches("(?i)smoke.*") && strSentence
+                    .matches(".*(?i)smoke(s|d)* +cig.*")) {
                 continue;
             }
 
-            String strAlcoholPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
-            String strTobaccoPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
+            String strAlcoholPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
+            String strTobaccoPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
 
-            if (!strSentence.toString().matches(strAlcoholPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
-                SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.METHOD, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+            if (!strSentence.matches(strAlcoholPattern)
+                    && !strSentence.matches(strTobaccoPattern)) {
+                SubstanceUsageElementLabeler
+                        .value(ImmutableSubstanceUsageElement.builder()
+                                .type(METHOD)
+                                .kind(DRUG)
+                                .build())
+                        .label(substanceUsageSpan);
             }
             // Check if relatives of all matched tokens related to alcohol
             else {
-                if ( Helpers.checkSubstanceDepenRelated(usageTokens,KindSubstanceUsageDetector.strDrugKeywords, googleRelationHash)) {
-                    SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.METHOD, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                if (Helpers.checkSubstanceDepenRelated(usageTokens,
+                        KindSubstanceUsageDetector.strDrugKeywords,
+                        googleRelationHash)) {
+                    SubstanceUsageElementLabeler
+                            .value(ImmutableSubstanceUsageElement.builder()
+                                    .type(METHOD)
+                                    .kind(DRUG)
+                                    .build())
+                            .label(substanceUsageSpan);
                 }
             }
         }
     }
 
-    private void extractFrequency(Label<Sentence> sentenceLabel, Hashtable<String, Object> googleRelationHash ) throws BiomedicusException {
+    private void extractFrequency(Label<Sentence> sentenceLabel,
+                                  Hashtable<String, Object> googleRelationHash)
+            throws BiomedicusException {
 
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         // Get all possible longest frequency patterns
-        Hashtable<Integer, Integer> spanHash= new Hashtable<Integer, Integer>();
+        Hashtable<Integer, Integer> spanHash
+                = new Hashtable<Integer, Integer>();
         for (Pattern pattern : frequencyPatternsList) {
 
             Matcher matcher = pattern.matcher(strSentence);
-            while (matcher.find()){
+            while (matcher.find()) {
 
                 int start = matcher.start();
                 int end = matcher.end();
 
                 boolean bClear = false;
-                if ( spanHash.isEmpty() ) {
+                if (spanHash.isEmpty()) {
                     // Empty match hash
                     bClear = true;
-                }
-                else {
+                } else {
                     // Non-empty hash, check if the span already included or there is already a longer label
                     Enumeration<Integer> enumKey = spanHash.keys();
                     while (enumKey.hasMoreElements()) {
@@ -537,20 +659,18 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                         if (key > end || value < start) {
                             // No overlap
                             bClear = true;
-                        }
-                        else if (start == key && end == value) {
+                        } else if (start == key && end == value) {
                             bClear = false;
                             break;
-                        }
-                        else{
-                            if (start <= key && end >= value ) {
+                        } else {
+                            if (start <= key && end >= value) {
                                 // compass an existing large match, then remove the old match
                                 spanHash.remove(key);
                                 bClear = true;
                                 break;
 
                             }
-                            if (start >= key && end <= value ) {
+                            if (start >= key && end <= value) {
                                 // within an existing large match,
                                 bClear = false;
                                 break;
@@ -558,7 +678,7 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
                         }
                     }
                 }
-                if (bClear) spanHash.put(start,end);
+                if (bClear) spanHash.put(start, end);
             }
         }
 
@@ -568,43 +688,62 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         //
         Enumeration<Integer> enumKey = spanHash.keys();
 
-        while ( enumKey.hasMoreElements())  {
+        while (enumKey.hasMoreElements()) {
 
             Integer start = enumKey.nextElement();
             Integer end = spanHash.get(start);
             List<Integer> usageTokens = new ArrayList<>();
-            String strMatch = strSentence.substring(start,end);
+            String strMatch = strSentence.substring(start, end);
 
             // See if it's in a larger temporal annotation
-            if (checkExistsElementsSpan(start,end)){ continue; }
-            allElementsSpanHash.put(start,end);
+            if (checkExistsElementsSpan(start, end)) { continue; }
+            allElementsSpanHash.put(start, end);
 
             // Get goggle tokens of the span
-            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
+            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+                    usageTokens);
 
-            String strAlcoholPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
-            String strTobaccoPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
+            String strAlcoholPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
+            String strTobaccoPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
 
-            if (!strSentence.toString().matches(strAlcoholPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
+            if (!strSentence.matches(strAlcoholPattern)
+                    && !strSentence.matches(strTobaccoPattern)) {
 
-                Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-                SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.FREQUENCY, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                Span substanceUsageSpan = sentenceLabel
+                        .derelativize(new Span(start, end));
+                SubstanceUsageElementLabeler
+                        .value(ImmutableSubstanceUsageElement.builder()
+                                .type(FREQUENCY)
+                                .kind(DRUG)
+                                .build())
+                        .label(substanceUsageSpan);
             }
             // Check if ancesters of all matched tokens related to alcohol
             else {
-                if ( Helpers.checkSubstanceDepenRelated(usageTokens,KindSubstanceUsageDetector.strDrugKeywords, googleRelationHash)) {
-                    Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-                    SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.FREQUENCY, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                if (Helpers.checkSubstanceDepenRelated(usageTokens,
+                        KindSubstanceUsageDetector.strDrugKeywords,
+                        googleRelationHash)) {
+                    Span substanceUsageSpan = sentenceLabel
+                            .derelativize(new Span(start, end));
+                    SubstanceUsageElementLabeler
+                            .value(ImmutableSubstanceUsageElement.builder()
+                                    .type(FREQUENCY)
+                                    .kind(DRUG)
+                                    .build())
+                            .label(substanceUsageSpan);
                 }
             }
         }
     }
 
 
+    private void extractType(Label<Sentence> sentenceLabel)
+            throws BiomedicusException {
 
-    private void extractType(Label<Sentence> sentenceLabel ) throws BiomedicusException {
-
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         Matcher matcher = typePattern.matcher(strSentence);
@@ -612,61 +751,90 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-            SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.TYPE, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+            Span substanceUsageSpan = sentenceLabel
+                    .derelativize(new Span(start, end));
+            SubstanceUsageElementLabeler
+                    .value(ImmutableSubstanceUsageElement.builder()
+                            .type(TYPE)
+                            .kind(DRUG)
+                            .build())
+                    .label(substanceUsageSpan);
         }
     }
 
 
-    private void extractAmount(Label<Sentence> sentenceLabel, Hashtable<String, Object> googleRelationHash ) throws BiomedicusException {
+    private void extractAmount(Label<Sentence> sentenceLabel,
+                               Hashtable<String, Object> googleRelationHash)
+            throws BiomedicusException {
 
-        List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).values();
+        List<ParseToken> sentenceTermTokens = parseTokenLabels
+                .insideSpan(sentenceLabel).values();
         String strSentence = helper.toTokensString(sentenceTermTokens);
-        Hashtable<Integer, Integer> spanHash= new Hashtable<Integer, Integer>();
+        Hashtable<Integer, Integer> spanHash
+                = new Hashtable<Integer, Integer>();
 
 
         Matcher matcher = amountPattern.matcher(strSentence);
         while (matcher.find()) {
-            int start =  matcher.start();
+            int start = matcher.start();
             int end = matcher.end();
-            String strMatch = strSentence.substring(start,end);
+            String strMatch = strSentence.substring(start, end);
 
-            if ( (strMatch.matches("(?i)any")) && strSentence.matches("(?i).*any +(history|kind).*")){ continue; }
+            if ((strMatch.matches("(?i)any")) && strSentence
+                    .matches("(?i).*any +(history|kind).*")) { continue; }
             // Check if the span already been marked as a temporal element or amount element
-            if (checkExistsElementsSpan(start,end)){ continue; }
-            allElementsSpanHash.put(start,end);
+            if (checkExistsElementsSpan(start, end)) { continue; }
+            allElementsSpanHash.put(start, end);
 
             List<Integer> usageTokens = new ArrayList<>();
 
             // Get goggle tokens of the span
-            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end, usageTokens);
+            Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+                    usageTokens);
 
-            String strAlcoholPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
-            String strTobaccoPattern = ".*(?i)\\b(" + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
+            String strAlcoholPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strAlcoholKeywords + ")\\b.*";
+            String strTobaccoPattern = ".*(?i)\\b("
+                    + KindSubstanceUsageDetector.strTobaccoKeywords + ")\\b.*";
 
-            if (!strSentence.toString().matches(strAlcoholPattern) &&  !strSentence.toString().matches(strTobaccoPattern)){
+            if (!strSentence.toString().matches(strAlcoholPattern)
+                    && !strSentence.toString().matches(strTobaccoPattern)) {
 
-                Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-                SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.AMOUNT, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                Span substanceUsageSpan = sentenceLabel
+                        .derelativize(new Span(start, end));
+                SubstanceUsageElementLabeler
+                        .value(ImmutableSubstanceUsageElement.builder()
+                                .type(AMOUNT)
+                                .kind(DRUG)
+                                .build())
+                        .label(substanceUsageSpan);
             }
             // Check if ancesters of all matched tokens related to alcohol
             else {
-                if ( Helpers.checkSubstanceDepenRelated(usageTokens,KindSubstanceUsageDetector.strDrugKeywords, googleRelationHash)) {
-                    Span substanceUsageSpan = sentenceLabel.derelativize(new Span(start, end));
-                    SubstanceUsageElementLabeler.value(new SubstanceUsageElement(SubstanceUsageElementType.AMOUNT, SubstanceUsageKind.DRUG)).label(substanceUsageSpan);
+                if (Helpers.checkSubstanceDepenRelated(usageTokens,
+                        KindSubstanceUsageDetector.strDrugKeywords,
+                        googleRelationHash)) {
+                    Span substanceUsageSpan = sentenceLabel
+                            .derelativize(new Span(start, end));
+                    SubstanceUsageElementLabeler
+                            .value(ImmutableSubstanceUsageElement.builder()
+                                    .type(AMOUNT)
+                                    .kind(DRUG)
+                                    .build())
+                            .label(substanceUsageSpan);
                 }
             }
         }
     }
 
-    private boolean checkExistsElementsSpan(Integer start, Integer end){
+    private boolean checkExistsElementsSpan(Integer start, Integer end) {
 
         // Empty global match hash
-        if ( allElementsSpanHash.isEmpty() ) { return false; }
+        if (allElementsSpanHash.isEmpty()) { return false; }
 
         Enumeration<Integer> enumKey = allElementsSpanHash.keys();
         boolean bExists = true;
-        while ( enumKey.hasMoreElements()) {
+        while (enumKey.hasMoreElements()) {
 
             int key = enumKey.nextElement();
             int value = allElementsSpanHash.get(key);
@@ -674,18 +842,16 @@ public class DrugKindSubstanceUsageDetector implements KindSubstanceUsageDetecto
             if (key > end || value < start) {
                 // No overlap
                 bExists = false;
-            }
-            else if (start == key && end == value) {
+            } else if (start == key && end == value) {
                 bExists = true;
                 break;
-            }
-            else{
-                if (start <= key && end >= value ) {
+            } else {
+                if (start <= key && end >= value) {
                     // compass an existing large match,
                     bExists = false;
                     break;
                 }
-                if (start >= key && end <= value ) {
+                if (start >= key && end <= value) {
                     // within an existing large match,
                     bExists = true;
                     break;

@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
+import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
 import edu.umn.biomedicus.common.types.semantics.Negated;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Sentence;
@@ -100,7 +101,7 @@ public final class NegationModificationDetector implements DocumentProcessor {
         for (Map.Entry<Span, List<Label<TermToken>>> entry : matches.entrySet()) {
             List<Label<TermToken>> cues = entry.getValue();
             List<Span> cuesList = cues.stream().map(Label::toSpan).collect(Collectors.toList());
-            labeler.value(new Negated(cuesList)).label(entry.getKey());
+            labeler.value(ImmutableNegated.builder().addAllCueTerms(cuesList).build()).label(entry.getKey());
         }
     }
 }

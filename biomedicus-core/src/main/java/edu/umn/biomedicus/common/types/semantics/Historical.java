@@ -17,18 +17,12 @@
 package edu.umn.biomedicus.common.types.semantics;
 
 import edu.umn.biomedicus.common.types.text.Span;
+import org.immutables.value.Value;
 
 import java.util.List;
 
-public final class Historical implements DictionaryTermModifier {
-    private final List<Span> cueTerms;
-
-    public Historical(List<Span> cueTerms) {
-        this.cueTerms = cueTerms;
-    }
-
+@Value.Immutable
+public interface Historical extends DictionaryTermModifier {
     @Override
-    public List<Span> getCueTerms() {
-        return cueTerms;
-    }
+    List<Span> cueTerms();
 }

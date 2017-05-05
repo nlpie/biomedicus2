@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
 import edu.umn.biomedicus.common.types.text.ParseToken;
@@ -36,7 +37,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class MisspellingCorrector implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingCorrector.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MisspellingCorrector.class);
     private final SpellingModel spellingModel;
     private final LabelIndex<Sentence> sentence2LabelIndex;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
@@ -50,7 +52,8 @@ public final class MisspellingCorrector implements DocumentProcessor {
         this.sentence2LabelIndex = document.getLabelIndex(Sentence.class);
         this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         this.misspellingLabelIndex = document.getLabelIndex(Misspelling.class);
-        this.spellCorrectionLabeler = document.getLabeler(SpellCorrection.class);
+        this.spellCorrectionLabeler = document
+                .getLabeler(SpellCorrection.class);
     }
 
     @Override
@@ -59,18 +62,28 @@ public final class MisspellingCorrector implements DocumentProcessor {
         for (Label<Sentence> sentence : sentence2LabelIndex) {
             String first = "<NONE>";
             String prev = "<NONE>";
-            for (Label<ParseToken> tokenLabel : parseTokenLabelIndex.insideSpan(sentence)) {
+            for (Label<ParseToken> tokenLabel : parseTokenLabelIndex
+                    .insideSpan(sentence)) {
                 ParseToken token = tokenLabel.value();
                 String text = token.text();
-                if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text).matches()) {
+                if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text)
+                        .matches()) {
                     return;
                 }
-                if (misspellingLabelIndex.withTextLocation(tokenLabel).isPresent()) {
-                    String suggested = spellingModel.suggestCorrection(text, Ngram.create(first, prev));
+                if (misspellingLabelIndex.withTextLocation(tokenLabel)
+                        .isPresent()) {
+                    String suggested = spellingModel
+                            .suggestCorrection(text, Ngram.create(first, prev));
                     if (suggested != null) {
-                        LOGGER.debug("Correcting word: {} with {}", text, suggested);
-                        SpellCorrection spellCorrection = new SpellCorrection(suggested, token.hasSpaceAfter());
-                        spellCorrectionLabeler.value(spellCorrection).label(tokenLabel);
+                        LOGGER.debug("Correcting word: {} with {}", text,
+                                suggested);
+                        SpellCorrection spellCorrection
+                                = ImmutableSpellCorrection.builder()
+                                .text(suggested)
+                                .hasSpaceAfter(token.hasSpaceAfter())
+                                .build();
+                        spellCorrectionLabeler.value(spellCorrection)
+                                .label(tokenLabel);
                     }
                 }
                 first = prev;

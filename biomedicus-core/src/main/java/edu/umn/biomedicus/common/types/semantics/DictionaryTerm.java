@@ -16,48 +16,13 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
+import com.google.common.collect.ImmutableList;
+import org.immutables.value.Value;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public final class DictionaryTerm {
-    private final List<DictionaryConcept> concepts;
-
-    private DictionaryTerm(List<DictionaryConcept> concepts) {
-        this.concepts = concepts;
-    }
-
-    public List<DictionaryConcept> concepts() {
-        return concepts;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-        private final List<DictionaryConcept> concepts = new ArrayList<>();
-
-        public Builder addConcepts(List<DictionaryConcept> dictionaryConcepts) {
-            for (DictionaryConcept dictionaryConcept : dictionaryConcepts) {
-                concepts.add(dictionaryConcept);
-            }
-            return this;
-        }
-
-        public Builder addConcept(DictionaryConcept dictionaryConcept) {
-            concepts.add(dictionaryConcept);
-            return this;
-        }
-
-        public DictionaryTerm build() {
-            return new DictionaryTerm(concepts);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "DictionaryTerm{" +
-                "concepts=" + concepts +
-                '}';
-    }
+@Value.Immutable
+public interface DictionaryTerm {
+    ImmutableList<DictionaryConcept> concepts();
 }

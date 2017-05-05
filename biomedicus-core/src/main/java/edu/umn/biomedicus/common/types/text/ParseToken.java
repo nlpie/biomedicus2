@@ -16,41 +16,16 @@
 
 package edu.umn.biomedicus.common.types.text;
 
+import org.immutables.value.Value;
+
 /**
  *
  */
-public final class ParseToken implements Token {
-    private String text;
-
-    private boolean hasSpaceAfter;
-
-    public ParseToken(String text, boolean hasSpaceAfter) {
-        this.text = text;
-        this.hasSpaceAfter = hasSpaceAfter;
-    }
+@Value.Immutable
+public interface ParseToken extends Token {
+    @Override
+    String text();
 
     @Override
-    public String text() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public boolean hasSpaceAfter() {
-        return hasSpaceAfter;
-    }
-
-    @Override
-    public String toString() {
-        return "ParseToken('" + text + '\'' +
-                ", hasSpaceAfter=" + hasSpaceAfter +
-                ')';
-    }
+    boolean hasSpaceAfter();
 }

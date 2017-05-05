@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
+import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.TermsBag;
@@ -125,10 +126,15 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     private void makeTerm(TextLocation textLocation,
                           List<SuiCuiTui> cuis,
                           double confidence) throws BiomedicusException {
-        List<DictionaryConcept> concepts = cuis.stream()
-                .map(suiCuiTui -> suiCuiTui.toConcept(confidence)).collect(Collectors.toList());
 
-        DictionaryTerm dictionaryTerm = DictionaryTerm.builder().addConcepts(concepts).build();
+        ImmutableDictionaryTerm.Builder builder = ImmutableDictionaryTerm
+                .builder();
+
+        for (SuiCuiTui cui : cuis) {
+            builder.addConcepts(cui.toConcept(confidence));
+        }
+
+        DictionaryTerm dictionaryTerm = builder.build();
 
         termLabeler.value(dictionaryTerm).label(textLocation);
     }

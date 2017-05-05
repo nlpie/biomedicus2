@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
@@ -70,7 +70,8 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabelIndex.iterator();
+        Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabelIndex
+                .iterator();
         Label<Sentence> header = null;
         Label<Sentence> firstSentence = null;
         Label<Sentence> lastSentence = null;
@@ -78,8 +79,10 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
         while (sentenceLabelIterator.hasNext()) {
             Label<Sentence> sentenceLabel = sentenceLabelIterator.next();
             CharSequence sentenceText = sentenceLabel.getCovered(text);
-            if (headers.matcher(sentenceText).matches() || boldLabelIndex.withTextLocation(sentenceLabel).isPresent()
-                    || underlinedLabelIndex.withTextLocation(sentenceLabel).isPresent()) {
+            if (headers.matcher(sentenceText).matches() || boldLabelIndex
+                    .withTextLocation(sentenceLabel).isPresent()
+                    || underlinedLabelIndex.withTextLocation(sentenceLabel)
+                    .isPresent()) {
                 makeSection(header, firstSentence, lastSentence);
                 header = sentenceLabel;
                 firstSentence = null;
@@ -96,14 +99,17 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
     private void makeSection(@Nullable Label<Sentence> header,
                              @Nullable Label<Sentence> firstSentence,
-                             @Nullable Label<Sentence> lastSentence) throws BiomedicusException {
+                             @Nullable Label<Sentence> lastSentence)
+            throws BiomedicusException {
         if (header == null || firstSentence == null || lastSentence == null) {
             return;
         }
 
-        sectionLabeler.value(new Section(null)).label(Span.create(header.getBegin(), lastSentence.getEnd()));
+        sectionLabeler.value(ImmutableSection.builder().build())
+                .label(Span.create(header.getBegin(), lastSentence.getEnd()));
         sectionTitleLabeler.value(new SectionTitle()).label(header);
-        sectionContentLabeler.value(new SectionContent()).label(Span.create(firstSentence.getBegin(),
-                lastSentence.getEnd()));
+        sectionContentLabeler.value(new SectionContent())
+                .label(Span.create(firstSentence.getBegin(),
+                        lastSentence.getEnd()));
     }
 }

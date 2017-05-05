@@ -16,5 +16,5 @@
 
 package edu.umn.biomedicus.common.types.style;
 
-public class Underlined {
+public final class Underlined {
 }

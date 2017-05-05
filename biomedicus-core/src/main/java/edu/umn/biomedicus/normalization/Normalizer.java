@@ -22,6 +22,7 @@ import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -34,7 +35,8 @@ import javax.inject.Inject;
  *
  */
 public class Normalizer implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Normalizer.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(Normalizer.class);
     private final NormalizerModel normalizerModel;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
@@ -52,11 +54,19 @@ public class Normalizer implements DocumentProcessor {
     public void process() throws BiomedicusException {
         LOGGER.info("Normalizing tokens in a document.");
         for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
-            PartOfSpeech partOfSpeech = partOfSpeechLabelIndex.withTextLocation(parseTokenLabel)
-                    .orElseThrow(() -> new BiomedicusException("Part of speech label not found for parse token label"))
+            PartOfSpeech partOfSpeech = partOfSpeechLabelIndex
+                    .withTextLocation(parseTokenLabel)
+                    .orElseThrow(() -> new BiomedicusException(
+                            "Part of speech label not found for parse token label"))
                     .value();
-            String normalForm = normalizerModel.normalize(parseTokenLabel.value(), partOfSpeech);
-            normFormLabeler.value(new NormForm(normalForm)).label(parseTokenLabel);
+            String normalForm = normalizerModel
+                    .normalize(parseTokenLabel.value(), partOfSpeech);
+
+            normFormLabeler.value(
+                    ImmutableNormForm.builder()
+                            .normalForm(normalForm)
+                            .build())
+                    .label(parseTokenLabel);
         }
     }
 }

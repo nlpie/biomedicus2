@@ -18,12 +18,15 @@ package edu.umn.biomedicus.syntaxnet;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.application.TextView;
 import edu.umn.biomedicus.common.labels.Label;
 import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.types.text.*;
+import edu.umn.biomedicus.common.types.text.DependencyParse;
+import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +36,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 public final class SyntaxnetParser implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SyntaxnetParser.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(SyntaxnetParser.class);
     private final Path installationDir;
     private final String modelDirString;
     private final LabelIndex<Sentence> sentenceLabelIndex;
@@ -41,9 +45,11 @@ public final class SyntaxnetParser implements DocumentProcessor {
     private final Labeler<DependencyParse> dependencyParseLabeler;
 
     @Inject
-    SyntaxnetParser(@Setting("syntaxnet.installationDir.path") Path installationDir,
-                    @Setting("syntaxnet.modelDir") String modelDirString,
-                    TextView document) {
+    SyntaxnetParser(
+            @Setting("syntaxnet.installationDir.path") Path installationDir,
+            @Setting("syntaxnet.modelDir") String modelDirString,
+            TextView document
+    ) {
         this.installationDir = installationDir;
         this.modelDirString = modelDirString;
         sentenceLabelIndex = document.getLabelIndex(Sentence.class);
@@ -51,32 +57,60 @@ public final class SyntaxnetParser implements DocumentProcessor {
         dependencyParseLabeler = document.getLabeler(DependencyParse.class);
     }
 
+    private static Runnable errorStreamLogger(Process process) {
+        return () -> {
+            InputStream errorStream = process.getErrorStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(
+                    errorStream);
+            BufferedReader bufferedReader = new BufferedReader(
+                    inputStreamReader);
+            String line;
+            try {
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (line.startsWith("F") || line.startsWith("E") || line
+                            .startsWith("W")) {
+                        LOGGER.error(line);
+                    } else {
+                        LOGGER.trace(line);
+                    }
+                }
+            } catch (IOException e) {
+                LOGGER.error("Error reading error stream.", e);
+            }
+        };
+    }
+
     @Override
     public void process() throws BiomedicusException {
-        Path parserEval = installationDir.resolve("bazel-bin/syntaxnet/parser_eval");
+        Path parserEval = installationDir
+                .resolve("bazel-bin/syntaxnet/parser_eval");
         Path modelDir = installationDir.resolve(modelDirString);
 
         try {
-            Process parser = new ProcessBuilder().directory(installationDir.toFile())
+            Process parser = new ProcessBuilder()
+                    .directory(installationDir.toFile())
                     .command(parserEval.toString(),
                             "--input=stdin-conll",
                             "--output=stdout-conll",
                             "--hidden_layer_sizes=512,512",
                             "--arg_prefix=brain_parser",
                             "--graph_builder=structured",
-                            "--task_context=" + modelDir.resolve("context.pbtxt"),
+                            "--task_context=" + modelDir
+                                    .resolve("context.pbtxt"),
                             "--model_path=" + modelDir.resolve("parser-params"),
                             "--slim_model",
                             "--batch_size=1024")
                     .start();
-            Process tagger = new ProcessBuilder().directory(installationDir.toFile())
+            Process tagger = new ProcessBuilder()
+                    .directory(installationDir.toFile())
                     .command(parserEval.toString(),
                             "--input=stdin-conll",
                             "--output=stdout-conll",
                             "--hidden_layer_sizes=64",
                             "--arg_prefix=brain_tagger",
                             "--graph_builder=structured",
-                            "--task_context=" + modelDir.resolve("context.pbtxt"),
+                            "--task_context=" + modelDir
+                                    .resolve("context.pbtxt"),
                             "--model_path=" + modelDir.resolve("tagger-params"),
                             "--slim_model",
                             "--batch_size=1024")
@@ -99,23 +133,32 @@ public final class SyntaxnetParser implements DocumentProcessor {
             }).start();
 
 
-            try (Writer writer = new OutputStreamWriter(tagger.getOutputStream())) {
+            try (Writer writer = new OutputStreamWriter(
+                    tagger.getOutputStream())) {
                 for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
-                    List<Label<ParseToken>> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel).all();
-                    String conllString = new Tokens2Conll(sentenceTokenLabels).conllString();
+                    List<Label<ParseToken>> sentenceTokenLabels
+                            = tokenLabelIndex.insideSpan(sentenceLabel).all();
+                    String conllString = new Tokens2Conll(sentenceTokenLabels)
+                            .conllString();
                     writer.write(conllString);
                     writer.write("\n");
                 }
             }
 
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(parser.getInputStream()))) {
+            try (BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(parser.getInputStream()))) {
                 for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
                     StringBuilder sentenceParse = new StringBuilder();
                     String line;
-                    while ((line = bufferedReader.readLine()) != null && !line.isEmpty()) {
+                    while ((line = bufferedReader.readLine()) != null && !line
+                            .isEmpty()) {
                         sentenceParse.append(line).append("\n");
                     }
-                    dependencyParseLabeler.value(new DependencyParse(sentenceParse.toString())).label(sentenceLabel);
+                    dependencyParseLabeler.value(
+                            ImmutableDependencyParse.builder()
+                                    .parseTree(sentenceParse.toString())
+                                    .build())
+                            .label(sentenceLabel);
                 }
             }
 
@@ -124,25 +167,5 @@ public final class SyntaxnetParser implements DocumentProcessor {
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }
-    }
-
-    private static Runnable errorStreamLogger(Process process) {
-        return () -> {
-            InputStream errorStream = process.getErrorStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(errorStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String line;
-            try {
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (line.startsWith("F") || line.startsWith("E") || line.startsWith("W")) {
-                        LOGGER.error(line);
-                    } else {
-                        LOGGER.trace(line);
-                    }
-                }
-            } catch (IOException e) {
-                LOGGER.error("Error reading error stream.", e);
-            }
-        };
     }
 }

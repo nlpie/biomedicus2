@@ -17,28 +17,13 @@
 package edu.umn.biomedicus.common.types.semantics;
 
 import edu.umn.biomedicus.common.types.text.Token;
+import org.immutables.value.Value;
 
-public final class SpellCorrection implements Token {
-    private final String text;
-    private final boolean hasSpaceAfter;
-
-    public SpellCorrection(String text, boolean hasSpaceAfter) {
-        this.text = text;
-        this.hasSpaceAfter = hasSpaceAfter;
-    }
+@Value.Immutable
+public interface SpellCorrection extends Token {
+    @Override
+    String text();
 
     @Override
-    public String text() {
-        return text;
-    }
-
-    @Override
-    public boolean hasSpaceAfter() {
-        return hasSpaceAfter;
-    }
-
-    @Override
-    public String toString() {
-        return "SpellCorrection(\"" + text + "\")";
-    }
+    boolean hasSpaceAfter();
 }

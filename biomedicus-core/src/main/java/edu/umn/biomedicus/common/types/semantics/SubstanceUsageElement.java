@@ -16,20 +16,11 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
-public class SubstanceUsageElement {
-    private final SubstanceUsageElementType substanceUsageElementType;
-    private final SubstanceUsageKind substanceUsageKind;
+import org.immutables.value.Value;
 
-    public SubstanceUsageElement(SubstanceUsageElementType substanceUsageElementType, SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageElementType = substanceUsageElementType;
-        this.substanceUsageKind = substanceUsageKind;
-    }
+@Value.Immutable
+public interface SubstanceUsageElement {
+    SubstanceUsageElementType type();
 
-    public SubstanceUsageElementType getSubstanceUsageElementType() {
-        return substanceUsageElementType;
-    }
-
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
-    }
+    SubstanceUsageKind kind();
 }

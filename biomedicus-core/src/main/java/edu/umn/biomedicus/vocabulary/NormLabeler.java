@@ -24,6 +24,7 @@ import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.application.TextView;
+import edu.umn.biomedicus.common.types.text.ImmutableNormIndex;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.NormIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -51,8 +52,10 @@ public final class NormLabeler implements DocumentProcessor {
         LOGGER.info("Labeling norm term index identifiers in a document.");
         for (Label<NormForm> normFormLabel : normFormLabelIndex) {
             String normalForm = normFormLabel.value().normalForm();
-            IndexedTerm indexedTerm = wordIndex.getIndexedTerm(normalForm);
-            NormIndex normIndex = new NormIndex(indexedTerm);
+            IndexedTerm term = wordIndex.getIndexedTerm(normalForm);
+            NormIndex normIndex = ImmutableNormIndex.builder()
+                    .term(term)
+                    .build();
             normIndexLabeler.value(normIndex).label(normFormLabel);
         }
     }
