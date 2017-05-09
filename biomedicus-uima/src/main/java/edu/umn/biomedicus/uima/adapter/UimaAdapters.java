@@ -16,10 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.application.Document;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.cas.CAS;
 

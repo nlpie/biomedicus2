@@ -18,7 +18,7 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;

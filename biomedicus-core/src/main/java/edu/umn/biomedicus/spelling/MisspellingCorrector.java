@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.Biomedicus;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.application.TextView;
+import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.common.grams.Ngram;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
@@ -66,7 +66,7 @@ public final class MisspellingCorrector implements DocumentProcessor {
                     .insideSpan(sentence)) {
                 ParseToken token = tokenLabel.value();
                 String text = token.text();
-                if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text)
+                if (Patterns.ALPHABETIC_WORD.matcher(text)
                         .matches()) {
                     return;
                 }

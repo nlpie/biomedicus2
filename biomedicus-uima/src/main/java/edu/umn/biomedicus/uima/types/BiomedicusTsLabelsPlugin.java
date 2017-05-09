@@ -17,7 +17,8 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.types.semantics.*;
 import edu.umn.biomedicus.common.types.style.Bold;

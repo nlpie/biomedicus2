@@ -19,7 +19,7 @@ package edu.umn.biomedicus.sentence;
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.application.PostProcessor;
+import edu.umn.biomedicus.framework.PostProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.sentdetect.SentenceDetectorFactory;

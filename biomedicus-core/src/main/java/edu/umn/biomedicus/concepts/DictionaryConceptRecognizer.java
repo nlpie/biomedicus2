@@ -16,13 +16,14 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
-import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -35,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.*;
 

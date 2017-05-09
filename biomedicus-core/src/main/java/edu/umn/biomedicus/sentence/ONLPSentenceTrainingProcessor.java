@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -31,10 +31,10 @@ public class ONLPSentenceTrainingProcessor implements DocumentProcessor {
     private final ONLPSentenceTrainer onlpSentenceTrainer;
 
     @Inject
-    ONLPSentenceTrainingProcessor(Document document,
+    ONLPSentenceTrainingProcessor(TextView textView,
                                   ONLPSentenceTrainer onlpSentenceTrainer) {
-        text = document.getText();
-        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        text = textView.getText();
+        sentenceLabelIndex = textView.getLabelIndex(Sentence.class);
         this.onlpSentenceTrainer = onlpSentenceTrainer;
     }
 

@@ -16,21 +16,16 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.application.Biomedicus;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.framework.*;
 import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.Span;
 import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.store.*;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 public class ONLPSentenceDetector implements DocumentProcessor {
     private final Labeler<Sentence> sentenceLabeler;
@@ -39,33 +34,32 @@ public class ONLPSentenceDetector implements DocumentProcessor {
     private final String text;
 
     @Inject
-    ONLPSentenceDetector(Document document,
+    ONLPSentenceDetector(TextView textView,
                          ONLPSentenceModel ONLPSentenceModel) {
-        text = document.getText();
-        sentenceLabeler = document.getLabeler(Sentence.class);
+        text = textView.getText();
+        sentenceLabeler = textView.getLabeler(Sentence.class);
         sentenceDetector = ONLPSentenceModel.createSentenceDetector();
-        textSegmentLabelIndex = document.getLabelIndex(TextSegment.class);
+        textSegmentLabelIndex = textView.getLabelIndex(TextSegment.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        List<Span> segments = new ArrayList<>();
-        for (Label<TextSegment> textSegmentLabel : textSegmentLabelIndex) {
-            segments.add(textSegmentLabel.toSpan());
+        Iterable<Label<TextSegment>> segments;
+        if (textSegmentLabelIndex.isEmpty()) {
+            segments = Collections.singleton(new Label<>(
+                    new Span(0, text.length()), new TextSegment()));
+        } else {
+            segments = textSegmentLabelIndex;
         }
 
-        if (segments.size() == 0) {
-            segments.add(new Span(0, text.length()));
-        }
-
-        for (Span segment : segments) {
+        for (TextLocation segment : segments) {
             String segmentText = segment.getCovered(text).toString();
             for (opennlp.tools.util.Span onlpSpan : sentenceDetector
                     .sentPosDetect(segmentText)) {
                 Span spanInSegment = new Span(onlpSpan.getStart(),
                         onlpSpan.getEnd());
                 Span sentenceSpan = segment.derelativize(spanInSegment);
-                if (Biomedicus.Patterns.NON_WHITESPACE
+                if (Patterns.NON_WHITESPACE
                         .matcher(sentenceSpan.getCovered(text)).find()) {
                     sentenceLabeler.value(new Sentence()).label(sentenceSpan);
                 }

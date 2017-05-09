@@ -16,10 +16,12 @@
 
 package edu.umn.biomedicus.modification;
 
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.*;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Span;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +50,10 @@ final class ContextSearch {
         Map<Span, List<Label<TermToken>>> matchingSpans = new HashMap<>();
         for (Label<Sentence> sentence : sentences) {
             LabelIndex<TermToken> sentenceTokens = tokens.insideSpan(sentence);
-            for (Label<?> modifiableTerm : modifiableTerms.insideSpan(sentence)) {
-                List<Label<TermToken>> matches = matches(sentenceTokens, modifiableTerm);
+            for (Label<?> modifiableTerm : modifiableTerms
+                    .insideSpan(sentence)) {
+                List<Label<TermToken>> matches = matches(sentenceTokens,
+                        modifiableTerm);
                 if (matches != null) {
                     matchingSpans.put(modifiableTerm.toSpan(), matches);
                 }
@@ -60,16 +64,28 @@ final class ContextSearch {
     }
 
     private List<Label<TermToken>> matches(LabelIndex<TermToken> sentenceTokens,
-                                            Label<?> modifiableTerm) {
-        LabelIndex<TermToken> leftContextTokens = sentenceTokens.leftwardsFrom(modifiableTerm);
-        List<Label<TermToken>> labels = contextCues.searchLeft(leftContextTokens.all(), partOfSpeechLabelIndex);
+                                           Label<?> modifiableTerm) {
+        LabelIndex<TermToken> leftContextTokens = sentenceTokens
+                .leftwardsFrom(modifiableTerm);
+
+        List<Label<TermToken>> labels = contextCues.searchLeft(
+                leftContextTokens.asList(),
+                partOfSpeechLabelIndex
+        );
+
         if (labels != null) {
             return labels;
         }
 
 
-        LabelIndex<TermToken> rightContextTokens = sentenceTokens.rightwardsFrom(modifiableTerm);
-        labels = contextCues.searchRight(rightContextTokens.all(), partOfSpeechLabelIndex);
+        LabelIndex<TermToken> rightContextTokens = sentenceTokens
+                .rightwardsFrom(modifiableTerm);
+
+        labels = contextCues.searchRight(
+                rightContextTokens.asList(),
+                partOfSpeechLabelIndex
+        );
+
         if (labels != null) {
             return labels;
         }
@@ -110,7 +126,8 @@ final class ContextSearch {
         }
 
         ContextSearch createContextSearch() {
-            return new ContextSearch(contextCues, sentences, modifiableTerms, tokens, partOfSpeechLabelIndex);
+            return new ContextSearch(contextCues, sentences, modifiableTerms,
+                    tokens, partOfSpeechLabelIndex);
         }
     }
 }

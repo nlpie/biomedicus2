@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryConcept;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;

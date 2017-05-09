@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.plugins;
 
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.EagerLoadable;
+import edu.umn.biomedicus.framework.EagerLoadable;
 
 import java.util.Collection;
 import java.util.Collections;

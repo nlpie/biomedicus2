@@ -16,17 +16,15 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.application.Biomedicus;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static edu.umn.biomedicus.application.Biomedicus.Patterns.NON_WHITESPACE;
+import static edu.umn.biomedicus.common.utilities.Patterns.NON_WHITESPACE;
 
 /**
  * Builds text segments by taking all splits and checking if spans between them

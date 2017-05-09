@@ -17,9 +17,8 @@
 package edu.umn.biomedicus.uima.util;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.Document;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.application.TextView;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

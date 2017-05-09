@@ -19,8 +19,8 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.application.LifecycleManaged;
+import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.framework.LifecycleManaged;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 

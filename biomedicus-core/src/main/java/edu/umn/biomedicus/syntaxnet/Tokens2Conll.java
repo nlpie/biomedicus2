@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.syntaxnet;
 
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Token;
 

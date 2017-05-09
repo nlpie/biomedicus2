@@ -16,17 +16,14 @@
 
 package edu.umn.biomedicus.sections;
 
-import com.google.common.base.Charsets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.Biomedicus;
+import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -37,7 +34,7 @@ class RuleBasedSectionDetectorModel {
 
     @Inject
     RuleBasedSectionDetectorModel(@Setting("sections.headers.path") Path path) throws BiomedicusException {
-        sectionHeaderPattern = Biomedicus.Patterns.loadPatternByJoiningLines(path);
+        sectionHeaderPattern = Patterns.loadPatternByJoiningLines(path);
     }
 
     Pattern getSectionHeaderPattern() {

@@ -17,11 +17,6 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -29,6 +24,11 @@ import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.*;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,21 @@ class AcronymProcessor implements DocumentProcessor {
      * All part of speech tags to exclude from consideration as acronyms.
      * Some of the verbs may have to change, but PRP and CC are key (esp. for tokens like "it", "or")
      */
-    private static final Set<PartOfSpeech> EXCLUDE_POS = buildExcludedPos();
+    private static final Set<PartOfSpeech> EXCLUDE_POS = EnumSet.of(
+            PartOfSpeech.PRP,
+            PartOfSpeech.DT,
+            PartOfSpeech.CC,
+            PartOfSpeech.IN,
+            PartOfSpeech.UH,
+            PartOfSpeech.TO,
+            PartOfSpeech.RP,
+            PartOfSpeech.PDT,
+            PartOfSpeech.WP,
+            PartOfSpeech.WP$,
+            PartOfSpeech.WDT,
+            PartOfSpeech.POS,
+            PartOfSpeech.MD
+    );
 
     private final AcronymModel model;
     @Nullable private final OrthographicAcronymModel orthographicModel;
@@ -78,24 +92,6 @@ class AcronymProcessor implements DocumentProcessor {
         this.acronymExpansionLabeler = document.getLabeler(Acronym.class);
     }
 
-    private static Set<PartOfSpeech> buildExcludedPos() {
-        return EnumSet.of(
-                PartOfSpeech.PRP,
-                PartOfSpeech.DT,
-                PartOfSpeech.CC,
-                PartOfSpeech.IN,
-                PartOfSpeech.UH,
-                PartOfSpeech.TO,
-                PartOfSpeech.RP,
-                PartOfSpeech.PDT,
-                PartOfSpeech.WP,
-                PartOfSpeech.WP$,
-                PartOfSpeech.WDT,
-                PartOfSpeech.POS,
-                PartOfSpeech.MD
-        );
-    }
-
     @Override
     public void process() throws BiomedicusException {
         LOGGER.info("Detecting acronyms in a document.");
@@ -107,7 +103,7 @@ class AcronymProcessor implements DocumentProcessor {
             Label<TermToken> termTokenLabel = termTokenLabelsList.get(i);
             TermToken termToken = termTokenLabel.value();
             List<Label<PartOfSpeech>> partOfSpeechLabelsForToken
-                    = partOfSpeechLabels.insideSpan(termTokenLabel).all();
+                    = partOfSpeechLabels.insideSpan(termTokenLabel).asList();
             List<Label<? extends Token>> suspectedAcronyms = new ArrayList<>();
             boolean excludedPos = partOfSpeechLabelsForToken.stream()
                     .map(Label::value).allMatch(EXCLUDE_POS::contains);
@@ -121,12 +117,13 @@ class AcronymProcessor implements DocumentProcessor {
                         suspectedAcronyms.add(termTokenLabel);
                         LOGGER.trace("Found potential acronym: {}", termToken);
                     }
-                    List<Label<ParseToken>> parseTokensForToken
-                            = parseTokenLabels.insideSpan(termTokenLabel).all();
-                    for (Label<ParseToken> parseTokenLabel : parseTokensForToken) {
+                    List<Label<ParseToken>> termParseTokens = parseTokenLabels
+                            .insideSpan(termTokenLabel)
+                            .asList();
+                    for (Label<ParseToken> parseTokenLabel : termParseTokens) {
                         ParseToken parseToken = parseTokenLabel.value();
                         Optional<Label<PartOfSpeech>> pos = partOfSpeechLabels
-                                .matching(parseTokenLabel);
+                                .withTextLocation(parseTokenLabel);
                         if ((!pos.isPresent() || !EXCLUDE_POS
                                 .contains(pos.get().value())) &&
                                 (model.hasAcronym(parseToken)
@@ -145,7 +142,8 @@ class AcronymProcessor implements DocumentProcessor {
                             .collect(Collectors.toList());
                 }
                 Token acronymToken = acronymLabel.value();
-                // swap out the current TermToken for the ParseToken we just found and find the sense
+                // swap out the current TermToken for the ParseToken we just
+                // found and find the sense
                 Token tempToken = allTokens.set(i, acronymToken);
                 String sense = model.findBestSense(allTokens, i);
                 if (!Acronyms.UNKNOWN.equals(sense) && !sense
@@ -156,7 +154,8 @@ class AcronymProcessor implements DocumentProcessor {
                             .hasSpaceAfter(acronymToken.hasSpaceAfter())
                             .build())
                             .label(acronymLabel);
-                    // If we just successfully set the term token, don't both with ParseTokens
+                    // If we just successfully set the term token, don't both
+                    // with ParseTokens
                     if (acronymToken instanceof TermToken) {
                         break;
                     }

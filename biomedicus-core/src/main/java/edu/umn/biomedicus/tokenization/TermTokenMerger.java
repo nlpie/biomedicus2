@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
 

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 import org.testng.annotations.Test;
 
 import java.util.List;

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.types;
 
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import org.apache.uima.cas.CAS;

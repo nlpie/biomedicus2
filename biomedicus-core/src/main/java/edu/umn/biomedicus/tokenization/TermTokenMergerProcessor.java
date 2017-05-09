@@ -17,12 +17,12 @@
 package edu.umn.biomedicus.tokenization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.LabelsUtilities;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.LabelsUtilities;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 

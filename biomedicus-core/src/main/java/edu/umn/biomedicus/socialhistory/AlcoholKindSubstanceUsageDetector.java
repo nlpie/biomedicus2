@@ -17,10 +17,11 @@
 package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;

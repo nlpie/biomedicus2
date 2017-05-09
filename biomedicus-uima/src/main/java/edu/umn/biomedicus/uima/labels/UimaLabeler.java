@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.ValueLabeler;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public final class UimaLabeler<T> implements Labeler<T> {

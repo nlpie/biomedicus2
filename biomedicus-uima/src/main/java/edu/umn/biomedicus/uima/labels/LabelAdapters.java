@@ -18,7 +18,7 @@ package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.common.labels.LabelAliases;
+import edu.umn.biomedicus.framework.LabelAliases;
 
 import java.util.HashMap;
 import java.util.Map;

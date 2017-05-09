@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 
 import java.util.List;
 

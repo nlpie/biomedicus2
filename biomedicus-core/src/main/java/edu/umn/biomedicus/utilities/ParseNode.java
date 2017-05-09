@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.utilities;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 
 public class ParseNode {
     private final Span parent;

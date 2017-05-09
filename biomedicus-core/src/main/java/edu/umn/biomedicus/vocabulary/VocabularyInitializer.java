@@ -17,9 +17,10 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelsUtilities;
+import edu.umn.biomedicus.framework.Bootstrapper;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelsUtilities;
 import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;

@@ -68,13 +68,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.opennlp</groupId>
-            <artifactId>opennlp</artifactId>
-            <version>1.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.opennlp</groupId>
             <artifactId>opennlp-tools</artifactId>
-            <version>1.5.3</version>
+            <version>1.7.2</version>
         </dependency>
     </dependencies>
     

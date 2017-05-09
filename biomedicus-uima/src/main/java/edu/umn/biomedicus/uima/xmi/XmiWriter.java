@@ -16,16 +16,12 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import edu.umn.biomedicus.application.Biomedicus;
+import edu.umn.biomedicus.common.ViewIdentifiers;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.analysis_engine.CasIterator;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XmiCasSerializer;
-import org.apache.uima.cas.AnnotationBaseFS;
-import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -39,7 +35,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 /**
  * A UIMA analysis engine that writes the contents of CASes to a files in a folder.
@@ -87,7 +82,7 @@ public class XmiWriter extends CasAnnotator_ImplBase {
 
         Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
         Feature documentId = type.getFeatureByBaseName("documentId");
-        String fileName = cas.getView(Biomedicus.ViewIdentifiers.SYSTEM)
+        String fileName = cas.getView(ViewIdentifiers.SYSTEM)
                 .getIndexRepository()
                 .getAllIndexedFS(type)
                 .next()

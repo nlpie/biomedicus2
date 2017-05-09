@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.application.TextView;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public interface KindSubstanceUsageDetector {

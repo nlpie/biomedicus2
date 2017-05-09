@@ -17,10 +17,10 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.common.base.Preconditions;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import edu.umn.biomedicus.uima.labels.UimaLabelIndex;

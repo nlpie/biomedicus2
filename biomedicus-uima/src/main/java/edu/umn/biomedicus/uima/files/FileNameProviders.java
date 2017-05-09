@@ -16,15 +16,11 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.application.Document;
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.TextView;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
-import org.apache.uima.jcas.JCas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

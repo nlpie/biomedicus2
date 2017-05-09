@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.TextLocation;
 
 /**
  * @since 1.3.0

@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Key;
-import edu.umn.biomedicus.application.DocumentProcessorRunner;
+import edu.umn.biomedicus.framework.DocumentProcessorRunner;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.UimaContext;

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.labels;
 
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 

@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.application.TextView;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.*;
+import edu.umn.biomedicus.framework.store.*;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.testng.annotations.Test;

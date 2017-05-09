@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 import mockit.*;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;

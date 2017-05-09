@@ -17,15 +17,15 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.collect.ImmutableDistinctSpanMap;
-import edu.umn.biomedicus.common.collect.ImmutableSpanMap;
-import edu.umn.biomedicus.common.collect.OrderedSpanMap;
-import edu.umn.biomedicus.common.collect.SpansMap;
-import edu.umn.biomedicus.common.labels.AbstractLabelIndex;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.StandardLabelIndex;
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.ImmutableDistinctSpanMap;
+import edu.umn.biomedicus.framework.store.ImmutableSpanMap;
+import edu.umn.biomedicus.framework.store.OrderedSpanMap;
+import edu.umn.biomedicus.framework.store.SpansMap;
+import edu.umn.biomedicus.framework.store.AbstractLabelIndex;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
+import edu.umn.biomedicus.framework.store.TextLocation;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
@@ -95,6 +95,6 @@ public final class UimaLabelIndex<T> extends AbstractLabelIndex<T> {
             }
             spansMap = new ImmutableSpanMap<>(orderedSpanMap);
         }
-        return new StandardLabelIndex<>(spansMap, (unused) -> true);
+        return new DefaultLabelIndex<>(spansMap, (unused) -> true);
     }
 }

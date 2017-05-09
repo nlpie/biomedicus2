@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.application.Document;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
