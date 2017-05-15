@@ -1394,9 +1394,8 @@ public class Searcher {
             PropertyMatch(String name) {
                 this.name = name;
                 try {
-                    readMethod = new PropertyDescriptor(name, labelType)
-                            .getReadMethod();
-                } catch (IntrospectionException e) {
+                    readMethod = labelType.getMethod(name);
+                } catch (NoSuchMethodException e) {
                     throw new IllegalStateException(e);
                 }
             }
@@ -1439,7 +1438,7 @@ public class Searcher {
                     Object invoke = readMethod.invoke(label.getValue());
                     return value.equals(invoke);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new IllegalStateException("");
+                    throw new IllegalStateException(e);
                 }
             }
         }

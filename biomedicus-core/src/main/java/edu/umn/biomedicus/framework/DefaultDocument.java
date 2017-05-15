@@ -16,10 +16,12 @@
 
 package edu.umn.biomedicus.framework;
 
+import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.framework.store.DefaultTextView;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.TextView;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -73,14 +75,36 @@ public class DefaultDocument implements Document {
     }
 
     @Override
-    public TextView createTextView(String name, String text) {
-        DefaultTextView textView = new DefaultTextView(text);
-        views.put(name, textView);
-        return textView;
+    public Optional<TextView> getTextView(String name) {
+        return Optional.ofNullable(views.get(name));
     }
 
     @Override
-    public Optional<TextView> getTextView(String name) {
-        return Optional.ofNullable(views.get(name));
+    public TextView.Builder newTextView() {
+        return new TextView.Builder() {
+            @Nullable String text = null;
+            @Nullable String name = null;
+
+            @Override
+            public TextView.Builder withText(String text) {
+                this.text = text;
+                return this;
+            }
+
+            @Override
+            public TextView.Builder withName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            @Override
+            public TextView build() {
+                Preconditions.checkNotNull(text, "Text not set");
+                Preconditions.checkNotNull(name, "Name not set");
+                DefaultTextView textView = new DefaultTextView(text);
+                views.put(name, textView);
+                return textView;
+            }
+        };
     }
 }

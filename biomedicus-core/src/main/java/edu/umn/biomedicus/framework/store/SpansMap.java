@@ -16,7 +16,10 @@
 
 package edu.umn.biomedicus.framework.store;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface SpansMap<T> {
     Optional<T> get(TextLocation textLocation);
@@ -70,4 +73,6 @@ public interface SpansMap<T> {
     List<T> valuesAsList();
 
     int size();
+
+    Optional<Label<T>> first();
 }

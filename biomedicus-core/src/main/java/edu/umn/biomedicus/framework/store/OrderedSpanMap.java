@@ -28,12 +28,6 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
     private transient int size;
 
-    @Nullable private transient Set<Span> spans;
-
-    @Nullable private transient Collection<T> values;
-
-    @Nullable private transient Set<Label<T>> entries;
-
     public OrderedSpanMap() {
         backingTree = new TreeMap<>();
         size = 0;
@@ -66,23 +60,35 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
                 );
     }
 
+    @Override
+    public Optional<Label<T>> first() {
+        Map.Entry<Integer, NavigableMap<Integer, T>> e
+                = backingTree.firstEntry();
+        if (e != null) {
+            Map.Entry<Integer, T> endEntry = e.getValue().firstEntry();
+            return Optional.of(new Label<>(e.getKey(), endEntry.getKey(),
+                    endEntry.getValue()));
+        }
+        return Optional.empty();
+    }
+
     public boolean isEmpty() {
         return size() != 0;
     }
 
     @Override
     public List<Label<T>> asList() {
-        return new ArrayList<>();
+        return new ArrayList<>(entries());
     }
 
     @Override
     public List<Span> spansAsList() {
-        return null;
+        return new ArrayList<>(spans());
     }
 
     @Override
     public List<T> valuesAsList() {
-        return null;
+        return new ArrayList<>(values());
     }
 
     public boolean containsKey(Object key) {
@@ -92,10 +98,9 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
         return false;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     public boolean containsValue(Object value) {
-        return backingTree.values().stream()
-                .map(endMap -> endMap.subMap(endMin, true, endMax, true))
-                .anyMatch(endMap -> endMap.containsValue(value));
+        return values().contains(value);
     }
 
     public T put(TextLocation textLocation, T object) {
@@ -105,6 +110,7 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
                 .put(textLocation.getEnd(), object);
     }
 
+    @Nullable
     public T remove(Object key) {
         size = -1;
         if (!(key instanceof TextLocation)) {
@@ -160,34 +166,6 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
                 endDescending);
     }
 
-    @Override
-    public SpansMap<T> toIncluding(TextLocation textLocation) {
-        return null;
-    }
-
-    @Override
-    public SpansMap<T> fromIncluding(TextLocation textLocation) {
-        return null;
-    }
-
-    @Override
-    public OrderedSpanMap<T> toTheLeftOf(TextLocation textLocation) {
-        NavigableMap<Integer, NavigableMap<Integer, T>> headMap = backingTree
-                .headMap(textLocation.getBegin(), false);
-        int newEndMax = Math.min(textLocation.getBegin(), endMax);
-        return new OrderedSpanMap<>(headMap, endMin, newEndMax, beginDescending,
-                endDescending);
-    }
-
-    @Override
-    public OrderedSpanMap<T> toTheRightOf(TextLocation textLocation) {
-        NavigableMap<Integer, NavigableMap<Integer, T>> tailMap = backingTree
-                .tailMap(textLocation.getEnd(), true);
-        int newEndMin = Math.max(textLocation.getEnd(), endMin);
-        return new OrderedSpanMap<>(tailMap, newEndMin, endMax, beginDescending,
-                endDescending);
-    }
-
     public void clear() {
         backingTree.values().forEach(
                 endMap -> endMap.subMap(endMin, true, endMax, true).clear());
@@ -235,7 +213,7 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
     @Override
     public Set<Span> spans() {
-        return spans != null ? spans : (spans = new AbstractSet<Span>() {
+        return new AbstractSet<Span>() {
             @Override
             public Iterator<Span> iterator() {
                 return new Iterator<Span>() {
@@ -255,41 +233,39 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
             @Override
             public int size() {
-                return 0;
+                return OrderedSpanMap.this.size();
             }
-        });
+        };
     }
 
     @Override
     public Collection<T> values() {
-        return values != null ? values
-                : (values = new AbstractCollection<T>() {
-                    @Override
-                    public Iterator<T> iterator() {
-                        return new ValueIt<>(entryIt());
-                    }
+        return new AbstractCollection<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return new ValueIt<>(entryIt());
+            }
 
-                    @Override
-                    public int size() {
-                        return OrderedSpanMap.this.size();
-                    }
-                });
+            @Override
+            public int size() {
+                return OrderedSpanMap.this.size();
+            }
+        };
     }
 
     @Override
     public Set<Label<T>> entries() {
-        return entries != null ? entries
-                : (entries = new AbstractSet<Label<T>>() {
-                    @Override
-                    public Iterator<Label<T>> iterator() {
-                        return entryIt();
-                    }
+        return new AbstractSet<Label<T>>() {
+            @Override
+            public Iterator<Label<T>> iterator() {
+                return entryIt();
+            }
 
-                    @Override
-                    public int size() {
-                        return OrderedSpanMap.this.size();
-                    }
-                });
+            @Override
+            public int size() {
+                return OrderedSpanMap.this.size();
+            }
+        };
     }
 
     @Override
@@ -334,19 +310,20 @@ public class OrderedSpanMap<T> implements SpansMap<T> {
 
         @Nullable private Label<T> next;
 
-        EntryIterator(NavigableMap<Integer, NavigableMap<Integer, T>> backingTree,
-                      boolean beginDescending,
-                      boolean endDescending,
-                      int endMin,
-                      int endMax) {
-            backingTree = beginDescending
-                    ? backingTree.descendingMap()
+        EntryIterator(
+                NavigableMap<Integer, NavigableMap<Integer, T>> backingTree,
+                boolean beginDescending,
+                boolean endDescending,
+                int endMin,
+                int endMax
+        ) {
+            backingTree = beginDescending ? backingTree.descendingMap()
                     : backingTree;
             beginIterator = backingTree.entrySet().iterator();
-            advance();
             this.endDescending = endDescending;
             this.endMin = endMin;
             this.endMax = endMax;
+            advance();
         }
 
         private void advance() {

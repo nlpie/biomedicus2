@@ -47,7 +47,7 @@ public class DefaultTextView implements TextView {
     @Override
     public <T> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
         SpansMap<T> spansMap = (SpansMap<T>) spanMaps.get(labelClass);
-        return new DefaultLabelIndex<T>(spansMap, unused -> true);
+        return new DefaultLabelIndex<>(spansMap);
     }
 
     @Override

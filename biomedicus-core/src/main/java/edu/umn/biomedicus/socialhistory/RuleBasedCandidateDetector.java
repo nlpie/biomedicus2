@@ -68,7 +68,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                             "Section did not have a title"));
 
             List<ParseToken> titleParseTokens = parseTokenLabels
-                    .insideSpan(sectionTitleLabel).values();
+                    .insideSpan(sectionTitleLabel).valuesAsList();
 
             List<KindCandidateDetector> headerMatches = new ArrayList<>();
             for (KindCandidateDetector candidateDetector : candidateDetectors) {
@@ -89,7 +89,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                 for (Label<Sentence> sentenceLabel : sentenceLabels) {
 
                     List<ParseToken> sentenceParseTokens = parseTokenLabels
-                            .insideSpan(sentenceLabel).values();
+                            .insideSpan(sentenceLabel).valuesAsList();
                     for (KindCandidateDetector headerMatch : headerMatches) {
 
                         if (headerMatch

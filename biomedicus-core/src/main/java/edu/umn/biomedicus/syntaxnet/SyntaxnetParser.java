@@ -18,22 +18,22 @@ package edu.umn.biomedicus.syntaxnet;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.types.text.DependencyParse;
 import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
 
 public final class SyntaxnetParser implements DocumentProcessor {
     private static final Logger LOGGER = LoggerFactory
@@ -136,9 +136,10 @@ public final class SyntaxnetParser implements DocumentProcessor {
             try (Writer writer = new OutputStreamWriter(
                     tagger.getOutputStream())) {
                 for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
-                    List<Label<ParseToken>> sentenceTokenLabels
-                            = tokenLabelIndex.insideSpan(sentenceLabel).all();
-                    String conllString = new Tokens2Conll(sentenceTokenLabels)
+                    Collection<ParseToken> sentenceTokens = tokenLabelIndex
+                            .insideSpan(sentenceLabel)
+                            .values();
+                    String conllString = new Tokens2Conll(sentenceTokens)
                             .conllString();
                     writer.write(conllString);
                     writer.write("\n");

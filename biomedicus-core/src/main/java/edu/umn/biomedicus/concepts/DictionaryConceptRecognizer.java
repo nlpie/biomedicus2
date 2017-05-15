@@ -16,21 +16,19 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.common.types.text.*;
+import edu.umn.biomedicus.common.types.text.NormIndex;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +47,8 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.*;
  * @since 1.0.0
  */
 class DictionaryConceptRecognizer implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryConceptRecognizer.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DictionaryConceptRecognizer.class);
     private static final Set<PartOfSpeech> TRIVIAL_POS = buildTrivialPos();
     private static final int SPAN_SIZE = 5;
     private final ConceptDictionary conceptDictionary;
@@ -67,7 +66,8 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
      * @param conceptDictionary the dictionary to get concepts from.
      */
     @Inject
-    DictionaryConceptRecognizer(ConceptDictionary conceptDictionary, TextView document) {
+    DictionaryConceptRecognizer(ConceptDictionary conceptDictionary,
+                                TextView document) {
         this.conceptDictionary = conceptDictionary;
         this.document = document;
         sentences = document.getLabelIndex(Sentence.class);
@@ -78,7 +78,31 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         acronymLabelIndex = document.getLabelIndex(Acronym.class);
     }
 
-    private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) throws BiomedicusException {
+    private static Set<PartOfSpeech> buildTrivialPos() {
+        Set<PartOfSpeech> builder = new HashSet<>();
+        Collections.addAll(builder,
+                DT,
+                CD,
+                WDT,
+                TO,
+                CC,
+                PRP,
+                PRP$,
+                MD,
+                EX,
+                IN,
+                XX);
+
+        Set<PartOfSpeech> punctuationClass = PartsOfSpeech
+                .getPunctuationClass();
+        builder.addAll(punctuationClass);
+        return Collections.unmodifiableSet(builder);
+    }
+
+    private boolean checkPhrase(Span span,
+                                String phrase,
+                                boolean oneToken,
+                                double confMod) throws BiomedicusException {
         List<SuiCuiTui> phraseSUI = conceptDictionary.forPhrase(phrase);
 
         if (phraseSUI != null) {
@@ -90,7 +114,8 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
             return false;
         }
 
-        phraseSUI = conceptDictionary.forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
+        phraseSUI = conceptDictionary
+                .forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
 
         if (phraseSUI != null) {
             makeTerm(span, phraseSUI, 0.6 - confMod);
@@ -100,16 +125,21 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         return false;
     }
 
-    private void checkTokenSet(List<Label<TermToken>> tokenSet) throws BiomedicusException {
+    private void checkTokenSet(List<Label<TermToken>> tokenSet)
+            throws BiomedicusException {
         if (tokenSet.size() <= 1) {
             return;
         }
 
-        Span phraseAsSpan = new Span(tokenSet.get(0).getBegin(), tokenSet.get(tokenSet.size() - 1).getEnd());
+        Span phraseAsSpan = new Span(tokenSet.get(0).getBegin(),
+                tokenSet.get(tokenSet.size() - 1).getEnd());
         TermsBag.Builder builder = TermsBag.builder();
-        for (Label<NormIndex> normIndexLabel : normIndexes.insideSpan(phraseAsSpan)) {
-            Optional<Label<PartOfSpeech>> partOfSpeechLabel = partOfSpeechLabelIndex.withTextLocation(normIndexLabel);
-            if (partOfSpeechLabel.isPresent() && TRIVIAL_POS.contains(partOfSpeechLabel.get().value())) {
+        for (Label<NormIndex> normIndexLabel : normIndexes
+                .insideSpan(phraseAsSpan)) {
+            Optional<Label<PartOfSpeech>> partOfSpeechLabel
+                    = partOfSpeechLabelIndex.withTextLocation(normIndexLabel);
+            if (partOfSpeechLabel.isPresent() && TRIVIAL_POS
+                    .contains(partOfSpeechLabel.get().value())) {
                 continue;
             }
 
@@ -148,18 +178,17 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
             StringBuilder editedString = new StringBuilder();
             List<Span> editedStringSpans = new ArrayList<>();
-            List<Label<TermToken>> sentenceTermTokens = termTokenLabelIndex.insideSpan(sentence).all();
+            List<Label<TermToken>> sentenceTermTokens = termTokenLabelIndex
+                    .insideSpan(sentence).asList();
 
             for (Label<TermToken> sentenceTermToken : sentenceTermTokens) {
-                Optional<Label<Acronym>> acronymForToken = acronymLabelIndex.withTextLocation(sentenceTermToken);
-                Token token;
-                if (acronymForToken.isPresent()) {
-                    token = acronymForToken.get().value();
-                } else {
-                    token = sentenceTermToken.value();
-                }
+                Optional<Label<Acronym>> acronymForToken = acronymLabelIndex
+                        .withTextLocation(sentenceTermToken);
+                Token token = acronymForToken.<Token>map(Label::value)
+                        .orElseGet(sentenceTermToken::value);
                 String tokenText = token.text();
-                Span span = new Span(editedString.length(), editedString.length() + tokenText.length());
+                Span span = new Span(editedString.length(),
+                        editedString.length() + tokenText.length());
                 editedString.append(tokenText);
                 if (token.hasSpaceAfter()) {
                     editedString.append(' ');
@@ -169,60 +198,47 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
             for (int from = 0; from < sentenceTermTokens.size(); from++) {
                 int to = Math.min(from + SPAN_SIZE, sentenceTermTokens.size());
-                List<Label<TermToken>> window = sentenceTermTokens.subList(from, to);
+                List<Label<TermToken>> window = sentenceTermTokens
+                        .subList(from, to);
 
                 Label<TermToken> firstTokenLabel = window.get(0);
-                boolean firstTokenAllTrivial = partOfSpeechLabelIndex.insideSpan(firstTokenLabel)
-                        .all()
-                        .stream()
-                        .map(Label::value)
-                        .allMatch(TRIVIAL_POS::contains);
+                boolean firstTrivial = TRIVIAL_POS.containsAll(
+                        partOfSpeechLabelIndex.insideSpan(firstTokenLabel)
+                                .values());
 
-                for (int subsetSize = 1; subsetSize <= window.size(); subsetSize++) {
-                    List<Label<TermToken>> windowSubset = window.subList(0, subsetSize);
+                for (int subsetSize = 1;
+                     subsetSize <= window.size();
+                     subsetSize++) {
+                    List<Label<TermToken>> windowSubset = window
+                            .subList(0, subsetSize);
                     int last = subsetSize - 1;
                     Label<TermToken> lastTokenLabel = windowSubset.get(last);
-                    Span asSpan = new Span(firstTokenLabel.getBegin(), lastTokenLabel.getEnd());
+                    Span asSpan = new Span(firstTokenLabel.getBegin(),
+                            lastTokenLabel.getEnd());
                     boolean phraseFound = checkPhrase(asSpan,
-                            documentText.substring(asSpan.getBegin(), asSpan.getEnd()), subsetSize == 1, 0);
+                            documentText.substring(asSpan.getBegin(),
+                                    asSpan.getEnd()), subsetSize == 1, 0);
                     if (!phraseFound) {
-                        int editedBegin = editedStringSpans.get(from).getBegin();
-                        int editedEnd = editedStringSpans.get(from + last).getEnd();
-                        String editedSubstring = editedString.substring(editedBegin, editedEnd);
-                        phraseFound = checkPhrase(asSpan, editedSubstring, subsetSize == 1, .1);
+                        int editedBegin = editedStringSpans.get(from)
+                                .getBegin();
+                        int editedEnd = editedStringSpans.get(from + last)
+                                .getEnd();
+                        String editedSubstring = editedString
+                                .substring(editedBegin, editedEnd);
+                        phraseFound = checkPhrase(asSpan, editedSubstring,
+                                subsetSize == 1, .1);
                     }
                     if (!phraseFound) {
-                        boolean lastTokenAllTrivial = partOfSpeechLabelIndex.insideSpan(lastTokenLabel)
-                                .all()
-                                .stream()
-                                .map(Label::value)
-                                .allMatch(TRIVIAL_POS::contains);
-                        if (!firstTokenAllTrivial && !lastTokenAllTrivial) {
+                        boolean lastTrivial = TRIVIAL_POS.containsAll(
+                                partOfSpeechLabelIndex
+                                        .insideSpan(lastTokenLabel)
+                                        .values());
+                        if (!firstTrivial && !lastTrivial) {
                             checkTokenSet(windowSubset);
                         }
                     }
                 }
             }
         }
-    }
-
-    private static Set<PartOfSpeech> buildTrivialPos() {
-        Set<PartOfSpeech> builder = new HashSet<>();
-        Collections.addAll(builder,
-                DT,
-                CD,
-                WDT,
-                TO,
-                CC,
-                PRP,
-                PRP$,
-                MD,
-                EX,
-                IN,
-                XX);
-
-        Set<PartOfSpeech> punctuationClass = PartsOfSpeech.getPunctuationClass();
-        builder.addAll(punctuationClass);
-        return Collections.unmodifiableSet(builder);
     }
 }

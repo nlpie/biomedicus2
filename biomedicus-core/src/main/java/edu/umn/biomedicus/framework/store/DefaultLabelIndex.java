@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.framework.store;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class DefaultLabelIndex<T> extends AbstractLabelIndex<T> {
@@ -77,8 +76,18 @@ public class DefaultLabelIndex<T> extends AbstractLabelIndex<T> {
     }
 
     @Override
-    public LabelIndex<T> filter(Predicate<Label<T>> predicate) {
-        return new FilteredLabelIndex<>(this, predicate);
+    public Optional<Label<T>> first() {
+        return tree.first();
+    }
+
+    @Override
+    public Optional<Label<T>> withTextLocation(TextLocation textLocation) {
+        return null;
+    }
+
+    @Override
+    public Optional<Label<T>> withSpan(Span span) {
+        return null;
     }
 
     @Override
@@ -119,5 +128,10 @@ public class DefaultLabelIndex<T> extends AbstractLabelIndex<T> {
     @Override
     public List<T> valuesAsList() {
         return tree.valuesAsList();
+    }
+
+    @Override
+    public int size() {
+        return tree.size();
     }
 }

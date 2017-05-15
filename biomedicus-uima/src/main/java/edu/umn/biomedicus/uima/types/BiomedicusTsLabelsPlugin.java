@@ -297,6 +297,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
                     .hasSpaceAfter(hasSpaceAfter)
                     .build();
         }
+
+        @Override
+        public boolean isDistinct() {
+            return true;
+        }
     }
 
     public static class AcronymLabelAdapter extends AbstractTokenLabelAdapter<Acronym> {

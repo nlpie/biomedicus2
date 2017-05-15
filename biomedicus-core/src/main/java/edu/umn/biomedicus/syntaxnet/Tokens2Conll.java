@@ -16,27 +16,25 @@
 
 package edu.umn.biomedicus.syntaxnet;
 
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Token;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.StringJoiner;
 
 public class Tokens2Conll {
-    private final List<Label<ParseToken>> tokenLabels;
+    private final Collection<ParseToken> tokenLabels;
 
-    public Tokens2Conll(List<Label<ParseToken>> tokenLabels) {
+    public Tokens2Conll(Collection<ParseToken> tokenLabels) {
         this.tokenLabels = tokenLabels;
     }
 
     public String conllString() {
         StringBuilder conllBuilder = new StringBuilder();
-        for (int i = 0; i < tokenLabels.size(); i++) {
-            Token token = tokenLabels.get(i).value();
+        int i = 1;
+        for (ParseToken token : tokenLabels) {
             String text = token.text();
             StringJoiner tokenBuilder = new StringJoiner("\t", "", "\n");
-            tokenBuilder.add(Integer.toString((i + 1))); // sentence position
+            tokenBuilder.add(Integer.toString((i++))); // sentence position
             tokenBuilder.add(text); // text
             tokenBuilder.add("_"); // LEMMA
             tokenBuilder.add("_"); // UPOSTAG
@@ -45,9 +43,11 @@ public class Tokens2Conll {
             tokenBuilder.add("_"); // HEAD
             tokenBuilder.add("_"); // DEPREL
             tokenBuilder.add("_"); // DEPS
-            tokenBuilder.add(token.hasSpaceAfter() ? "_" : "SpaceAfter=No"); // MISC
+            tokenBuilder
+                    .add(token.hasSpaceAfter() ? "_" : "SpaceAfter=No"); // MISC
             conllBuilder.append(tokenBuilder.toString());
         }
+
         return conllBuilder.toString();
     }
 }

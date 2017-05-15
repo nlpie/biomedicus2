@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * @param <T> the type that is labeled
  * @since 1.5.0
  */
-public interface LabelIndex<T> extends Iterable<Label<T>> {
+public interface LabelIndex<T> extends Collection<Label<T>> {
     /**
      * Returns a collection of all the labels that contain the specified
      * {@link TextLocation} parameter.
@@ -114,26 +114,6 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
     LabelIndex<T> descendingEnd();
 
     /**
-     * Limits the the number of labels returned to a specific count. Should be
-     * used as close as possible to the use of the index, since
-     * limiting forces segmentation between transformation calls.
-     *
-     * @param max the number of labels to limit to
-     * @return a view of this label index
-     */
-    LabelIndex<T> limit(int max);
-
-    /**
-     * Applies the predicate, return a collection of the labels that match that
-     * predicate. Should be used as close as possible to the use of the
-     * index, since filtering forces segmentation between transformation calls.
-     *
-     * @param predicate the testing predicate
-     * @return a view of this label index.
-     */
-    LabelIndex<T> filter(Predicate<Label<T>> predicate);
-
-    /**
      * Returns optionally the first label in this LabelIndex.
      *
      * @return an optional of the first label, empty if there are no labels in
@@ -176,13 +156,6 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
     Collection<T> values();
 
     /**
-     * Returns true if this index is empty, false otherwise.
-     *
-     * @return true if contains no labels.
-     */
-    boolean isEmpty();
-
-    /**
      * Either put all of the elements in a list or provide a list view of the
      * elements. Unmodifiable.
      *
@@ -204,11 +177,4 @@ public interface LabelIndex<T> extends Iterable<Label<T>> {
      * @return
      */
     List<T> valuesAsList();
-
-    /**
-     * Stream of all the labels in this label index.
-     *
-     * @return stream
-     */
-    Stream<Label<T>> stream();
 }

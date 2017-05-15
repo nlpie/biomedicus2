@@ -34,7 +34,7 @@ public class SearcherTest {
 
     }
 
-    static class Foo {
+    public static class Foo {
         private String value;
         private int baz;
 
@@ -150,7 +150,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"bar\"}");
+                "Foo{getValue=\"bar\"}");
 
         Search search = blah.createSearcher(document);
         search.search();
@@ -170,7 +170,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"bar\"}");
+                "Foo{getValue=\"bar\"}");
 
         Search search = blah.createSearcher(document);
         search.search();
@@ -191,7 +191,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"baz\",baz=42}");
+                "Foo{getValue=\"baz\",getBaz=42}");
 
         Search search = blah.createSearcher(document);
         search.search();

@@ -258,7 +258,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         Label<ConstituencyParse> consttParseLabel = document
@@ -290,7 +290,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
                                  String strConstt) throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
         // Get all possible longest frequency patterns
 
@@ -444,7 +444,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
             throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         // Get all exact longest frequency patterns
@@ -602,7 +602,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
         // Match method phrases that explicitly indicate alcohol drink method
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         Matcher matcher = methodPattern.matcher(strSentence);
@@ -677,7 +677,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
             throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         // Get all possible longest frequency patterns
@@ -782,7 +782,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
             throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         Matcher matcher = typePattern.matcher(strSentence);
@@ -803,7 +803,7 @@ public class TobaccoKindSubstanceUsageDetector implements KindSubstanceUsageDete
             throws BiomedicusException {
 
         List<ParseToken> sentenceTermTokens = parseTokenLabels
-                .insideSpan(sentenceLabel).values();
+                .insideSpan(sentenceLabel).valuesAsList();
         String strSentence = helper.toTokensString(sentenceTermTokens);
 
         Hashtable<Integer, Integer> spanHash

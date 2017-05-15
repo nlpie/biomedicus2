@@ -17,9 +17,13 @@
 package edu.umn.biomedicus.framework.store;
 
 import java.util.*;
+import java.util.function.IntFunction;
 
 /**
+ * A spans map for when the spans are distinct, i.e. non-overlapping.
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
     private final int[] begins;
@@ -95,90 +99,47 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
 
     @Override
     public Set<Span> spans() {
+        List<Span> spans = spansAsList();
         return new AbstractSet<Span>() {
             @Override
             public Iterator<Span> iterator() {
-                return new Iterator<Span>() {
-                    int index = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return index < nodes.length;
-                    }
-
-                    @Override
-                    public Span next() {
-                        return spanAtIndex(index++);
-                    }
-                };
+                return spans.iterator();
             }
 
             @Override
             public int size() {
-                return 0;
+                return spans.size();
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return spans.contains(o);
             }
         };
     }
 
     @Override
     public Collection<E> values() {
-        return new AbstractCollection<E>() {
-            @Override
-            public Iterator<E> iterator() {
-                return new Iterator<E>() {
-                    int index = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return index < nodes.length;
-                    }
-
-                    @Override
-                    public E next() {
-                        return valueAtIndex(index++);
-                    }
-                };
-            }
-
-            @Override
-            public int size() {
-                return nodes.length;
-            }
-        };
+        return new ValueListView<>(this);
     }
 
     @Override
     public Set<Label<E>> entries() {
+        List<Label<E>> labels = asList();
         return new AbstractSet<Label<E>>() {
             @Override
             public Iterator<Label<E>> iterator() {
-                return new Iterator<Label<E>>() {
-                    int index = 0;
-
-                    @Override
-                    public boolean hasNext() {
-                        return index < nodes.length;
-                    }
-
-                    @Override
-                    public Label<E> next() {
-                        return labelAtIndex(index++);
-                    }
-                };
+                return labels.iterator();
             }
 
             @Override
             public int size() {
-                return nodes.length;
+                return labels.size();
             }
 
             @Override
             public boolean contains(Object o) {
-                if (!(o instanceof Label)) {
-                    return false;
-                }
-                Label label = (Label) o;
-                return containsLabel(label);
+                return labels.contains(o);
             }
         };
     }
@@ -199,7 +160,7 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return begins.length != 0;
     }
 
     @Override
@@ -220,6 +181,14 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
     @Override
     public int size() {
         return begins.length;
+    }
+
+    @Override
+    public Optional<Label<E>> first() {
+        if (begins.length > 0) {
+            return Optional.of(labelAtIndex(0));
+        }
+        return Optional.empty();
     }
 
     int lower(int index) {
@@ -349,12 +318,15 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         @SuppressWarnings("unchecked")
         @Override
         public Optional<E> get(TextLocation textLocation) {
-            int i = Arrays.binarySearch(backingMap.begins,
+            int result = Arrays.binarySearch(backingMap.begins,
                     textLocation.getBegin());
-            if (i < left || i > right) {
-                return Optional.empty();
+            if (result >= left && result <= right) {
+                Node node = backingMap.nodes[result];
+                if (textLocation.getEnd() == node.end) {
+                    return Optional.of((E) node.value);
+                }
             }
-            return Optional.of((E) backingMap.nodes[i].value);
+            return Optional.empty();
         }
 
         @Override
@@ -406,6 +378,235 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
             int i = backingMap.indexOfLabel(label);
             return i != -1 && i >= left && i <= right;
         }
+
+        @Override
+        public List<Label<E>> asList() {
+            return new ViewLabelsList<>(this);
+        }
+
+        @Override
+        public List<Span> spansAsList() {
+            return new ViewSpansList(this);
+        }
+
+        @Override
+        public List<E> valuesAsList() {
+            return new ViewValuesList<>(this);
+        }
+
+        @Override
+        public Set<Span> spans() {
+            return new AbstractSet<Span>() {
+                @Override
+                public Iterator<Span> iterator() {
+                    return new ViewIterator<>(View.this::spanAtIndex);
+                }
+
+                @Override
+                public int size() {
+                    return View.this.size();
+                }
+
+                @Override
+                public boolean contains(Object o) {
+                    return indexOfSpan(o) != -1;
+                }
+            };
+        }
+
+        @Override
+        public Collection<E> values() {
+            return new AbstractCollection<E>() {
+                @Override
+                public Iterator<E> iterator() {
+                    return new ViewIterator<>(View.this::valueAtIndex);
+                }
+
+                @Override
+                public int size() {
+                    return View.this.size();
+                }
+            };
+        }
+
+        @Override
+        public Set<Label<E>> entries() {
+            return new AbstractSet<Label<E>>() {
+                @Override
+                public Iterator<Label<E>> iterator() {
+                    return new ViewIterator<>(View.this::labelAtIndex);
+                }
+
+                @Override
+                public int size() {
+                    return View.this.size();
+                }
+
+                @Override
+                public boolean contains(Object o) {
+                    return indexOfLabel(o) != -1;
+                }
+            };
+        }
+
+        protected abstract int offsetIndex(int index);
+
+        protected abstract int incrementIndex(int index);
+
+        protected abstract boolean hasNextIndex(int index);
+
+        protected abstract int firstIndex();
+
+        Span spanAtIndex(int index) {
+            return backingMap.spanAtIndex(offsetIndex(index));
+        }
+
+        E valueAtIndex(int index) {
+            return backingMap.valueAtIndex(offsetIndex(index));
+        }
+
+        Label<E> labelAtIndex(int index) {
+            return backingMap.labelAtIndex(offsetIndex(index));
+        }
+
+        private int check(int index) {
+            if (index < left || index > right) {
+                return -1;
+            }
+            return index;
+        }
+
+        int indexOfSpan(Object o) {
+            return check(backingMap.indexOfSpan(o));
+        }
+
+        int indexOfLabel(Object o) {
+            return check(backingMap.indexOfLabel(o));
+        }
+
+        @Override
+        public Optional<Label<E>> first() {
+            return isEmpty() ? Optional.empty()
+                    : Optional.of(backingMap.labelAtIndex(firstIndex()));
+        }
+
+        @Override
+        public int size() {
+            return right - left + 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return left <= right;
+        }
+
+        static class ViewSpansList extends AbstractList<Span>
+                implements RandomAccess {
+            private final View<?> backingView;
+
+            ViewSpansList(View<?> backingView) {
+                this.backingView = backingView;
+            }
+
+            @Override
+            public Span get(int index) {
+                return backingView.spanAtIndex(index);
+            }
+
+            @Override
+            public int size() {
+                return backingView.size();
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return indexOf(o) != -1;
+            }
+
+            @Override
+            public int indexOf(Object o) {
+                return backingView.indexOfSpan(o);
+            }
+
+            @Override
+            public int lastIndexOf(Object o) {
+                return indexOf(o);
+            }
+        }
+
+        static class ViewValuesList<E> extends AbstractList<E>
+                implements RandomAccess {
+            private final View<E> backingView;
+
+            ViewValuesList(View<E> backingView) {
+                this.backingView = backingView;
+            }
+
+            @Override
+            public E get(int index) {
+                return backingView.valueAtIndex(index);
+            }
+
+            @Override
+            public int size() {
+                return backingView.size();
+            }
+        }
+
+        static class ViewLabelsList<E> extends AbstractList<Label<E>>
+                implements RandomAccess {
+            private final View<E> backingView;
+
+            ViewLabelsList(View<E> backingView) {
+                this.backingView = backingView;
+            }
+
+            @Override
+            public Label<E> get(int index) {
+                return backingView.labelAtIndex(index);
+            }
+
+            @Override
+            public int size() {
+                return backingView.size();
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return indexOf(o) != -1;
+            }
+
+            @Override
+            public int indexOf(Object o) {
+                return backingView.indexOfLabel(o);
+            }
+
+            @Override
+            public int lastIndexOf(Object o) {
+                return indexOf(o);
+            }
+        }
+
+        class ViewIterator<T> implements Iterator<T> {
+            final IntFunction<T> mapper;
+            int i = firstIndex();
+
+            ViewIterator(IntFunction<T> mapper) {
+                this.mapper = mapper;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return hasNextIndex(i);
+            }
+
+            @Override
+            public T next() {
+                int value = i;
+                i = incrementIndex(i);
+                return mapper.apply(value);
+            }
+        }
     }
 
     static class AscendingView<E> extends View<E> {
@@ -441,165 +642,25 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         }
 
         @Override
-        public Set<Span> spans() {
-            return null;
-        }
-
-        @Override
-        public Collection<E> values() {
-            return new AbstractCollection<E>() {
-                @Override
-                public Iterator<E> iterator() {
-                    return new Iterator<E>() {
-                        int i = left;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i <= right;
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        @Override
-                        public E next() {
-                            return (E) backingMap.nodes[i++].value;
-                        }
-                    };
-                }
-
-                @Override
-                public int size() {
-                    return right - left + 1;
-                }
-            };
-        }
-
-        @Override
-        public Set<Label<E>> entries() {
-            return new AbstractSet<Label<E>>() {
-                @Override
-                public Iterator<Label<E>> iterator() {
-                    return new Iterator<Label<E>>() {
-                        int i = left;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i <= right;
-                        }
-
-                        @Override
-                        public Label<E> next() {
-                            return backingMap.labelAtIndex(i++);
-                        }
-                    };
-                }
-
-                @Override
-                public int size() {
-                    return right - left + 1;
-                }
-
-                @Override
-                public boolean contains(Object o) {
-                    if (!(o instanceof Label)) return false;
-                    Label label = (Label) o;
-                    return containsLabel(label);
-                }
-            };
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public List<Label<E>> asList() {
-            return null;
-        }
-
-        @Override
-        public List<Span> spansAsList() {
-            return null;
-        }
-
-        @Override
-        public List<E> valuesAsList() {
-            return null;
-        }
-
-        @Override
-        public int size() {
-            return right - left + 1;
-        }
-
-        private int offsetIndex(int index) {
+        protected int offsetIndex(int index) {
             return left + index;
         }
 
-        Span spanAtIndex(int index) {
-            return backingMap.spanAtIndex(offsetIndex(index));
+        @Override
+        protected int incrementIndex(int index) {
+            return index + 1;
         }
 
-        E valueAtIndex(int index) {
-            return backingMap.valueAtIndex(offsetIndex(index));
+        @Override
+        protected boolean hasNextIndex(int index) {
+            return index <= right;
         }
 
-        Label<E> labelAtIndex(int index) {
-            return backingMap.labelAtIndex(offsetIndex(index));
+        @Override
+        protected int firstIndex() {
+            return left;
         }
 
-        private int check(int index) {
-            if (index < left || index > right) {
-                return  -1;
-            }
-            return index;
-        }
-
-        int indexOfSpan(Object o) {
-            return check(backingMap.indexOfSpan(o));
-        }
-
-        int indexOfLabel(Object o) {
-            return check(backingMap.indexOfLabel(o));
-        }
-
-        static class AscendingSpansListView extends AbstractList<Span>
-                implements RandomAccess {
-            private final AscendingView<?> backingView;
-
-            AscendingSpansListView(AscendingView<?> backingView) {
-                this.backingView = backingView;
-            }
-
-            @Override
-            public Span get(int index) {
-                return backingView.spanAtIndex(index);
-            }
-
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean contains(Object o) {
-                return indexOf(o) != -1;
-            }
-
-            @Override
-            public int indexOf(Object o) {
-                int i = backingMap.indexOfSpan(o);
-                if (i >= left && i <= right) {
-                    return i;
-                }
-                return -1;
-            }
-
-            @Override
-            public int lastIndexOf(Object o) {
-                return indexOf(o);
-            }
-        }
     }
 
     static class DescendingView<E> extends View<E> {
@@ -612,6 +673,26 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         @Override
         View<E> update(int left, int right) {
             return new DescendingView<>(backingMap, left, right);
+        }
+
+        @Override
+        protected int offsetIndex(int index) {
+            return right - index;
+        }
+
+        @Override
+        protected int incrementIndex(int index) {
+            return index - 1;
+        }
+
+        @Override
+        protected boolean hasNextIndex(int index) {
+            return index >= left;
+        }
+
+        @Override
+        protected int firstIndex() {
+            return right;
         }
 
         @Override
@@ -632,121 +713,6 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         @Override
         public SpansMap<E> descendingEnd() {
             return this;
-        }
-
-        @Override
-        public Set<Span> spans() {
-            return new AbstractSet<Span>() {
-                @Override
-                public Iterator<Span> iterator() {
-                    return new Iterator<Span>() {
-                        int i = right;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i >= left;
-                        }
-
-                        @Override
-                        public Span next() {
-                            return new Span(backingMap.begins[i],
-                                    backingMap.nodes[i--].end);
-                        }
-                    };
-                }
-
-                @Override
-                public int size() {
-                    return right - left + 1;
-                }
-            };
-        }
-
-        @Override
-        public Collection<E> values() {
-            return new AbstractCollection<E>() {
-                @Override
-                public Iterator<E> iterator() {
-                    return new Iterator<E>() {
-                        int i = right;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i >= left;
-                        }
-
-                        @SuppressWarnings("unchecked")
-                        @Override
-                        public E next() {
-                            return (E) backingMap.nodes[i--].value;
-                        }
-                    };
-                }
-
-                @Override
-                public int size() {
-                    return right - left + 1;
-                }
-            };
-        }
-
-        @Override
-        public Set<Label<E>> entries() {
-            return new AbstractSet<Label<E>>() {
-                @Override
-                public Iterator<Label<E>> iterator() {
-                    return new Iterator<Label<E>>() {
-                        int i = right;
-
-                        @Override
-                        public boolean hasNext() {
-                            return i >= left;
-                        }
-
-                        @Override
-                        public Label<E> next() {
-                            return backingMap.labelAtIndex(i--);
-                        }
-                    };
-                }
-
-                @Override
-                public int size() {
-                    return right - left + 1;
-                }
-
-                @Override
-                public boolean contains(Object o) {
-                    if (!(o instanceof Label)) return false;
-                    Label label = (Label) o;
-                    return containsLabel(label);
-                }
-            };
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public List<Label<E>> asList() {
-            return null;
-        }
-
-        @Override
-        public List<Span> spansAsList() {
-            return null;
-        }
-
-        @Override
-        public List<E> valuesAsList() {
-            return null;
-        }
-
-        @Override
-        public int size() {
-            return right - left + 1;
         }
     }
 
@@ -830,7 +796,6 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         public int indexOf(Object o) {
             return backingMap.indexOfLabel(o);
         }
-
 
         @Override
         public int lastIndexOf(Object o) {
