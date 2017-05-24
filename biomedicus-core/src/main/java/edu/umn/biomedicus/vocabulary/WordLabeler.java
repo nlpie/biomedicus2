@@ -17,13 +17,14 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.labels.LabelIndex;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -36,13 +37,14 @@ import java.util.Locale;
  *
  */
 public final class WordLabeler implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(WordLabeler.class);
     private final TermIndex wordIndex;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
     private final Labeler<WordIndex> wordIndexLabeler;
 
     @Inject
-    public WordLabeler(Vocabulary vocabulary, Document document) {
+    public WordLabeler(Vocabulary vocabulary, TextView document) {
         wordIndex = vocabulary.getWordsIndex();
         parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         wordIndexLabeler = document.getLabeler(WordIndex.class);
@@ -50,11 +52,14 @@ public final class WordLabeler implements DocumentProcessor {
 
     @Override
     public void process() throws BiomedicusException {
-        LOGGER.info("Labeling word term index identifiers in a document.");
+        LOGGER.debug("Labeling word term index identifiers in a document.");
         for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
             ParseToken token = parseTokenLabel.value();
-            IndexedTerm indexedTerm = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
-            WordIndex wordIndex = new WordIndex(indexedTerm);
+            IndexedTerm indexedTerm = wordIndex
+                    .getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
+            WordIndex wordIndex = ImmutableWordIndex.builder()
+                    .term(indexedTerm)
+                    .build();
             wordIndexLabeler.value(wordIndex).label(parseTokenLabel);
         }
     }

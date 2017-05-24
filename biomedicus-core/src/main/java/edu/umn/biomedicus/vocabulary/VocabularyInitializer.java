@@ -17,13 +17,11 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelsUtilities;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.framework.Bootstrapper;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelsUtilities;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
 import edu.umn.biomedicus.tokenization.TermTokenMerger;
@@ -33,6 +31,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.PathOptionHandler;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,14 +50,17 @@ public class VocabularyInitializer {
     private final TermIndexBuilder wordsIndexBuilder;
     private final VocabularyBuilder builder;
 
+    @Nullable
     @Option(name = "-s", required = true, handler = PathOptionHandler.class,
             usage = "path to SPECIALIST Lexicon installation.")
     private Path specialistPath;
 
+    @Nullable
     @Option(name = "-u", required = true, handler = PathOptionHandler.class,
             usage = "path to UMLS Lexicon installation.")
     private Path umlsPath;
 
+    @Nullable
     @Argument(handler = PathOptionHandler.class)
     private Path outputPath;
 
@@ -94,7 +96,10 @@ public class VocabularyInitializer {
                 wordsIndexBuilder.addTerm(term);
                 boolean hasSpaceAfter = span != null && prev.getEnd() != span
                         .getBegin();
-                ParseToken parseToken = new ParseToken(term, hasSpaceAfter);
+                ParseToken parseToken = ImmutableParseToken.builder()
+                        .text(term)
+                        .hasSpaceAfter(hasSpaceAfter)
+                        .build();
                 Label<ParseToken> parseTokenLabel = new Label<>(prev,
                         parseToken);
                 parseTokens.add(LabelsUtilities.cast(parseTokenLabel));

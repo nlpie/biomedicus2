@@ -18,21 +18,23 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DocumentProcessor;
 import edu.umn.biomedicus.common.grams.Ngram;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -73,7 +75,7 @@ public class TntPosTagger implements DocumentProcessor {
     private final TntModel tntModel;
     private final LabelIndex<Sentence> sentenceLabelIndex;
     private final LabelIndex<ParseToken> parseTokenLabelIndex;
-    private final Document document;
+    private final TextView document;
     private final Labeler<PartOfSpeech> partOfSpeechLabeler;
 
     /**
@@ -85,7 +87,7 @@ public class TntPosTagger implements DocumentProcessor {
     @Inject
     public TntPosTagger(TntModel tntModel,
                         @Setting("tnt.beam.threshold") Double beamThreshold,
-                        Document document) {
+                        TextView document) {
         this.tntModel = tntModel;
         this.beamThreshold = beamThreshold;
         this.document = document;
@@ -94,27 +96,32 @@ public class TntPosTagger implements DocumentProcessor {
         partOfSpeechLabeler = document.getLabeler(PartOfSpeech.class);
     }
 
-    public void tagSentence(Label<Sentence> sentence2Label) throws BiomedicusException {
-        List<Label<ParseToken>> tokens = parseTokenLabelIndex.insideSpan(sentence2Label).all();
-        ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel, Ngram.create(BBS, BOS),
-                Ngram::create);
+    public void tagSentence(Label<Sentence> sentence2Label)
+            throws BiomedicusException {
+        Collection<Label<ParseToken>> tokens = parseTokenLabelIndex
+                .insideSpan(sentence2Label);
+        ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi
+                .secondOrder(tntModel, tntModel, Ngram.create(BBS, BOS),
+                        Ngram::create);
 
         for (Label<ParseToken> token : tokens) {
             CharSequence text = token.getCovered(document.getText());
             boolean isCapitalized = Character.isUpperCase(text.charAt(0));
-            viterbiProcessor.advance(new WordCap(text.toString(), isCapitalized));
+            viterbiProcessor
+                    .advance(new WordCap(text.toString(), isCapitalized));
             viterbiProcessor.beamFilter(beamThreshold);
         }
 
         List<PosCap> tags = viterbiProcessor.end(SKIP, EOS);
 
         if (tokens.size() + 2 != tags.size()) {
-            throw new AssertionError("Tags should be same size as number of tokens in sentence");
+            throw new AssertionError(
+                    "Tags should be same size as number of tokens in sentence");
         }
 
-        for (int i = 2; i < tags.size(); i++) {
-            PartOfSpeech partOfSpeech = tags.get(i).getPartOfSpeech();
-            Label<ParseToken> token = tokens.get(i - 2);
+        Iterator<PosCap> it = tags.subList(2, tags.size()).iterator();
+        for (Label<ParseToken> token : tokens) {
+            PartOfSpeech partOfSpeech = it.next().getPartOfSpeech();
             partOfSpeechLabeler.value(partOfSpeech).label(token);
         }
     }

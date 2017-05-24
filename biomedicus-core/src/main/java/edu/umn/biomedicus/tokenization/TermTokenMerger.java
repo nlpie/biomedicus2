@@ -16,23 +16,25 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
- * Iterator over a collection of merged tokens. Tokens that are connected by - / \ ' or _ without spaces are merged.
+ * Iterator over a collection of merged tokens. Tokens that are connected by
+ * - / \ ' or _ without spaces are merged.
  *
  * @author Ben Knoll
  * @since 1.6.0
  */
 public final class TermTokenMerger implements Iterator<Label<TermToken>> {
-    private static final Set<Character> MERGE = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
+    private static final Set<Character> MERGE
+            = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
     private final List<Label<Token>> running = new ArrayList<>();
     private final Iterator<Label<Token>> iterator;
     @Nullable private Label<TermToken> next;
@@ -58,9 +60,12 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
             Label<Token> lastLabel = running.get(running.size() - 1);
             Token lastToken = lastLabel.value();
             String lastTokenText = lastToken.text();
-            char lastTokenLastChar = lastTokenText.charAt(lastTokenText.length() - 1);
+            char lastTokenLastChar = lastTokenText
+                    .charAt(lastTokenText.length() - 1);
             char curTokenFirstChar = tokenLabel.value().text().charAt(0);
-            if (lastToken.hasSpaceAfter() || (!MERGE.contains(curTokenFirstChar) && !MERGE.contains(lastTokenLastChar))) {
+            if (lastToken.hasSpaceAfter()
+                    || (!MERGE.contains(curTokenFirstChar)
+                    && !MERGE.contains(lastTokenLastChar))) {
                 makeTermToken();
             }
             running.add(tokenLabel);
@@ -83,8 +88,13 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
         Label<? extends Token> lastTokenLabel = running.get(running.size() - 1);
         boolean hasSpaceAfter = lastTokenLabel.value().hasSpaceAfter();
 
-        TermToken termToken = new TermToken(tokenText.toString(), hasSpaceAfter);
-        next = new Label<>(new Span(running.get(0).getBegin(), lastTokenLabel.getEnd()), termToken);
+        Span span = new Span(running.get(0).getBegin(),
+                lastTokenLabel.getEnd());
+        TermToken termToken = ImmutableTermToken.builder()
+                .text(tokenText.toString())
+                .hasSpaceAfter(hasSpaceAfter)
+                .build();
+        next = new Label<>(span, termToken);
         running.clear();
     }
 

@@ -25,7 +25,6 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.apache.uima.jcas.JCas;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
@@ -36,7 +35,6 @@ import static org.testng.Assert.*;
 public class PropertyCasMappingTest {
     PropertyCasMapping propertyCasMapping;
 
-    @Mocked JCas jCas;
     @Mocked TypeSystem typeSystem;
     @Mocked Type type;
     @Mocked Feature feature;
@@ -76,7 +74,7 @@ public class PropertyCasMappingTest {
     public void testGetAnnotationBeginBeforeZero() throws Exception {
         PropertyCasMapping propertyCasMapping = new PropertyCasMapping("group", "property", "annotation", 1, 3, true,
                 false);
-        propertyCasMapping.getAnnotation(jCas, -1, 3, 1);
+        propertyCasMapping.getAnnotation(cas, -1, 3, 1);
         fail();
     }
 
@@ -84,7 +82,7 @@ public class PropertyCasMappingTest {
     public void testGetAnnotationEndBeforeBegin() throws Exception {
         PropertyCasMapping propertyCasMapping = new PropertyCasMapping("group", "property", "annotation", 1, 3, true,
                 false);
-        propertyCasMapping.getAnnotation(jCas, 4, 3, 1);
+        propertyCasMapping.getAnnotation(cas, 4, 3, 1);
         fail();
     }
 
@@ -92,22 +90,21 @@ public class PropertyCasMappingTest {
     public void testGetAnnotationZeroLengthNotEmitted() throws Exception {
         PropertyCasMapping propertyCasMapping = new PropertyCasMapping("group", "property", "annotation", 1, 3, true,
                 false);
-        assertNull(propertyCasMapping.getAnnotation(jCas, 3, 3, 1));
+        assertNull(propertyCasMapping.getAnnotation(cas, 3, 3, 1));
     }
 
     @Test
     public void testGetAnnotationValueIncluded() throws Exception {
         new Expectations() {{
-            jCas.getTypeSystem(); result = typeSystem;
+            cas.getTypeSystem(); result = typeSystem;
             typeSystem.getType("annotation"); result = type;
-            jCas.getCas(); result = cas;
             cas.createAnnotation(type, 3, 3); result = annotationFS;
             type.getFeatureByBaseName("value"); result = feature;
         }};
 
         PropertyCasMapping propertyCasMapping = new PropertyCasMapping("group", "property", "annotation", 1, 3, true,
                 true);
-        assertEquals(propertyCasMapping.getAnnotation(jCas, 3, 3, 1), annotationFS);
+        assertEquals(propertyCasMapping.getAnnotation(cas, 3, 3, 1), annotationFS);
 
         new Verifications() {{
             annotationFS.setIntValue(feature, 1);
@@ -117,15 +114,14 @@ public class PropertyCasMappingTest {
     @Test
     public void testGetAnnotation() throws Exception {
         new Expectations() {{
-            jCas.getTypeSystem(); result = typeSystem;
+            cas.getTypeSystem(); result = typeSystem;
             typeSystem.getType("annotation"); result = type;
-            jCas.getCas(); result = cas;
             cas.createAnnotation(type, 3, 3); result = annotationFS;
         }};
 
         PropertyCasMapping propertyCasMapping = new PropertyCasMapping("group", "property", "annotation", 1, 3, false,
                 true);
-        assertEquals(propertyCasMapping.getAnnotation(jCas, 3, 3, 1), annotationFS);
+        assertEquals(propertyCasMapping.getAnnotation(cas, 3, 3, 1), annotationFS);
 
         new Verifications() {{
             type.getFeatureByBaseName("value"); times = 0;

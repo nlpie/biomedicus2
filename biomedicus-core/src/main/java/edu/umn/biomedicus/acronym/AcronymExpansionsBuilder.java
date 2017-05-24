@@ -18,8 +18,8 @@ package edu.umn.biomedicus.acronym;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.Biomedicus;
-import edu.umn.biomedicus.application.Bootstrapper;
+import edu.umn.biomedicus.framework.Application;
+import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.spelling.SpecialistAgreementModel;
 import org.slf4j.Logger;
@@ -234,8 +234,8 @@ public class AcronymExpansionsBuilder {
 
     public static void main(String args[]) {
         try {
-            Biomedicus biomedicus = Bootstrapper.create();
-            AcronymExpansionsBuilder acronymExpansionsBuilder = biomedicus.getInstance(AcronymExpansionsBuilder.class);
+            Application application = Bootstrapper.create();
+            AcronymExpansionsBuilder acronymExpansionsBuilder = application.getInstance(AcronymExpansionsBuilder.class);
             acronymExpansionsBuilder.setMasterFile(args.length > 0 ? Paths.get(args[0]) : null);
             acronymExpansionsBuilder.setDataSet(args.length > 1 ? Paths.get(args[1]) : null);
             acronymExpansionsBuilder.setManualSensesPath(args.length > 2 ? Paths.get(args[2]) : null);

@@ -19,7 +19,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.tools.rtfrewriting.AnnotationInsertingWriter</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.rtfrewriting.AnnotationInsertingWriter</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>RTF Annotation Inserting Writer</name>
         <description>Inserts placeholders around annotations in the original RTF document.</description>

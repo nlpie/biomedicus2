@@ -16,34 +16,9 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.immutables.value.Value;
 
-public final class ConstituencyParse {
-    private final String parse;
-
-    @JsonCreator
-    public ConstituencyParse(@JsonProperty("parse") String parse) {
-        this.parse = parse;
-    }
-
-    public String getParse() {
-        return parse;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ConstituencyParse that = (ConstituencyParse) o;
-
-        return parse.equals(that.parse);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return parse.hashCode();
-    }
+@Value.Immutable
+public interface ConstituencyParse {
+    String parse();
 }

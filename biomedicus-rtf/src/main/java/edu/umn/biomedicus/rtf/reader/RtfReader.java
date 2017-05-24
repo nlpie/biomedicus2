@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 
 import java.io.IOException;

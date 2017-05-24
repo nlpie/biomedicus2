@@ -16,10 +16,9 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.common.labels.Label;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public interface KindSubstanceUsageDetector {
@@ -30,5 +29,5 @@ public interface KindSubstanceUsageDetector {
     String strDayNames = "monday|mon|tuesday|tue|tu|tues|wednsday|wed|thursday|thur|th|thu|thurs|friday|fri|saturday|sat|sunday|sun";
     String strMonNames = "jan|january|feb|february|march|mar|april|apr|may|june|jun|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december";
 
-    void processCandidate(Document document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException;
+    void processCandidate(TextView document, Label<SocialHistoryCandidate> socialHistoryCandidateLabel) throws BiomedicusException;
 }

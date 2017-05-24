@@ -17,14 +17,14 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.Biomedicus;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
+import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.ValueLabeler;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.Document;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
@@ -42,7 +42,7 @@ public final class MisspellingDetector implements DocumentProcessor {
 
     @Inject
     public MisspellingDetector(Vocabulary vocabulary,
-                               Document document) {
+                               TextView document) {
         wordIndex = vocabulary.getWordsIndex();
         this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         mispellingLabeler = document.getLabeler(Misspelling.class).value(new Misspelling());
@@ -54,7 +54,7 @@ public final class MisspellingDetector implements DocumentProcessor {
         for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
             ParseToken parseToken = parseTokenLabel.value();
             String text = parseToken.text();
-            if (Biomedicus.Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
+            if (Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
                 mispellingLabeler.label(parseTokenLabel);
             }
         }

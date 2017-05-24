@@ -16,18 +16,15 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
-import edu.umn.biomedicus.uima.type1_5.DocumentMetadata;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import org.apache.uima.UimaContext;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +40,7 @@ import java.util.Objects;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class Parser extends JCasAnnotator_ImplBase {
+public class Parser extends CasAnnotator_ImplBase {
     /**
      * Class logger.
      */
@@ -112,70 +109,37 @@ public class Parser extends JCasAnnotator_ImplBase {
     }
 
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    public void process(CAS aCAS) throws AnalysisEngineProcessException {
         Objects.requireNonNull(casRtfParser);
         Objects.requireNonNull(originalDocumentViewName);
         Objects.requireNonNull(targetViewName);
 
         LOGGER.info("Parsing an rtf document from {} into CAS", originalDocumentViewName);
 
-        JCas originalDocument;
-        try {
-            originalDocument = aJCas.getView(originalDocumentViewName);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+        CAS originalDocument = aCAS.getView(originalDocumentViewName);
 
         String documentText = originalDocument.getDocumentText();
 
-        JCas targetView;
+        CAS targetView;
         boolean isRtf;
         if (documentText.indexOf("{\\rtf1") == 0) {
             StringReader reader = new StringReader(documentText);
             RtfSource rtfSource = new ReaderRtfSource(reader);
 
             try {
-                casRtfParser.parseFile(aJCas, rtfSource);
+                casRtfParser.parseFile(aCAS, rtfSource);
             } catch (IOException | RtfReaderException e) {
                 throw new AnalysisEngineProcessException(e);
             }
+
             isRtf = true;
-
-            try {
-                targetView = aJCas.getView(targetViewName);
-            } catch (CASException e) {
-                throw new AnalysisEngineProcessException(e);
-            }
         } else {
-            try {
-                targetView = aJCas.createView(targetViewName);
-            } catch (CASException e) {
-                throw new AnalysisEngineProcessException(e);
-            }
-
+            targetView = aCAS.createView(targetViewName);
             targetView.setDocumentText(documentText);
             isRtf = false;
         }
 
-        JFSIndexRepository jfsIndexRepository = originalDocument.getJFSIndexRepository();
-
-        DocumentId originalDocId = (DocumentId) jfsIndexRepository.getAllIndexedFS(DocumentId.type).next();
-        DocumentId copyDocId = new DocumentId(targetView);
-        copyDocId.setDocumentId(originalDocId.getDocumentId());
-        copyDocId.addToIndexes();
-
-        DocumentMetadata documentMetadata = new DocumentMetadata(targetView);
-        documentMetadata.setKey("isRtf");
-        documentMetadata.setValue(Boolean.toString(isRtf));
-        documentMetadata.addToIndexes();
-
-        FSIterator<DocumentMetadata> documentMetadataIt = jfsIndexRepository.getAllIndexedFS(DocumentMetadata.type);
-        while (documentMetadataIt.hasNext()) {
-            DocumentMetadata origDocMeta = documentMetadataIt.next();
-            DocumentMetadata copyDocMeta = new DocumentMetadata(targetView);
-            copyDocMeta.setKey(origDocMeta.getKey());
-            copyDocMeta.setValue(origDocMeta.getValue());
-            copyDocMeta.addToIndexes();
-        }
+        Document document = UimaAdapters.getDocument(aCAS, null);
+        document.putMetadata("isRtf", Boolean.toString(isRtf));
     }
 }

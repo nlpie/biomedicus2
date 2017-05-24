@@ -16,10 +16,12 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.rtf.reader.IndexListener;
-import edu.umn.biomedicus.rtfuima.type.ViewIndex;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 
 /**
  * Listens to for indices of characters that are written to.
@@ -31,22 +33,36 @@ class CasIndexListener implements IndexListener {
     /**
      * The view storing the Rtf document.
      */
-    private final JCas originalDocumentView;
+    private final CAS originalDocumentView;
+    private final Type viewIndexType;
+    private final Feature destinationNameFeature;
+    private final Feature destinationIndexFeature;
 
     /**
-     * Creates an index listener which creates {@link ViewIndex} annotations.
+     * Creates an index listener which creates ViewIndex annotations.
      *
      * @param originalDocumentView the view that the original rtf document is stored in.
      */
-    CasIndexListener(JCas originalDocumentView) {
+    CasIndexListener(CAS originalDocumentView) {
         this.originalDocumentView = originalDocumentView;
+        viewIndexType = originalDocumentView.getTypeSystem()
+                .getType("edu.umn.biomedicus.rtfuima.type.ViewIndex");
+        destinationIndexFeature = viewIndexType
+                .getFeatureByBaseName("destinationIndex");
+        destinationNameFeature = viewIndexType
+                .getFeatureByBaseName("destinationName");
     }
 
     @Override
-    public void wroteToDestination(String destinationName, int destinationIndex, TextLocation originalDocumentTextLocation) {
-        ViewIndex viewIndex = new ViewIndex(originalDocumentView, originalDocumentTextLocation.getBegin(), originalDocumentTextLocation.getEnd());
-        viewIndex.setDestinationIndex(destinationIndex);
-        viewIndex.setDestinationName(destinationName);
-        viewIndex.addToIndexes();
+    public void wroteToDestination(String destinationName,
+                                   int destinationIndex,
+                                   TextLocation originalDocumentTextLocation) {
+        AnnotationFS viewIndex = originalDocumentView
+                .createAnnotation(viewIndexType,
+                        originalDocumentTextLocation.getBegin(),
+                        originalDocumentTextLocation.getEnd());
+        viewIndex.setStringValue(destinationNameFeature, destinationName);
+        viewIndex.setIntValue(destinationIndexFeature, destinationIndex);
+        originalDocumentView.addFsToIndexes(viewIndex);
     }
 }

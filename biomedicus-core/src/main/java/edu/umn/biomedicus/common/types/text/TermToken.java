@@ -16,27 +16,13 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-public final class TermToken implements Token {
-    private final String text;
-    private final boolean hasSpaceAfter;
+import org.immutables.value.Value;
 
-    public TermToken(String text, boolean hasSpaceAfter) {
-        this.text = text;
-        this.hasSpaceAfter = hasSpaceAfter;
-    }
+@Value.Immutable
+public interface TermToken extends Token {
+    @Override
+    String text();
 
     @Override
-    public String text() {
-        return text;
-    }
-
-    @Override
-    public boolean hasSpaceAfter() {
-        return hasSpaceAfter;
-    }
-
-    @Override
-    public String toString() {
-        return "TermToken(\"" + text + "\")";
-    }
+    boolean hasSpaceAfter();
 }

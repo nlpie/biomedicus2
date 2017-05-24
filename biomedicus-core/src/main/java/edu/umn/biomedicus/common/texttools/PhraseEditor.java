@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.texttools;
 
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
 
 import java.util.List;
 import java.util.stream.Collectors;

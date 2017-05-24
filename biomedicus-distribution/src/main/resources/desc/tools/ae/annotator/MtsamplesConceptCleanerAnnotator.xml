@@ -18,7 +18,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
     <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
     <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.tools.mtsamples.ConceptCleanerAnnotator</annotatorImplementationName>
+    <annotatorImplementationName>edu.umn.biomedicus.uima.util.ConceptCleanerAnnotator</annotatorImplementationName>
     <analysisEngineMetaData>
         <name>MTSamples Concept Cleaner Annotator</name>
         <description>Removes information besides UMLS CUIs from the conceptId feature on concepts.</description>

@@ -16,13 +16,20 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.type.IllegalXmlCharacter;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
+import com.google.inject.Injector;
+import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
+import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
+import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
-import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,99 +37,112 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  *
  */
 public class RtfTextFileAdapter implements InputFileAdapter {
-
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RtfTextFileAdapter.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RtfTextFileAdapter.class);
 
     /**
      * Date formatter for adding date to metadata.
      */
-    private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG);
-
+    private final DateFormat dateFormatter = DateFormat
+            .getDateInstance(DateFormat.LONG);
+    @Nullable
+    protected Document document;
     /**
      * View to load data into.
      */
     @Nullable
     private String viewName;
+    private LabelAdapters labelAdapters;
 
-    @Nullable
-    private String version;
-
-    @Override
-    public void initialize(UimaContext uimaContext, ProcessingResourceMetaData processingResourceMetaData) {
-        LOGGER.info("Initializing xml validating file adapter.");
-        version = processingResourceMetaData.getVersion();
+    private static boolean isValid(int ch) {
+        return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A
+                || ch == 0x0D;
     }
 
     @Override
-    public void adaptFile(CAS cas, Path path) throws CollectionException, IOException {
+    public void initialize(UimaContext uimaContext,
+                           ProcessingResourceMetaData processingResourceMetaData) {
+        LOGGER.info("Initializing xml validating file adapter.");
+        try {
+            labelAdapters = ((Injector) uimaContext
+                    .getResourceObject("guiceInjector"))
+                    .getInstance(LabelAdapters.class);
+        } catch (ResourceAccessException e) {
+            throw new IllegalStateException("");
+        }
+    }
+
+    @Override
+    public void adaptFile(CAS cas, Path path)
+            throws CollectionException, IOException {
         if (cas == null) {
             LOGGER.error("Null CAS");
             throw new IllegalArgumentException("CAS was null");
         }
 
-        LOGGER.info("Reading text from: {} into a CAS view: {}", path, viewName);
-        JCas defaultView;
-        try {
-            defaultView = cas.getJCas();
-        } catch (CASException e) {
-            throw new CollectionException(e);
+        String fileName = path.getFileName().toString();
+        int period = fileName.lastIndexOf('.');
+        if (period == -1) {
+            period = fileName.length();
         }
+        String documentId = fileName.substring(0, period);
 
-        JCas targetView;
-        try {
-            targetView = defaultView.createView(viewName);
-        } catch (CASException e) {
-            throw new CollectionException(e);
-        }
+        document = UimaAdapters.createDocument(cas, labelAdapters, documentId);
 
+        List<Label<IllegalXmlCharacter>> illegalXmlCharacters
+                = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        try (Reader stringReader = Files.newBufferedReader(path, StandardCharsets.US_ASCII)) {
+        try (Reader stringReader = Files.newBufferedReader(path, US_ASCII)) {
             int ch;
             while ((ch = stringReader.read()) != -1) {
                 if (isValid(ch)) {
                     stringBuilder.append((char) ch);
                 } else {
                     int len = stringBuilder.length();
-                    LOGGER.warn("Illegal rtf character with code point: {} at {} in {}", ch, len, path.toString());
-                    IllegalXmlCharacter illegalXmlCharacter = new IllegalXmlCharacter(targetView, len, len);
-                    illegalXmlCharacter.setValue(ch);
-                    illegalXmlCharacter.addToIndexes();
+                    LOGGER.warn(
+                            "Illegal rtf character with code point: {} at {} in {}",
+                            ch, len, path.toString());
+                    IllegalXmlCharacter xmlCharacter
+                            = ImmutableIllegalXmlCharacter.builder()
+                            .value(ch)
+                            .build();
+                    Label<IllegalXmlCharacter> label
+                            = new Label<>(len, len, xmlCharacter);
+                    illegalXmlCharacters.add(label);
                 }
             }
         }
 
         String documentText = stringBuilder.toString();
-        targetView.setDocumentText(documentText);
-
-        DocumentId documentAnnotation = new DocumentId(targetView);
-        String fileName = path.getFileName().toString();
-        int period = fileName.lastIndexOf('.');
-        if (period == -1) {
-            period = fileName.length();
+        TextView odTextView = document.newTextView()
+                .withName(Views.ORIGINAL_DOCUMENT_VIEW)
+                .withText(documentText)
+                .build();
+        Labeler<IllegalXmlCharacter> illCharLabeler = odTextView
+                .getLabeler(IllegalXmlCharacter.class);
+        for (Label<IllegalXmlCharacter> illChar : illegalXmlCharacters) {
+            illCharLabeler.label(illChar);
         }
-        documentAnnotation.setDocumentId(fileName.substring(0, period));
-        documentAnnotation.addToIndexes();
+        illCharLabeler.finish();
     }
 
     @Override
     public void setTargetView(String viewName) {
         this.viewName = viewName;
-    }
-
-    private static boolean isValid(int ch) {
-        return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A || ch == 0x0D;
     }
 }

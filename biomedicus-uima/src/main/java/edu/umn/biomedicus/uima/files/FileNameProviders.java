@@ -16,14 +16,11 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.type1_5.DocumentId;
-import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.FSIterator;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.JFSIndexRepository;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.TextView;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,50 +60,25 @@ public final class FileNameProviders {
     }
 
     /**
-     * Provides a file name provider from the system view of a JCas document.
-     *
-     * @param systemView the systemView JCas document
-     * @param extension  the extension to name the file, should include the separator e.g. ".".
-     * @return new file name provider
-     */
-    public static String fromSystemView(JCas systemView, String extension) {
-        String documentIdentifier = null;
-        JFSIndexRepository jfsIndexRepository = systemView.getJFSIndexRepository();
-        if (jfsIndexRepository != null) {
-            FSIterator<DocumentId> clinicalNotes = jfsIndexRepository.getAllIndexedFS(DocumentId.type);
-            if (clinicalNotes.hasNext()) {
-                @SuppressWarnings("unchecked")
-                DocumentId documentId = clinicalNotes.next();
-                if (documentId != null) {
-                    documentIdentifier = documentId.getDocumentId();
-                } else {
-                    LOGGER.warn("Clinical note annotation was null.");
-                }
-            }
-        }
-        return FileNameProviders.withPotentiallyNullIdentifier(documentIdentifier, extension);
-    }
-
-    /**
      * Creates a file name provider given the initial view of a jCas passed to a ae_writer
      *
-     * @param jCas      jCas initial view
+     * @param cas      any cas view
      * @param extension extension to use, should include the separator e.g. ".".
      * @return a newly initialized file name provider.
-     * @throws BiomedicusException if we fail to get the system view
      */
-    public static String fromInitialView(JCas jCas, String extension) throws BiomedicusException {
-        JCas systemView;
-        try {
-            systemView = jCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new BiomedicusException(e);
-        }
-        return FileNameProviders.fromSystemView(systemView, extension);
+    public static String fromCAS(CAS cas, String extension) {
+        CAS metadata = cas.getView("metadata");
+        Type documentIdType = cas.getTypeSystem()
+                .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
+        Feature docIdFeat = documentIdType.getFeatureByBaseName("documentId");
+        return metadata.getIndexRepository()
+                .getAllIndexedFS(documentIdType)
+                .get()
+                .getStringValue(docIdFeat) + extension;
     }
 
     /**
-     * Creates a file name provider from a biomedicus {@link Document} type.
+     * Creates a file name provider from a biomedicus {@link TextView} type.
      *
      * @param document  the document to pull the document identifier from.
      * @param extension the extension to give the file name

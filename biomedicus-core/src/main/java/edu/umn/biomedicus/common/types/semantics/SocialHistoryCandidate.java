@@ -16,14 +16,9 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
-public class SocialHistoryCandidate {
-    private final SubstanceUsageKind substanceUsageKind;
+import org.immutables.value.Value;
 
-    public SocialHistoryCandidate(SubstanceUsageKind substanceUsageKind) {
-        this.substanceUsageKind = substanceUsageKind;
-    }
-
-    public SubstanceUsageKind getSubstanceUsageKind() {
-        return substanceUsageKind;
-    }
+@Value.Immutable
+public interface SocialHistoryCandidate {
+    SubstanceUsageKind substanceUsageKind();
 }

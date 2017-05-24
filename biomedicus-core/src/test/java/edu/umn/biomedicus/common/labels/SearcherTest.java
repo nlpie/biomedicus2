@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.labels;
 
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.*;
+import edu.umn.biomedicus.framework.store.*;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ public class SearcherTest {
 
     }
 
-    static class Foo {
+    public static class Foo {
         private String value;
         private int baz;
 
@@ -56,7 +56,7 @@ public class SearcherTest {
     }
 
     @Mocked
-    Document document;
+    TextView document;
 
     @Mocked
     LabelAliases labelAliases;
@@ -150,7 +150,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"bar\"}");
+                "Foo{getValue=\"bar\"}");
 
         Search search = blah.createSearcher(document);
         search.search();
@@ -170,7 +170,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"bar\"}");
+                "Foo{getValue=\"bar\"}");
 
         Search search = blah.createSearcher(document);
         search.search();
@@ -191,7 +191,7 @@ public class SearcherTest {
         }};
 
         Searcher blah = Searcher.parse(labelAliases,
-                "Foo{value=\"baz\",baz=42}");
+                "Foo{getValue=\"baz\",getBaz=42}");
 
         Search search = blah.createSearcher(document);
         search.search();

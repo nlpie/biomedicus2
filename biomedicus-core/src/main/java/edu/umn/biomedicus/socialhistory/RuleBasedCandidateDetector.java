@@ -17,10 +17,12 @@
 package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.*;
@@ -46,7 +48,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
     private final Labeler<SocialHistoryCandidate> candidateLabeler;
 
     @Inject
-    public RuleBasedCandidateDetector(Document document) {
+    public RuleBasedCandidateDetector(TextView document) {
 
         sectionLabels = document.getLabelIndex(Section.class);
         sectionTitleLabels = document.getLabelIndex(SectionTitle.class);
@@ -66,7 +68,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                             "Section did not have a title"));
 
             List<ParseToken> titleParseTokens = parseTokenLabels
-                    .insideSpan(sectionTitleLabel).values();
+                    .insideSpan(sectionTitleLabel).valuesAsList();
 
             List<KindCandidateDetector> headerMatches = new ArrayList<>();
             for (KindCandidateDetector candidateDetector : candidateDetectors) {
@@ -87,7 +89,7 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                 for (Label<Sentence> sentenceLabel : sentenceLabels) {
 
                     List<ParseToken> sentenceParseTokens = parseTokenLabels
-                            .insideSpan(sentenceLabel).values();
+                            .insideSpan(sentenceLabel).valuesAsList();
                     for (KindCandidateDetector headerMatch : headerMatches) {
 
                         if (headerMatch
@@ -97,8 +99,10 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
                             SubstanceUsageKind socialHistoryKind = headerMatch
                                     .getSocialHistoryKind();
                             SocialHistoryCandidate labelValue
-                                    = new SocialHistoryCandidate(
-                                    socialHistoryKind);
+                                    = ImmutableSocialHistoryCandidate
+                                    .builder()
+                                    .substanceUsageKind(socialHistoryKind)
+                                    .build();
                             candidateLabeler.value(labelValue)
                                     .label(sentenceLabel);
 

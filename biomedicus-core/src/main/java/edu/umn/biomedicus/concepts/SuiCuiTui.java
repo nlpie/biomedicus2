@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
+import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryConcept;
 
 import javax.annotation.Nullable;
 import java.util.regex.Matcher;
@@ -66,11 +67,11 @@ public class SuiCuiTui {
     }
 
     public DictionaryConcept toConcept(double confidence) {
-        return DictionaryConcept.builder()
-                .withIdentifier(cui.toString())
-                .withType(tui.toString())
-                .withConfidence(confidence)
-                .withSource("UMLS")
+        return ImmutableDictionaryConcept.builder()
+                .identifier(cui.toString())
+                .type(tui.toString())
+                .confidence(confidence)
+                .source("UMLS")
                 .build();
     }
 

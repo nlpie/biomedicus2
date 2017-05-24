@@ -16,20 +16,12 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-import com.google.inject.Inject;
+import org.immutables.value.Value;
 
 import javax.annotation.Nullable;
 
-public final class Section {
-    @Nullable private final String kind;
-
-    @Inject
-    public Section(@Nullable String kind) {
-        this.kind = kind;
-    }
-
+@Value.Immutable
+public interface Section {
     @Nullable
-    public String getKind() {
-        return kind;
-    }
+    String kind();
 }

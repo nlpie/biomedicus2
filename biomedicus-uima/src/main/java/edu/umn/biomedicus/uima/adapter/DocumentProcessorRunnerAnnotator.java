@@ -17,8 +17,9 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Key;
-import edu.umn.biomedicus.application.DocumentProcessorRunner;
+import edu.umn.biomedicus.framework.DocumentProcessorRunner;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
@@ -40,7 +41,7 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunnerAnnotator.class);
     @Nullable private String viewName;
     @Nullable private DocumentProcessorRunner documentProcessorRunner;
-    private LabelAdapters labelAdapters;
+    @Nullable private LabelAdapters labelAdapters;
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
@@ -110,16 +111,20 @@ public final class DocumentProcessorRunnerAnnotator extends CasAnnotator_ImplBas
 
         try {
             LOGGER.debug("Processing document from view: {}", viewName);
-            CAS view = cas.getView(viewName);
-            if (view == null) {
+            CAS defaultView = cas.getView(viewName);
+            if (defaultView == null) {
                 LOGGER.error("Trying to process null view");
                 throw new BiomedicusException("View was null");
             }
 
             HashMap<Key<?>, Object> additionalSeeded = new HashMap<>();
-            additionalSeeded.put(Key.get(CAS.class), view);
+            additionalSeeded.put(Key.get(CAS.class), defaultView);
+            CASDocument casDocument = new CASDocument(labelAdapters, cas);
+            additionalSeeded.put(Key.get(TextView.class),
+                    casDocument.getTextView(viewName)
+                            .orElseThrow(() -> new IllegalStateException()));
 
-            CASDocument casDocument = new CASDocument(view, labelAdapters);
+
             documentProcessorRunner.processDocument(casDocument, additionalSeeded);
         } catch (BiomedicusException e) {
             LOGGER.error("error while processing document");

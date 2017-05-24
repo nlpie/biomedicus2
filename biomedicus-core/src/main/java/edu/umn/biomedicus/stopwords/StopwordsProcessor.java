@@ -17,12 +17,12 @@
 package edu.umn.biomedicus.stopwords;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.ValueLabeler;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.ValueLabeler;
 import edu.umn.biomedicus.common.types.semantics.StopWord;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
@@ -32,7 +32,7 @@ public class StopwordsProcessor implements DocumentProcessor {
     private final ValueLabeler stopWordsLabeler;
 
     @Inject
-    public StopwordsProcessor(Stopwords stopwords, Document document) {
+    public StopwordsProcessor(Stopwords stopwords, TextView document) {
         this.stopwords = stopwords;
         parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
         stopWordsLabeler = document.getLabeler(StopWord.class).value(new StopWord());

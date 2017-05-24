@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
 import edu.umn.biomedicus.common.types.text.Token;

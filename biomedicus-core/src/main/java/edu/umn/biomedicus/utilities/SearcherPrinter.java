@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.utilities;
 
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.Search;
-import edu.umn.biomedicus.common.labels.Searcher;
-import edu.umn.biomedicus.common.labels.SearcherFactory;
-import edu.umn.biomedicus.common.types.text.Document;
-import edu.umn.biomedicus.common.types.text.Span;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.Search;
+import edu.umn.biomedicus.framework.Searcher;
+import edu.umn.biomedicus.framework.SearcherFactory;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import javax.inject.Inject;
@@ -34,12 +34,12 @@ import javax.inject.Inject;
 public class SearcherPrinter implements DocumentProcessor {
 
     private final Searcher searcher;
-    private final Document document;
+    private final TextView document;
 
     @Inject
     public SearcherPrinter(SearcherFactory searcherFactory,
                            @ProcessorSetting("searchPattern") String searchPattern,
-                           Document document) {
+                           TextView document) {
 
         searcher = searcherFactory.searcher(searchPattern);
         this.document = document;

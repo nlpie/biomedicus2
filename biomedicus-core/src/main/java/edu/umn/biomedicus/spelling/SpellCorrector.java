@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.spelling;
 
-import edu.umn.biomedicus.application.DocumentProcessor;
+import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public class SpellCorrector implements DocumentProcessor {

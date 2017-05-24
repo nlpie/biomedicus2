@@ -17,13 +17,14 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.labels.Label;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.Document;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.common.types.text.ImmutableNormIndex;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.NormIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
@@ -40,7 +41,7 @@ public final class NormLabeler implements DocumentProcessor {
     private final Labeler<NormIndex> normIndexLabeler;
 
     @Inject
-    public NormLabeler(Vocabulary vocabulary, Document document) {
+    public NormLabeler(Vocabulary vocabulary, TextView document) {
         this.wordIndex = vocabulary.getNormsIndex();
         normFormLabelIndex = document.getLabelIndex(NormForm.class);
         normIndexLabeler = document.getLabeler(NormIndex.class);
@@ -51,8 +52,10 @@ public final class NormLabeler implements DocumentProcessor {
         LOGGER.info("Labeling norm term index identifiers in a document.");
         for (Label<NormForm> normFormLabel : normFormLabelIndex) {
             String normalForm = normFormLabel.value().normalForm();
-            IndexedTerm indexedTerm = wordIndex.getIndexedTerm(normalForm);
-            NormIndex normIndex = new NormIndex(indexedTerm);
+            IndexedTerm term = wordIndex.getIndexedTerm(normalForm);
+            NormIndex normIndex = ImmutableNormIndex.builder()
+                    .term(term)
+                    .build();
             normIndexLabeler.value(normIndex).label(normFormLabel);
         }
     }

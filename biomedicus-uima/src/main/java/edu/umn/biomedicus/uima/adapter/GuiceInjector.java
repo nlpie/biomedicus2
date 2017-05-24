@@ -17,21 +17,11 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.*;
+import edu.umn.biomedicus.framework.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.plugins.AbstractPlugin;
 import org.apache.uima.resource.Resource_ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Guice injector resource implementation.
@@ -47,8 +37,8 @@ public final class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            Biomedicus biomedicus = UimaBootstrapper.create();
-            injector = biomedicus.getInjector();
+            Application application = UimaBootstrapper.create();
+            injector = application.getInjector();
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }

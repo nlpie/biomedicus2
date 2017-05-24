@@ -32,7 +32,8 @@
             <!-- TODO: Add any configuration parameters -->
             <configurationParameter>
                 <name>documentProcessor</name>
-                <description>The document processor class to instantiate.</description>
+                <description>The document processor class to instantiate.
+                </description>
                 <type>String</type>
                 <mandatory>true</mandatory>
             </configurationParameter>
@@ -44,8 +45,10 @@
             <configurationParameter>
                 <name>eagerLoad</name>
                 <description>
-                    The name of any classes that need to be eagerly loaded by the Guice injector. Classes which are
-                    instances of LoadableDataModel will have the loadData method called.
+                    The name of any classes that need to be eagerly loaded by
+                    the Guice injector. Classes which are
+                    instances of LoadableDataModel will have the loadData method
+                    called.
                 </description>
                 <type>String</type>
                 <multiValued>true</multiValued>
@@ -54,7 +57,8 @@
             <configurationParameter>
                 <name>postProcessors</name>
                 <description>
-                    The class names of any post processors that should be run after all documents have been processed.
+                    The class names of any post processors that should be run
+                    after all documents have been processed.
                 </description>
                 <type>String</type>
                 <multiValued>true</multiValued>
@@ -72,7 +76,8 @@
             <nameValuePair>
                 <name>viewName</name>
                 <value>
-                    <string>SystemView</string><!-- TODO: change this to process a different view. -->
+                    <string>SystemView
+                    </string><!-- TODO: change this to process a different view. -->
                 </value>
             </nameValuePair>
             <!-- TODO: Eager loaded model classes or post processors go here
@@ -106,6 +111,7 @@
         </typePriorities>
         <operationalProperties>
             <modifiesCas>true</modifiesCas>
+            <!-- TODO: change to false if multithreading not supported -->
             <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
             <outputsNewCASes>false</outputsNewCASes>
         </operationalProperties>
@@ -124,7 +130,9 @@
                 <name>guiceInjector</name>
                 <description>The guice resource.</description>
                 <customResourceSpecifier>
-                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+                    <resourceClassName>
+                        edu.umn.biomedicus.uima.adapter.GuiceInjector
+                    </resourceClassName>
                 </customResourceSpecifier>
             </externalResource>
         </externalResources>

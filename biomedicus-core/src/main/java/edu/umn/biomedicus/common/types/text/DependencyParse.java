@@ -16,14 +16,9 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-public final class DependencyParse {
-    private final String parseTree;
+import org.immutables.value.Value;
 
-    public DependencyParse(String parseTree) {
-        this.parseTree = parseTree;
-    }
-
-    public String parseTree() {
-        return parseTree;
-    }
+@Value.Immutable
+public interface DependencyParse {
+    String parseTree();
 }

@@ -16,10 +16,9 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.types.text.Span;
-import edu.umn.biomedicus.common.types.text.TextLocation;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

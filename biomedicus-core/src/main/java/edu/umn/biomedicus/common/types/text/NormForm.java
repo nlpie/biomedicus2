@@ -16,23 +16,9 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-public final class NormForm {
-    private final String normalForm;
+import org.immutables.value.Value;
 
-    public NormForm(String normalForm) {
-        this.normalForm = normalForm;
-    }
-
-    public String getNormalForm() {
-        return normalForm;
-    }
-
-    public String normalForm() {
-        return normalForm;
-    }
-
-    @Override
-    public String toString() {
-        return "NormalForm(" + normalForm + ")";
-    }
+@Value.Immutable
+public interface NormForm {
+    String normalForm();
 }

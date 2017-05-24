@@ -20,8 +20,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
 import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.common.labels.LabelIndex;
-import edu.umn.biomedicus.common.labels.Labeler;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
 
 import java.lang.reflect.ParameterizedType;
 
