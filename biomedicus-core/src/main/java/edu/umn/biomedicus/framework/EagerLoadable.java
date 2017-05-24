@@ -19,5 +19,6 @@ package edu.umn.biomedicus.framework;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public interface EagerLoadable {
-    void eagerLoad() throws BiomedicusException;
+
+  void eagerLoad() throws BiomedicusException;
 }

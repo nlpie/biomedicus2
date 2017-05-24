@@ -22,4 +22,8 @@ package edu.umn.biomedicus.common.types.text;
  * @since 1.5.0
  */
 public final class Sentence {
+
+  public static Sentence create() {
+    return new Sentence();
+  }
 }

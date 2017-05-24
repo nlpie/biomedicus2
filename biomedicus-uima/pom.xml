@@ -20,7 +20,7 @@
     <parent>
         <artifactId>biomedicus</artifactId>
         <groupId>edu.umn.biomedicus</groupId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,12 +30,12 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-core</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-rtf</artifactId>
-            <version>1.6.0-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
