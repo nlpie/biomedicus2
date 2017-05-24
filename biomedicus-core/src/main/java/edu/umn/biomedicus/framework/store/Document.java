@@ -25,38 +25,58 @@ import java.util.Optional;
  * @since 1.6.0
  */
 public interface Document {
-    /**
-     *
-     *
-     * @return
-     */
-    String getDocumentId();
 
+  /**
+   * Returns the document identifier.
+   *
+   * @return string document identifier
+   */
+  String getDocumentId();
 
-    /**
-     *
-     * @param key
-     * @return
-     */
-    Optional<String> getMetadata(String key);
+  /**
+   * Returns an Optional of the metadata with the specified key.
+   *
+   * @param key the string identifier key for the metadata value
+   * @return an optional of the value associated with the key, it will be empty if there is no value
+   * associated with the specified key
+   */
+  Optional<String> getMetadata(String key);
 
-    Map<String, String> getAllMetadata();
+  /**
+   * Returns a map of all the metadata for this document.
+   *
+   * @return unmodifiable map of all the metadata for this document.
+   */
+  Map<String, String> getAllMetadata();
 
-    /**
-     *  @param key
-     * @param value
-     */
-    void putMetadata(String key, String value);
+  /**
+   * Adds the following metadata to the document.
+   *
+   * @param key the key for the metadata
+   * @param value the value for the metadata.
+   */
+  void putMetadata(String key, String value);
 
-    void putAllMetadata(Map<String, String> metadata);
+  /**
+   * Puts all the entries from the map into the document
+   *
+   * @param metadata a metadata map
+   */
+  void putAllMetadata(Map<String, String> metadata);
 
-    /**
-     *
-     * @param name
-     * @return
-     */
-    Optional<TextView> getTextView(String name);
+  /**
+   * Gets an optional of the text view specified by the name.
+   *
+   * @param name the name identifier of the text view
+   * @return an optional of the text view, it will be empty if there is no text view associated for
+   * the specific text view.
+   */
+  Optional<TextView> getTextView(String name);
 
-
-    TextView.Builder newTextView();
+  /**
+   * Returns a builder for a new text view.
+   *
+   * @return builder for a new text view
+   */
+  TextView.Builder newTextView();
 }

@@ -24,47 +24,81 @@ import java.io.Reader;
  * @since 1.6.0
  */
 public interface TextView {
-    /**
-     * Returns a reader for the document text
-     *
-     * @return a java reader for the document text
-     */
-    Reader getReader();
+
+  /**
+   * Returns a reader for the document text
+   *
+   * @return a java reader for the document text
+   */
+  Reader getReader();
+
+  /**
+   * Gets the entire text of the document
+   *
+   * @return document text
+   */
+  String getText();
+
+  /**
+   * Returns the label index for the specific label class.
+   *
+   * @param labelClass the labelable class instance
+   * @param <T> the type of the labelable class
+   * @return label index for the labelable type
+   */
+  <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
+
+  /**
+   * Returns a labeler for the specific label class.
+   *
+   * @param labelClass the labelable class instance
+   * @param <T> the type of the labelable class
+   * @return labeler for the labelable type
+   */
+  <T> Labeler<T> getLabeler(Class<T> labelClass);
+
+  /**
+   * Labels a label without having to use a labeler, still follows the same rules as far as
+   * immutability after the first processor that labels a specific type.
+   *
+   * @param label the label to label
+   * @param <T> the type of the label
+   */
+  <T> void label(Label<T> label);
+
+  /**
+   * Returns the {@link Span} of the entire document.
+   *
+   * @return the Span of the entire document.
+   */
+  Span getDocumentSpan();
+
+  /**
+   * A builder for a new text view.
+   */
+  interface Builder {
 
     /**
-     * Gets the entire text of the document
+     * Sets the text of the text view.
      *
-     * @return document text
+     * @param text the text of the text view
+     * @return this builder
      */
-    String getText();
+    Builder withText(String text);
 
     /**
+     * Sets the name of the text view.
      *
-     * @param labelClass
-     * @param <T>
-     * @return
+     * @param name the name identifier of the text view.
+     * @return this builder
      */
-    <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
+    Builder withName(String name);
 
     /**
+     * Finalizes and builds the new text view.
      *
-     * @param labelClass
-     * @param <T>
-     * @return
+     * @return the finished text view.
      */
-    <T> Labeler<T> getLabeler(Class<T> labelClass);
-
-    /**
-     *
-     * @return
-     */
-    Span getDocumentSpan();
-
-    interface Builder {
-        Builder withText(String text);
-
-        Builder withName(String name);
-
-        TextView build();
-    }
+    TextView build();
+  }
 }
