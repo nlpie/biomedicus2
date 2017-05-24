@@ -16,56 +16,79 @@
 
 package edu.umn.biomedicus.common.terms;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 public abstract class AbstractTermIndex implements TermIndex {
 
-    protected abstract String getTerm(int termIdentifier);
+  protected abstract String getTerm(int termIdentifier);
 
-    protected abstract int getIdentifier(@Nullable CharSequence term);
+  protected abstract int getIdentifier(@Nullable CharSequence term);
 
-    @Override
-    @Nullable
-    public String getTerm(IndexedTerm indexedTerm) {
-        if (indexedTerm.isUnknown()) {
-            return null;
-        }
-        return getTerm(indexedTerm.termIdentifier());
+  @Override
+  @Nullable
+  public String getTerm(IndexedTerm indexedTerm) {
+    if (indexedTerm.isUnknown()) {
+      return null;
     }
+    return getTerm(indexedTerm.termIdentifier());
+  }
 
-    @Override
-    public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {
-        return new IndexedTerm(getIdentifier(term));
-    }
+  @Override
+  public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {
+    return new IndexedTerm(getIdentifier(term));
+  }
 
-    @Override
-    public TermsBag getTermsBag(Iterable<? extends CharSequence> terms) {
-        TermsBag.Builder builder = TermsBag.builder();
-        for (CharSequence term : terms) {
-            IndexedTerm indexedTerm = getIndexedTerm(term);
-            builder.addTerm(indexedTerm);
-        }
-        return builder.build();
+  @Override
+  public TermsBag getTermsBag(Iterable<? extends CharSequence> terms) {
+    TermsBag.Builder builder = TermsBag.builder();
+    for (CharSequence term : terms) {
+      IndexedTerm indexedTerm = getIndexedTerm(term);
+      builder.addTerm(indexedTerm);
     }
+    return builder.build();
+  }
 
-    @Override
-    public List<String> getTerms(TermsBag termsBag) {
-        return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
-    }
+  @Override
+  public List<String> getTerms(TermsBag termsBag) {
+    return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
+  }
 
-    @Override
-    public Iterator<IndexedTerm> iterator() {
-        return stream().iterator();
+  @Override
+  public List<String> getTerms(TermVector terms) {
+    List<String> strings = new ArrayList<>(terms.length());
+    for (IndexedTerm term : terms) {
+      strings.add(getTerm(term));
     }
+    return strings;
+  }
 
-    @Override
-    public Stream<IndexedTerm> stream() {
-        return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
+  @Override
+  public TermVector getTermVector(Iterable<? extends CharSequence> terms) {
+    List<Integer> indexList = new ArrayList<>();
+    for (CharSequence term : terms) {
+      indexList.add(getIdentifier(term));
     }
+    int[] arr = new int[indexList.size()];
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = indexList.get(i);
+    }
+    return new TermVector(arr);
+  }
+
+  @Override
+  public Iterator<IndexedTerm> iterator() {
+    return stream().iterator();
+  }
+
+  @Override
+  public Stream<IndexedTerm> stream() {
+    return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
+  }
 
 }

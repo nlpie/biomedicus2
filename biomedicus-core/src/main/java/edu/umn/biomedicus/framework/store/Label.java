@@ -36,6 +36,14 @@ public final class Label<T> implements TextLocation {
         this.value = Objects.requireNonNull(value, "Value must not be null");
     }
 
+    public static <T> Label<T> create(Span span, T value) {
+        return new Label<>(span, value);
+    }
+
+    public static <T> Label<T> create(int begin, int end, T value) {
+        return new Label<>(begin, end, value);
+    }
+
     public T getValue() {
         return value;
     }
@@ -46,7 +54,8 @@ public final class Label<T> implements TextLocation {
 
     @SuppressWarnings("unchecked")
     public Class<T> labelClass() {
-        return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        return (Class<T>) ((ParameterizedType) getClass()
+                .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     public void call(BiConsumer<Span, T> biConsumer) {
@@ -94,5 +103,4 @@ public final class Label<T> implements TextLocation {
     public String toString() {
         return "Label(" + span + ", " + value + ")";
     }
-
 }

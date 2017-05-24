@@ -25,6 +25,7 @@ import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.concepts.CUI;
 import edu.umn.biomedicus.concepts.SUI;
 import edu.umn.biomedicus.concepts.TUI;
+import java.util.Collection;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -153,7 +154,7 @@ public final class YamlSerialization {
                     });
                     representers.put(TermsBag.class, o -> {
                         TermsBag tv = (TermsBag) o;
-                        List<String> expanded = termIndex.getTerms(tv);
+                        Collection<String> expanded = termIndex.getTerms(tv);
                         return representSequence(new Tag("!tv"), expanded, null);
                     });
                 }

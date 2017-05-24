@@ -16,122 +16,128 @@
 
 package edu.umn.biomedicus.framework.store;
 
-import java.util.*;
+import edu.umn.biomedicus.framework.store.ImmutableSpanMap.Builder;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class DefaultLabelIndex<T> extends AbstractLabelIndex<T> {
-    private final SpansMap<T> tree;
 
-    public DefaultLabelIndex(SpansMap<T> tree) {
-        this.tree = tree;
-    }
+  private final SpansMap<T> tree;
 
-    public DefaultLabelIndex(Iterable<Label<T>> labels) {
-        OrderedSpanMap<T> orderedSpanMap = new OrderedSpanMap<>();
-        for (Label<T> label : labels) {
-            orderedSpanMap.put(label, label.value());
-        }
-        tree = orderedSpanMap;
-    }
+  public DefaultLabelIndex(SpansMap<T> tree) {
+    this.tree = tree;
+  }
 
-    @Override
-    public LabelIndex<T> containing(TextLocation textLocation) {
-        return new DefaultLabelIndex<>(tree.containing(textLocation));
+  public DefaultLabelIndex(Iterable<Label<T>> labels) {
+    Builder<T> builder = ImmutableSpanMap.builder();
+    for (Label<T> label : labels) {
+      builder.put(label, label.value());
     }
+    tree = builder.build();
+  }
 
-    @Override
-    public LabelIndex<T> insideSpan(TextLocation textLocation) {
-        return new DefaultLabelIndex<>(tree.insideSpan(textLocation));
-    }
+  @Override
+  public LabelIndex<T> containing(TextLocation textLocation) {
+    return new DefaultLabelIndex<>(tree.containing(textLocation));
+  }
 
-    @Override
-    public LabelIndex<T> leftwardsFrom(TextLocation span) {
-        return new DefaultLabelIndex<>(tree.toTheLeftOf(span).descendingBegin()
-                .descendingEnd());
-    }
+  @Override
+  public LabelIndex<T> insideSpan(TextLocation textLocation) {
+    return new DefaultLabelIndex<>(tree.insideSpan(textLocation));
+  }
 
-    @Override
-    public LabelIndex<T> rightwardsFrom(TextLocation span) {
-        return new DefaultLabelIndex<>(tree.toTheRightOf(span));
-    }
+  @Override
+  public LabelIndex<T> leftwardsFrom(TextLocation span) {
+    return new DefaultLabelIndex<>(tree.toTheLeftOf(span).descendingBegin()
+        .descendingEnd());
+  }
 
-    @Override
-    public LabelIndex<T> ascendingBegin() {
-        return new DefaultLabelIndex<>(tree.ascendingBegin());
-    }
+  @Override
+  public LabelIndex<T> rightwardsFrom(TextLocation span) {
+    return new DefaultLabelIndex<>(tree.toTheRightOf(span));
+  }
 
-    @Override
-    public LabelIndex<T> descendingBegin() {
-        return new DefaultLabelIndex<>(tree.descendingBegin());
-    }
+  @Override
+  public LabelIndex<T> ascendingBegin() {
+    return new DefaultLabelIndex<>(tree.ascendingBegin());
+  }
 
-    @Override
-    public LabelIndex<T> ascendingEnd() {
-        return new DefaultLabelIndex<>(tree.ascendingEnd());
-    }
+  @Override
+  public LabelIndex<T> descendingBegin() {
+    return new DefaultLabelIndex<>(tree.descendingBegin());
+  }
 
-    @Override
-    public LabelIndex<T> descendingEnd() {
-        return new DefaultLabelIndex<>(tree.descendingBegin());
-    }
+  @Override
+  public LabelIndex<T> ascendingEnd() {
+    return new DefaultLabelIndex<>(tree.ascendingEnd());
+  }
 
-    @Override
-    public Optional<Label<T>> first() {
-        return tree.first();
-    }
+  @Override
+  public LabelIndex<T> descendingEnd() {
+    return new DefaultLabelIndex<>(tree.descendingBegin());
+  }
 
-    @Override
-    public Optional<Label<T>> withTextLocation(TextLocation textLocation) {
-        return null;
-    }
+  @Override
+  public Optional<Label<T>> first() {
+    return tree.first();
+  }
 
-    @Override
-    public Optional<Label<T>> withSpan(Span span) {
-        return null;
-    }
+  @Override
+  public Optional<Label<T>> withTextLocation(TextLocation textLocation) {
+    return tree.getLabel(textLocation);
+  }
 
-    @Override
-    public Iterator<Label<T>> iterator() {
-        return tree.entries().iterator();
-    }
+  @Override
+  public Iterator<Label<T>> iterator() {
+    return tree.entries().iterator();
+  }
 
-    @Override
-    public Stream<Label<T>> stream() {
-        return tree.entries().stream();
-    }
+  @Override
+  public Stream<Label<T>> stream() {
+    return tree.entries().stream();
+  }
 
-    @Override
-    public Set<Span> spans() {
-        return tree.spans();
-    }
+  @Override
+  public Set<Span> spans() {
+    return tree.spans();
+  }
 
-    @Override
-    public Collection<T> values() {
-        return tree.values();
-    }
+  @Override
+  public Collection<T> values() {
+    return tree.values();
+  }
 
-    @Override
-    public boolean isEmpty() {
-        return tree.isEmpty();
-    }
+  @Override
+  public boolean isEmpty() {
+    return tree.isEmpty();
+  }
 
-    @Override
-    public List<Label<T>> asList() {
-        return tree.asList();
-    }
+  @Override
+  public List<Label<T>> asList() {
+    return tree.asList();
+  }
 
-    @Override
-    public List<Span> spansAsList() {
-        return tree.spansAsList();
-    }
+  @Override
+  public List<Span> spansAsList() {
+    return tree.spansAsList();
+  }
 
-    @Override
-    public List<T> valuesAsList() {
-        return tree.valuesAsList();
-    }
+  @Override
+  public List<T> valuesAsList() {
+    return tree.valuesAsList();
+  }
 
-    @Override
-    public int size() {
-        return tree.size();
-    }
+  @Override
+  public int size() {
+    return tree.size();
+  }
+
+  @Override
+  public boolean contains(Object o) {
+    return tree.containsLabel(o);
+  }
 }

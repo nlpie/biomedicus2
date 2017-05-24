@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface SpansMap<T> {
+    Optional<Label<T>> getLabel(TextLocation textLocation);
+
     Optional<T> get(TextLocation textLocation);
 
     SpansMap<T> toTheLeftOf(int index);
@@ -62,7 +64,7 @@ public interface SpansMap<T> {
 
     Set<Label<T>> entries();
 
-    boolean containsLabel(Label label);
+    boolean containsLabel(Object o);
 
     boolean isEmpty();
 

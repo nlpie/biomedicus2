@@ -25,82 +25,96 @@ import javax.annotation.Nullable;
  * @since 1.5.0
  */
 public final class Span implements TextLocation, Comparable<Span> {
-    /**
-     * The begin of the span, inclusive.
-     */
-    private final int begin;
 
-    /**
-     * The end index of the span, exclusive.
-     */
-    private final int end;
+  /**
+   * The begin of the span, inclusive.
+   */
+  private final int begin;
 
-    /**
-     * Creates a new span from the begin index to the end index (exclusive).
-     *
-     * @param begin begin of the span, inclusive.
-     * @param end end of the span, exclusive.
-     */
-    public Span(int begin, int end) {
-        if (begin > end || begin < 0) {
-            throw new IllegalArgumentException("begin can't be greater than end or less than 0.");
-        }
-        this.begin = begin;
-        this.end = end;
+  /**
+   * The end index of the span, exclusive.
+   */
+  private final int end;
+
+  /**
+   * Creates a new span from the begin index to the end index (exclusive).
+   *
+   * @param begin begin of the span, inclusive.
+   * @param end end of the span, exclusive.
+   */
+  public Span(int begin, int end) {
+    if (begin > end || begin < 0) {
+      throw new IllegalArgumentException("begin can't be greater than end or less than 0.");
     }
+    this.begin = begin;
+    this.end = end;
+  }
 
-    public Span(TextLocation textLocation) {
-        this.begin = textLocation.getBegin();
-        this.end = textLocation.getEnd();
-    }
+  public Span(TextLocation textLocation) {
+    this.begin = textLocation.getBegin();
+    this.end = textLocation.getEnd();
+  }
 
-    @Override
-    public int getBegin() {
-        return begin;
-    }
+  /**
+   * Creates a new span between the begin and end.
+   *
+   * @param begin the begin of the span.
+   * @param end the end of the span.
+   * @return newly initialized span.
+   */
+  public static Span create(int begin, int end) {
+    return new Span(begin, end);
+  }
 
-    @Override
-    public int getEnd() {
-        return end;
-    }
+  /**
+   * Alias for {@link #create(int, int)}.
+   *
+   * @param begin the begin of the span
+   * @param end the end of the span
+   * @return newly created span.
+   */
+  public static Span of(int begin, int end) {
+    return new Span(begin, end);
+  }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Span that = (Span) o;
-        return begin == that.begin && end == that.end;
-    }
+  @Override
+  public int getBegin() {
+    return begin;
+  }
 
-    @Override
-    public int hashCode() {
-        return Integer.hashCode(begin) * 31 + Integer.hashCode(end);
-    }
+  @Override
+  public int getEnd() {
+    return end;
+  }
 
-    @Override
-    public int compareTo(Span o) {
-        int compare = Integer.compare(begin, o.begin);
-        if (compare != 0) return compare;
-        return Integer.compare(o.end, end);
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Span that = (Span) o;
+    return begin == that.begin && end == that.end;
+  }
 
-    @Override
-    public String toString() {
-        return "Span(" + begin + ", " + end + ")";
-    }
+  @Override
+  public int hashCode() {
+    return Integer.hashCode(begin) * 31 + Integer.hashCode(end);
+  }
 
-    /**
-     * Creates a new span between the begin and end.
-     *
-     * @param begin the begin of the span.
-     * @param end   the end of the span.
-     * @return newly initialized span.
-     */
-    public static Span create(int begin, int end) {
-        return new Span(begin, end);
+  @Override
+  public int compareTo(Span o) {
+    int compare = Integer.compare(begin, o.begin);
+    if (compare != 0) {
+      return compare;
     }
+    return Integer.compare(o.end, end);
+  }
+
+  @Override
+  public String toString() {
+    return "Span(" + begin + ", " + end + ")";
+  }
 }

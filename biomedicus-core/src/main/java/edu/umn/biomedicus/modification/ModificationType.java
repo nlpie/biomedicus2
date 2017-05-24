@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.vocabulary;
+package edu.umn.biomedicus.modification;
 
-import com.google.inject.AbstractModule;
-
-public class VocabularyModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
-        bind(VocabularyStore.class).to(MapDbVocabStore.class);
-        bind(VocabularyBuilder.class).to(MapDbVocabularyBuilder.class);
-    }
+/**
+ * 
+ */
+public enum ModificationType {
+  PROBABLE,
+  HISTORICAL,
+  NEGATED
 }

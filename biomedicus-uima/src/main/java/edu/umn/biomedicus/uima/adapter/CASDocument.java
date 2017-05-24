@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
+import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
@@ -25,8 +26,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- *
- *
  * @author Ben Knoll
  * @since 1.6.0
  */
@@ -148,13 +147,6 @@ final class CASDocument implements Document {
     }
 
     @Override
-    public TextView createTextView(String name, String text) {
-        CAS textView = view.createView(name);
-        textView.setDocumentText(text);
-        return new CASTextView(textView, labelAdapters);
-    }
-
-    @Override
     public Optional<TextView> getTextView(String name) {
         Iterator<CAS> it = view.getViewIterator();
         while (it.hasNext()) {
@@ -164,5 +156,34 @@ final class CASDocument implements Document {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public TextView.Builder newTextView() {
+        return new TextView.Builder() {
+            @Nullable String text;
+            @Nullable String name;
+
+            @Override
+            public TextView.Builder withText(String text) {
+                this.text = text;
+                return this;
+            }
+
+            @Override
+            public TextView.Builder withName(String name) {
+                this.name = name;
+                return this;
+            }
+
+            @Override
+            public TextView build() {
+                Preconditions.checkNotNull(text, "text is null");
+                Preconditions.checkNotNull(name, "name is null");
+                CAS textView = view.createView(name);
+                textView.setDocumentText(text);
+                return new CASTextView(textView, labelAdapters);
+            }
+        };
     }
 }

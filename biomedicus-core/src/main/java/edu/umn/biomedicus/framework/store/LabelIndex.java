@@ -137,7 +137,9 @@ public interface LabelIndex<T> extends Collection<Label<T>> {
      * @return an optional of the label with the span, empty if no label has
      * that span
      */
-    Optional<Label<T>> withSpan(Span span);
+    default Optional<Label<T>> withSpan(Span span) {
+        return withTextLocation(span);
+    }
 
     /**
      * The spans contained in the label index. Iteration order is begin

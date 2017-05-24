@@ -17,17 +17,17 @@
 package edu.umn.biomedicus.uima.files;
 
 import com.google.inject.Injector;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
 import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import org.apache.uima.UimaContext;
-import org.apache.uima.cas.*;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.metadata.ProcessingResourceMetaData;
@@ -52,23 +52,27 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     /**
      * Class logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RtfTextFileAdapter.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RtfTextFileAdapter.class);
 
     /**
      * Date formatter for adding date to metadata.
      */
-    private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG);
-
+    private final DateFormat dateFormatter = DateFormat
+            .getDateInstance(DateFormat.LONG);
+    @Nullable
+    protected Document document;
     /**
      * View to load data into.
      */
     @Nullable
     private String viewName;
-
-    @Nullable
-    protected Document document;
-
     private LabelAdapters labelAdapters;
+
+    private static boolean isValid(int ch) {
+        return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A
+                || ch == 0x0D;
+    }
 
     @Override
     public void initialize(UimaContext uimaContext,
@@ -84,7 +88,8 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     }
 
     @Override
-    public void adaptFile(CAS cas, Path path) throws CollectionException, IOException {
+    public void adaptFile(CAS cas, Path path)
+            throws CollectionException, IOException {
         if (cas == null) {
             LOGGER.error("Null CAS");
             throw new IllegalArgumentException("CAS was null");
@@ -109,7 +114,9 @@ public class RtfTextFileAdapter implements InputFileAdapter {
                     stringBuilder.append((char) ch);
                 } else {
                     int len = stringBuilder.length();
-                    LOGGER.warn("Illegal rtf character with code point: {} at {} in {}", ch, len, path.toString());
+                    LOGGER.warn(
+                            "Illegal rtf character with code point: {} at {} in {}",
+                            ch, len, path.toString());
                     IllegalXmlCharacter xmlCharacter
                             = ImmutableIllegalXmlCharacter.builder()
                             .value(ch)
@@ -122,8 +129,10 @@ public class RtfTextFileAdapter implements InputFileAdapter {
         }
 
         String documentText = stringBuilder.toString();
-        TextView odTextView = document
-                .createTextView(Views.ORIGINAL_DOCUMENT_VIEW, documentText);
+        TextView odTextView = document.newTextView()
+                .withName(Views.ORIGINAL_DOCUMENT_VIEW)
+                .withText(documentText)
+                .build();
         Labeler<IllegalXmlCharacter> illCharLabeler = odTextView
                 .getLabeler(IllegalXmlCharacter.class);
         for (Label<IllegalXmlCharacter> illChar : illegalXmlCharacters) {
@@ -135,9 +144,5 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     @Override
     public void setTargetView(String viewName) {
         this.viewName = viewName;
-    }
-
-    private static boolean isValid(int ch) {
-        return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A || ch == 0x0D;
     }
 }

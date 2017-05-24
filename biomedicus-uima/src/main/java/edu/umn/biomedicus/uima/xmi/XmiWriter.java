@@ -82,7 +82,7 @@ public class XmiWriter extends CasAnnotator_ImplBase {
 
         Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
         Feature documentId = type.getFeatureByBaseName("documentId");
-        String fileName = cas.getView(ViewIdentifiers.SYSTEM)
+        String fileName = cas.getView("metadata")
                 .getIndexRepository()
                 .getAllIndexedFS(type)
                 .next()

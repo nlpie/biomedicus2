@@ -16,26 +16,32 @@
 
 package edu.umn.biomedicus.common.terms;
 
-import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 public interface TermIndex {
-    boolean contains(String string);
 
-    @Nullable
-    String getTerm(IndexedTerm indexedTerm);
+  boolean contains(String string);
 
-    IndexedTerm getIndexedTerm(@Nullable CharSequence term);
+  @Nullable
+  String getTerm(IndexedTerm indexedTerm);
 
-    TermsBag getTermsBag(Iterable<? extends CharSequence> terms);
+  IndexedTerm getIndexedTerm(@Nullable CharSequence term);
 
-    List<String> getTerms(TermsBag termsBag);
+  List<String> getTerms(TermVector terms);
 
-    Iterator<IndexedTerm> iterator();
+  TermVector getTermVector(Iterable<? extends CharSequence> terms);
 
-    Stream<IndexedTerm> stream();
+  TermsBag getTermsBag(Iterable<? extends CharSequence> terms);
 
-    int size();
+  Collection<String> getTerms(TermsBag termsBag);
+
+  Iterator<IndexedTerm> iterator();
+
+  Stream<IndexedTerm> stream();
+
+  int size();
 }

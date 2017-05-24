@@ -38,6 +38,16 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         return new Builder<>();
     }
 
+    @Override
+    public Optional<Label<E>> getLabel(TextLocation textLocation) {
+        Span span = textLocation.toSpan();
+        int i = indexOfSpan(span);
+        if (i == -1) {
+            return Optional.empty();
+        }
+        return Optional.of(labelAtIndex(i));
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Optional<E> get(TextLocation textLocation) {
@@ -145,17 +155,8 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
     }
 
     @Override
-    public boolean containsLabel(Label label) {
-        int i = Arrays.binarySearch(begins, label.getBegin());
-
-        if (i < 0) {
-            return false;
-        }
-
-        @SuppressWarnings("unchecked")
-        Node<E> node = (Node<E>) nodes[i];
-        return node.end == label.end()
-                && label.value().equals(node.value);
+    public boolean containsLabel(Object o) {
+        return indexOfLabel(o) != -1;
     }
 
     @Override
@@ -285,7 +286,8 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
             Node[] nodes = new Node[size];
             int i = 0;
             for (Map.Entry<Integer, Node<E>> entry : map.entrySet()) {
-                begins[i++] = entry.getKey();
+                begins[i] = entry.getKey();
+                nodes[i++] = entry.getValue();
 
             }
             return new ImmutableDistinctSpanMap<>(begins, nodes);
@@ -374,8 +376,8 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         }
 
         @Override
-        public boolean containsLabel(Label label) {
-            int i = backingMap.indexOfLabel(label);
+        public boolean containsLabel(Object o) {
+            int i = backingMap.indexOfLabel(o);
             return i != -1 && i >= left && i <= right;
         }
 
@@ -488,6 +490,15 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
         public Optional<Label<E>> first() {
             return isEmpty() ? Optional.empty()
                     : Optional.of(backingMap.labelAtIndex(firstIndex()));
+        }
+
+        @Override
+        public Optional<Label<E>> getLabel(TextLocation textLocation) {
+            int i = indexOfSpan(textLocation.toSpan());
+            if (i == -1) {
+                return Optional.empty();
+            }
+            return Optional.of(labelAtIndex(i));
         }
 
         @Override
