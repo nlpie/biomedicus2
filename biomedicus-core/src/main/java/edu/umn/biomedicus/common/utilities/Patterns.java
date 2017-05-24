@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Utility library for patterns for biomedicus.
  *
- * @since 1.1.0
  */
 public final class Patterns {
     /**
@@ -41,7 +39,7 @@ public final class Patterns {
 
     /**
      * A Pattern that will match against any character that is not whitespace.
-     *
+     * <p>
      * Using {@link java.util.regex.Matcher#find} will return whether or not a string has any non-whitespace characters.
      */
     public static final Pattern NON_WHITESPACE = Pattern.compile("\\S");
@@ -49,11 +47,25 @@ public final class Patterns {
     /**
      * A Pattern that will match against a string that only contains one or more unicode alphabetic characters.
      */
-    public static final Pattern ALPHABETIC_WORD = Pattern.compile("[\\p{IsAlphabetic}]+");
+    public static final Pattern ALPHABETIC_WORD = Pattern
+            .compile("[\\p{L}]+");
 
-    public static final Pattern A_LETTER_OR_NUMBER = Pattern.compile("[\\p{IsAlphabetic}\\p{Digit}]");
+    /**
+     * A pattern that will match against a string that only contains one or more unicode alphanumeric characters.
+     */
+    public static final Pattern ALPHANUMERIC_WORD = Pattern
+            .compile("[\\p{L}\\p{Nd}]+");
 
+    /**
+     * A pattern that will match any unicode alphanumeric character
+     */
+    public static final Pattern A_LETTER_OR_NUMBER = Pattern
+            .compile("[\\p{Nd}\\p{L}]");
 
+    /**
+     * A pattern that will match the newline character.
+     */
+    public static final Pattern NEWLINE = Pattern.compile("\n");
 
     /**
      * Loads a pattern from a file in the resource path by joining all of the lines of the file with an OR symbol '|'
@@ -62,8 +74,11 @@ public final class Patterns {
      * @return newly created pattern
      */
     public static Pattern loadPatternByJoiningLines(String resourceName) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(resourceName)))){
+        ClassLoader classLoader = Thread.currentThread()
+                .getContextClassLoader();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                        classLoader.getResourceAsStream(resourceName)))) {
             return getPattern(reader);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,10 +86,13 @@ public final class Patterns {
     }
 
     private static Pattern getPattern(BufferedReader reader) {
-        return Pattern.compile(reader.lines().collect(Collectors.joining("|")), Pattern.MULTILINE);
+        return Pattern
+                .compile(reader.lines().collect(Collectors.joining("|")),
+                        Pattern.MULTILINE);
     }
 
-    public static Pattern loadPatternByJoiningLines(Path path) throws BiomedicusException {
+    public static Pattern loadPatternByJoiningLines(Path path)
+            throws BiomedicusException {
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             return getPattern(reader);
         } catch (IOException e) {

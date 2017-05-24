@@ -21,9 +21,8 @@ import edu.umn.biomedicus.rtf.beans.properties.PropertiesDescription;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.*;
 import edu.umn.biomedicus.uima.common.Views;
-import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
-import org.apache.uima.jcas.JCas;
 
 import java.io.IOException;
 import java.util.List;
@@ -54,9 +53,10 @@ class CasRtfParser {
 
     /**
      * Creates a CAS rtf parser with the given properties.
-     *  @param initialProperties The initial properties to set a state to.
-     * @param rtfKeywordParser The keyword actions for specific keywords.
-     * @param casMappings The mappings from destination name to output destinations.
+     *
+     * @param initialProperties The initial properties to set a state to.
+     * @param rtfKeywordParser  The keyword actions for specific keywords.
+     * @param casMappings       The mappings from destination name to output destinations.
      */
     CasRtfParser(Map<String, Map<String, Integer>> initialProperties,
                  RtfKeywordParser rtfKeywordParser,
@@ -69,27 +69,33 @@ class CasRtfParser {
     /**
      * Creates a CAS rtf parser by loading from the given descriptor files.
      *
-     * @param propertiesDescriptionClasspathRef The classpath reference to the properties descriptor file.
+     * @param propertiesDescriptionClasspathRef      The classpath reference to the properties descriptor file.
      * @param controlKeywordsDescriptionClasspathRef The classpath reference to the control keywords descriptor file.
-     * @param casMappingsDescriptionClassPathRef the classpath reference to the cas mappings descriptor file.
+     * @param casMappingsDescriptionClassPathRef     the classpath reference to the cas mappings descriptor file.
      * @return newly created rtf parser.
      */
     static CasRtfParser createByLoading(String propertiesDescriptionClasspathRef,
                                         String controlKeywordsDescriptionClasspathRef,
                                         String casMappingsDescriptionClassPathRef) {
         PropertiesDescription propertiesDescription
-                = PropertiesDescription.loadFromFile(propertiesDescriptionClasspathRef);
+                = PropertiesDescription
+                .loadFromFile(propertiesDescriptionClasspathRef);
 
-        Map<String, Map<String, Integer>> properties = propertiesDescription.createProperties();
+        Map<String, Map<String, Integer>> properties = propertiesDescription
+                .createProperties();
 
         ControlKeywordsDescription controlKeywordsDescription
-                = ControlKeywordsDescription.loadFromFile(controlKeywordsDescriptionClasspathRef);
+                = ControlKeywordsDescription
+                .loadFromFile(controlKeywordsDescriptionClasspathRef);
 
-        Map<String, KeywordAction> keywordActionMap = controlKeywordsDescription.getKeywordActionsAsMap();
+        Map<String, KeywordAction> keywordActionMap = controlKeywordsDescription
+                .getKeywordActionsAsMap();
 
-        CasMappings casMappings = CasMappings.loadFromFile(casMappingsDescriptionClassPathRef);
+        CasMappings casMappings = CasMappings
+                .loadFromFile(casMappingsDescriptionClassPathRef);
 
-        RtfKeywordParser rtfKeywordParser = new RtfKeywordParser(keywordActionMap);
+        RtfKeywordParser rtfKeywordParser = new RtfKeywordParser(
+                keywordActionMap);
 
         return new CasRtfParser(properties, rtfKeywordParser, casMappings);
     }
@@ -97,32 +103,36 @@ class CasRtfParser {
     /**
      * Parses the rtf source into a set of UIMA CAS views.
      *
-     * @param jCas parent jCas view to create destination views in.
+     * @param cas       parent jCas view to create destination views in.
      * @param rtfSource the source rtf document.
-     * @throws IOException if there is a problem reading.
+     * @throws IOException        if there is a problem reading.
      * @throws RtfReaderException if there is a problem parsing.
      */
-    void parseFile(JCas jCas, RtfSource rtfSource) throws IOException, RtfReaderException {
-        List<DestinationCasMapping> destinationCasMappings = casMappings.getDestinationCasMappings();
+    void parseFile(CAS cas, RtfSource rtfSource)
+            throws IOException, RtfReaderException {
+        List<DestinationCasMapping> destinationCasMappings = casMappings
+                .getDestinationCasMappings();
 
-        Map<String, Type> annotationTypeForSymbolName = casMappings.getControlWordCasMappings()
+        Map<String, Type> annotationTypeForSymbolName = casMappings
+                .getControlWordCasMappings()
                 .stream()
                 .collect(Collectors.toMap(ControlWordCasMapping::getControlWord,
-                        p -> jCas.getTypeSystem().getType(p.getAnnotationName())));
+                        p -> cas.getTypeSystem()
+                                .getType(p.getAnnotationName())));
 
-        OutputDestinationFactory outputDestinationFactory = new CasOutputDestinationFactory(destinationCasMappings,
-                annotationTypeForSymbolName, casMappings.getPropertyCasMappings(), jCas);
+        OutputDestinationFactory outputDestinationFactory
+                = new CasOutputDestinationFactory(destinationCasMappings,
+                annotationTypeForSymbolName,
+                casMappings.getPropertyCasMappings(), cas);
 
-        JCas originalDocumentView;
-        try {
-            originalDocumentView = jCas.getView(Views.ORIGINAL_DOCUMENT_VIEW);
-        } catch (CASException e) {
-            throw new RtfReaderException(e);
-        }
-        IndexListener indexListener = new CasIndexListener(originalDocumentView);
+        CAS originalDocumentView = cas.getView(Views.ORIGINAL_DOCUMENT_VIEW);
+        IndexListener indexListener
+                = new CasIndexListener(originalDocumentView);
 
-        State initialState = State.createState(outputDestinationFactory, initialProperties, indexListener);
-        RtfReader rtfReader = new RtfReader(rtfKeywordParser, rtfSource, initialState);
+        State initialState = State.createState(outputDestinationFactory,
+                initialProperties, indexListener);
+        RtfReader rtfReader = new RtfReader(rtfKeywordParser, rtfSource,
+                initialState);
         rtfReader.parseFile();
     }
 }

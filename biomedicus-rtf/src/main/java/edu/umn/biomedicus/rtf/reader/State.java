@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,10 +189,10 @@ public class State {
      * Writes the character to the output destination.
      *
      * @param code   character code
-     * @param originalDocumentSpanLike the span of the character in the original document.
+     * @param originalDocumentTextLocation the span of the character in the original document.
      * @throws RtfReaderException if there is some kind of error in writing to the output destination.
      */
-    public void writeCharacter(int code, SpanLike originalDocumentSpanLike) throws RtfReaderException {
+    public void writeCharacter(int code, TextLocation originalDocumentTextLocation) throws RtfReaderException {
         if (skippingDestination) {
             return;
         }
@@ -205,7 +205,7 @@ public class State {
                 LOGGER.debug("Not writing a binary byte");
                 break;
             case NORMAL:
-                directWriteCharacter((char) code, originalDocumentSpanLike);
+                directWriteCharacter((char) code, originalDocumentTextLocation);
                 break;
             case HEX:
                 hexStringBuilder.append((char) code);
@@ -213,7 +213,7 @@ public class State {
                     String hexString = hexStringBuilder.toString();
                     Byte charByte = (byte) (Integer.parseInt(hexString, 16) & 0xff);
                     code = charset.decode(ByteBuffer.wrap(new byte[]{charByte})).get(0);
-                    directWriteCharacter((char) code, Span.create(hexStart, originalDocumentSpanLike.getEnd()));
+                    directWriteCharacter((char) code, Span.create(hexStart, originalDocumentTextLocation.getEnd()));
                     inputType = InputType.NORMAL;
                 }
                 break;
@@ -226,17 +226,17 @@ public class State {
      * Internal method for writing characters to the output destination.
      *
      * @param ch character to write.
-     * @param originalDocumentSpanLike the span of the character in the original document.
+     * @param originalDocumentTextLocation the span of the character in the original document.
      * @throws RtfReaderException if there is some kind of failure writing to output destination.
      */
-    public void directWriteCharacter(char ch, SpanLike originalDocumentSpanLike) throws RtfReaderException {
+    public void directWriteCharacter(char ch, TextLocation originalDocumentTextLocation) throws RtfReaderException {
         if (ignoreNextChars > 0) {
             ignoreNextChars--;
             return;
         }
         if (outputDestination != null) {
             int destinationIndex = outputDestination.writeChar(ch, this);
-            indexListener.wroteToDestination(outputDestination.getName(), destinationIndex, originalDocumentSpanLike);
+            indexListener.wroteToDestination(outputDestination.getName(), destinationIndex, originalDocumentTextLocation);
         }
     }
 

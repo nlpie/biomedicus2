@@ -1,0 +1,47 @@
+BioMedICUS
+Copyright 2016 Regents of the University of Minnesota
+
+This product contains software developed by the NLP/IE Group at the University of Minnesota Institute for Health
+Informatics (https://healthinformatics.umn.edu/research/nlpie-group).
+
+This project includes:
+
+  ActiveMQ :: Client under The Apache Software License, Version 2.0
+  AOP alliance under Public Domain
+  Apache Log4j 1.x Compatibility API under The Apache Software License, Version 2.0
+  Apache Log4j API under The Apache Software License, Version 2.0
+  Apache Log4j Core under The Apache Software License, Version 2.0
+  Apache Log4j SLF4J Binding under The Apache Software License, Version 2.0
+  Apache OpenNLP Maxent under The Apache Software License, Version 2.0
+  Apache OpenNLP Tools under The Apache Software License, Version 2.0
+  Apache UIMA Base: jVinci: Vinci Transport Library under The Apache Software License, Version 2.0
+  Apache UIMA Base: uimaj-adapter-vinci: Vinci Adapter under The Apache Software License, Version 2.0
+  Apache UIMA Base: uimaj-core under The Apache Software License, Version 2.0
+  Apache UIMA Base: uimaj-cpe: Collection Processing Engine under The Apache Software License, Version 2.0
+  Apache UIMA Base: uimaj-tools: Tools under The Apache Software License, Version 2.0
+  BeanShell under GNU LESSER GENERAL PUBLIC LICENSE
+  biomedicus under Apache License, Version 2.0
+  biomedicus-core under Apache License, Version 2.0
+  biomedicus-opennlp under Apache License, Version 2.0
+  biomedicus-rtf under Apache License, Version 2.0
+  biomedicus-tools under Apache License, Version 2.0
+  biomedicus-uima under Apache License, Version 2.0
+  distribution under Apache License, Version 2.0
+  FindBugs-Annotations under GNU Lesser Public License
+  FindBugs-jsr305 under The Apache Software License, Version 2.0
+  Google Guice - Core Library under The Apache Software License, Version 2.0
+  Google Guice - Extensions - MultiBindings under The Apache Software License, Version 2.0
+  Guava: Google Core Libraries for Java under The Apache Software License, Version 2.0
+  hawtbuf under The Apache Software License, Version 2.0
+  J2EE Management 1.1 under The Apache Software License, Version 2.0
+  Java WordNet Library under BSD 3-Clause License
+  Javassist under MPL 1.1 or LGPL 2.1 or Apache License 2.0
+  javax.inject under The Apache Software License, Version 2.0
+  JCommander under The Apache Software License, Version 2.0
+  JMS 1.1 under The Apache Software License, Version 2.0
+  Main under MIT LICENSE
+  MongoDB Java Driver under The Apache Software License, Version 2.0
+  SLF4J API Module under MIT License
+  SLF4J NOP Binding under MIT License
+  SnakeYAML under Apache License, Version 2.0
+  TestNG under Apache License, Version 2.0

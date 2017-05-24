@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.utilities.Strings;
 
@@ -40,7 +40,7 @@ import java.util.Set;
  * @since 1.0.0
  */
 public class SuffixWordProbabilityModel implements WordProbabilityModel {
-    static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartsOfSpeech.REAL_TAGS;
+    private static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartsOfSpeech.getRealTags();
 
     private Map<String, Map<PartOfSpeech, Double>> probabilities;
     private int maxSuffixLength;

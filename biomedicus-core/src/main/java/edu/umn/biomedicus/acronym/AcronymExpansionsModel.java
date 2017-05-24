@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  *
  */
 @ProvidedBy(AcronymExpansionsModel.Loader.class)
-class AcronymExpansionsModel {
+public class AcronymExpansionsModel {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcronymExpansionsModel.class);
 
     private final Map<String, Collection<String>> expansions;
@@ -49,7 +49,7 @@ class AcronymExpansionsModel {
         return expansions.get(acronym);
     }
 
-    Set<String> getAcronyms() {
+    public Set<String> getAcronyms() {
         return expansions.keySet();
     }
 
@@ -76,7 +76,7 @@ class AcronymExpansionsModel {
                 String acronym;
                 while ((acronym = bufferedReader.readLine()) != null) {
                     String[] acronymExpansions = splitter.split(bufferedReader.readLine());
-                    expansions.put(acronym, Arrays.asList(acronymExpansions));
+                    expansions.put(Acronyms.standardAcronymForm(acronym), Arrays.asList(acronymExpansions));
                 }
             } catch (IOException e) {
                 throw new BiomedicusException(e);

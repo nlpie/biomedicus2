@@ -1,0 +1,28 @@
+crystal +methamphetamine
+Illicit +injectable +drug[s]*
+Unprescribed +drug[s]*
+Recreational +drug[s]*
+prescription +drug[s]*
+illicit substance[s]*
+methamphetamine[s]*
+injected +drug[s]*
+benzodiazepines
+illicit +drug[s]*
+illegal drug[s]*
+polysubstance
+cocaine +drug[s]*
+Other +drug[s]*
+barbiturates
+marijuana
+narcotics
+methadone
+Steroids
+illicits
+morphine
+IV +drug[s]*
+opiates
+hashish
+cocaine
+heroin
+crack
+drug[s]*

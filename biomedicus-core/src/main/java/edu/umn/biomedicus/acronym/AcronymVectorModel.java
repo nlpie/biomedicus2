@@ -21,10 +21,8 @@ import com.google.inject.ProvidedBy;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
-import edu.umn.biomedicus.common.text.ParseToken;
-import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
+import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import org.slf4j.Logger;
@@ -33,6 +31,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -51,14 +50,14 @@ class AcronymVectorModel implements AcronymModel {
     /**
      * A vector space with a built dictionary to use at test time
      */
-    private final VectorSpaceDouble vectorSpaceDouble;
+    private final WordVectorSpace wordVectorSpace;
 
     private final AcronymExpansionsModel acronymExpansionsModel;
 
     /**
      * Maps long forms to their trained word vectors
      */
-    private final Map<String, DoubleVector> senseMap;
+    private final Map<String, SparseVector> senseMap;
 
     /**
      * The alignment model will guess an acronym's full form based on its alignment if we don't know what it is.
@@ -68,14 +67,14 @@ class AcronymVectorModel implements AcronymModel {
     /**
      * Constructor. Needs several things already made:
      *
-     * @param vectorSpaceDouble the vector space (most importantly dictionary) used to build context vectors
+     * @param wordVectorSpace the vector space (most importantly dictionary) used to build context vectors
      * @param senseMap          which maps between senses and their context vectors
      * @param alignmentModel    a model used for alignment of unknown acronyms
      */
-    AcronymVectorModel(VectorSpaceDouble vectorSpaceDouble, Map<String, DoubleVector> senseMap, AcronymExpansionsModel acronymExpansionsModel, @Nullable AlignmentModel alignmentModel) {
+    AcronymVectorModel(WordVectorSpace wordVectorSpace, Map<String, SparseVector> senseMap, AcronymExpansionsModel acronymExpansionsModel, @Nullable AlignmentModel alignmentModel) {
         this.acronymExpansionsModel = acronymExpansionsModel;
         this.senseMap = senseMap;
-        this.vectorSpaceDouble = vectorSpaceDouble;
+        this.wordVectorSpace = wordVectorSpace;
         this.alignmentModel = alignmentModel;
     }
 
@@ -85,8 +84,8 @@ class AcronymVectorModel implements AcronymModel {
      * @param token a Token
      * @return a List of Strings of all possible senses
      */
-    public Collection<String> getExpansions(TokenLike token) {
-        String acronym = Acronyms.standardForm(token);
+    public Collection<String> getExpansions(Token token) {
+        String acronym = Acronyms.standardAcronymForm(token);
         Collection<String> expansions = acronymExpansionsModel.getExpansions(acronym);
         if (expansions != null) {
             return expansions;
@@ -96,34 +95,33 @@ class AcronymVectorModel implements AcronymModel {
 
     /**
      * Does the model know about this acronym?
-     *
-     * @param token
-     * @return
+     * @param token a token
+     * @return true if this token's text is a known acronym
      */
-    public boolean hasAcronym(TokenLike token) {
-        String acronym = Acronyms.standardForm(token);
+    public boolean hasAcronym(Token token) {
+        String acronym = Acronyms.standardAcronymForm(token);
         return acronymExpansionsModel.hasExpansions(acronym);
     }
 
     /**
      * Will return the model's best guess for the sense of this acronym
      *
-     * @param context a list of tokens providing context for this acronym
-     * @param token   the token of the acronym itself
+     * @param context a list of tokens including the full context for this acronym
+     * @param forThisIndex an integer specifying the index of the acronym
      * @return
      */
     @Override
-    public String findBestSense(List<TokenLike> context, TokenLike token) {
+    public String findBestSense(List<Token> context, int forThisIndex) {
 
-        // String to assign to unknown acronyms
-
-        String acronym = Acronyms.standardForm(token);
+        String acronym = Acronyms.standardAcronymForm(context.get(forThisIndex));
 
         // If the model doesn't contain this acronym, make sure it doesn't contain an upper-case version of it
-
         Collection<String> senses = acronymExpansionsModel.getExpansions(acronym);
         if (senses == null) {
             senses = acronymExpansionsModel.getExpansions(acronym.toUpperCase());
+        }
+        if (senses == null) {
+            senses = acronymExpansionsModel.getExpansions(acronym.replace(".", ""));
         }
         if (senses == null) {
             senses = acronymExpansionsModel.getExpansions(acronym.toLowerCase());
@@ -139,7 +137,6 @@ class AcronymVectorModel implements AcronymModel {
         if (senses.size() == 1) {
             return senses.iterator().next();
         }
-
 
         List<String> usableSenses = new ArrayList<>();
         // Be sure that there even are disambiguation vectors for senses
@@ -166,12 +163,11 @@ class AcronymVectorModel implements AcronymModel {
         double best = -Double.MAX_VALUE;
         String winner = Acronyms.UNKNOWN;
 
-        DoubleVector vector = vectorSpaceDouble.vectorize(context, token);
-        vector.multiply(vectorSpaceDouble.getIdf());
+        SparseVector vector = wordVectorSpace.vectorize(context, forThisIndex);
 
         // Loop through all possible senses for this acronym
         for (String sense : usableSenses) {
-            DoubleVector compVec = senseMap.get(sense);
+            SparseVector compVec = senseMap.get(sense);
             double score = vector.dot(compVec);
             if (score > best) {
                 best = score;
@@ -187,7 +183,12 @@ class AcronymVectorModel implements AcronymModel {
      * @param word the word to remove
      */
     public void removeWord(String word) {
-        vectorSpaceDouble.removeWord(word);
+        Integer ind = wordVectorSpace.removeWord(word);
+        if (ind != null) {
+            for (SparseVector vec : senseMap.values()) {
+                vec.set(ind, 0);
+            }
+        }
     }
 
     /**
@@ -196,52 +197,83 @@ class AcronymVectorModel implements AcronymModel {
      * @param wordsToRemove the set of words to keep
      */
     public void removeWordsExcept(Set<String> wordsToRemove) {
-        vectorSpaceDouble.removeWordsExcept(wordsToRemove);
+        Set<Integer> removed = wordVectorSpace.removeWordsExcept(wordsToRemove);
+        removed.remove(null);
+        for (SparseVector vec : senseMap.values()) {
+            for (Integer ind : removed) {
+                if (ind != null) {
+                    vec.set(ind, 0);
+                }
+            }
+        }
     }
 
     void writeToDirectory(Path outputDir) throws IOException {
         Yaml yaml = YamlSerialization.createYaml();
 
-        yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
-        yaml.dump(vectorSpaceDouble, Files.newBufferedWriter(outputDir.resolve("vectorSpace.yml")));
+        if (alignmentModel != null) {
+            yaml.dump(alignmentModel, Files.newBufferedWriter(outputDir.resolve("alignment.yml")));
+        }
+        yaml.dump(wordVectorSpace, Files.newBufferedWriter(outputDir.resolve("vectorSpace.yml")));
         serializeSenseMap(outputDir.resolve("senseMap.ser"));
     }
 
     /**
-     * Binary serialization for the senseMap, which gets too big for yaml (and isn't very human readable anyway)
-     * Serializes built-in java classes
-     *
+     * Write senseMap to a file. Uses a mix of Object serialization and binary data.
      * @param outFile output file to serialize to
      * @throws IOException
      */
     private void serializeSenseMap(Path outFile) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outFile.toFile()));
-        oos.writeObject(senseMap.size());
-        for (Map.Entry<String, DoubleVector> e : senseMap.entrySet()) {
-            oos.writeObject(e.getKey());
-            oos.writeObject(e.getValue().getVector());
+        ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(outFile.toFile()));
+        String[] words = senseMap.keySet().toArray(new String[0]);
+        stream.writeObject(words);
+        for (String word : words) {
+            SparseVector vec = senseMap.get(word);
+            Map<Integer, Double> vecMap = vec.getVector();
+            int size = vecMap.size();
+            stream.write(ByteBuffer.allocate(4).putInt(size).array());
+            ByteBuffer buf = ByteBuffer.allocate(size*8);
+            for (Map.Entry<Integer, Double> e : vecMap.entrySet()) {
+                buf.putInt(e.getKey());
+                buf.putFloat((float)(double)e.getValue());
+            }
+            stream.write(buf.array());
         }
-        oos.flush();
-        oos.close();
+        stream.close();
     }
 
-    private static Map<String, DoubleVector> deserializeSenseMap(Path senseMapPath) throws IOException {
-        Map<String, DoubleVector> map = new HashMap<>();
+    /**
+     * Load senseMap from a file. File must have been generated by the serializeSenseMap method in this class.
+     * @param senseMapPath path to the serialized senseMap
+     * @return a map between senses and their vectors
+     * @throws IOException
+     */
+    private static Map<String, SparseVector> deserializeSenseMap(Path senseMapPath) throws IOException {
+        ObjectInputStream stream = new ObjectInputStream(new FileInputStream(senseMapPath.toFile()));
+        ByteBuffer intByteBuffer = ByteBuffer.allocate(4);
+        Map<String, SparseVector> senseMap;
+        String[] words;
         try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(senseMapPath.toFile()));
-            int size = (int) ois.readObject();
-            for (int i = 0; i < size; i++) {
-                String word = (String) ois.readObject();
-                DoubleVector vector = new WordVectorDouble();
-                @SuppressWarnings("unchecked")
-                Map<Integer, Double> readVector = (Map<Integer, Double>) ois.readObject();
-                vector.setVector(readVector);
-                map.put(word, vector);
-            }
+            words = (String[]) stream.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException();
         }
-        return map;
+        senseMap = new HashMap<>(words.length);
+        for (String word : words) {
+            stream.readFully(intByteBuffer.array());
+            int size = intByteBuffer.getInt(0);
+            Map<Integer, Double> vector = new HashMap<>(size);
+            ByteBuffer buf = ByteBuffer.allocate(size*8);
+            stream.readFully(buf.array());
+            for (int i = 0; i < size; i++) {
+                int index = buf.getInt();
+                float val = buf.getFloat();
+                vector.put(index, (double) val);
+            }
+            senseMap.put(word, new SparseVector(vector));
+        }
+        stream.close();
+        return senseMap;
     }
 
     /**
@@ -280,13 +312,13 @@ class AcronymVectorModel implements AcronymModel {
             try {
                 LOGGER.info("Loading acronym vector space: {}", vectorSpacePath);
                 @SuppressWarnings("unchecked")
-                VectorSpaceDouble vectorSpaceDouble = (VectorSpaceDouble) yaml.load(Files.newBufferedReader(vectorSpacePath));
+                WordVectorSpace wordVectorSpace = (WordVectorSpace) yaml.load(Files.newBufferedReader(vectorSpacePath));
 
                 LOGGER.info("Loading acronym sense map: {}", senseMapPath);
                 @SuppressWarnings("unchecked")
-                Map<String, DoubleVector> senseMap = deserializeSenseMap(senseMapPath);
+                Map<String, SparseVector> senseMap = deserializeSenseMap(senseMapPath);
 
-                return new AcronymVectorModel(vectorSpaceDouble, senseMap, expansionsModel, useAlignment ? alignmentModel.get() : null);
+                return new AcronymVectorModel(wordVectorSpace, senseMap, expansionsModel, useAlignment ? alignmentModel.get() : null);
             } catch (IOException e) {
                 throw new BiomedicusException(e);
             }

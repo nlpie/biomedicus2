@@ -16,9 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
-import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
+import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.List;
 import java.util.Set;
@@ -34,9 +32,9 @@ import java.util.Set;
  */
 interface AcronymModel {
 
-    boolean hasAcronym(TokenLike token);
+    boolean hasAcronym(Token token);
 
-    String findBestSense(List<TokenLike> allTokens, TokenLike token);
+    String findBestSense(List<Token> allTokens, int forTokenIndex);
 
     /**
      * For deidentification: remove a single word from the model entirely

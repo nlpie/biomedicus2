@@ -16,65 +16,61 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import com.google.inject.Injector;
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.BiomedicusFiles;
-import edu.umn.biomedicus.application.Bootstrapper;
+import edu.umn.biomedicus.framework.Application;
+import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.plugins.AbstractPlugin;
+import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
+import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.biomedicus.uima.labels.UimaPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class UimaBootstrapper {
-    private final Injector injector;
-    private final List<AbstractPlugin> plugins;
+public final class UimaBootstrapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UimaBootstrapper.class);
 
-    public UimaBootstrapper(Injector injector, List<AbstractPlugin> plugins) {
-        this.injector = injector;
-        this.plugins = plugins;
-    }
-
-    public static UimaBootstrapper create(Module... additionalModules) throws BiomedicusException {
-        Injector injector = Bootstrapper.create(additionalModules).injector();
-        BiomedicusFiles biomedicusFiles = injector.getInstance(BiomedicusFiles.class);
-        Path uimaPluginsFile = biomedicusFiles.confFolder().resolve("uimaPlugins.txt");
+    public static Application create(Module... additionalModules) throws BiomedicusException {
+        ArrayList<Module> modules = new ArrayList<>();
+        modules.add(new UimaModule());
+        modules.addAll(Arrays.asList(additionalModules));
+        Application application = Bootstrapper.create(modules.toArray(new Module[modules.size()]));
+        Path uimaPluginsFile = application.confFolder().resolve("uimaPlugins.txt");
         List<String> pluginClassNames;
         try {
             pluginClassNames = Files.lines(uimaPluginsFile).collect(Collectors.toList());
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }
-        List<AbstractPlugin> plugins = new ArrayList<>();
-        List<Module> modules = new ArrayList<>();
+
+        LabelAdapters labelAdapters = application.getInstance(LabelAdapters.class);
         for (String pluginClassName : pluginClassNames) {
-            Class<? extends AbstractPlugin> pluginClass;
+            if (pluginClassName.isEmpty()) {
+                continue;
+            }
+            LOGGER.info("Loading uima plugin: {}", pluginClassName);
+
+            Class<? extends UimaPlugin> pluginClass;
             try {
-                pluginClass = Class.forName(pluginClassName).asSubclass(AbstractPlugin.class);
+                pluginClass = Class.forName(pluginClassName).asSubclass(UimaPlugin.class);
             } catch (ClassNotFoundException e) {
                 throw new BiomedicusException(e);
             }
-            AbstractPlugin abstractPlugin = injector.getInstance(pluginClass);
-            plugins.add(abstractPlugin);
-            modules.addAll(abstractPlugin.modules());
+
+            UimaPlugin plugin = application.getInstance(pluginClass);
+
+            Map<Class<?>, LabelAdapterFactory> labelAdapterFactories = plugin.getLabelAdapterFactories();
+            for (Map.Entry<Class<?>, LabelAdapterFactory> entry : labelAdapterFactories.entrySet()) {
+                LabelAdapterFactory value = entry.getValue();
+                labelAdapters.addLabelAdapter(entry.getKey(), value);
+            }
         }
 
-        return new UimaBootstrapper(injector.createChildInjector(modules.toArray(new Module[modules.size()])), plugins);
-    }
-
-    public <T> T createClass(Class<T> tClass) {
-        return injector.getInstance(tClass);
-    }
-
-    public Injector getInjector() {
-        return injector;
-    }
-
-    public List<AbstractPlugin> getPlugins() {
-        return plugins;
+        return application;
     }
 }

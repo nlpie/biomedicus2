@@ -19,7 +19,7 @@
     <parent>
         <artifactId>biomedicus</artifactId>
         <groupId>edu.umn.biomedicus</groupId>
-        <version>1.5.0</version>
+        <version>1.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>edu.umn.biomedicus</groupId>
             <artifactId>biomedicus-core</artifactId>
-            <version>1.5.0</version>
+            <version>1.6.0</version>
         </dependency>
     </dependencies>
 

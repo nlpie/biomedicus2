@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.normalization;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordPos;
 import org.yaml.snakeyaml.Yaml;
 

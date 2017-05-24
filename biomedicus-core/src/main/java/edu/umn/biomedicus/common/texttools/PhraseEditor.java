@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.common.texttools;
 
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.SpanLike;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,9 +43,9 @@ public final class PhraseEditor {
         this.spans = originals.stream().collect(Collectors.toList());
     }
 
-    public static PhraseEditor create(String phrase, List<? extends SpanLike> spans) {
+    public static PhraseEditor create(String phrase, List<? extends TextLocation> spans) {
         return new PhraseEditor(new StringBuilder(phrase),
-                spans.stream().map(SpanLike::toSpan).collect(Collectors.toList()));
+                spans.stream().map(TextLocation::toSpan).collect(Collectors.toList()));
     }
 
     /**

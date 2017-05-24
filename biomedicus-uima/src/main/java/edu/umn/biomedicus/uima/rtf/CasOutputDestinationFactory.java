@@ -19,9 +19,8 @@ package edu.umn.biomedicus.uima.rtf;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.OutputDestination;
 import edu.umn.biomedicus.rtf.reader.OutputDestinationFactory;
-import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
-import org.apache.uima.jcas.JCas;
 
 import java.util.List;
 import java.util.Map;
@@ -51,45 +50,47 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
     /**
      * The parent view to create new views in.
      */
-    private final JCas jCas;
+    private final CAS cas;
 
     /**
      * Constructs a new factory for {@link CasOutputDestination} objects.
      *
-     * @param destinationCasMappings      the cas mappings to find the destination in.
-     * @param annotationTypeForSymbolName the annotation type for control word symbols.
-     * @param propertyCasMappings         the property watchers which create annotations for those properties.
-     * @param jCas                        the parent view to create new views in.
+     * @param destinationCasMappings      the cas mappings to find the
+     *                                    destination in.
+     * @param annotationTypeForSymbolName the annotation type for control word
+     *                                    symbols.
+     * @param propertyCasMappings         the property watchers which create
+     *                                    annotations for those properties.
+     * @param cas                         the parent view to create new views
+     *                                    in.
      */
-    CasOutputDestinationFactory(List<DestinationCasMapping> destinationCasMappings,
-                                Map<String, Type> annotationTypeForSymbolName,
-                                List<PropertyCasMapping> propertyCasMappings,
-                                JCas jCas) {
+    CasOutputDestinationFactory(
+            List<DestinationCasMapping> destinationCasMappings,
+            Map<String, Type> annotationTypeForSymbolName,
+            List<PropertyCasMapping> propertyCasMappings,
+            CAS cas
+    ) {
         this.destinationCasMappings = destinationCasMappings;
         this.annotationTypeForSymbolName = annotationTypeForSymbolName;
         this.propertyCasMappings = propertyCasMappings;
-        this.jCas = jCas;
+        this.cas = cas;
     }
 
     @Override
-    public OutputDestination create(String destinationName) throws RtfReaderException {
+    public OutputDestination create(String destinationName)
+            throws RtfReaderException {
         DestinationCasMapping matchingCasMapping = null;
-        for (DestinationCasMapping destinationCasMapping : destinationCasMappings) {
-            if (destinationName.equals(destinationCasMapping.getDestinationName())) {
-                matchingCasMapping = destinationCasMapping;
+        for (DestinationCasMapping destMapping : destinationCasMappings) {
+            if (destinationName.equals(destMapping.getDestinationName())) {
+                matchingCasMapping = destMapping;
             }
         }
         if (matchingCasMapping == null) {
             return new IgnoreOutputDestination(destinationName);
         }
 
-        JCas newView;
-        try {
-            newView = jCas.createView(matchingCasMapping.getViewName());
-        } catch (CASException e) {
-            throw new RtfReaderException(e);
-        }
-        return new CasOutputDestination(newView, propertyCasMappings, annotationTypeForSymbolName,
-                destinationName);
+        CAS newView = cas.createView(matchingCasMapping.getViewName());
+        return new CasOutputDestination(newView, propertyCasMappings,
+                annotationTypeForSymbolName, destinationName);
     }
 }

@@ -25,7 +25,7 @@ import java.util.*;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public class TermsBag implements Comparable<TermsBag> {
+public final class TermsBag implements Comparable<TermsBag> {
     /**
      * The term identifiers, sorted increasing.
      */
@@ -53,7 +53,7 @@ public class TermsBag implements Comparable<TermsBag> {
     }
 
     private int indexOf(IndexedTerm indexedTerm) {
-        return Arrays.binarySearch(identifiers, indexedTerm.indexedTerm());
+        return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier());
     }
 
     public boolean contains(IndexedTerm indexedTerm) {
@@ -66,6 +66,10 @@ public class TermsBag implements Comparable<TermsBag> {
             return 0;
         }
         return counts[index];
+    }
+
+    public int size() {
+        return identifiers.length;
     }
 
     @Override
@@ -115,7 +119,11 @@ public class TermsBag implements Comparable<TermsBag> {
                 return this;
             }
 
-            identifierToCount.compute(indexedTerm.indexedTerm(), (identifier, count) -> {
+            return addIdentifier(indexedTerm.termIdentifier());
+        }
+
+        Builder addIdentifier(int identifier) {
+            identifierToCount.compute(identifier, (id, count) -> {
                 if (count == null) {
                     count = 0;
                 }

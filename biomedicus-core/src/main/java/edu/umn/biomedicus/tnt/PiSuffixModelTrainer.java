@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.utilities.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

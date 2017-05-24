@@ -16,8 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.text.Token;
-import edu.umn.biomedicus.common.text.TokenLike;
+import edu.umn.biomedicus.common.types.text.Token;
 
 import java.util.regex.Pattern;
 
@@ -38,24 +37,14 @@ public final class Acronyms {
     private static final Pattern BIG_NUMBER = Pattern.compile("[0-9][0-9,]+");
 
     /**
-     * Gets a standardized form of a token, derived from Token.normalForm
-     *
-     * @param t the token to standardize
-     * @return the standard form of the token
-     */
-    static String standardForm(TokenLike t) {
-        return standardFormString(t.getText());
-    }
-
-    /**
-     * Get a standardized form for the dictionary
-     * Replace non-single-digit numerals (including decimals/commas) with a generic string
-     * Collapse certain non-alphanumeric characters ('conjunction' symbols like /, &, +)
+     * Get a standardized form of this word for the dictionary.
+     * Replace non-single-digit numerals (including decimals/commas) with a generic string.
+     * Collapse case.
      *
      * @param charSequence the character sequence
      * @return the standardized form
      */
-    static String standardFormString(CharSequence charSequence) {
+    static String standardContextForm(CharSequence charSequence) {
         // Collapse numbers
         if (SINGLE_DIGIT.matcher(charSequence).matches()) {
             return "single_digit";
@@ -66,7 +55,22 @@ public final class Acronyms {
         if (BIG_NUMBER.matcher(charSequence).matches()) {
             return "big_number";
         }
-        // Collapse certain symbols
+        return charSequence.toString().toLowerCase();
+    }
+    static String standardContextForm(Token t) {
+        return standardContextForm(t.text());
+    }
+
+    /**
+     * Get a standardized form of this acronym token, collapsing some equivalent acronyms.
+     * Collapse certain non-alphanumeric characters ('conjunction' symbols like /, &, +).
+     * @param charSequence the form to be standardized
+     * @return the standard form as a String
+     */
+    static String standardAcronymForm(CharSequence charSequence) {
         return charSequence.toString().replace('&', '/').replace('+', '/');
+    }
+    static String standardAcronymForm(Token t) {
+        return standardAcronymForm(t.text());
     }
 }

@@ -17,23 +17,11 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import edu.umn.biomedicus.application.BiomedicusFiles;
-import edu.umn.biomedicus.application.Bootstrapper;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.plugins.AbstractPlugin;
 import org.apache.uima.resource.Resource_ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Guice injector resource implementation.
@@ -41,7 +29,7 @@ import java.util.stream.Collectors;
  * @author Ben Knoll
  * @since 1.4
  */
-public class GuiceInjector extends Resource_ImplBase {
+public final class GuiceInjector extends Resource_ImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiceInjector.class);
 
     private final Injector injector;
@@ -49,15 +37,8 @@ public class GuiceInjector extends Resource_ImplBase {
     public GuiceInjector() {
         LOGGER.info("Initializing Guice Injector Resource");
         try {
-            UimaBootstrapper uimaBootstrapper = UimaBootstrapper.create();
-            injector = uimaBootstrapper.getInjector();
-
-            for (AbstractPlugin plugin : uimaBootstrapper.getPlugins()) {
-                for (Class<DataLoader> loaderClass : plugin.dataLoaders()) {
-                    DataLoader dataLoader = injector.getInstance(loaderClass);
-                    dataLoader.eagerLoad();
-                }
-            }
+            Application application = UimaBootstrapper.create();
+            injector = application.getInjector();
         } catch (BiomedicusException e) {
             throw new IllegalStateException(e);
         }
@@ -65,5 +46,9 @@ public class GuiceInjector extends Resource_ImplBase {
 
     public Injector getInjector() {
         return injector;
+    }
+
+    public DocumentProcessorRunner createDocumentProcessorRunner() {
+        return DocumentProcessorRunner.create(injector);
     }
 }

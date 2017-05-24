@@ -1,0 +1,31 @@
+occasional
+daily
+weekly
+monthly
+yearly
+rarely
+socially
+very +rare
+regular
+very +rarely
+regularly
+even +once
+once +per +month
+more +than +one +year
+times/month
+\d+ +of +joints +per +day
+\d+ +days +in +last +month
+\d+ +times +per +month
+\d+ +days +of +use +in +last +month
+\d+ +times +of +lifetime +use
+Daily +use
+Weekly +use
+Irregular +use
+$number_names +of +joints +per +day
+$number_names +days +in +last +month
+$number_names +times +per +month
+$number_names +days +of +use +in +last +month
+$number_names +times +of +lifetime +use
+occasionally
+Occasional
+off +and +on

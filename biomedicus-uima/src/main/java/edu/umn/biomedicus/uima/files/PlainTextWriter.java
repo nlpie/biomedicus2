@@ -77,7 +77,7 @@ public class PlainTextWriter extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        String fileName = FileNameProviders.fromSystemView(systemView, ".txt");
+        String fileName = FileNameProviders.fromCAS(jCas.getCas(), ".txt");
         Path file = outputDir.resolve(fileName);
 
         try (InputStream sofaDataStream = systemView.getSofaDataStream()) {

@@ -21,14 +21,14 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class IndexedTerm implements Comparable<IndexedTerm> {
+public final class IndexedTerm implements Comparable<IndexedTerm> {
     private final int termIdentifier;
 
     public IndexedTerm(int termIdentifier) {
         this.termIdentifier = termIdentifier;
     }
 
-    public int indexedTerm() {
+    public int termIdentifier() {
         return termIdentifier;
     }
 
@@ -54,5 +54,9 @@ public class IndexedTerm implements Comparable<IndexedTerm> {
     @Override
     public int compareTo(IndexedTerm o) {
         return Integer.compare(termIdentifier, o.termIdentifier);
+    }
+
+    public static IndexedTerm unknown() {
+        return new IndexedTerm(-1);
     }
 }

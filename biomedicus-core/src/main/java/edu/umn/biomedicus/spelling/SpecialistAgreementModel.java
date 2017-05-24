@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  *
  */
 @ProvidedBy(SpecialistAgreementModel.Loader.class)
-public class SpecialistAgreementModel {
+public final class SpecialistAgreementModel {
     private final Map<String, Collection<String>> baseToCanonicalForm;
 
     private SpecialistAgreementModel(Map<String, Collection<String>> baseToCanonicalForm) {

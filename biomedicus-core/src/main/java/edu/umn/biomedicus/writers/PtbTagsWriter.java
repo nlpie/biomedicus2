@@ -17,11 +17,14 @@
 package edu.umn.biomedicus.writers;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;
@@ -29,26 +32,39 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DocumentScoped
 public class PtbTagsWriter implements DocumentProcessor {
 
     private final Path outputDir;
-    private final Document document;
+    private final LabelIndex<ParseToken> parseTokenLabelIndex;
+    private final LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
+    private final String text;
+    private final String documentId;
 
     @Inject
-    public PtbTagsWriter(@ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir, Document document) {
+    public PtbTagsWriter(
+            @ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir,
+            TextView systemView,
+            Document document
+    ) {
         this.outputDir = outputDir;
-        this.document = document;
+        text = systemView.getText();
+        documentId = document.getDocumentId();
+        parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+        partOfSpeechLabelIndex = systemView.getLabelIndex(PartOfSpeech.class);
     }
 
     @Override
     public void process() throws BiomedicusException {
-        String text = document.getText();
         StringBuilder rewriter = new StringBuilder(text);
         int added = 0;
-        for (Token token : document.getTokens()) {
-            int end = token.getEnd() + added;
-            String insertion = "/" + token.getPartOfSpeech().toString();
+        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
+            int end = parseTokenLabel.getEnd() + added;
+            String insertion = "/" + partOfSpeechLabelIndex
+                    .withTextLocation(parseTokenLabel)
+                    .orElseThrow(() -> new BiomedicusException(
+                            "No part of speech for parse token."))
+                    .value()
+                    .toString();
             rewriter.insert(end, insertion);
             if (rewriter.charAt(end + insertion.length()) != ' ') {
                 rewriter.insert(end + insertion.length(), ' ');
@@ -58,8 +74,9 @@ public class PtbTagsWriter implements DocumentProcessor {
         }
 
         try {
-            Path fileName = outputDir.resolve(document.getDocumentId());
-            Files.write(fileName, rewriter.toString().getBytes(StandardCharsets.UTF_8));
+            Path fileName = outputDir.resolve(documentId);
+            Files.write(fileName,
+                    rewriter.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new BiomedicusException(e);
         }

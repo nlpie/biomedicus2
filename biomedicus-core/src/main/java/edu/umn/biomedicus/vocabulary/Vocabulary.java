@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,26 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.common.terms.TermIndex;
 
 /**
+ * Retrieves the system-wide term indexes used by BioMedICUS.
  *
+ * @since 1.6.0
  */
-@ProvidedBy(VocabularyLoader.class)
-public class Vocabulary {
-    private final TermIndex wordIndex;
+public interface Vocabulary {
+    /**
+     * The words that would appear in parse tokens.
+     */
+    TermIndex getWordsIndex();
 
-    Vocabulary(TermIndex wordIndex) {
-        this.wordIndex = wordIndex;
-    }
+    /**
+     * The words that would occur in term tokens.
+     */
+    TermIndex getTermsIndex();
 
-    public TermIndex wordIndex() {
-        return wordIndex;
-    }
+    /**
+     * The words that would occur as normalized forms of term tokens.
+     */
+    TermIndex getNormsIndex();
 }

@@ -16,83 +16,154 @@
 
 package edu.umn.biomedicus.modification;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.serialization.YamlSerialization;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import edu.umn.biomedicus.common.tuples.Pair;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Span;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
 
-public final class ContextCues {
-    private List<String> leftContextCues;
-    private int leftContextScope;
-    private List<String> rightContextCues;
-    private int rightContextScope;
-    private List<PartOfSpeech> scopeDelimitersPos;
-    private List<String> scopeDelimitersTxt;
+class ContextCues {
+  private final List<List<String>> leftPhrases;
+  private final List<ModificationType> leftTypes;
+  private final int maxSizeLeftPhrase;
+  private final List<List<String>> rightPhrases;
+  private final List<ModificationType> rightTypes;
+  private final int maxSizeRightPhrase;
+  private final List<PartOfSpeech> scopeDelimitersPos;
+  private final List<String> scopeDelimiterWords;
 
-    public List<String> getLeftContextCues() {
-        return leftContextCues;
-    }
+  private ContextCues(
+      List<List<String>> leftPhrases,
+      List<ModificationType> leftTypes,
+      int maxSizeLeftPhrase,
+      List<List<String>> rightPhrases,
+      List<ModificationType> rightTypes,
+      int maxSizeRightPhrase,
+      List<PartOfSpeech> scopeDelimitersPos,
+      List<String> scopeDelimiterWords
+  ) {
+    this.leftPhrases = leftPhrases;
+    this.leftTypes = leftTypes;
+    this.maxSizeLeftPhrase = maxSizeLeftPhrase;
+    this.rightPhrases = rightPhrases;
+    this.rightTypes = rightTypes;
+    this.maxSizeRightPhrase = maxSizeRightPhrase;
+    this.scopeDelimitersPos = scopeDelimitersPos;
+    this.scopeDelimiterWords = scopeDelimiterWords;
+  }
 
-    public void setLeftContextCues(List<String> leftContextCues) {
-        this.leftContextCues = leftContextCues;
-    }
+  static Builder builder() {
+    return new Builder();
+  }
 
-    public List<String> getRightContextCues() {
-        return rightContextCues;
-    }
-
-    public void setRightContextCues(List<String> rightContextCues) {
-        this.rightContextCues = rightContextCues;
-    }
-
-    public int getLeftContextScope() {
-        return leftContextScope;
-    }
-
-    public void setLeftContextScope(int leftContextScope) {
-        this.leftContextScope = leftContextScope;
-    }
-
-    public int getRightContextScope() {
-        return rightContextScope;
-    }
-
-    public void setRightContextScope(int rightContextScope) {
-        this.rightContextScope = rightContextScope;
-    }
-
-    public List<PartOfSpeech> getScopeDelimitersPos() {
-        return scopeDelimitersPos;
-    }
-
-    public void setScopeDelimitersPos(List<PartOfSpeech> scopeDelimitersPos) {
-        this.scopeDelimitersPos = scopeDelimitersPos;
-    }
-
-    public List<String> getScopeDelimitersTxt() {
-        return scopeDelimitersTxt;
-    }
-
-    public void setScopeDelimitersTxt(List<String> scopeDelimitersTxt) {
-        this.scopeDelimitersTxt = scopeDelimitersTxt;
-    }
-
-    public static ContextCues deserialize(Path path) throws IOException {
-        try (InputStream inputStream = Files.newInputStream(path)) {
-            @SuppressWarnings("unchecked")
-            ContextCues contextCues = (ContextCues) YamlSerialization.createYaml().load(inputStream);
-            return contextCues;
+  @Nullable
+  private Pair<Integer, List<Span>> search(
+      List<Label<TermToken>> parseTokenLabels,
+      LabelIndex<PartOfSpeech> partOfSpeeches,
+      List<List<String>> phrases,
+      int maxSize
+  ) {
+    int size = parseTokenLabels.size();
+    for (int i = 0; i < size; i++) {
+      Label<TermToken> firstParseToken = parseTokenLabels.get(i);
+      for (PartOfSpeech partOfSpeech : partOfSpeeches.insideSpan(firstParseToken).values()) {
+        if (scopeDelimitersPos.contains(partOfSpeech)) {
+          return null;
         }
+      }
+      String word = firstParseToken.value().text();
+      if (scopeDelimiterWords.contains(word)) {
+        return null;
+      }
+      int limit = Math.min(size - i, maxSize);
+      for (int j = 1; j <= limit; j++) {
+        List<Label<TermToken>> leftRange = parseTokenLabels.subList(i, i + j);
+        List<String> leftSearch = new ArrayList<>(leftRange.size());
+        for (Label<TermToken> parseTokenLabel : leftRange) {
+          leftSearch.add(parseTokenLabel.value().text());
+        }
+        int indexOf = phrases.indexOf(leftSearch);
+        if (indexOf != -1) {
+          ArrayList<Span> result = new ArrayList<>();
+          for (Label<TermToken> tokenLabel : leftRange) {
+            result.add(tokenLabel.toSpan());
+          }
+          return new Pair<>(indexOf, result);
+        }
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  Pair<ModificationType, List<Span>> searchLeft(List<Label<TermToken>> parseTokenLabels,
+      LabelIndex<PartOfSpeech> partOfSpeeches) {
+    Pair<Integer, List<Span>> search = search(parseTokenLabels, partOfSpeeches, leftPhrases,
+        maxSizeLeftPhrase);
+    if (search != null) {
+      Collections.reverse(search.second());
+    }
+    return search == null ? null : Pair.of(leftTypes.get(search.first()), search.second());
+  }
+
+  @Nullable
+  Pair<ModificationType, List<Span>> searchRight(List<Label<TermToken>> parseTokenLabels,
+      LabelIndex<PartOfSpeech> partOfSpeeches) {
+    Pair<Integer, List<Span>> search = search(parseTokenLabels, partOfSpeeches, rightPhrases,
+        maxSizeRightPhrase);
+    return search == null ? null : Pair.of(rightTypes.get(search.getFirst()), search.getSecond());
+  }
+
+  static class Builder {
+    private final List<List<String>> leftPhrases = new ArrayList<>();
+    private final List<ModificationType> leftTypes = new ArrayList<>();
+    private final List<List<String>> rightPhrases = new ArrayList<>();
+    private final List<ModificationType> rightTypes = new ArrayList<>();
+    private final List<PartOfSpeech> scopeDelimitersPos = new ArrayList<>();
+    private final List<String> scopeDelimiterWords = new ArrayList<>();
+    private int maxSizeLeftPhrase = 0;
+    private int maxSizeRightPhrase = 0;
+
+    Builder addRightPhrase(ModificationType modificationType, String... words) {
+      if (words.length > maxSizeRightPhrase) {
+        maxSizeRightPhrase = words.length;
+      }
+      rightPhrases.add(Arrays.asList(words));
+      rightTypes.add(modificationType);
+      return this;
     }
 
-    public void serialize(Path path) throws IOException {
-        YamlSerialization.createYaml().dump(this, Files.newBufferedWriter(path, StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING));
+    Builder addLeftPhrase(ModificationType modificationType, String... words) {
+      if (words.length > maxSizeLeftPhrase) {
+        maxSizeLeftPhrase = words.length;
+      }
+      List<String> wordsList = Arrays.asList(words);
+      Collections.reverse(wordsList);
+      leftPhrases.add(wordsList);
+      leftTypes.add(modificationType);
+      return this;
     }
+
+    Builder addScopeDelimitingPos(PartOfSpeech partOfSpeech) {
+      scopeDelimitersPos.add(partOfSpeech);
+      return this;
+    }
+
+    Builder addScopeDelimitingWord(String word) {
+      scopeDelimiterWords.add(word);
+      return this;
+    }
+
+    ContextCues build() {
+      return new ContextCues(leftPhrases, leftTypes, maxSizeLeftPhrase, rightPhrases, rightTypes,
+          maxSizeRightPhrase,
+          scopeDelimitersPos, scopeDelimiterWords);
+    }
+  }
 }

@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.plugins;
 
 import com.google.inject.Module;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.EagerLoadable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public abstract class AbstractPlugin {
         return Collections.emptyList();
     }
 
-    public Collection<Class<DataLoader>> dataLoaders() {
+    public Collection<Class<EagerLoadable>> dataLoaders() {
         return Collections.emptyList();
     }
 }

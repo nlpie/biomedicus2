@@ -16,87 +16,32 @@
 
 package edu.umn.biomedicus.common.terms;
 
-import edu.umn.biomedicus.common.collect.HashIndexMap;
-
-import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
-/**
- *
- */
-public class TermIndex {
-    private final HashIndexMap<String> hashIndexMap;
+public interface TermIndex {
 
-    public TermIndex() {
-        hashIndexMap = new HashIndexMap<>();
-    }
+  boolean contains(String string);
 
-    public TermIndex(Collection<? extends CharSequence> collection) {
-        hashIndexMap = new HashIndexMap<>();
-        for (CharSequence charSequence : collection) {
-            addTerm(charSequence);
-        }
-    }
+  @Nullable
+  String getTerm(IndexedTerm indexedTerm);
 
-    public boolean contains(String string) {
-        return hashIndexMap.contains(string);
-    }
+  IndexedTerm getIndexedTerm(@Nullable CharSequence term);
 
-    public void addTerm(CharSequence term) {
-        String string = term.toString();
-        hashIndexMap.addItem(string);
-    }
+  List<String> getTerms(TermVector terms);
 
-    private String getTerm(int termIdentifier) {
-        return hashIndexMap.forIndex(termIdentifier);
-    }
+  TermVector getTermVector(Iterable<? extends CharSequence> terms);
 
-    private int getIdentifier(@Nullable CharSequence term) {
-        if (term == null) {
-            return -1;
-        }
-        String item = term.toString();
-        Integer index = hashIndexMap.indexOf(item);
-        return index == null ? -1 : index;
-    }
+  TermsBag getTermsBag(Iterable<? extends CharSequence> terms);
 
-    @Nullable
-    public String getTerm(IndexedTerm indexedTerm) {
-        if (indexedTerm.isUnknown()) {
-            return null;
-        }
-        return getTerm(indexedTerm.indexedTerm());
-    }
+  Collection<String> getTerms(TermsBag termsBag);
 
-    public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {
-        return new IndexedTerm(getIdentifier(term));
-    }
+  Iterator<IndexedTerm> iterator();
 
-    public TermsBag getTermVector(Iterable<? extends CharSequence> terms) {
-        TermsBag.Builder builder = TermsBag.builder();
-        for (CharSequence term : terms) {
-            IndexedTerm indexedTerm = getIndexedTerm(term);
-            builder.addTerm(indexedTerm);
-        }
-        return builder.build();
-    }
+  Stream<IndexedTerm> stream();
 
-    public List<String> getTerms(TermsBag termsBag) {
-        return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
-    }
-
-    public Iterator<IndexedTerm> iterator() {
-        return stream().iterator();
-    }
-
-    public Stream<IndexedTerm> stream() {
-        return IntStream.range(0, hashIndexMap.size()).mapToObj(IndexedTerm::new);
-    }
-
-    public int size() {
-        return hashIndexMap.size();
-    }
+  int size();
 }

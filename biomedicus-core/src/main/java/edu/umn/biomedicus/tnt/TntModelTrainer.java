@@ -16,10 +16,9 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
-import edu.umn.biomedicus.common.text.Sentence;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +74,11 @@ public class TntModelTrainer {
      * Private constructor, initialized by builder.
      *
      * @param filteredWordPosFrequencies The collection of frequency counters for word - part of speech pairs.
-     * @param posCapTrigramModelTrainer    The trainer for the PosCap trigram probabilities.
-     * @param maxSuffixLength              The maximum suffix length to use in a suffix model.
-     * @param maxWordFrequency             The maximum word frequency in the suffix / unknown words model.
-     * @param useMslSuffixModel            Whether or not the MSL suffix model should be used.
-     * @param restrictToOpenClass          Whether or not we should restrict to the {@link PartsOfSpeech#OPEN_CLASS}.
+     * @param posCapTrigramModelTrainer  The trainer for the PosCap trigram probabilities.
+     * @param maxSuffixLength            The maximum suffix length to use in a suffix model.
+     * @param maxWordFrequency           The maximum word frequency in the suffix / unknown words model.
+     * @param useMslSuffixModel          Whether or not the MSL suffix model should be used.
+     * @param restrictToOpenClass        Whether or not we should restrict to the {@link PartsOfSpeech#OPEN_CLASS}.
      */
     private TntModelTrainer(List<FilteredWordPosFrequencies> filteredWordPosFrequencies,
                             PosCapTrigramModelTrainer posCapTrigramModelTrainer,
@@ -108,19 +107,24 @@ public class TntModelTrainer {
      * Adds the counts of trigrams, bigrams, and unigrams of Part of Speech capitalizations to the trigram model,
      * and stores word frequencies for building the
      *
-     * @param sentence sentence to add tokens from
+     * @param tokens         the tokens in the sentence
+     * @param partOfSpeeches the part of speeches of the tokens in the sentence.
      */
-    public void addSentence(Sentence sentence) {
-        for (Token token : sentence.getTokens()) {
-            WordCap wordCap = new WordCap(token.getText(), token.isCapitalized());
+    public void addSentence(List<Token> tokens, List<PartOfSpeech> partOfSpeeches) {
+        for (int i = 0; i < tokens.size(); i++) {
+            Token token = tokens.get(i);
+            String tokenText = token.text();
+            boolean isCapitalized = Character.isUpperCase(tokenText.charAt(0));
+            WordCap wordCap = new WordCap(tokenText, isCapitalized);
+            PartOfSpeech partOfSpeech = partOfSpeeches.get(i);
             for (FilteredWordPosFrequencies filteredWordPosFrequencies : this.filteredWordPosFrequencies) {
-                PartOfSpeech partOfSpeech = token.getPartOfSpeech();
                 if (partOfSpeech != null) {
                     filteredWordPosFrequencies.addWord(wordCap, partOfSpeech);
                 }
             }
         }
-        posCapTrigramModelTrainer.addSentence(sentence);
+
+        posCapTrigramModelTrainer.addSentence(tokens, partOfSpeeches);
     }
 
     /**
@@ -131,7 +135,7 @@ public class TntModelTrainer {
     public TntModel createModel() {
         PosCapTrigramModel posCapTrigramModel = posCapTrigramModelTrainer.build();
 
-        Set<PartOfSpeech> tagSet = restrictToOpenClass ? PartsOfSpeech.OPEN_CLASS : PartsOfSpeech.REAL_TAGS;
+        Set<PartOfSpeech> tagSet = restrictToOpenClass ? PartsOfSpeech.getOpenClass() : PartsOfSpeech.getRealTags();
 
         final List<FilteredAdaptedWordProbabilityModel> knownWordModels = new ArrayList<>();
         final List<FilteredAdaptedWordProbabilityModel> suffixModels = new ArrayList<>();

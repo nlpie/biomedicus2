@@ -16,15 +16,13 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.rtfuima.type.NewParagraph;
-import edu.umn.biomedicus.type.ParagraphAnnotation;
 import edu.umn.biomedicus.uima.common.Views;
-import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
+import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,28 +32,32 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class ParagraphAnnotator extends JCasAnnotator_ImplBase {
+public class ParagraphAnnotator extends CasAnnotator_ImplBase {
     /**
      * Class logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ParagraphAnnotator.class);
 
     @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
-        LOGGER.info("Annotating rtf paragraphs.");
-        JCas systemView;
-        try {
-            systemView = aJCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-        AnnotationIndex<Annotation> newParagraphIndex = systemView.getAnnotationIndex(NewParagraph.type);
+    public void process(CAS aCAS) throws AnalysisEngineProcessException {
+        LOGGER.debug("Annotating rtf paragraphs.");
+        CAS systemView = aCAS.getView(Views.SYSTEM_VIEW);
+
+        Type newParagraphType = systemView.getTypeSystem()
+                .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
+
+        Type paragraphType = systemView.getTypeSystem()
+                .getType("edu.umn.biomedicus.type.ParagraphAnnotation");
+
+        AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
+                .getAnnotationIndex(newParagraphType);
         int start = 0;
 
-        for (Annotation newParagraph : newParagraphIndex) {
+        for (AnnotationFS newParagraph : newParagraphIndex) {
             int end = newParagraph.getEnd();
-            ParagraphAnnotation paragraphAnnotation = new ParagraphAnnotation(systemView, start, end);
-            paragraphAnnotation.addToIndexes();
+            systemView.addFsToIndexes(
+                    systemView.createAnnotation(paragraphType, start, end));
+
             start = end;
         }
     }

@@ -1,0 +1,8 @@
+\d+ *times
+$number_names *times
+heavy
+$number_names *of *joints
+\d+ *of *joints
+multiple
+any
+any significant

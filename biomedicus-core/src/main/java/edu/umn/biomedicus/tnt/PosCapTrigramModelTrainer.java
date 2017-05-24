@@ -16,14 +16,14 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Sentence;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Trains the trigram model for the TnT tagger.
@@ -83,33 +83,15 @@ class PosCapTrigramModelTrainer {
     }
 
     /**
-     * Adds the count of part of speech tag and capitalization unigram, bigrams and trigrams in the document to the
-     * running counts in the trainer.
-     *
-     * @param document document that has tokens, sentences, and parts of speech annotated
-     */
-    public void addDocument(Document document) {
-        for (Sentence sentence : document.getSentences()) {
-            addSentence(sentence);
-        }
-    }
-
-    /**
      * Adds the count of part of speech tag and capitalization unigram, bigrams and trigrams in the sentence to the
      * running counts in the trainer.
-     *
-     * @param sentence document that has tokens, sentences, and parts of speech annotated
      */
-    public void addSentence(Sentence sentence) {
-        boolean nulls = sentence.tokens()
-                .filter(t -> t.getPartOfSpeech() == null)
-                .findAny()
-                .isPresent();
-        if (nulls) {
-            return;
+    public void addSentence(List<Token> tokens, List<PartOfSpeech> partsOfSpeech) {
+        int[] tokenPosCaps = new int[tokens.size()];
+        for (int i = 0; i < tokens.size(); i++) {
+            tokenPosCaps[i] = PosCap.create(partsOfSpeech.get(i),
+                    Character.isUpperCase(tokens.get(i).text().charAt(0))).ordinal();
         }
-
-        int[] tokenPosCaps = sentence.tokens().map(PosCap::create).mapToInt(PosCap::ordinal).toArray();
         int[] posCaps = new int[tokenPosCaps.length + 3];
         posCaps[0] = BBS_POS_CAP.ordinal();
         posCaps[1] = BOS_POS_CAP.ordinal();

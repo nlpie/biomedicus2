@@ -19,7 +19,7 @@ package edu.umn.biomedicus.concepts;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.application.DataLoader;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 import java.io.IOException;

@@ -33,13 +33,9 @@ import java.util.Objects;
  * @since 1.3.0
  */
 class TableAnnotationDivider {
-    /**
-     * View to work in.
-     */
-    private final JCas jCas;
 
     /**
-     * CAS version of view.
+     * CAS view.
      */
     private final CAS cas;
 
@@ -64,15 +60,14 @@ class TableAnnotationDivider {
     /**
      * Initializes using a view.
      *
-     * @param jCas the view.
+     * @param cas the view.
      */
-    private TableAnnotationDivider(JCas jCas) {
-        this.jCas = jCas;
-        cas = jCas.getCas();
+    private TableAnnotationDivider(CAS cas) {
+        this.cas = cas;
     }
 
-    static TableAnnotationDivider in(JCas jCas) {
-        return new TableAnnotationDivider(jCas);
+    static TableAnnotationDivider in(CAS cas) {
+        return new TableAnnotationDivider(cas);
     }
 
     /**
@@ -81,8 +76,8 @@ class TableAnnotationDivider {
      * @param annotationType type to divide.
      * @return this object
      */
-    TableAnnotationDivider divide(int annotationType) {
-        annotations = jCas.getAnnotationIndex(annotationType);
+    TableAnnotationDivider divide(Type annotationType) {
+        annotations = cas.getAnnotationIndex(annotationType);
         return this;
     }
 
@@ -92,19 +87,19 @@ class TableAnnotationDivider {
      * @param dividerType type code for the dividing annotation type.
      * @return this object
      */
-    TableAnnotationDivider using(int dividerType) {
-        dividers = jCas.getAnnotationIndex(dividerType);
+    TableAnnotationDivider using(Type dividerType) {
+        dividers = cas.getAnnotationIndex(dividerType);
         return this;
     }
 
     /**
      * Sets the type to create.
      *
-     * @param typeCode type code for the type to create;
+     * @param type type to create;
      * @return this object
      */
-    TableAnnotationDivider into(int typeCode) {
-        typeToCreate = jCas.getCasType(typeCode);
+    TableAnnotationDivider into(Type type) {
+        typeToCreate = type;
         return this;
     }
 

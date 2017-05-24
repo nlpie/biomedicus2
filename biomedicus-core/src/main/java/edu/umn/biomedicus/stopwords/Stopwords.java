@@ -16,8 +16,7 @@
 
 package edu.umn.biomedicus.stopwords;
 
-import edu.umn.biomedicus.common.text.Document;
-import edu.umn.biomedicus.common.text.Token;
+import edu.umn.biomedicus.common.types.text.Token;
 
 /**
  * Represents stop words in text, words that should be ignored before processing because they are too common or for some
@@ -27,13 +26,8 @@ import edu.umn.biomedicus.common.text.Token;
 public interface Stopwords {
     /**
      * Checks and marks if a token is a stopword
+     *
      * @param token the token to mark whether is a stopword
      */
-    void checkIfStopword(Token token);
-
-    /**
-     * Checks and marks all of the tokens in a document whether they are stop words.
-     * @param document the document to iterate through all tokens and check whether are stopwords.
-     */
-    void annotateStopwords(Document document);
+    boolean isStopWord(Token token);
 }

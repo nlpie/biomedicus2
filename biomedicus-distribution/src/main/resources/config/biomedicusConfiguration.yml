@@ -1,0 +1,71 @@
+# paths can be set here, by environment variable or java property.
+paths:
+  #home: /absolute-path
+  #data: /absolute-path
+# settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
+settings:
+  vocabulary:
+    db.path: vocabulary.db
+    inMemory: yes
+  spelling:
+    arpa.path: spell/UPMC.arpa
+    maxEditDistance: 4
+  tnt:
+    trigram.path: tnt/trigram.yml
+    word.path: tnt/words/
+    beam.threshold: 2.0
+  stopwords:
+    model: fileBased
+    fileBased.path: stopwords/PubMedStopwords.txt
+  normalization:
+    lexicon.path: normalization/lexicon.yml
+    fallback.path: normalization/fallbackLexicon.yml
+  acronym:
+    useAlignment: false
+    expansionsModel.path: acronym/expansions.txt
+    alignmentModel.path: acronym-alignment/alignment.yml
+    model: vector
+    vector:
+      model.path: acronym/vectorSpace.yml
+      trainer:
+        expansionMap.path: REPLACE_ME_PATH_TO
+        uniqueIdMap.path: REPLACE_ME_PATH_TO
+        longforms.path: REPLACE_ME_PATH_TO
+        outputDir.path: REPLACE_ME_PATH_TO
+    senseMap.path: acronym/senseMap.ser
+    orthographicModel.path: acronym-orthographic/orthographicModel.yml
+  semanticNetwork:
+    srdef.path: semnetwork/SRDEF
+    semgroups.path: semnetwork/SemGroups.txt
+  concepts:
+    phrases.path: concepts/phrases.txt
+    norms.path: concepts/norms.txt
+    filters:
+      sui.path: conceptFilters/filteredSuis.txt
+      suicui.path: conceptFilters/filteredSuiCuis.txt
+      cui.path: conceptFilters/filteredCuis.txt
+      tui.path: conceptFilters/filteredTuis.txt
+  sections.headers.path: sections/headers.txt
+  parser.implementation: opennlp
+  opennlp:
+    sentence:
+      model.path: opennlp/sentenceME.bin
+      trainerOutput.path: opennlp/sentence-out.bin
+  syntaxnet:
+    installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
+    modelDir: syntaxnet/models/parsey_mcparseface
+  specialist.path: SPECIALIST/LEX
+  modification:
+    history.path: modification/history.yml
+    negation.path: modification/negation.yml
+    probability.path: modification/probability.yml
+# these indicate settings keys which are bound against a certain class
+settingInterfaces:
+  acronym.model: edu.umn.biomedicus.acronym.AcronymModel
+  stopwords.model: edu.umn.biomedicus.stopwords.Stopwords
+# these indicate the options for the bindings above
+interfaceImplementations:
+  edu.umn.biomedicus.acronym.AcronymModel:
+    vector: edu.umn.biomedicus.acronym.AcronymVectorModel
+  edu.umn.biomedicus.stopwords.Stopwords:
+    fileBased: edu.umn.biomedicus.stopwords.StopwordsModel

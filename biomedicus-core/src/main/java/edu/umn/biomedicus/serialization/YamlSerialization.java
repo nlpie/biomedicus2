@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.serialization;
 
-import edu.umn.biomedicus.common.semantics.PartOfSpeech;
-import edu.umn.biomedicus.common.semantics.PartsOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
@@ -25,6 +25,7 @@ import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.concepts.CUI;
 import edu.umn.biomedicus.concepts.SUI;
 import edu.umn.biomedicus.concepts.TUI;
+import java.util.Collection;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -65,7 +66,7 @@ public final class YamlSerialization {
                     public Object construct(Node node) {
                         String value = (String) constructScalar((ScalarNode) node);
                         boolean isCapitalized = value.charAt(0) == 'C';
-                        PartOfSpeech partOfSpeech = PartsOfSpeech.MAP.get(value.substring(1));
+                        PartOfSpeech partOfSpeech = PartsOfSpeech.forTag(value.substring(1));
                         return PosCap.create(partOfSpeech, isCapitalized);
                     }
                 });
@@ -73,7 +74,7 @@ public final class YamlSerialization {
                     @Override
                     public Object construct(Node node) {
                         String value = (String) constructScalar((ScalarNode) node);
-                        return PartsOfSpeech.MAP.get(value);
+                        return PartsOfSpeech.forTag(value);
                     }
                 });
                 yamlConstructors.put(new Tag("!cui"), new AbstractConstruct() {
@@ -109,7 +110,7 @@ public final class YamlSerialization {
                         @Override
                         public Object construct(Node node) {
                             String[] val = (String[]) constructArray((SequenceNode) node);
-                            return termIndex.getTermVector(Arrays.asList(val));
+                            return termIndex.getTermsBag(Arrays.asList(val));
                         }
                     });
                 }
@@ -153,7 +154,7 @@ public final class YamlSerialization {
                     });
                     representers.put(TermsBag.class, o -> {
                         TermsBag tv = (TermsBag) o;
-                        List<String> expanded = termIndex.getTerms(tv);
+                        Collection<String> expanded = termIndex.getTerms(tv);
                         return representSequence(new Tag("!tv"), expanded, null);
                     });
                 }

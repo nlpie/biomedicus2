@@ -17,13 +17,19 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.application.DocumentProcessor;
-import edu.umn.biomedicus.common.text.Span;
-import edu.umn.biomedicus.common.text.Document;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.common.types.style.Bold;
+import edu.umn.biomedicus.common.types.style.Underlined;
+import edu.umn.biomedicus.common.types.text.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
-import java.util.regex.Matcher;
+import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 /**
@@ -33,58 +39,78 @@ import java.util.regex.Pattern;
  * @author Yan Wang (rules)
  * @since 1.4
  */
-@DocumentScoped
 public class RuleBasedSectionDetector implements DocumentProcessor {
-
-    private final Document document;
-
-    /**
-     * The section title/headers pattern.
-     */
     private final Pattern headers;
+    private final LabelIndex<Sentence> sentenceLabelIndex;
+    private final Labeler<Section> sectionLabeler;
+    private final Labeler<SectionTitle> sectionTitleLabeler;
+    private final Labeler<SectionContent> sectionContentLabeler;
+    private final String text;
+    private final LabelIndex<Bold> boldLabelIndex;
+    private final LabelIndex<Underlined> underlinedLabelIndex;
 
     /**
      * Injectable constructor.
      *
-     * @param document the document to process.
+     * @param document                      the document to process.
      * @param ruleBasedSectionDetectorModel patterns.
      */
     @Inject
-    RuleBasedSectionDetector(Document document, RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
-        this.document = document;
+    RuleBasedSectionDetector(TextView document,
+                             RuleBasedSectionDetectorModel ruleBasedSectionDetectorModel) {
         this.headers = ruleBasedSectionDetectorModel.getSectionHeaderPattern();
+        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
+        boldLabelIndex = document.getLabelIndex(Bold.class);
+        underlinedLabelIndex = document.getLabelIndex(Underlined.class);
+        sectionLabeler = document.getLabeler(Section.class);
+        sectionTitleLabeler = document.getLabeler(SectionTitle.class);
+        sectionContentLabeler = document.getLabeler(SectionContent.class);
+        text = document.getText();
     }
 
 
     @Override
     public void process() throws BiomedicusException {
-        String text = document.getText();
-        Matcher matcher = headers.matcher(text);
-        int prevBegin = 0;
-        int prevEnd = 0;
-        while (matcher.find()) {
-            int begin = matcher.start();
-            if (!text.substring(prevBegin, begin).isEmpty()) {
-                document.createSection(Span.create(prevBegin, begin))
-                        .withContentStart(prevEnd)
-                        .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
-                        .withHasSubsections(false)
-                        .withLevel(0)
-                        .build();
+        Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabelIndex
+                .iterator();
+        Label<Sentence> header = null;
+        Label<Sentence> firstSentence = null;
+        Label<Sentence> lastSentence = null;
+
+        while (sentenceLabelIterator.hasNext()) {
+            Label<Sentence> sentenceLabel = sentenceLabelIterator.next();
+            CharSequence sentenceText = sentenceLabel.getCovered(text);
+            if (headers.matcher(sentenceText).matches() || boldLabelIndex
+                    .withTextLocation(sentenceLabel).isPresent()
+                    || underlinedLabelIndex.withTextLocation(sentenceLabel)
+                    .isPresent()) {
+                makeSection(header, firstSentence, lastSentence);
+                header = sentenceLabel;
+                firstSentence = null;
+                continue;
             }
-
-            prevBegin = begin;
-            prevEnd = matcher.end();
+            if (firstSentence == null) {
+                firstSentence = sentenceLabel;
+            }
+            lastSentence = sentenceLabel;
         }
 
-        int textEnd = text.length();
-        if (!text.substring(prevBegin, textEnd).isEmpty()) {
-            document.createSection(Span.create(prevBegin, textEnd))
-                    .withContentStart(prevEnd)
-                    .withSectionTitle(text.substring(prevBegin, prevEnd).trim())
-                    .withHasSubsections(false)
-                    .withLevel(0)
-                    .build();
+        makeSection(header, firstSentence, lastSentence);
+    }
+
+    private void makeSection(@Nullable Label<Sentence> header,
+                             @Nullable Label<Sentence> firstSentence,
+                             @Nullable Label<Sentence> lastSentence)
+            throws BiomedicusException {
+        if (header == null || firstSentence == null || lastSentence == null) {
+            return;
         }
+
+        sectionLabeler.value(ImmutableSection.builder().build())
+                .label(Span.create(header.getBegin(), lastSentence.getEnd()));
+        sectionTitleLabeler.value(new SectionTitle()).label(header);
+        sectionContentLabeler.value(new SectionContent())
+                .label(Span.create(firstSentence.getBegin(),
+                        lastSentence.getEnd()));
     }
 }
