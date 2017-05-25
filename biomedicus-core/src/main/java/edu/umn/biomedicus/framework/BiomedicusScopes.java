@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * </ul>
  * <br/>
  * The primary methods for running code in scopes are {@link #createProcessorContext(Map)} and
- * {@link #runInDocumentScope(Callable, Map)}.
+ * {@link #runInDocumentScope(Map, Callable)}.
  *
  * @author Ben Knoll
  * @since 1.6.0
@@ -96,20 +96,20 @@ public final class BiomedicusScopes {
     /**
      * Creates and uses a document scope to run a callable.
      *
-     * @param callable      a {@link Callable} to run.
-     * @param seededObjects the original objects to seed into the document context.
      * @param <T>           the return type of the callable to run.
+     * @param seededObjects the original objects to seed into the document context.
+     * @param callable      a {@link Callable} to run.
      * @return the result of the callable.
      * @throws Exception any exception throw while executing the callable
      */
-    public static <T> T runInDocumentScope(Callable<T> callable, Map<Key<?>, Object> seededObjects) throws Exception {
+    public static <T> T runInDocumentScope(Map<Key<?>, Object> seededObjects, Callable<T> callable) throws Exception {
         Context documentContext = new Context(DOCUMENT_CONTEXT, checkForInvalidSeedsAndCopy(seededObjects));
         return documentContext.call(callable);
     }
 
     /**
      * A provider which represents an object that will be provided by seeding into the context via the map arguments on
-     * {@link #createProcessorContext(Map)} or {@link #runInDocumentScope(Callable, Map)}. Modules can bind objects to
+     * {@link #createProcessorContext(Map)} or {@link #runInDocumentScope(Map, Callable)}. Modules can bind objects to
      * this provider in order to satisfy injector dependencies prior to the creation of the scopes. The binding can only
      * be injected inside a scope, and any provision request outside of a {@link ContextScope} will cause an
      * {@link IllegalStateException}.
