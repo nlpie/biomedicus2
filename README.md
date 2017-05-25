@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/51161341.svg)](https://zenodo.org/badge/latestdoi/51161341)
 [![Build Status](https://travis-ci.org/nlpie/biomedicus.svg?branch=master)](https://travis-ci.org/nlpie/biomedicus)
 
 Overview
