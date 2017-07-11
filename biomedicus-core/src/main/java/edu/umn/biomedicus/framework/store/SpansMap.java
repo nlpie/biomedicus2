@@ -22,59 +22,60 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface SpansMap<T> {
-    Optional<Label<T>> getLabel(TextLocation textLocation);
 
-    Optional<T> get(TextLocation textLocation);
+  Optional<Label<T>> getLabel(TextLocation textLocation);
 
-    SpansMap<T> toTheLeftOf(int index);
+  Optional<T> get(TextLocation textLocation);
 
-    SpansMap<T> toTheRightOf(int index);
+  SpansMap<T> toTheLeftOf(int index);
 
-    default SpansMap<T> toIncluding(TextLocation textLocation) {
-        return toTheLeftOf(textLocation.getEnd());
-    }
+  SpansMap<T> toTheRightOf(int index);
 
-    default SpansMap<T> fromIncluding(TextLocation textLocation) {
-        return toTheRightOf(textLocation.getBegin());
-    }
+  default SpansMap<T> toIncluding(TextLocation textLocation) {
+    return toTheLeftOf(textLocation.getEnd());
+  }
 
-    default SpansMap<T> toTheLeftOf(TextLocation textLocation) {
-        return toTheLeftOf(textLocation.getBegin());
-    }
+  default SpansMap<T> fromIncluding(TextLocation textLocation) {
+    return toTheRightOf(textLocation.getBegin());
+  }
 
-    default SpansMap<T> toTheRightOf(TextLocation textLocation) {
-        return toTheRightOf(textLocation.getEnd());
-    }
+  default SpansMap<T> toTheLeftOf(TextLocation textLocation) {
+    return toTheLeftOf(textLocation.getBegin());
+  }
 
-    SpansMap<T> insideSpan(TextLocation textLocation);
+  default SpansMap<T> toTheRightOf(TextLocation textLocation) {
+    return toTheRightOf(textLocation.getEnd());
+  }
 
-    SpansMap<T> containing(TextLocation textLocation);
+  SpansMap<T> insideSpan(TextLocation textLocation);
 
-    SpansMap<T> ascendingBegin();
+  SpansMap<T> containing(TextLocation textLocation);
 
-    SpansMap<T> descendingBegin();
+  SpansMap<T> ascendingBegin();
 
-    SpansMap<T> ascendingEnd();
+  SpansMap<T> descendingBegin();
 
-    SpansMap<T> descendingEnd();
+  SpansMap<T> ascendingEnd();
 
-    Set<Span> spans();
+  SpansMap<T> descendingEnd();
 
-    Collection<T> values();
+  Set<Span> spans();
 
-    Set<Label<T>> entries();
+  Collection<T> values();
 
-    boolean containsLabel(Object o);
+  Set<Label<T>> entries();
 
-    boolean isEmpty();
+  boolean containsLabel(Object o);
 
-    List<Label<T>> asList();
+  boolean isEmpty();
 
-    List<Span> spansAsList();
+  List<Label<T>> asList();
 
-    List<T> valuesAsList();
+  List<Span> spansAsList();
 
-    int size();
+  List<T> valuesAsList();
 
-    Optional<Label<T>> first();
+  int size();
+
+  Optional<Label<T>> first();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package edu.umn.biomedicus.uima.copying;
 
-import mockit.*;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.Verifications;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
@@ -29,39 +33,56 @@ import org.testng.annotations.Test;
  * @author Ben Knoll
  */
 public class ViewCopierTest {
-    @Tested ViewCopier viewCopier;
 
-    @Mocked FSIterator<FeatureStructure> fsIterator;
+  @Tested
+  ViewCopier viewCopier;
 
-    @Mocked FeatureStructure featureStructure;
+  @Mocked
+  FSIterator<FeatureStructure> fsIterator;
 
-    @Mocked FeatureStructureCopyingQueue featureStructureCopyingQueue;
+  @Mocked
+  FeatureStructure featureStructure;
 
-    @Injectable CAS oldCas;
-    @Injectable CAS newCas;
+  @Mocked
+  FeatureStructureCopyingQueue featureStructureCopyingQueue;
 
-    @Injectable JCas oldView;
-    @Injectable JCas newView;
+  @Injectable
+  CAS oldCas;
+  @Injectable
+  CAS newCas;
 
-    @Test
-    public void testMigrate() throws Exception {
-        new Expectations() {{
-            onInstance(oldView).getDocumentText(); result = "docText";
-            fsIterator.hasNext(); result = new boolean[]{true, true, true, false};
-            fsIterator.next(); result = featureStructure; times = 3;
+  @Injectable
+  JCas oldView;
+  @Injectable
+  JCas newView;
 
-            onInstance(newView).getCas(); result = newCas;
-            onInstance(oldView).getCas(); result = oldCas;
-            new FeatureStructureCopyingQueue(onInstance(oldCas), onInstance(newCas)); result = featureStructureCopyingQueue;
-        }};
+  @Test
+  public void testMigrate() throws Exception {
+    new Expectations() {{
+      onInstance(oldView).getDocumentText();
+      result = "docText";
+      fsIterator.hasNext();
+      result = new boolean[]{true, true, true, false};
+      fsIterator.next();
+      result = featureStructure;
+      times = 3;
 
-        viewCopier.migrate(oldView, newView);
+      onInstance(newView).getCas();
+      result = newCas;
+      onInstance(oldView).getCas();
+      result = oldCas;
+      new FeatureStructureCopyingQueue(onInstance(oldCas), onInstance(newCas));
+      result = featureStructureCopyingQueue;
+    }};
 
-        new Verifications() {{
-            onInstance(newView).setDocumentText("docText");
+    viewCopier.migrate(oldView, newView);
 
-            featureStructureCopyingQueue.enqueue(featureStructure); times = 3;
-            featureStructureCopyingQueue.run();
-        }};
-    }
+    new Verifications() {{
+      onInstance(newView).setDocumentText("docText");
+
+      featureStructureCopyingQueue.enqueue(featureStructure);
+      times = 3;
+      featureStructureCopyingQueue.run();
+    }};
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package edu.umn.biomedicus.rtf.beans.keywords;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
@@ -24,28 +28,29 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement
 @XmlType
 @XmlSeeAlso({BinaryKeywordAction.class, DestinationKeywordAction.class, HexKeywordAction.class,
-        OutputKeywordAction.class, PropertyKeywordAction.class, PropertyResetKeywordAction.class,
-        SkipDestinationIfUnknownKeywordAction.class, UnicodeKeywordAction.class})
+    OutputKeywordAction.class, PropertyKeywordAction.class, PropertyResetKeywordAction.class,
+    SkipDestinationIfUnknownKeywordAction.class, UnicodeKeywordAction.class})
 public class ControlKeyword {
-    private String keyword;
 
-    private AbstractKeywordAction keywordAction;
+  private String keyword;
 
-    @XmlElement(required = true)
-    public String getKeyword() {
-        return keyword;
-    }
+  private AbstractKeywordAction keywordAction;
 
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
+  @XmlElement(required = true)
+  public String getKeyword() {
+    return keyword;
+  }
 
-    @XmlElementRef(required = true)
-    public AbstractKeywordAction getKeywordAction() {
-        return keywordAction;
-    }
+  public void setKeyword(String keyword) {
+    this.keyword = keyword;
+  }
 
-    public void setKeywordAction(AbstractKeywordAction keywordAction) {
-        this.keywordAction = keywordAction;
-    }
+  @XmlElementRef(required = true)
+  public AbstractKeywordAction getKeywordAction() {
+    return keywordAction;
+  }
+
+  public void setKeywordAction(AbstractKeywordAction keywordAction) {
+    this.keywordAction = keywordAction;
+  }
 }

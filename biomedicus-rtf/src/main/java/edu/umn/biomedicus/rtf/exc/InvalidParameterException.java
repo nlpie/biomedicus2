@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,24 @@ package edu.umn.biomedicus.rtf.exc;
  *
  */
 public class InvalidParameterException extends RtfReaderException {
-    public InvalidParameterException() {
-    }
 
-    public InvalidParameterException(String message) {
-        super(message);
-    }
+  public InvalidParameterException() {
+  }
 
-    public InvalidParameterException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public InvalidParameterException(String message) {
+    super(message);
+  }
 
-    public InvalidParameterException(Throwable cause) {
-        super(cause);
-    }
+  public InvalidParameterException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public InvalidParameterException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+  public InvalidParameterException(Throwable cause) {
+    super(cause);
+  }
+
+  public InvalidParameterException(String message, Throwable cause, boolean enableSuppression,
+      boolean writableStackTrace) {
+    super(message, cause, enableSuppression, writableStackTrace);
+  }
 }

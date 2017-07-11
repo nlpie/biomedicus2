@@ -22,14 +22,13 @@ import com.google.inject.Key;
  *
  */
 final class ProcessorSettings {
-    private ProcessorSettings() {
-        throw new UnsupportedOperationException();
-    }
 
-    static final String VIEW_NAME_SETTING = "viewName";
+  static final String VIEW_NAME_SETTING = "viewName";
+  static final String DEFAULT_VIEW_NOT_SET = "notSet";
+  static final Key<String> VIEW_NAME_KEY = Key.get(String.class,
+      new ProcessorSettingImpl(VIEW_NAME_SETTING));
 
-    static final String DEFAULT_VIEW_NOT_SET = "notSet";
-
-    static final Key<String> VIEW_NAME_KEY = Key.get(String.class,
-            new ProcessorSettingImpl(VIEW_NAME_SETTING));
+  private ProcessorSettings() {
+    throw new UnsupportedOperationException();
+  }
 }

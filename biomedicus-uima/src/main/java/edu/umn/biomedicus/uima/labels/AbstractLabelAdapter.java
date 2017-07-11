@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,42 +24,43 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
 public abstract class AbstractLabelAdapter<T> implements LabelAdapter<T> {
-    protected final CAS cas;
-    protected final Type type;
 
-    protected AbstractLabelAdapter(CAS cas, Type type) {
-        this.cas = cas;
-        this.type = type;
-    }
+  protected final CAS cas;
+  protected final Type type;
 
-    @Override
-    public Type getType() {
-        return type;
-    }
+  protected AbstractLabelAdapter(CAS cas, Type type) {
+    this.cas = cas;
+    this.type = type;
+  }
 
-    @Override
-    public AnnotationFS labelToAnnotation(Label<T> label) {
-        AnnotationFS annotation = cas.createAnnotation(type, label.getBegin(),
-                label.getEnd());
-        fillAnnotation(label, annotation);
-        cas.addFsToIndexes(annotation);
-        return annotation;
-    }
+  @Override
+  public Type getType() {
+    return type;
+  }
 
-    protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
+  @Override
+  public AnnotationFS labelToAnnotation(Label<T> label) {
+    AnnotationFS annotation = cas.createAnnotation(type, label.getBegin(),
+        label.getEnd());
+    fillAnnotation(label, annotation);
+    cas.addFsToIndexes(annotation);
+    return annotation;
+  }
 
-    }
+  protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
 
-    @Override
-    public Label<T> annotationToLabel(AnnotationFS annotationFS) {
-        T labelValue = createLabelValue(annotationFS);
-        return new Label<>(new Span(annotationFS.getBegin(), annotationFS.getEnd()), labelValue);
-    }
+  }
 
-    protected abstract T createLabelValue(FeatureStructure featureStructure);
+  @Override
+  public Label<T> annotationToLabel(AnnotationFS annotationFS) {
+    T labelValue = createLabelValue(annotationFS);
+    return new Label<>(new Span(annotationFS.getBegin(), annotationFS.getEnd()), labelValue);
+  }
 
-    @Override
-    public boolean isDistinct() {
-        return false;
-    }
+  protected abstract T createLabelValue(FeatureStructure featureStructure);
+
+  @Override
+  public boolean isDistinct() {
+    return false;
+  }
 }

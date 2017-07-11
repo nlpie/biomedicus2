@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,63 +18,64 @@ package edu.umn.biomedicus.socialhistory;
 
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public class TobaccoKindCandidateDetector implements KindCandidateDetector {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TobaccoKindCandidateDetector.class);
-    private Helpers helper = new Helpers();
+  private static final Logger LOGGER = LoggerFactory.getLogger(TobaccoKindCandidateDetector.class);
+  private Helpers helper = new Helpers();
 
-    @Override
-    public boolean isSocialHistoryHeader(List<ParseToken> headerTokens) {
+  @Override
+  public boolean isSocialHistoryHeader(List<ParseToken> headerTokens) {
 
+    String strHeaderList = "(history|complaint|habits|subjectiv|allerg|risk +factor|hpi|Present +illness|Current +level +of +activity|Present +illness|Cardiovascular +risk +analysis|tobacco)";
+    String sttHeaderListExact = "(ESRD|SH|SHX)";
 
-        String strHeaderList = "(history|complaint|habits|subjectiv|allerg|risk +factor|hpi|Present +illness|Current +level +of +activity|Present +illness|Cardiovascular +risk +analysis|tobacco)";
-        String sttHeaderListExact = "(ESRD|SH|SHX)";
-
-        String strHeader = helper.toTokensString(headerTokens);
-        if (strHeader.matches("(?is).*\\b" + strHeaderList + "\\b.*") || strHeader.matches("(?s).*\\b" + sttHeaderListExact + "\\b.*") ) {return true;}
-
-        return false;
+    String strHeader = helper.toTokensString(headerTokens);
+    if (strHeader.matches("(?is).*\\b" + strHeaderList + "\\b.*") || strHeader
+        .matches("(?s).*\\b" + sttHeaderListExact + "\\b.*")) {
+      return true;
     }
 
-    @Override
-    public boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens, List<ParseToken> sentenceTokens) {
+    return false;
+  }
 
-        String strRelative = "(mom|mother|dad|father|grandmother|grandfather|son|child|daughter|sister|brother|maternal|paternal|niece|nephew|cousin|grandchild)";
-        String strNicotine = "(smok|chew|dips|expo|smoker|Chews tobacco|Snuff user|Ex-smoker|non smoker|nonsmoker|cigarette|pack|tin|carton|tobacco|Nicorette)";
+  @Override
+  public boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens,
+      List<ParseToken> sentenceTokens) {
 
-        String strSentence = helper.toTokensString(sentenceTokens);
-        String strHeader = helper.toTokensString(sectionTitleTokens);
+    String strRelative = "(mom|mother|dad|father|grandmother|grandfather|son|child|daughter|sister|brother|maternal|paternal|niece|nephew|cousin|grandchild)";
+    String strNicotine = "(smok|chew|dips|expo|smoker|Chews tobacco|Snuff user|Ex-smoker|non smoker|nonsmoker|cigarette|pack|tin|carton|tobacco|Nicorette)";
 
-        strHeader = "SOCIAL HISTORY";
+    String strSentence = helper.toTokensString(sentenceTokens);
+    String strHeader = helper.toTokensString(sectionTitleTokens);
 
-        if (! strSentence.matches(".*[a-zA-Z].*")) {
-            return false;
-        }
-        if (strSentence== strHeader) {
-            return false;
-        }
-        if (strSentence.matches("(?s).*:$")) {
-            return false;
-        }
-        if (strSentence.matches("(?is).*\\b" + strRelative + "\\b.*")) {
-            return false;
-        }
-        if (!strSentence.matches("(?is).*" + strNicotine + ".*")) {
+    strHeader = "SOCIAL HISTORY";
 
-            return false;
-        }
+    if (!strSentence.matches(".*[a-zA-Z].*")) {
+      return false;
+    }
+    if (strSentence == strHeader) {
+      return false;
+    }
+    if (strSentence.matches("(?s).*:$")) {
+      return false;
+    }
+    if (strSentence.matches("(?is).*\\b" + strRelative + "\\b.*")) {
+      return false;
+    }
+    if (!strSentence.matches("(?is).*" + strNicotine + ".*")) {
 
-        return true;
+      return false;
     }
 
-    @Override
-    public SubstanceUsageKind getSocialHistoryKind() {
-        return SubstanceUsageKind.NICOTINE;
-    }
+    return true;
+  }
+
+  @Override
+  public SubstanceUsageKind getSocialHistoryKind() {
+    return SubstanceUsageKind.NICOTINE;
+  }
 }

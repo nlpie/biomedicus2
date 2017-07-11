@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ import java.util.Collection;
  */
 @FunctionalInterface
 public interface EmissionProbabilityModel<S, Y> {
-    /**
-     * Gets the {@link CandidateProbability} objects for the emitted value. CandidateProbabilities are a hidden state
-     * along with the emission probability that this hidden state leads to the emitted value.
-     *
-     * @param emittedValue the emitted value from the series for which hidden states are being found.
-     * @return a unordered collection of candidate-state emission-probability pairs.
-     */
-    Collection<CandidateProbability<S>> getCandidates(Y emittedValue);
+
+  /**
+   * Gets the {@link CandidateProbability} objects for the emitted value. CandidateProbabilities are
+   * a hidden state along with the emission probability that this hidden state leads to the emitted
+   * value.
+   *
+   * @param emittedValue the emitted value from the series for which hidden states are being found.
+   * @return a unordered collection of candidate-state emission-probability pairs.
+   */
+  Collection<CandidateProbability<S>> getCandidates(Y emittedValue);
 }

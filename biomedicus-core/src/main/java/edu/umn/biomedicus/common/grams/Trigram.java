@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,39 @@ package edu.umn.biomedicus.common.grams;
  * @since 1.3.0
  */
 public interface Trigram<T> extends Iterable<T> {
-    /**
-     * Returns the second two parts of the trigram
-     *
-     * @return new bigram of the second two parts of the trigram
-     */
-    Bigram<T> tail();
 
-    /**
-     * Returns the first two parts of the trigram
-     *
-     * @return new bigram of the first two parts of the trigram
-     */
-    Bigram<T> head();
+  /**
+   * Returns the second two parts of the trigram
+   *
+   * @return new bigram of the second two parts of the trigram
+   */
+  Bigram<T> tail();
 
-    /**
-     * Returns the first object in the trigram
-     *
-     * @return the first object
-     */
-    T getFirst();
+  /**
+   * Returns the first two parts of the trigram
+   *
+   * @return new bigram of the first two parts of the trigram
+   */
+  Bigram<T> head();
 
-    /**
-     * Returns the second object in the trigram
-     *
-     * @return the second object
-     */
-    T getSecond();
+  /**
+   * Returns the first object in the trigram
+   *
+   * @return the first object
+   */
+  T getFirst();
 
-    /**
-     * Returns the third object in the trigram
-     *
-     * @return the third object
-     */
-    T getThird();
+  /**
+   * Returns the second object in the trigram
+   *
+   * @return the second object
+   */
+  T getSecond();
+
+  /**
+   * Returns the third object in the trigram
+   *
+   * @return the third object
+   */
+  T getThird();
 }

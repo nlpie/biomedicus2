@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,25 @@ import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
  *
  */
 class KnownWordModelTrainer extends WordModelTrainer {
-    private static final KnownWordModelTrainer INSTANCE = new KnownWordModelTrainer();
 
-    private KnownWordModelTrainer() {
-        super(PartsOfSpeech.getRealTags());
-    }
+  private static final KnownWordModelTrainer INSTANCE = new KnownWordModelTrainer();
 
-    public static KnownWordModelTrainer get() {
-        return INSTANCE;
-    }
+  private KnownWordModelTrainer() {
+    super(PartsOfSpeech.getRealTags());
+  }
 
-    @Override
-    protected double getProbability(WordPosFrequencies wordPosFrequencies, String word, PartOfSpeech partOfSpeech) {
-        int wordFreq = wordPosFrequencies.frequencyOfWordAndPartOfSpeech(word, partOfSpeech);
-        int posFreq = wordPosFrequencies.frequencyOfPartOfSpeech(partOfSpeech);
-        if (posFreq == 0) {
-            return Double.NEGATIVE_INFINITY;
-        }
-        return Math.log10((double)wordFreq / (double)posFreq);
+  public static KnownWordModelTrainer get() {
+    return INSTANCE;
+  }
+
+  @Override
+  protected double getProbability(WordPosFrequencies wordPosFrequencies, String word,
+      PartOfSpeech partOfSpeech) {
+    int wordFreq = wordPosFrequencies.frequencyOfWordAndPartOfSpeech(word, partOfSpeech);
+    int posFreq = wordPosFrequencies.frequencyOfPartOfSpeech(partOfSpeech);
+    if (posFreq == 0) {
+      return Double.NEGATIVE_INFINITY;
     }
+    return Math.log10((double) wordFreq / (double) posFreq);
+  }
 }

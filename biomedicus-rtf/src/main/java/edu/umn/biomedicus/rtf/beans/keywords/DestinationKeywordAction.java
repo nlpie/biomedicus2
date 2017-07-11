@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package edu.umn.biomedicus.rtf.beans.keywords;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -33,39 +32,40 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement
 @XmlType
 public class DestinationKeywordAction extends AbstractKeywordAction {
-    /**
-     * The name of the destination.
-     */
-    private String destinationName;
 
-    /**
-     * Getter for the destination name.
-     *
-     * @return the destination name.
-     */
-    @XmlElement(required = true)
-    public String getDestinationName() {
-        return destinationName;
-    }
+  /**
+   * The name of the destination.
+   */
+  private String destinationName;
 
-    /**
-     * Sets the destination name.
-     *
-     * @param destinationName the destination name.
-     */
-    public void setDestinationName(String destinationName) {
-        this.destinationName = destinationName;
-    }
+  /**
+   * Getter for the destination name.
+   *
+   * @return the destination name.
+   */
+  @XmlElement(required = true)
+  public String getDestinationName() {
+    return destinationName;
+  }
 
-    @Override
-    public void executeKeyword(State state) throws RtfReaderException {
-        state.changeDestination(destinationName);
-    }
+  /**
+   * Sets the destination name.
+   *
+   * @param destinationName the destination name.
+   */
+  public void setDestinationName(String destinationName) {
+    this.destinationName = destinationName;
+  }
 
-    @Override
-    public KeywordAction copy() {
-        DestinationKeywordAction destinationKeywordAction = new DestinationKeywordAction();
-        destinationKeywordAction.setDestinationName(destinationName);
-        return destinationKeywordAction;
-    }
+  @Override
+  public void executeKeyword(State state) throws RtfReaderException {
+    state.changeDestination(destinationName);
+  }
+
+  @Override
+  public KeywordAction copy() {
+    DestinationKeywordAction destinationKeywordAction = new DestinationKeywordAction();
+    destinationKeywordAction.setDestinationName(destinationName);
+    return destinationKeywordAction;
+  }
 }

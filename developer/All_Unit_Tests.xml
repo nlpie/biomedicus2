@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,35 +15,36 @@
   -->
 
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All Unit Tests" type="TestNG" factoryName="TestNG">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="jacoco" />
-    <module name="" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" value="" />
-    <option name="SUITE_NAME" value="" />
-    <option name="PACKAGE_NAME" value="" />
-    <option name="MAIN_CLASS_NAME" value="" />
-    <option name="METHOD_NAME" />
-    <option name="GROUP_NAME" value="" />
-    <option name="TEST_OBJECT" value="PATTERN" />
-    <option name="VM_PARAMETERS" value="-ea" />
-    <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-    <option name="OUTPUT_DIRECTORY" value="" />
-    <option name="ANNOTATION_TYPE" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
+  <configuration default="false" factoryName="TestNG" name="All Unit Tests" type="TestNG">
+    <extension enabled="false" merge="false" name="coverage" runner="jacoco"
+      sample_coverage="true"/>
+    <module name=""/>
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false"/>
+    <option name="ALTERNATIVE_JRE_PATH" value=""/>
+    <option name="SUITE_NAME" value=""/>
+    <option name="PACKAGE_NAME" value=""/>
+    <option name="MAIN_CLASS_NAME" value=""/>
+    <option name="METHOD_NAME"/>
+    <option name="GROUP_NAME" value=""/>
+    <option name="TEST_OBJECT" value="PATTERN"/>
+    <option name="VM_PARAMETERS" value="-ea"/>
+    <option name="PARAMETERS" value=""/>
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$"/>
+    <option name="OUTPUT_DIRECTORY" value=""/>
+    <option name="ANNOTATION_TYPE"/>
+    <option name="ENV_VARIABLES"/>
+    <option name="PASS_PARENT_ENVS" value="true"/>
     <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="wholeProject" />
+      <value defaultName="wholeProject"/>
     </option>
-    <option name="USE_DEFAULT_REPORTERS" value="false" />
-    <option name="PROPERTIES_FILE" value="" />
-    <envs />
-    <properties />
-    <listeners />
+    <option name="USE_DEFAULT_REPORTERS" value="false"/>
+    <option name="PROPERTIES_FILE" value=""/>
+    <envs/>
+    <properties/>
+    <listeners/>
     <patterns>
-      <pattern testClass="^(?!.*IT$).*$" />
+      <pattern testClass="^(?!.*IT$).*$"/>
     </patterns>
-    <method />
+    <method/>
   </configuration>
 </component>

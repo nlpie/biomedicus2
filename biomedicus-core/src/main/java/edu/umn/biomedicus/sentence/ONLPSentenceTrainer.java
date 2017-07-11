@@ -16,11 +16,27 @@
 
 package edu.umn.biomedicus.sentence;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
-import edu.umn.biomedicus.annotations.ProcessorScoped;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.framework.PostProcessor;
+import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.Aggregator;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.TextView;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingDeque;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.sentdetect.SentenceDetectorFactory;
 import opennlp.tools.sentdetect.SentenceDetectorME;
@@ -29,111 +45,120 @@ import opennlp.tools.sentdetect.SentenceSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.StringList;
 import opennlp.tools.util.TrainingParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
+public class ONLPSentenceTrainer implements Aggregator {
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+  private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
 
-@ProcessorScoped
-public class ONLPSentenceTrainer implements PostProcessor {
-    private static final char[] EOS_CHARS = ".!?:\n\t".toCharArray();
-    private static final String POISON = ">poison<";
-    private final BlockingDeque<String> samplesQueue
-            = new LinkedBlockingDeque<>();
-    private final Dictionary abbrevs;
-    private final Path outputPath;
-    private final CountDownLatch modelTrained = new CountDownLatch(1);
-    @Nullable private SentenceModel sentenceModel = null;
-    @Nullable private IOException ioException = null;
+  private static final char[] EOS_CHARS = ".!?:\n\t".toCharArray();
+  private static final String POISON = ">poison<";
+  private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();
+  private final Dictionary abbrevs;
+  private final Path outputPath;
+  private final CountDownLatch modelTrained = new CountDownLatch(1);
 
-    @Inject
-    ONLPSentenceTrainer(AcronymExpansionsModel acronymExpansionsModel,
-                        @ProcessorSetting("opennlp.sentence.trainerOutput.path")
-                                Path outputPath) {
-        this.outputPath = outputPath;
-        abbrevs = new Dictionary(true);
-        for (String s : acronymExpansionsModel.getAcronyms()) {
-            abbrevs.put(new StringList(s));
-        }
+  @Nullable
+  private SentenceModel sentenceModel = null;
 
-        new Thread(() -> {
-            try {
-                SentenceSampleStream samples = new SentenceSampleStream(
-                        new ObjectStream<String>() {
-                            @Override
-                            public String read() throws IOException {
-                                try {
-                                    String sentenceSample = samplesQueue.take();
-                                    // comparing reference equality on purpose.
-                                    //noinspection StringEquality
-                                    if (sentenceSample == POISON) {
-                                        return null;
-                                    }
-                                    return sentenceSample;
-                                } catch (InterruptedException e) {
-                                    throw new IOException(e);
-                                }
-                            }
+  @Nullable
+  private IOException ioException = null;
 
-                            @Override
-                            public void reset() throws IOException,
-                                    UnsupportedOperationException {
-                                throw new UnsupportedOperationException();
-                            }
-
-                            @Override
-                            public void close() throws IOException {
-
-                            }
-                        });
-                SentenceDetectorFactory sentenceDetectorFactory
-                        = new SentenceDetectorFactory("en",
-                        false, abbrevs, EOS_CHARS);
-                TrainingParameters params = TrainingParameters.defaultParams();
-                sentenceModel = SentenceDetectorME.train("en",
-                        samples, sentenceDetectorFactory, params);
-                modelTrained.countDown();
-            } catch (IOException e) {
-                ioException = e;
-            }
-        });
+  @Inject
+  ONLPSentenceTrainer(AcronymExpansionsModel acronymExpansionsModel,
+      @ProcessorSetting("opennlp.sentence.trainerOutputDirectory") Path outputPath) {
+    this.outputPath = outputPath;
+    abbrevs = new Dictionary(true);
+    for (String s : acronymExpansionsModel.getAcronyms()) {
+      abbrevs.put(new StringList(s));
     }
 
-    void addSentenceSample(String sentenceSample) throws InterruptedException {
-        samplesQueue.put(sentenceSample);
+    Thread thread = new Thread(() -> {
+      try {
+        SentenceSampleStream samples = new SentenceSampleStream(
+            new ObjectStream<String>() {
+              boolean done = false;
+
+              @Nullable
+              @Override
+              public String read() throws IOException {
+                try {
+                  if (done) {
+                    return null;
+                  }
+                  String sentenceSample = samplesQueue.take();
+                  // comparing reference equality on purpose.
+                  //noinspection StringEquality
+                  if (sentenceSample == POISON) {
+                    done = true;
+                    return null;
+                  }
+                  return sentenceSample;
+                } catch (InterruptedException e) {
+                  throw new IOException(e);
+                }
+              }
+
+              @Override
+              public void reset() throws IOException,
+                  UnsupportedOperationException {
+                throw new UnsupportedOperationException();
+              }
+
+              @Override
+              public void close() throws IOException {
+
+              }
+            });
+        SentenceDetectorFactory sentenceDetectorFactory = new SentenceDetectorFactory("en",
+            false, abbrevs, EOS_CHARS);
+        TrainingParameters params = TrainingParameters.defaultParams();
+        logger.info("Training sentence model.");
+        sentenceModel = SentenceDetectorME.train("en", samples, sentenceDetectorFactory, params);
+        logger.info("Finished training sentence model.");
+        modelTrained.countDown();
+      } catch (IOException e) {
+        ioException = e;
+      }
+    });
+    thread.start();
+  }
+
+  @Override
+  public void addDocument(Document document) {
+    TextView textView = document.getTextView(StandardViews.SYSTEM)
+        .orElseThrow(() -> new IllegalStateException("No system view."));
+
+    String text = textView.getText();
+
+    for (Label<Sentence> sentenceLabel : textView.getLabelIndex(Sentence.class)) {
+      CharSequence sample = sentenceLabel.getCovered(text);
+      samplesQueue.add(sample.toString());
     }
+  }
 
-    @Override
-    public void afterProcessing() throws BiomedicusException {
-        samplesQueue.add(POISON);
-        try {
-            modelTrained.await();
-            if (ioException != null) {
-                throw new BiomedicusException(ioException);
-            }
+  @Override
+  public void done() throws BiomedicusException {
 
-            if (sentenceModel == null) {
-                throw new BiomedicusException("Error training sentence model.");
-            }
+    samplesQueue.add(POISON);
+    try {
+      modelTrained.await();
+      if (ioException != null) {
+        throw new BiomedicusException(ioException);
+      }
 
-            OutputStream outputStream = Files.newOutputStream(outputPath,
-                    CREATE, TRUNCATE_EXISTING);
+      if (sentenceModel == null) {
+        throw new BiomedicusException("Error training sentence model.");
+      }
 
-            sentenceModel.serialize(outputStream);
-        } catch (InterruptedException e) {
-            throw new BiomedicusException(
-                    "Interrupted before model could be saved.");
-        } catch (IOException e) {
-            throw new BiomedicusException("Failed to write out model.");
-        }
+      OutputStream outputStream = Files.newOutputStream(outputPath.resolve("sentence.bin"), CREATE,
+          TRUNCATE_EXISTING);
+      sentenceModel.serialize(outputStream);
+    } catch (InterruptedException e) {
+      throw new BiomedicusException("Interrupted before model could be saved.");
+    } catch (IOException e) {
+      throw new BiomedicusException("Failed to write out model.");
     }
+  }
 }

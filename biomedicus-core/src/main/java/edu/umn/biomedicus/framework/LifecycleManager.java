@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package edu.umn.biomedicus.framework;
 
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.exc.BiomedicusException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,16 +30,17 @@ import java.util.Collection;
  */
 @Singleton
 public class LifecycleManager {
-    private final Collection<LifecycleManaged> lifecycleManageds
-            = new ArrayList<>();
 
-    public void register(LifecycleManaged lifecycleManaged) {
-        lifecycleManageds.add(lifecycleManaged);
-    }
+  private final Collection<LifecycleManaged> lifecycleManageds
+      = new ArrayList<>();
 
-    public void triggerShutdown() throws BiomedicusException {
-        for (LifecycleManaged lifecycleManaged : lifecycleManageds) {
-            lifecycleManaged.doShutdown();
-        }
+  public void register(LifecycleManaged lifecycleManaged) {
+    lifecycleManageds.add(lifecycleManaged);
+  }
+
+  public void triggerShutdown() throws BiomedicusException {
+    for (LifecycleManaged lifecycleManaged : lifecycleManageds) {
+      lifecycleManaged.doShutdown();
     }
+  }
 }

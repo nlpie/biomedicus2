@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,21 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.store.Document;
+import javax.annotation.Nonnull;
 
 /**
- * A base processor of a document.
- *
- * Subclasses of this are designed to be injected using Guice.
+ * A base processor of a document. A single document processor is created and injected for each
+ * document. Avoid time-consuming work in the constructor for implementations of document processor.
  *
  * @since 1.4.0
  */
 public interface DocumentProcessor {
-    /**
-     * Processes the document.
-     */
-    void process() throws BiomedicusException;
+
+  /**
+   * Performs the processing.
+   *
+   * @param document document to process
+   */
+  void process(@Nonnull Document document) throws BiomedicusException;
 }

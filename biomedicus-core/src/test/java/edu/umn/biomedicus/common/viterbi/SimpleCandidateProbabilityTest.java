@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,38 +16,42 @@
 
 package edu.umn.biomedicus.common.viterbi;
 
+import static org.testng.Assert.assertEquals;
+
 import mockit.Injectable;
 import mockit.Tested;
 import mockit.Verifications;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
 /**
  * Unit test for {@link SimpleCandidateProbability}.
  */
 public class SimpleCandidateProbabilityTest {
-    @Tested SimpleCandidateProbability<String> simpleCandidateProbability;
 
-    @Injectable(value = "state") String candidate;
+  @Tested
+  SimpleCandidateProbability<String> simpleCandidateProbability;
 
-    @Injectable(value = "-1.0") double emissionLogProbability;
+  @Injectable(value = "state")
+  String candidate;
 
-    @Test
-    public void testGetCandidate() throws Exception {
-        String candidate = simpleCandidateProbability.getCandidate();
+  @Injectable(value = "-1.0")
+  double emissionLogProbability;
 
-        new Verifications() {{
-            assertEquals(candidate, "state");
-        }};
-    }
+  @Test
+  public void testGetCandidate() throws Exception {
+    String candidate = simpleCandidateProbability.getCandidate();
 
-    @Test
-    public void testGetEmissionLogProbability() throws Exception {
-        double emissionLogProbability = simpleCandidateProbability.getEmissionLogProbability();
+    new Verifications() {{
+      assertEquals(candidate, "state");
+    }};
+  }
 
-        new Verifications() {{
-            assertEquals(emissionLogProbability, -1.0d);
-        }};
-    }
+  @Test
+  public void testGetEmissionLogProbability() throws Exception {
+    double emissionLogProbability = simpleCandidateProbability.getEmissionLogProbability();
+
+    new Verifications() {{
+      assertEquals(emissionLogProbability, -1.0d);
+    }};
+  }
 }

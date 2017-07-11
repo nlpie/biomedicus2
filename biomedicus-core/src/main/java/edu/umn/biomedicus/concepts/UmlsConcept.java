@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,39 @@ import edu.umn.biomedicus.common.types.semantics.Concept;
  *
  */
 class UmlsConcept implements Concept {
-    private final SUI sui;
-    private final CUI identifier;
-    private final TUI type;
-    private final double confidence;
 
-    public UmlsConcept(CUI identifier, TUI type, SUI sui, double confidence) {
-        this.identifier = identifier;
-        this.type = type;
-        this.sui = sui;
-        this.confidence = confidence;
-    }
+  private final SUI sui;
+  private final CUI identifier;
+  private final TUI type;
+  private final double confidence;
 
-    @Override
-    public String getIdentifier() {
-        return identifier.toString();
-    }
+  public UmlsConcept(CUI identifier, TUI type, SUI sui, double confidence) {
+    this.identifier = identifier;
+    this.type = type;
+    this.sui = sui;
+    this.confidence = confidence;
+  }
 
-    public String getType() {
-        return type.toString();
-    }
+  @Override
+  public String getIdentifier() {
+    return identifier.toString();
+  }
 
-    @Override
-    public String getSource() {
-        return "UMLS";
-    }
+  public String getType() {
+    return type.toString();
+  }
 
-    @Override
-    public double getConfidence() {
-        return confidence;
-    }
+  @Override
+  public String getSource() {
+    return "UMLS";
+  }
 
-    public SUI sui() {
-        return sui;
-    }
+  @Override
+  public double getConfidence() {
+    return confidence;
+  }
+
+  public SUI sui() {
+    return sui;
+  }
 }

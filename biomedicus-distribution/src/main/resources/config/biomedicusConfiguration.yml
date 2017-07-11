@@ -49,8 +49,8 @@ settings:
   parser.implementation: opennlp
   opennlp:
     sentence:
-      model.path: opennlp/sentenceME.bin
-      trainerOutput.path: opennlp/sentence-out.bin
+      model.path: opennlp/sentence.bin
+      trainerOutputDirectory: opennlp/sentence-out.bin
   syntaxnet:
     installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface

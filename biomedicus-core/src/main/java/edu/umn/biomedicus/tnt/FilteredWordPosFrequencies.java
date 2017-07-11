@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,45 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 
 /**
  *
  */
 class FilteredWordPosFrequencies {
-    private final WordPosFrequencies wordPosFrequencies;
-    private final WordCapFilter filter;
-    private final WordCapAdapter wordCapAdapter;
 
-    FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter, WordCapAdapter wordCapAdapter) {
-        this.wordPosFrequencies = wordPosFrequencies;
-        this.filter = filter;
-        this.wordCapAdapter = wordCapAdapter;
-    }
+  private final WordPosFrequencies wordPosFrequencies;
+  private final WordCapFilter filter;
+  private final WordCapAdapter wordCapAdapter;
 
-    FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter) {
-        this(new WordPosFrequencies(), filter, wordCapAdapter);
-    }
+  FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter,
+      WordCapAdapter wordCapAdapter) {
+    this.wordPosFrequencies = wordPosFrequencies;
+    this.filter = filter;
+    this.wordCapAdapter = wordCapAdapter;
+  }
 
-    void addWord(WordCap wordCap, PartOfSpeech partOfSpeech) {
-        WordCap adapted = wordCapAdapter.apply(wordCap);
-        if (filter.test(adapted)) {
-            wordPosFrequencies.addCount(adapted.getWord(), partOfSpeech, 1);
-        }
-    }
+  FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter) {
+    this(new WordPosFrequencies(), filter, wordCapAdapter);
+  }
 
-    WordCapFilter getFilter() {
-        return filter;
+  void addWord(WordCap wordCap, PartOfSpeech partOfSpeech) {
+    WordCap adapted = wordCapAdapter.apply(wordCap);
+    if (filter.test(adapted)) {
+      wordPosFrequencies.addCount(adapted.getWord(), partOfSpeech, 1);
     }
+  }
 
-    WordCapAdapter getWordCapAdapter() {
-        return wordCapAdapter;
-    }
+  WordCapFilter getFilter() {
+    return filter;
+  }
 
-    WordPosFrequencies getWordPosFrequencies() {
-        return wordPosFrequencies;
-    }
+  WordCapAdapter getWordCapAdapter() {
+    return wordCapAdapter;
+  }
+
+  WordPosFrequencies getWordPosFrequencies() {
+    return wordPosFrequencies;
+  }
 }

@@ -19,37 +19,44 @@ package edu.umn.biomedicus.utilities;
 import edu.umn.biomedicus.framework.store.Span;
 
 public class ParseNode {
-    private final Span parent;
-    private final String label;
 
-    public ParseNode(Span parent, String label) {
-        this.parent = parent;
-        this.label = label;
+  private final Span parent;
+  private final String label;
+
+  public ParseNode(Span parent, String label) {
+    this.parent = parent;
+    this.label = label;
+  }
+
+  public Span getParent() {
+    return parent;
+  }
+
+  public String getLabel() {
+    return label;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public Span getParent() {
-        return parent;
+    ParseNode parseNode = (ParseNode) o;
+
+    if (!parent.equals(parseNode.parent)) {
+      return false;
     }
+    return label.equals(parseNode.label);
+  }
 
-    public String getLabel() {
-        return label;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ParseNode parseNode = (ParseNode) o;
-
-        if (!parent.equals(parseNode.parent)) return false;
-        return label.equals(parseNode.label);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = parent.hashCode();
-        result = 31 * result + label.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = parent.hashCode();
+    result = 31 * result + label.hashCode();
+    return result;
+  }
 }

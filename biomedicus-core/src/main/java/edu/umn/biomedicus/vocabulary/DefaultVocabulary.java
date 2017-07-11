@@ -19,11 +19,10 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.framework.DataLoader;
-import edu.umn.biomedicus.framework.LifecycleManaged;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
-
+import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.framework.LifecycleManaged;
 import java.io.IOException;
 
 /**
@@ -36,55 +35,57 @@ import java.io.IOException;
 @Singleton
 @ProvidedBy(DefaultVocabulary.Loader.class)
 class DefaultVocabulary implements LifecycleManaged, Vocabulary {
+
+  private final VocabularyStore store;
+  private final TermIndex wordsIndex;
+  private final TermIndex termIndex;
+  private final TermIndex normsIndex;
+
+  DefaultVocabulary(VocabularyStore store) {
+    this.store = store;
+    this.wordsIndex = store.getWords();
+    this.termIndex = store.getTerms();
+    this.normsIndex = store.getNorms();
+  }
+
+  @Override
+  public TermIndex getWordsIndex() {
+    return wordsIndex;
+  }
+
+  @Override
+  public TermIndex getTermsIndex() {
+    return termIndex;
+  }
+
+  @Override
+  public TermIndex getNormsIndex() {
+    return normsIndex;
+  }
+
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    try {
+      store.close();
+    } catch (IOException e) {
+      throw new BiomedicusException(e);
+    }
+  }
+
+  @Singleton
+  public static class Loader extends DataLoader<Vocabulary> {
+
     private final VocabularyStore store;
-    private final TermIndex wordsIndex;
-    private final TermIndex termIndex;
-    private final TermIndex normsIndex;
 
-    DefaultVocabulary(VocabularyStore store) {
-        this.store = store;
-        this.wordsIndex = store.getWords();
-        this.termIndex = store.getTerms();
-        this.normsIndex = store.getNorms();
+    @Inject
+    Loader(VocabularyStore store) {
+      this.store = store;
     }
 
     @Override
-    public TermIndex getWordsIndex() {
-        return wordsIndex;
+    protected Vocabulary loadModel() throws BiomedicusException {
+      store.open();
+      return new DefaultVocabulary(store);
     }
-
-    @Override
-    public TermIndex getTermsIndex() {
-        return termIndex;
-    }
-
-    @Override
-    public TermIndex getNormsIndex() {
-        return normsIndex;
-    }
-
-    @Override
-    public void doShutdown() throws BiomedicusException {
-        try {
-            store.close();
-        } catch (IOException e) {
-            throw new BiomedicusException(e);
-        }
-    }
-
-    @Singleton
-    public static class Loader extends DataLoader<Vocabulary> {
-        private final VocabularyStore store;
-
-        @Inject
-        Loader(VocabularyStore store) {
-            this.store = store;
-        }
-
-        @Override
-        protected Vocabulary loadModel() throws BiomedicusException {
-            store.open();
-            return new DefaultVocabulary(store);
-        }
-    }
+  }
 }

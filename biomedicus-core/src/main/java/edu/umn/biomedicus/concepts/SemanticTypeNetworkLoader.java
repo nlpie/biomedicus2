@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,8 @@ package edu.umn.biomedicus.concepts;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.exc.BiomedicusException;
-
+import edu.umn.biomedicus.framework.DataLoader;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -31,23 +30,23 @@ import java.nio.file.Path;
 @Singleton
 public class SemanticTypeNetworkLoader extends DataLoader<SemanticTypeNetwork> {
 
-    private final Path srdefPath;
+  private final Path srdefPath;
 
-    private final Path semgroupsPath;
+  private final Path semgroupsPath;
 
-    @Inject
-    public SemanticTypeNetworkLoader(@Setting("semanticNetwork.srdef.path") Path srdefPath,
-                                     @Setting("semanticNetwork.semgroups.path") Path semgroupsPath) {
-        this.srdefPath = srdefPath;
-        this.semgroupsPath = semgroupsPath;
+  @Inject
+  public SemanticTypeNetworkLoader(@Setting("semanticNetwork.srdef.path") Path srdefPath,
+      @Setting("semanticNetwork.semgroups.path") Path semgroupsPath) {
+    this.srdefPath = srdefPath;
+    this.semgroupsPath = semgroupsPath;
+  }
+
+  @Override
+  protected SemanticTypeNetwork loadModel() throws BiomedicusException {
+    try {
+      return SemanticTypeNetwork.loadFromFiles(srdefPath, semgroupsPath);
+    } catch (IOException e) {
+      throw new BiomedicusException(e);
     }
-
-    @Override
-    protected SemanticTypeNetwork loadModel() throws BiomedicusException {
-        try {
-            return SemanticTypeNetwork.loadFromFiles(srdefPath, semgroupsPath);
-        } catch (IOException e) {
-            throw new BiomedicusException(e);
-        }
-    }
+  }
 }

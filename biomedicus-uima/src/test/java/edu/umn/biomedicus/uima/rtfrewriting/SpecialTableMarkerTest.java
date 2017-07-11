@@ -16,22 +16,22 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import edu.umn.biomedicus.uima.rtfrewriting.SpecialTableMarker;
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.Test;
 
 /**
  * Unit test for {@link SpecialTableMarker}.
  */
 public class SpecialTableMarkerTest {
 
-    @Test
-    public void testInsertInTable() throws Exception {
-        String document = "{\\atbl;1;2;3;}";
+  @Test
+  public void testInsertInTable() throws Exception {
+    String document = "{\\atbl;1;2;3;}";
 
-        SpecialTableMarker specialTableMarker = new SpecialTableMarker(document, "\\u2222221B", "\\atbl");
+    SpecialTableMarker specialTableMarker = new SpecialTableMarker(document, "\\u2222221B",
+        "\\atbl");
 
-        assertEquals(specialTableMarker.insertInTable(), "{\\atbl;1;2;3;\\u2222221B 4}");
-    }
+    assertEquals(specialTableMarker.insertInTable(), "{\\atbl;1;2;3;\\u2222221B 4}");
+  }
 }

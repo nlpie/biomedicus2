@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package edu.umn.biomedicus.rtf.beans.keywords;
 
 import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
-
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -35,28 +34,30 @@ import java.util.stream.Collectors;
 @XmlRootElement
 @XmlType
 public class ControlKeywordsDescription {
-    private List<ControlKeyword> controlKeywords;
 
-    @XmlElementWrapper(required = true)
-    @XmlElement(name = "controlKeyword")
-    public List<ControlKeyword> getControlKeywords() {
-        return controlKeywords;
-    }
+  private List<ControlKeyword> controlKeywords;
 
-    public void setControlKeywords(List<ControlKeyword> controlKeywords) {
-        this.controlKeywords = controlKeywords;
-    }
+  public static ControlKeywordsDescription loadFromFile(String classpath) {
+    InputStream inputStream = Thread.currentThread().getContextClassLoader()
+        .getResourceAsStream(classpath);
+    return JAXB.unmarshal(inputStream, ControlKeywordsDescription.class);
+  }
 
-    public static ControlKeywordsDescription loadFromFile(String classpath) {
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(classpath);
-        return JAXB.unmarshal(inputStream, ControlKeywordsDescription.class);
-    }
+  @XmlElementWrapper(required = true)
+  @XmlElement(name = "controlKeyword")
+  public List<ControlKeyword> getControlKeywords() {
+    return controlKeywords;
+  }
 
-    public Map<String, KeywordAction> getKeywordActionsAsMap() {
-        assert controlKeywords != null;
-        Preconditions.checkNotNull(controlKeywords);
+  public void setControlKeywords(List<ControlKeyword> controlKeywords) {
+    this.controlKeywords = controlKeywords;
+  }
 
-        return controlKeywords.stream()
-                .collect(Collectors.toMap(ControlKeyword::getKeyword, ControlKeyword::getKeywordAction));
-    }
+  public Map<String, KeywordAction> getKeywordActionsAsMap() {
+    assert controlKeywords != null;
+    Preconditions.checkNotNull(controlKeywords);
+
+    return controlKeywords.stream()
+        .collect(Collectors.toMap(ControlKeyword::getKeyword, ControlKeyword::getKeywordAction));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package edu.umn.biomedicus.uima.util;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionProcessingEngine;
@@ -27,11 +31,6 @@ import org.apache.uima.util.InvalidXMLException;
 import org.apache.uima.util.XMLInputSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Semaphore;
 
 /**
  * <p>Class was adapted from the UIMA examples file org.apache.uima.examples.cpe.SimpleRunCPE</p>
@@ -45,137 +44,139 @@ import java.util.concurrent.Semaphore;
  * @since 1.3.0
  */
 public class SimpleRunCPE implements Callable<Void> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRunCPE.class);
 
-    private final CollectionProcessingEngine collectionProcessingEngine;
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRunCPE.class);
 
-    private final Semaphore completionSemaphore = new Semaphore(0);
+  private final CollectionProcessingEngine collectionProcessingEngine;
 
-    private int entityCount = 0;
+  private final Semaphore completionSemaphore = new Semaphore(0);
 
-    private long size = 0;
+  private int entityCount = 0;
 
-    public SimpleRunCPE(CpeDescription cpeDesc) throws ResourceInitializationException {
-        LOGGER.info("Instantiating CPE");
-        collectionProcessingEngine = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
-        collectionProcessingEngine.addStatusCallbackListener(new StatusCallbackListener() {
-            @Override
-            public void initializationComplete() {
-                LOGGER.info("CPM Initialization Complete");
-            }
+  private long size = 0;
 
-            @Override
-            public void batchProcessComplete() {
-                LOGGER.info("Completed " + entityCount + " documents");
-                if (size > 0) {
-                    LOGGER.info("; " + size + " characters");
-                }
-            }
+  public SimpleRunCPE(CpeDescription cpeDesc) throws ResourceInitializationException {
+    LOGGER.info("Instantiating CPE");
+    collectionProcessingEngine = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
+    collectionProcessingEngine.addStatusCallbackListener(new StatusCallbackListener() {
+      @Override
+      public void initializationComplete() {
+        LOGGER.info("CPM Initialization Complete");
+      }
 
-            @Override
-            public void collectionProcessComplete() {
-                LOGGER.info("Completed " + entityCount + " documents");
-                if (size > 0) {
-                    LOGGER.info("; " + size + " characters");
-                }
-                LOGGER.info("PERFORMANCE REPORT \n" + collectionProcessingEngine.getPerformanceReport().toString());
+      @Override
+      public void batchProcessComplete() {
+        LOGGER.info("Completed " + entityCount + " documents");
+        if (size > 0) {
+          LOGGER.info("; " + size + " characters");
+        }
+      }
 
-                completionSemaphore.release();
-            }
+      @Override
+      public void collectionProcessComplete() {
+        LOGGER.info("Completed " + entityCount + " documents");
+        if (size > 0) {
+          LOGGER.info("; " + size + " characters");
+        }
+        LOGGER.info(
+            "PERFORMANCE REPORT \n" + collectionProcessingEngine.getPerformanceReport().toString());
 
-            @Override
-            public void paused() {
-                LOGGER.info("Paused");
-            }
+        completionSemaphore.release();
+      }
 
-            @Override
-            public void resumed() {
-                LOGGER.info("Resumed");
-            }
+      @Override
+      public void paused() {
+        LOGGER.info("Paused");
+      }
 
-            @Override
-            public void aborted() {
-                LOGGER.error("CPE processing was aborted");
+      @Override
+      public void resumed() {
+        LOGGER.info("Resumed");
+      }
 
-                completionSemaphore.release();
-            }
+      @Override
+      public void aborted() {
+        LOGGER.error("CPE processing was aborted");
 
-            @Override
-            public void entityProcessComplete(CAS aCas, EntityProcessStatus aStatus) {
-                List<Exception> exceptions = aStatus.getExceptions();
-                LOGGER.debug(aStatus.getStatusMessage());
+        completionSemaphore.release();
+      }
 
-                for (Exception exception : exceptions) {
-                    LOGGER.error("Exception processing a CAS: ", exception);
-                }
-                if (exceptions.size() > 0) {
-                    throw new RuntimeException("Processing exception");
-                }
+      @Override
+      public void entityProcessComplete(CAS aCas, EntityProcessStatus aStatus) {
+        List<Exception> exceptions = aStatus.getExceptions();
+        LOGGER.debug(aStatus.getStatusMessage());
 
-
-                entityCount++;
-                String docText = aCas.getDocumentText();
-                if (docText != null) {
-                    size += docText.length();
-                }
-            }
-        });
-    }
-
-    public void runCPE() throws ResourceInitializationException {
-        LOGGER.info("Running CPE");
-        collectionProcessingEngine.process();
-    }
-
-    public void waitForCompletion() throws InterruptedException {
-        completionSemaphore.acquire();
-    }
-
-    @Override
-    public Void call() throws Exception {
-        runCPE();
-        waitForCompletion();
-        return null;
-    }
-
-    /**
-     * main class.
-     *
-     * @param args Command line arguments - see class description
-     */
-    public static void main(String[] args) {
-        String descriptorPath = args[0];
-
-        if (args.length < 1) {
-            System.out.print(" Arguments to the program are as follows : \n"
-                    + "args[0] : path to CPE descriptor file");
-            System.exit(1);
+        for (Exception exception : exceptions) {
+          LOGGER.error("Exception processing a CAS: ", exception);
+        }
+        if (exceptions.size() > 0) {
+          throw new RuntimeException("Processing exception");
         }
 
-        CpeDescription cpeDesc = null;
-        try {
-            cpeDesc = UIMAFramework.getXMLParser().parseCpeDescription(new XMLInputSource(descriptorPath));
-        } catch (InvalidXMLException | IOException e) {
-            System.err.print("Error parsing descriptor");
-            System.exit(1);
+        entityCount++;
+        String docText = aCas.getDocumentText();
+        if (docText != null) {
+          size += docText.length();
         }
+      }
+    });
+  }
 
-        SimpleRunCPE simpleRunCPE = null;
-        try {
-            simpleRunCPE = new SimpleRunCPE(cpeDesc);
-            simpleRunCPE.runCPE();
-        } catch (ResourceInitializationException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+  /**
+   * main class.
+   *
+   * @param args Command line arguments - see class description
+   */
+  public static void main(String[] args) {
+    String descriptorPath = args[0];
 
-        try {
-            simpleRunCPE.waitForCompletion();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
-        System.exit(0);
+    if (args.length < 1) {
+      System.out.print(" Arguments to the program are as follows : \n"
+          + "args[0] : path to CPE descriptor file");
+      System.exit(1);
     }
+
+    CpeDescription cpeDesc = null;
+    try {
+      cpeDesc = UIMAFramework.getXMLParser()
+          .parseCpeDescription(new XMLInputSource(descriptorPath));
+    } catch (InvalidXMLException | IOException e) {
+      System.err.print("Error parsing descriptor");
+      System.exit(1);
+    }
+
+    SimpleRunCPE simpleRunCPE = null;
+    try {
+      simpleRunCPE = new SimpleRunCPE(cpeDesc);
+      simpleRunCPE.runCPE();
+    } catch (ResourceInitializationException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+
+    try {
+      simpleRunCPE.waitForCompletion();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+
+    System.exit(0);
+  }
+
+  public void runCPE() throws ResourceInitializationException {
+    LOGGER.info("Running CPE");
+    collectionProcessingEngine.process();
+  }
+
+  public void waitForCompletion() throws InterruptedException {
+    completionSemaphore.acquire();
+  }
+
+  @Override
+  public Void call() throws Exception {
+    runCPE();
+    waitForCompletion();
+    return null;
+  }
 }

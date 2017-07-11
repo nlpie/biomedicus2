@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package edu.umn.biomedicus.common.types.semantics;
 
 import edu.umn.biomedicus.framework.store.Span;
-import org.immutables.value.Value;
-
 import java.util.List;
+import org.immutables.value.Value;
 
 @Value.Immutable
 public interface Probable extends DictionaryTermModifier {
-    @Override
-    List<Span> cueTerms();
+
+  @Override
+  List<Span> cueTerms();
 }

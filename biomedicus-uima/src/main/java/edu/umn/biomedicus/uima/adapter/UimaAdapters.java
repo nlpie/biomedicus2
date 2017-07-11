@@ -18,9 +18,8 @@ package edu.umn.biomedicus.uima.adapter;
 
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
-import org.apache.uima.cas.CAS;
-
 import javax.annotation.Nullable;
+import org.apache.uima.cas.CAS;
 
 /**
  * Utility class for adapting the UIMA backend to the Biomedicus type system.
@@ -30,25 +29,20 @@ import javax.annotation.Nullable;
  */
 public final class UimaAdapters {
 
-    private UimaAdapters() {
-        throw new UnsupportedOperationException("Instantiation of utility class");
-    }
+  private UimaAdapters() {
+    throw new UnsupportedOperationException("Instantiation of utility class");
+  }
 
-    /**
-     * Initializes a BioMedICUS document on a UIMA CAS view.
-     *
-     * @param initialView
-     * @param labelAdapters
-     * @param documentId
-     * @return
-     */
-    public static Document createDocument(CAS initialView,
-                                   @Nullable LabelAdapters labelAdapters,
-                                   String documentId) {
-        return new CASDocument(labelAdapters, initialView, documentId);
-    }
+  /**
+   * Initializes a BioMedICUS document on a UIMA CAS view.
+   */
+  public static Document createDocument(CAS initialView,
+      @Nullable LabelAdapters labelAdapters,
+      String documentId) {
+    return new CASDocument(labelAdapters, initialView, documentId);
+  }
 
-    public static Document getDocument(CAS initialView, @Nullable LabelAdapters labelAdapters) {
-        return new CASDocument(labelAdapters, initialView);
-    }
+  public static Document getDocument(CAS initialView, @Nullable LabelAdapters labelAdapters) {
+    return new CASDocument(labelAdapters, initialView);
+  }
 }

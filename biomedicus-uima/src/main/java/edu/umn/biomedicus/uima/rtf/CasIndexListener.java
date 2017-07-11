@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,39 +30,40 @@ import org.apache.uima.cas.text.AnnotationFS;
  * @since 1.3.0
  */
 class CasIndexListener implements IndexListener {
-    /**
-     * The view storing the Rtf document.
-     */
-    private final CAS originalDocumentView;
-    private final Type viewIndexType;
-    private final Feature destinationNameFeature;
-    private final Feature destinationIndexFeature;
 
-    /**
-     * Creates an index listener which creates ViewIndex annotations.
-     *
-     * @param originalDocumentView the view that the original rtf document is stored in.
-     */
-    CasIndexListener(CAS originalDocumentView) {
-        this.originalDocumentView = originalDocumentView;
-        viewIndexType = originalDocumentView.getTypeSystem()
-                .getType("edu.umn.biomedicus.rtfuima.type.ViewIndex");
-        destinationIndexFeature = viewIndexType
-                .getFeatureByBaseName("destinationIndex");
-        destinationNameFeature = viewIndexType
-                .getFeatureByBaseName("destinationName");
-    }
+  /**
+   * The view storing the Rtf document.
+   */
+  private final CAS originalDocumentView;
+  private final Type viewIndexType;
+  private final Feature destinationNameFeature;
+  private final Feature destinationIndexFeature;
 
-    @Override
-    public void wroteToDestination(String destinationName,
-                                   int destinationIndex,
-                                   TextLocation originalDocumentTextLocation) {
-        AnnotationFS viewIndex = originalDocumentView
-                .createAnnotation(viewIndexType,
-                        originalDocumentTextLocation.getBegin(),
-                        originalDocumentTextLocation.getEnd());
-        viewIndex.setStringValue(destinationNameFeature, destinationName);
-        viewIndex.setIntValue(destinationIndexFeature, destinationIndex);
-        originalDocumentView.addFsToIndexes(viewIndex);
-    }
+  /**
+   * Creates an index listener which creates ViewIndex annotations.
+   *
+   * @param originalDocumentView the view that the original rtf document is stored in.
+   */
+  CasIndexListener(CAS originalDocumentView) {
+    this.originalDocumentView = originalDocumentView;
+    viewIndexType = originalDocumentView.getTypeSystem()
+        .getType("edu.umn.biomedicus.rtfuima.type.ViewIndex");
+    destinationIndexFeature = viewIndexType
+        .getFeatureByBaseName("destinationIndex");
+    destinationNameFeature = viewIndexType
+        .getFeatureByBaseName("destinationName");
+  }
+
+  @Override
+  public void wroteToDestination(String destinationName,
+      int destinationIndex,
+      TextLocation originalDocumentTextLocation) {
+    AnnotationFS viewIndex = originalDocumentView
+        .createAnnotation(viewIndexType,
+            originalDocumentTextLocation.getBegin(),
+            originalDocumentTextLocation.getEnd());
+    viewIndex.setStringValue(destinationNameFeature, destinationName);
+    viewIndex.setIntValue(destinationIndexFeature, destinationIndex);
+    originalDocumentView.addFsToIndexes(viewIndex);
+  }
 }

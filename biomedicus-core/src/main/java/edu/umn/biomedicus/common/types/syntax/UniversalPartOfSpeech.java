@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,72 +17,72 @@
 package edu.umn.biomedicus.common.types.syntax;
 
 public enum UniversalPartOfSpeech {
-    /**
-     * Adjective
-     */
-    ADJ,
-    /**
-     * Adverb
-     */
-    ADV,
-    /**
-     * Interjection
-     */
-    INTJ,
-    /**
-     * Noun
-     */
-    NOUN,
-    /**
-     * Proper Noun
-     */
-    PROPN,
-    /**
-     * Verb
-     */
-    VERB,
-    /**
-     * Adposition (prepositions, postpositions in other languages)
-     */
-    ADP,
-    /**
-     * Auxiliary verb
-     */
-    AUX,
-    /**
-     * Coordinating conjunction
-     */
-    CONJ,
-    /**
-     * Determiner
-     */
-    DET,
-    /**
-     * Numeral
-     */
-    NUM,
-    /**
-     * Particle
-     */
-    PART,
-    /**
-     * Pronoun
-     */
-    PRON,
-    /**
-     * Subordinating conjunction
-     */
-    SCONJ,
-    /**
-     * Punctuation
-     */
-    PUNCT,
-    /**
-     * Symbol
-     */
-    SYM,
-    /**
-     * Other / unknown
-     */
-    X
+  /**
+   * Adjective
+   */
+  ADJ,
+  /**
+   * Adverb
+   */
+  ADV,
+  /**
+   * Interjection
+   */
+  INTJ,
+  /**
+   * Noun
+   */
+  NOUN,
+  /**
+   * Proper Noun
+   */
+  PROPN,
+  /**
+   * Verb
+   */
+  VERB,
+  /**
+   * Adposition (prepositions, postpositions in other languages)
+   */
+  ADP,
+  /**
+   * Auxiliary verb
+   */
+  AUX,
+  /**
+   * Coordinating conjunction
+   */
+  CONJ,
+  /**
+   * Determiner
+   */
+  DET,
+  /**
+   * Numeral
+   */
+  NUM,
+  /**
+   * Particle
+   */
+  PART,
+  /**
+   * Pronoun
+   */
+  PRON,
+  /**
+   * Subordinating conjunction
+   */
+  SCONJ,
+  /**
+   * Punctuation
+   */
+  PUNCT,
+  /**
+   * Symbol
+   */
+  SYM,
+  /**
+   * Other / unknown
+   */
+  X
 }

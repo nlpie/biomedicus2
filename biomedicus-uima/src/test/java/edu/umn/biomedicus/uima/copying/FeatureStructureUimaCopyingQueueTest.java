@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,73 +16,97 @@
 
 package edu.umn.biomedicus.uima.copying;
 
-import mockit.*;
+import java.util.Deque;
+import java.util.Map;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.Verifications;
 import org.apache.uima.cas.FeatureStructure;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.Deque;
-import java.util.Map;
 
 /**
  * Test for {@link FeatureStructureCopyingQueue}.
  */
 public class FeatureStructureUimaCopyingQueueTest {
-    @Tested FeatureStructureCopyingQueue featureStructureCopyingQueue;
 
-    @Injectable FsCopiers fsCopiers;
+  @Tested
+  FeatureStructureCopyingQueue featureStructureCopyingQueue;
 
-    @Injectable FsConstructors fsConstructors;
+  @Injectable
+  FsCopiers fsCopiers;
 
-    @Injectable Deque<FeatureStructure> fsQueue;
+  @Injectable
+  FsConstructors fsConstructors;
 
-    @Injectable Map<FeatureStructure, FeatureStructure> fsMap;
+  @Injectable
+  Deque<FeatureStructure> fsQueue;
 
-    @Injectable FeatureStructure retFs;
+  @Injectable
+  Map<FeatureStructure, FeatureStructure> fsMap;
 
-    @Mocked FeatureStructure mockFs;
+  @Injectable
+  FeatureStructure retFs;
 
-    @Test
-    public void testEnqueueShouldReturnExisting(@Injectable FeatureStructure featureStructure) throws Exception {
-        new Expectations() {{
-            fsMap.containsKey(featureStructure); result = true;
-            fsMap.get(featureStructure); result = retFs;
-        }};
+  @Mocked
+  FeatureStructure mockFs;
 
-        Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
+  @Test
+  public void testEnqueueShouldReturnExisting(@Injectable FeatureStructure featureStructure)
+      throws Exception {
+    new Expectations() {{
+      fsMap.containsKey(featureStructure);
+      result = true;
+      fsMap.get(featureStructure);
+      result = retFs;
+    }};
 
-        new Verifications() {{
-            fsConstructors.createNewInstanceOfSameType(featureStructure); times = 0;
-        }};
-    }
+    Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
 
-    @Test
-    public void testEnqueueShouldCreateNew(@Injectable FeatureStructure featureStructure) throws Exception {
-        new Expectations() {{
-            fsMap.containsKey(featureStructure); result = false;
-            fsConstructors.createNewInstanceOfSameType(featureStructure); result = retFs;
-        }};
+    new Verifications() {{
+      fsConstructors.createNewInstanceOfSameType(featureStructure);
+      times = 0;
+    }};
+  }
 
-        Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
+  @Test
+  public void testEnqueueShouldCreateNew(@Injectable FeatureStructure featureStructure)
+      throws Exception {
+    new Expectations() {{
+      fsMap.containsKey(featureStructure);
+      result = false;
+      fsConstructors.createNewInstanceOfSameType(featureStructure);
+      result = retFs;
+    }};
 
-        new Verifications() {{
-            fsQueue.add(featureStructure);
-            fsMap.put(featureStructure, retFs);
-        }};
-    }
+    Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
 
-    @Test
-    public void testRun() throws Exception {
-        new Expectations() {{
-            fsQueue.isEmpty(); result = new boolean[]{false, false, false, true};
-            fsQueue.poll(); result = mockFs; times = 3;
-            fsMap.get(mockFs); result = mockFs; times = 3;
-        }};
+    new Verifications() {{
+      fsQueue.add(featureStructure);
+      fsMap.put(featureStructure, retFs);
+    }};
+  }
 
-        featureStructureCopyingQueue.run();
+  @Test
+  public void testRun() throws Exception {
+    new Expectations() {{
+      fsQueue.isEmpty();
+      result = new boolean[]{false, false, false, true};
+      fsQueue.poll();
+      result = mockFs;
+      times = 3;
+      fsMap.get(mockFs);
+      result = mockFs;
+      times = 3;
+    }};
 
-        new Verifications() {{
-            fsCopiers.copy(mockFs, mockFs); times = 3;
-        }};
-    }
+    featureStructureCopyingQueue.run();
+
+    new Verifications() {{
+      fsCopiers.copy(mockFs, mockFs);
+      times = 3;
+    }};
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
-
-import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * Responsible for dividing annotations using 0-length marker annotations within those annotations.
@@ -34,99 +32,99 @@ import java.util.Objects;
  */
 class TableAnnotationDivider {
 
-    /**
-     * CAS view.
-     */
-    private final CAS cas;
+  /**
+   * CAS view.
+   */
+  private final CAS cas;
 
-    /**
-     * Annotations to divide.
-     */
-    @Nullable
-    private AnnotationIndex<Annotation> annotations;
+  /**
+   * Annotations to divide.
+   */
+  @Nullable
+  private AnnotationIndex<Annotation> annotations;
 
-    /**
-     * Annotations to use as divisions.
-     */
-    @Nullable
-    private AnnotationIndex<Annotation> dividers;
+  /**
+   * Annotations to use as divisions.
+   */
+  @Nullable
+  private AnnotationIndex<Annotation> dividers;
 
-    /**
-     * Divided annotations type to create.
-     */
-    @Nullable
-    private Type typeToCreate;
+  /**
+   * Divided annotations type to create.
+   */
+  @Nullable
+  private Type typeToCreate;
 
-    /**
-     * Initializes using a view.
-     *
-     * @param cas the view.
-     */
-    private TableAnnotationDivider(CAS cas) {
-        this.cas = cas;
+  /**
+   * Initializes using a view.
+   *
+   * @param cas the view.
+   */
+  private TableAnnotationDivider(CAS cas) {
+    this.cas = cas;
+  }
+
+  static TableAnnotationDivider in(CAS cas) {
+    return new TableAnnotationDivider(cas);
+  }
+
+  /**
+   * Sets the type to divide.
+   *
+   * @param annotationType type to divide.
+   * @return this object
+   */
+  TableAnnotationDivider divide(Type annotationType) {
+    annotations = cas.getAnnotationIndex(annotationType);
+    return this;
+  }
+
+  /**
+   * Sets the type to use for division.
+   *
+   * @param dividerType type code for the dividing annotation type.
+   * @return this object
+   */
+  TableAnnotationDivider using(Type dividerType) {
+    dividers = cas.getAnnotationIndex(dividerType);
+    return this;
+  }
+
+  /**
+   * Sets the type to create.
+   *
+   * @param type type to create;
+   * @return this object
+   */
+  TableAnnotationDivider into(Type type) {
+    typeToCreate = type;
+    return this;
+  }
+
+  /**
+   * Runs the divider.
+   */
+  void execute() {
+    Objects.requireNonNull(annotations);
+
+    annotations.forEach(this::divideAnnotation);
+
+    annotations = null;
+    dividers = null;
+  }
+
+  private void divideAnnotation(Annotation annotation) {
+    Objects.requireNonNull(typeToCreate);
+    Objects.requireNonNull(dividers);
+
+    FSIterator<Annotation> subiterator = dividers.subiterator(annotation);
+    int begin = annotation.getBegin();
+    while (subiterator.hasNext()) {
+      int end = subiterator.next().getBegin();
+      cas.addFsToIndexes(cas.createAnnotation(typeToCreate, begin, end));
+      begin = end;
     }
-
-    static TableAnnotationDivider in(CAS cas) {
-        return new TableAnnotationDivider(cas);
-    }
-
-    /**
-     * Sets the type to divide.
-     *
-     * @param annotationType type to divide.
-     * @return this object
-     */
-    TableAnnotationDivider divide(Type annotationType) {
-        annotations = cas.getAnnotationIndex(annotationType);
-        return this;
-    }
-
-    /**
-     * Sets the type to use for division.
-     *
-     * @param dividerType type code for the dividing annotation type.
-     * @return this object
-     */
-    TableAnnotationDivider using(Type dividerType) {
-        dividers = cas.getAnnotationIndex(dividerType);
-        return this;
-    }
-
-    /**
-     * Sets the type to create.
-     *
-     * @param type type to create;
-     * @return this object
-     */
-    TableAnnotationDivider into(Type type) {
-        typeToCreate = type;
-        return this;
-    }
-
-    /**
-     * Runs the divider.
-     */
-    void execute() {
-        Objects.requireNonNull(annotations);
-
-        annotations.forEach(this::divideAnnotation);
-
-        annotations = null;
-        dividers = null;
-    }
-
-    private void divideAnnotation(Annotation annotation) {
-        Objects.requireNonNull(typeToCreate);
-        Objects.requireNonNull(dividers);
-
-        FSIterator<Annotation> subiterator = dividers.subiterator(annotation);
-        int begin = annotation.getBegin();
-        while (subiterator.hasNext()) {
-            int end = subiterator.next().getBegin();
-            cas.addFsToIndexes(cas.createAnnotation(typeToCreate, begin, end));
-            begin = end;
-        }
-    }
+  }
 
 
 }

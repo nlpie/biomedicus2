@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,65 +21,56 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
- * A class that provides access to the functionality of Biomedicus. The instances of this class is the
- * "application instance" of Biomedicus.
+ * A class that provides access to the functionality of Biomedicus. The instances of this class is
+ * the "application instance" of Biomedicus.
  *
  * @author Ben Knoll
  * @since 1.6.0
  */
 @Singleton
 public final class Application {
-    private final Injector injector;
-    private final Path confFolder;
-    private final Path dataFolder;
 
-    @Inject
-    Application(Injector injector,
-                @Setting("paths.conf") Path confFolder,
-                @Setting("paths.data") Path dataFolder) {
-        this.injector = injector;
-        this.confFolder = confFolder;
-        this.dataFolder = dataFolder;
-    }
+  private final Injector injector;
+  private final Path confFolder;
+  private final Path dataFolder;
 
-    public Injector getInjector() {
-        return injector;
-    }
+  @Inject
+  Application(Injector injector,
+      @Setting("paths.conf") Path confFolder,
+      @Setting("paths.data") Path dataFolder) {
+    this.injector = injector;
+    this.confFolder = confFolder;
+    this.dataFolder = dataFolder;
+  }
 
-    public <T> T getInstance(Class<T> tClass) {
-        return injector.getInstance(tClass);
-    }
+  public Injector getInjector() {
+    return injector;
+  }
 
-    public <T> T getGlobalSetting(Class<T> settingType, String key) {
-        return injector.getInstance(Key.get(settingType, new SettingImpl(key)));
-    }
+  public <T> T getInstance(Class<T> tClass) {
+    return injector.getInstance(tClass);
+  }
 
-    public Path confFolder() {
-        return confFolder;
-    }
+  public <T> T getGlobalSetting(Class<T> settingType, String key) {
+    return injector.getInstance(Key.get(settingType, new SettingImpl(key)));
+  }
 
-    public Path getConfFolder() {
-        return confFolder;
-    }
+  public Path confFolder() {
+    return confFolder;
+  }
 
-    public Path dataFolder() {
-        return dataFolder;
-    }
+  public Path getConfFolder() {
+    return confFolder;
+  }
 
-    public Path getDataFolder() {
-        return dataFolder;
-    }
+  public Path dataFolder() {
+    return dataFolder;
+  }
+
+  public Path getDataFolder() {
+    return dataFolder;
+  }
 }

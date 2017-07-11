@@ -24,5 +24,4 @@ package edu.umn.biomedicus.common.collect;
 
 import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
 import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
-
 import javax.annotation.ParametersAreNonnullByDefault;

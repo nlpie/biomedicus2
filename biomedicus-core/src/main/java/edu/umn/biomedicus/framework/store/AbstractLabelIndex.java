@@ -16,21 +16,14 @@
 
 package edu.umn.biomedicus.framework.store;
 
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static java.util.Spliterator.*;
+import java.util.AbstractCollection;
 
 /**
- * Abstract class for a LabelIndex implementation. Provides sensible defaults for methods using an adapter pattern.
- * Falls back to {@link DefaultLabelIndex} for methods which may not be implementable under other instances.
- *
- * @param <T>
+ * Abstract class for a LabelIndex implementation. Provides sensible defaults for methods using an
+ * adapter pattern. Falls back to {@link DefaultLabelIndex} for methods which may not be
+ * implementable under other instances.
  */
 public abstract class AbstractLabelIndex<T> extends AbstractCollection<Label<T>>
-        implements LabelIndex<T> {
+    implements LabelIndex<T> {
 
 }

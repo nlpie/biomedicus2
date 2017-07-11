@@ -17,15 +17,15 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.common.terms.TermIndex;
-
 import java.io.Closeable;
 
 abstract class VocabularyStore implements Closeable {
-    abstract void open();
 
-    abstract TermIndex getWords();
+  abstract void open();
 
-    abstract TermIndex getTerms();
+  abstract TermIndex getWords();
 
-    abstract TermIndex getNorms();
+  abstract TermIndex getTerms();
+
+  abstract TermIndex getNorms();
 }

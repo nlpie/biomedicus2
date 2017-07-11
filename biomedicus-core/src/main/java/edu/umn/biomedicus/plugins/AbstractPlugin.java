@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@ package edu.umn.biomedicus.plugins;
 
 import com.google.inject.Module;
 import edu.umn.biomedicus.framework.EagerLoadable;
-
 import java.util.Collection;
 import java.util.Collections;
 
 public abstract class AbstractPlugin {
-    public Collection<? extends Module> modules() {
-        return Collections.emptyList();
-    }
 
-    public Collection<Class<EagerLoadable>> dataLoaders() {
-        return Collections.emptyList();
-    }
+  public Collection<? extends Module> modules() {
+    return Collections.emptyList();
+  }
+
+  public Collection<Class<EagerLoadable>> dataLoaders() {
+    return Collections.emptyList();
+  }
 }

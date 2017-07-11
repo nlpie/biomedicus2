@@ -16,67 +16,73 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import java.io.IOException;
+import java.nio.file.Path;
+import javax.annotation.Nullable;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.nio.file.Path;
-
-import static com.google.common.base.Preconditions.checkState;
-
 class MapDbVocabStore extends VocabularyStore {
-    private final Path dbPath;
-    private final Boolean inMemory;
 
-    @Nullable private DB db;
-    @Nullable private TermIndex words;
-    @Nullable private TermIndex terms;
-    @Nullable private TermIndex norms;
+  private final Path dbPath;
+  private final Boolean inMemory;
 
-    @Inject
-    MapDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
-                    @Setting("vocabulary.inMemory") Boolean inMemory) {
-        this.dbPath = dbPath;
-        this.inMemory = inMemory;
+  @Nullable
+  private DB db;
+  @Nullable
+  private TermIndex words;
+  @Nullable
+  private TermIndex terms;
+  @Nullable
+  private TermIndex norms;
+
+  @Inject
+  MapDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
+      @Setting("vocabulary.inMemory") Boolean inMemory) {
+    this.dbPath = dbPath;
+    this.inMemory = inMemory;
+  }
+
+  @Override
+  public void open() {
+    db = DBMaker.fileDB(dbPath.toString()).readOnly()
+        .fileMmapEnableIfSupported().make();
+    words = new MapDbTermIndex(db, "words").inMemory(inMemory);
+    terms = new MapDbTermIndex(db, "terms").inMemory(inMemory);
+    norms = new MapDbTermIndex(db, "norms").inMemory(inMemory);
+  }
+
+  @Override
+  TermIndex getWords() {
+    checkState(db != null, "Not open");
+    checkState(words != null, "Not open yet");
+    return words;
+  }
+
+  @Override
+  TermIndex getTerms() {
+    checkState(db != null, "Not open");
+    checkState(terms != null, "Not open yet");
+    return terms;
+  }
+
+  @Override
+  TermIndex getNorms() {
+    checkState(db != null, "Not open");
+    checkState(norms != null, "Not open yet");
+    return norms;
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (db != null) {
+      db.close();
     }
-
-    @Override
-    public void open() {
-        db = DBMaker.fileDB(dbPath.toString()).readOnly()
-                .fileMmapEnableIfSupported().make();
-        words = new MapDbTermIndex(db, "words").inMemory(inMemory);
-        terms = new MapDbTermIndex(db, "terms").inMemory(inMemory);
-        norms = new MapDbTermIndex(db, "norms").inMemory(inMemory);
-    }
-
-    @Override
-    TermIndex getWords() {
-        checkState(db != null, "Not open");
-        checkState(words != null, "Not open yet");
-        return words;
-    }
-
-    @Override
-    TermIndex getTerms() {
-        checkState(db != null, "Not open");
-        checkState(terms != null, "Not open yet");
-        return terms;
-    }
-
-    @Override
-    TermIndex getNorms() {
-        checkState(db != null, "Not open");
-        checkState(norms != null, "Not open yet");
-        return norms;
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (db != null) db.close();
-        db = null;
-    }
+    db = null;
+  }
 }
