@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,143 +16,146 @@
 
 package edu.umn.biomedicus.common.tuples;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 /**
  * Unit test for {@link PosCap}.
  */
 public class PosCapTest {
-    @Test
-    public void testGetCapitalized() throws Exception {
-        PosCap posCap = PosCap.getCapitalized(PartOfSpeech.BOS);
 
-        assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
-        assertEquals(posCap.isCapitalized(), true);
-    }
+  @Test
+  public void testGetCapitalized() throws Exception {
+    PosCap posCap = PosCap.getCapitalized(PartOfSpeech.BOS);
 
-    @Test
-    public void testGetNotCapitalized() throws Exception {
-        PosCap posCap = PosCap.getNotCapitalized(PartOfSpeech.BOS);
+    assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
+    assertEquals(posCap.isCapitalized(), true);
+  }
 
-        assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
-        assertEquals(posCap.isCapitalized(), false);
-    }
+  @Test
+  public void testGetNotCapitalized() throws Exception {
+    PosCap posCap = PosCap.getNotCapitalized(PartOfSpeech.BOS);
 
-    @Test
-    public void testCreate() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
+    assertEquals(posCap.isCapitalized(), false);
+  }
 
-        assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
-        assertEquals(posCap.isCapitalized(), true);
-    }
+  @Test
+  public void testCreate() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
-    @Test
-    public void testGetPartOfSpeech() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
+    assertEquals(posCap.isCapitalized(), true);
+  }
 
-        assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
-    }
+  @Test
+  public void testGetPartOfSpeech() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
-    @Test
-    public void testIsCapitalized() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
+  }
 
-        assertEquals(posCap.isCapitalized(), true);
-    }
+  @Test
+  public void testIsCapitalized() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
-    @Test
-    public void testOrdinal() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        int ordinal = posCap.ordinal();
-        PosCap fromOrdinal = PosCap.createFromOrdinal(ordinal);
-        assertEquals(fromOrdinal, posCap);
-    }
+    assertEquals(posCap.isCapitalized(), true);
+  }
 
-    @Test
-    public void testEqualsSameObject() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.CD, true);
-        assertTrue(posCap.equals(posCap));
-    }
+  @Test
+  public void testOrdinal() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    int ordinal = posCap.ordinal();
+    PosCap fromOrdinal = PosCap.createFromOrdinal(ordinal);
+    assertEquals(fromOrdinal, posCap);
+  }
 
-    @Test
-    public void testEquals() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
+  @Test
+  public void testEqualsSameObject() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.CD, true);
+    assertTrue(posCap.equals(posCap));
+  }
 
-        assertTrue(posCap.equals(second));
-    }
+  @Test
+  public void testEquals() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
 
-    @Test
-    public void testEqualsNull() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    assertTrue(posCap.equals(second));
+  }
 
-        assertFalse(posCap.equals(null));
-    }
+  @Test
+  public void testEqualsNull() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
-    @Test
-    public void testEqualsNotObject() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    assertFalse(posCap.equals(null));
+  }
 
-        assertFalse(posCap.equals("string"));
-    }
+  @Test
+  public void testEqualsNotObject() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
-    @Test
-    public void testEqualsFalse() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
+    assertFalse(posCap.equals("string"));
+  }
 
-        assertFalse(posCap.equals(second));
-    }
+  @Test
+  public void testEqualsFalse() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
-    @Test
-    public void testEqualsFalseCapitalization() throws Exception {
+    assertFalse(posCap.equals(second));
+  }
 
-        PosCap posCap = PosCap.create(PartOfSpeech.BBS, false);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
+  @Test
+  public void testEqualsFalseCapitalization() throws Exception {
 
-        assertFalse(posCap.equals(second));
-    }
+    PosCap posCap = PosCap.create(PartOfSpeech.BBS, false);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
-    @Test
-    public void testHashCodeEqual() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
+    assertFalse(posCap.equals(second));
+  }
 
-        assertTrue(posCap.hashCode() == second.hashCode());
-    }
+  @Test
+  public void testHashCodeEqual() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
 
-    @Test
-    public void testHashCodeUnequal() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
+    assertTrue(posCap.hashCode() == second.hashCode());
+  }
 
-        assertFalse(posCap.hashCode() == second.hashCode());
-    }
+  @Test
+  public void testHashCodeUnequal() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
-    @Test
-    public void testCompareTo() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
+    assertFalse(posCap.hashCode() == second.hashCode());
+  }
 
-        assertEquals(posCap.compareTo(second), PartOfSpeech.BOS.compareTo(PartOfSpeech.BBS));
-    }
+  @Test
+  public void testCompareTo() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
-    @Test
-    public void testCompareToCapitalization() throws Exception {
+    assertEquals(posCap.compareTo(second), PartOfSpeech.BOS.compareTo(PartOfSpeech.BBS));
+  }
 
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
-        PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
+  @Test
+  public void testCompareToCapitalization() throws Exception {
 
-        assertEquals(posCap.compareTo(second), Boolean.compare(false, true));
-    }
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
+    PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
 
-    @Test
-    public void testToString() throws Exception {
-        PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
+    assertEquals(posCap.compareTo(second), Boolean.compare(false, true));
+  }
 
-        assertEquals(posCap.toString(), "PosCap{partOfSpeech=BOS, capitalized=false}");
-    }
+  @Test
+  public void testToString() throws Exception {
+    PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
+
+    assertEquals(posCap.toString(), "PosCap{partOfSpeech=BOS, capitalized=false}");
+  }
 }

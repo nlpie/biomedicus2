@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package edu.umn.biomedicus.rtf.reader;
 
 import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
-
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -31,72 +30,69 @@ import java.util.Deque;
  */
 public class RtfReader {
 
-    /**
-     * Parses the rtf control words.
-     */
-    private final RtfKeywordParser rtfKeywordParser;
+  /**
+   * Parses the rtf control words.
+   */
+  private final RtfKeywordParser rtfKeywordParser;
 
-    /**
-     * Source of RTF data.
-     */
-    private final RtfSource rtfSource;
+  /**
+   * Source of RTF data.
+   */
+  private final RtfSource rtfSource;
 
-    /**
-     * Stack of states.
-     */
-    private final Deque<State> stateStack;
+  /**
+   * Stack of states.
+   */
+  private final Deque<State> stateStack;
 
-    /**
-     * The current state.
-     */
-    private State currentState;
+  /**
+   * The current state.
+   */
+  private State currentState;
 
-    /**
-     * Creates a new rtf reader.
-     *
-     * @param rtfKeywordParser the parser for rtf keywords.
-     * @param rtfSource the source of rtf data.
-     * @param initialState the initial state.
-     */
-    public RtfReader(RtfKeywordParser rtfKeywordParser, RtfSource rtfSource, State initialState) {
-        this.rtfKeywordParser = rtfKeywordParser;
-        this.rtfSource = rtfSource;
-        this.currentState = initialState;
-        this.stateStack = new ArrayDeque<>();
+  /**
+   * Creates a new rtf reader.
+   *
+   * @param rtfKeywordParser the parser for rtf keywords.
+   * @param rtfSource the source of rtf data.
+   * @param initialState the initial state.
+   */
+  public RtfReader(RtfKeywordParser rtfKeywordParser, RtfSource rtfSource, State initialState) {
+    this.rtfKeywordParser = rtfKeywordParser;
+    this.rtfSource = rtfSource;
+    this.currentState = initialState;
+    this.stateStack = new ArrayDeque<>();
+  }
+
+  /**
+   * Runs the parsing.
+   */
+  public void parseFile() throws IOException, RtfReaderException {
+    while (true) {
+      int index = rtfSource.getIndex();
+      int ch = rtfSource.readCharacter();
+      if (ch == -1) {
+        break;
+      }
+      switch (ch) {
+        case '{':
+          stateStack.addFirst(currentState);
+          currentState = currentState.copy();
+          break;
+        case '}':
+          currentState = stateStack.removeFirst();
+          break;
+        case '\\':
+          KeywordAction keywordAction = rtfKeywordParser.parse(index, rtfSource);
+          currentState.handleKeyword(keywordAction);
+          break;
+        case 0:
+          break;
+        default:
+          currentState.writeCharacter(ch, Span.create(index, rtfSource.getIndex()));
+          break;
+      }
     }
-
-    /**
-     * Runs the parsing.
-     *
-     * @throws IOException
-     * @throws RtfReaderException
-     */
-    public void parseFile() throws IOException, RtfReaderException {
-        while (true) {
-            int index = rtfSource.getIndex();
-            int ch = rtfSource.readCharacter();
-            if (ch == -1) {
-                break;
-            }
-            switch (ch) {
-                case '{':
-                    stateStack.addFirst(currentState);
-                    currentState = currentState.copy();
-                    break;
-                case '}':
-                    currentState = stateStack.removeFirst();
-                    break;
-                case '\\':
-                    KeywordAction keywordAction = rtfKeywordParser.parse(index, rtfSource);
-                    currentState.handleKeyword(keywordAction);
-                    break;
-                case 0:
-                    break;
-                default:
-                    currentState.writeCharacter(ch, Span.create(index, rtfSource.getIndex()));
-                    break;
-            }
-        }
-        currentState.finishState();
-    }
+    currentState.finishState();
+  }
 }

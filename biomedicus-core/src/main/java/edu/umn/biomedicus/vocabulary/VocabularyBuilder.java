@@ -19,9 +19,10 @@ package edu.umn.biomedicus.vocabulary;
 import edu.umn.biomedicus.framework.LifecycleManaged;
 
 abstract class VocabularyBuilder implements LifecycleManaged {
-    abstract TermIndexBuilder createWordsIndexBuilder();
 
-    abstract TermIndexBuilder createTermsIndexBuilder();
+  abstract TermIndexBuilder createWordsIndexBuilder();
 
-    abstract TermIndexBuilder createNormsIndexBuilder();
+  abstract TermIndexBuilder createTermsIndexBuilder();
+
+  abstract TermIndexBuilder createNormsIndexBuilder();
 }

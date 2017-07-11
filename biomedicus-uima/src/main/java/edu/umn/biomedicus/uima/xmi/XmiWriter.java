@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,20 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import edu.umn.biomedicus.common.ViewIdentifiers;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.annotation.Nullable;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.*;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -28,76 +37,75 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.annotation.Nullable;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 /**
  * A UIMA analysis engine that writes the contents of CASes to a files in a folder.
  */
 public class XmiWriter extends CasAnnotator_ImplBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(XmiWriter.class);
 
-    @Nullable private TypeSystemWriterResource typeSystemWriter;
+  private static final Logger LOGGER = LoggerFactory.getLogger(XmiWriter.class);
 
-    @Nullable private Path outputDir;
+  @Nullable
+  private TypeSystemWriterResource typeSystemWriter;
 
-    /**
-     * Initializes the outputDirectory.
-     *
-     * @param context the uima context
-     * @throws ResourceInitializationException if we fail to initialize DocumentIdOutputStreamFactory
-     */
-    @Override
-    public void initialize(UimaContext context) throws ResourceInitializationException {
-        super.initialize(context);
-        LOGGER.info("Initializing XMI writer AE");
+  @Nullable
+  private Path outputDir;
 
-        outputDir = Paths.get((String) context.getConfigParameterValue("outputDirectory"));
-        try {
-            Files.createDirectories(outputDir);
-        } catch (IOException e) {
-            throw new ResourceInitializationException(e);
-        }
+  /**
+   * Initializes the outputDirectory.
+   *
+   * @param context the uima context
+   * @throws ResourceInitializationException if we fail to initialize DocumentIdOutputStreamFactory
+   */
+  @Override
+  public void initialize(UimaContext context) throws ResourceInitializationException {
+    super.initialize(context);
+    LOGGER.info("Initializing XMI writer AE");
 
-        try {
-            typeSystemWriter = (TypeSystemWriterResource) context.getResourceObject("typeSystemWriterResource");
-        } catch (ResourceAccessException e) {
-            throw new ResourceInitializationException(e);
-        }
+    outputDir = Paths.get((String) context.getConfigParameterValue("outputDirectory"));
+    try {
+      Files.createDirectories(outputDir);
+    } catch (IOException e) {
+      throw new ResourceInitializationException(e);
     }
 
-    @Override
-    public void process(CAS cas) throws AnalysisEngineProcessException {
-        TypeSystem typeSystem = cas.getTypeSystem();
-        try {
-            typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), typeSystem);
-        } catch (IOException | SAXException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-
-        Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
-        Feature documentId = type.getFeatureByBaseName("documentId");
-        String fileName = cas.getView("metadata")
-                .getIndexRepository()
-                .getAllIndexedFS(type)
-                .next()
-                .getStringValue(documentId) + ".xmi";
-        Path path = outputDir.resolve(fileName);
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Writing XMI CAS to location: {}", path.toString());
-        }
-
-        try (OutputStream out = new FileOutputStream(path.toFile())) {
-            XmiCasSerializer.serialize(cas, out);
-        } catch (IOException | SAXException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
-
+    try {
+      typeSystemWriter = (TypeSystemWriterResource) context
+          .getResourceObject("typeSystemWriterResource");
+    } catch (ResourceAccessException e) {
+      throw new ResourceInitializationException(e);
     }
+  }
+
+  @Override
+  public void process(CAS cas) throws AnalysisEngineProcessException {
+    assert typeSystemWriter != null;
+    assert outputDir != null;
+
+    TypeSystem typeSystem = cas.getTypeSystem();
+    try {
+      typeSystemWriter.writeToPath(outputDir.resolve("TypeSystem.xml"), typeSystem);
+    } catch (IOException | SAXException e) {
+      throw new AnalysisEngineProcessException(e);
+    }
+
+    Type type = typeSystem.getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
+    Feature documentId = type.getFeatureByBaseName("documentId");
+    String fileName = cas.getView("metadata")
+        .getIndexRepository()
+        .getAllIndexedFS(type)
+        .next()
+        .getStringValue(documentId) + ".xmi";
+    Path path = outputDir.resolve(fileName);
+
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("Writing XMI CAS to location: {}", path.toString());
+    }
+
+    try (OutputStream out = new FileOutputStream(path.toFile())) {
+      XmiCasSerializer.serialize(cas, out);
+    } catch (IOException | SAXException e) {
+      throw new AnalysisEngineProcessException(e);
+    }
+
+  }
 }

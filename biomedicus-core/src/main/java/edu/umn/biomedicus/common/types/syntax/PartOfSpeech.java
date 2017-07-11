@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,318 +17,320 @@
 package edu.umn.biomedicus.common.types.syntax;
 
 /**
- * A part of speech in the Penn Treebank P.O.S. tags format. The full list of tags is described here:
- * <a href="http://repository.upenn.edu/cgi/viewcontent.cgi?article=1603&context=cis_reports">
- * Santorini, B. 1990. Part-of-speech tagging guidelines for the Penn Treebank Project.
- * Technical report MS-CIS-90-47, Department of Computer and Information Science, University of Pennsylvania.</a>
+ * A part of speech in the Penn Treebank P.O.S. tags format. The full list of tags is described
+ * here: <a href="http://repository.upenn.edu/cgi/viewcontent.cgi?article=1603&context=cis_reports">
+ * Santorini, B. 1990. Part-of-speech tagging guidelines for the Penn Treebank Project. Technical
+ * report MS-CIS-90-47, Department of Computer and Information Science, University of
+ * Pennsylvania.</a>
  * <p/>
- * <p>We use the tag as the enum constant for the most case, except in cases where the enum constant can not be
- * represented in Java</p>
+ * <p>We use the tag as the enum constant for the most case, except in cases where the enum constant
+ * can not be represented in Java</p>
  * <p/>
- * <p>A notable derivation from Penn Treebank is the Before Beginning of Sentence/BBS tag, Beginning of Sentence/BOS tag
- * and the End of Sentence/EOS tag, which are abstract tags (i.e. should never be used to tag a token) that are used in
- * some statistical models like the TnT POS-Tagger that are run after sentence splitting and can be improved by the
- * inclusion of sentence boundary information.</p>
+ * <p>A notable derivation from Penn Treebank is the Before Beginning of Sentence/BBS tag, Beginning
+ * of Sentence/BOS tag and the End of Sentence/EOS tag, which are abstract tags (i.e. should never
+ * be used to tag a token) that are used in some statistical models like the TnT POS-Tagger that are
+ * run after sentence splitting and can be improved by the inclusion of sentence boundary
+ * information.</p>
  */
 public enum PartOfSpeech {
-    /**
-     * Coordinating conjunction
-     */
-    CC("CC"),
+  /**
+   * Coordinating conjunction
+   */
+  CC("CC"),
 
-    /**
-     * Cardinal number
-     */
-    CD("CD"),
+  /**
+   * Cardinal number
+   */
+  CD("CD"),
 
-    /**
-     * Determiner
-     */
-    DT("DT"),
+  /**
+   * Determiner
+   */
+  DT("DT"),
 
-    /**
-     * Existential <i>there</i>
-     */
-    EX("EX"),
+  /**
+   * Existential <i>there</i>
+   */
+  EX("EX"),
 
-    /**
-     * Foreign word
-     */
-    FW("FW"),
+  /**
+   * Foreign word
+   */
+  FW("FW"),
 
-    /**
-     * Preposition or coordinating conjunction
-     */
-    IN("IN"),
+  /**
+   * Preposition or coordinating conjunction
+   */
+  IN("IN"),
 
-    /**
-     * Adjective
-     */
-    JJ("JJ"),
+  /**
+   * Adjective
+   */
+  JJ("JJ"),
 
-    /**
-     * Adjective, comparative
-     */
-    JJR("JJR"),
+  /**
+   * Adjective, comparative
+   */
+  JJR("JJR"),
 
-    /**
-     * Adjective, superlative
-     */
-    JJS("JJS"),
+  /**
+   * Adjective, superlative
+   */
+  JJS("JJS"),
 
-    /**
-     * List item marker
-     */
-    LS("LS"),
+  /**
+   * List item marker
+   */
+  LS("LS"),
 
-    /**
-     * Modal
-     */
-    MD("MD"),
+  /**
+   * Modal
+   */
+  MD("MD"),
 
-    /**
-     * Noun, singular or mass
-     */
-    NN("NN"),
+  /**
+   * Noun, singular or mass
+   */
+  NN("NN"),
 
-    /**
-     * Noun, plural
-     */
-    NNS("NNS"),
+  /**
+   * Noun, plural
+   */
+  NNS("NNS"),
 
-    /**
-     * Proper noun, singular
-     */
-    NNP("NNP"),
+  /**
+   * Proper noun, singular
+   */
+  NNP("NNP"),
 
-    /**
-     * Proper noun, plural
-     */
-    NNPS("NNPS"),
+  /**
+   * Proper noun, plural
+   */
+  NNPS("NNPS"),
 
-    /**
-     * Predeterminer
-     */
-    PDT("PDT"),
+  /**
+   * Predeterminer
+   */
+  PDT("PDT"),
 
-    /**
-     * Possessive ending
-     */
-    POS("POS"),
+  /**
+   * Possessive ending
+   */
+  POS("POS"),
 
-    /**
-     * Personal pronoun
-     */
-    PRP("PRP"),
+  /**
+   * Personal pronoun
+   */
+  PRP("PRP"),
 
-    /**
-     * Possessive pronoun
-     */
-    PRP$("PRP$"),
+  /**
+   * Possessive pronoun
+   */
+  PRP$("PRP$"),
 
-    /**
-     * Adverb
-     */
-    RB("RB"),
+  /**
+   * Adverb
+   */
+  RB("RB"),
 
-    /**
-     * Adverb, comparative
-     */
-    RBR("RBR"),
+  /**
+   * Adverb, comparative
+   */
+  RBR("RBR"),
 
-    /**
-     * Adverb, superlative
-     */
-    RBS("RBS"),
+  /**
+   * Adverb, superlative
+   */
+  RBS("RBS"),
 
-    /**
-     * Particle
-     */
-    RP("RP"),
+  /**
+   * Particle
+   */
+  RP("RP"),
 
-    /**
-     * Symbol
-     */
-    SYM("SYM"),
+  /**
+   * Symbol
+   */
+  SYM("SYM"),
 
-    /**
-     * <i>to</i>
-     */
-    TO("TO"),
+  /**
+   * <i>to</i>
+   */
+  TO("TO"),
 
-    /**
-     * Interjection
-     */
-    UH("UH"),
+  /**
+   * Interjection
+   */
+  UH("UH"),
 
-    /**
-     * Verb, base form
-     */
-    VB("VB"),
+  /**
+   * Verb, base form
+   */
+  VB("VB"),
 
-    /**
-     * Verb, past tense
-     */
-    VBD("VBD"),
+  /**
+   * Verb, past tense
+   */
+  VBD("VBD"),
 
-    /**
-     * Verb, gerund or present participle
-     */
-    VBG("VBG"),
+  /**
+   * Verb, gerund or present participle
+   */
+  VBG("VBG"),
 
-    /**
-     * Verb, past participle
-     */
-    VBN("VBN"),
+  /**
+   * Verb, past participle
+   */
+  VBN("VBN"),
 
-    /**
-     * Verb, non-3rd person singular present
-     */
-    VBP("VBP"),
+  /**
+   * Verb, non-3rd person singular present
+   */
+  VBP("VBP"),
 
-    /**
-     * Verb, 3rd person singular present
-     */
-    VBZ("VBZ"),
+  /**
+   * Verb, 3rd person singular present
+   */
+  VBZ("VBZ"),
 
-    /**
-     * Wh-determiner
-     */
-    WDT("WDT"),
+  /**
+   * Wh-determiner
+   */
+  WDT("WDT"),
 
-    /**
-     * Wh-pronoun
-     */
-    WP("WP"),
+  /**
+   * Wh-pronoun
+   */
+  WP("WP"),
 
-    /**
-     * Possessive wh-pronoun
-     */
-    WP$("WP$"),
+  /**
+   * Possessive wh-pronoun
+   */
+  WP$("WP$"),
 
-    /**
-     * Wh-adverb
-     */
-    WRB("WRB"),
+  /**
+   * Wh-adverb
+   */
+  WRB("WRB"),
 
-    /**
-     * Punctuation, sentence closer
-     */
-    SENTENCE_CLOSER_PUNCTUATION("."),
+  /**
+   * Punctuation, sentence closer
+   */
+  SENTENCE_CLOSER_PUNCTUATION("."),
 
-    /**
-     * Punctuation, comma
-     */
-    COMMA_PUNCTUATION(","),
+  /**
+   * Punctuation, comma
+   */
+  COMMA_PUNCTUATION(","),
 
-    /**
-     * Punctuation, colon
-     */
-    COLON_PUNCTUATION(":"),
+  /**
+   * Punctuation, colon
+   */
+  COLON_PUNCTUATION(":"),
 
-    /**
-     * Punctuation, left parenthesis
-     */
-    LEFT_PAREN("("),
+  /**
+   * Punctuation, left parenthesis
+   */
+  LEFT_PAREN("("),
 
-    /**
-     * Punctuation, right parenthesis
-     */
-    RIGHT_PAREN(")"),
+  /**
+   * Punctuation, right parenthesis
+   */
+  RIGHT_PAREN(")"),
 
-    /**
-     * Punctuation, right quotation marks
-     */
-    OPENING_QUOTATION("``"),
+  /**
+   * Punctuation, right quotation marks
+   */
+  OPENING_QUOTATION("``"),
 
-    /**
-     * Punctuation, right quotation marks
-     */
-    CLOSING_QUOTATION("''"),
+  /**
+   * Punctuation, right quotation marks
+   */
+  CLOSING_QUOTATION("''"),
 
-    /**
-     * Punctuation opening single quote.
-     */
-    OPENING_SINGLE_QUOTE("`"),
+  /**
+   * Punctuation opening single quote.
+   */
+  OPENING_SINGLE_QUOTE("`"),
 
-    /**
-     * Punctuation, closing single quote.
-     */
-    CLOSING_SINGLE_QUOTE("'"),
+  /**
+   * Punctuation, closing single quote.
+   */
+  CLOSING_SINGLE_QUOTE("'"),
 
-    /**
-     * Punctuation, straight double quote
-     */
-    STRAIGHT_DOUBLE_QUOTE("\""),
+  /**
+   * Punctuation, straight double quote
+   */
+  STRAIGHT_DOUBLE_QUOTE("\""),
 
-    /**
-     * Pound sign #
-     */
-    POUND_SIGN("#"),
+  /**
+   * Pound sign #
+   */
+  POUND_SIGN("#"),
 
-    /**
-     * Dollar sign $
-     */
-    DOLLAR_SIGN("$"),
+  /**
+   * Dollar sign $
+   */
+  DOLLAR_SIGN("$"),
 
-    /**
-     * Hyphen
-     */
-    HYPH("HYPH"),
+  /**
+   * Hyphen
+   */
+  HYPH("HYPH"),
 
-    /**
-     * Affix
-     */
-    AFX("AFX"),
+  /**
+   * Affix
+   */
+  AFX("AFX"),
 
-    /**
-     * Goes-with
-     */
-    GW("GW"),
+  /**
+   * Goes-with
+   */
+  GW("GW"),
 
-    /**
-     * Missing, Unknown, De-identified, or untaggable
-     */
-    XX("XX"),
+  /**
+   * Missing, Unknown, De-identified, or untaggable
+   */
+  XX("XX"),
 
-    /**
-     * Before Beginning of Sentence, abstract tag used for before the beginning of a sentence.
-     */
-    BBS("BBS"),
+  /**
+   * Before Beginning of Sentence, abstract tag used for before the beginning of a sentence.
+   */
+  BBS("BBS"),
 
-    /**
-     * Beginning of Sentence, abstract tag used for the beginning of a sentence.
-     */
-    BOS("BOS"),
+  /**
+   * Beginning of Sentence, abstract tag used for the beginning of a sentence.
+   */
+  BOS("BOS"),
 
-    /**
-     * End of Sentence, abstract tag used for the end of a sentence.
-     */
-    EOS("EOS"),
+  /**
+   * End of Sentence, abstract tag used for the end of a sentence.
+   */
+  EOS("EOS"),
 
-    /**
-     * Electronic address.
-     */
-    ADD("ADD"),
+  /**
+   * Electronic address.
+   */
+  ADD("ADD"),
 
-    /**
-     * Non-final punctuation.
-     */
-    NFP("NFP");
+  /**
+   * Non-final punctuation.
+   */
+  NFP("NFP");
 
-    private final String pos;
+  private final String pos;
 
-    /**
-     * Default constructor. Initialized with the string representation of the part of speech tag.
-     *
-     * @param pos string value for the part of speech tag
-     */
-    PartOfSpeech(String pos) {
-        this.pos = pos;
-    }
+  /**
+   * Default constructor. Initialized with the string representation of the part of speech tag.
+   *
+   * @param pos string value for the part of speech tag
+   */
+  PartOfSpeech(String pos) {
+    this.pos = pos;
+  }
 
-    @Override
-    public String toString() {
-        return pos;
-    }
+  @Override
+  public String toString() {
+    return pos;
+  }
 }

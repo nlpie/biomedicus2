@@ -22,6 +22,7 @@ import edu.umn.biomedicus.framework.store.Document;
  *
  */
 public interface Collector<T, U> {
+
   void addDocument(Document document);
 
   T getIntermediate();

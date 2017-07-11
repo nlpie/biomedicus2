@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package edu.umn.biomedicus.rtf.beans.keywords;
 
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
-
+import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.Objects;
 
 /**
  * Base class for a keyword action.
@@ -31,67 +30,67 @@ import java.util.Objects;
 @XmlRootElement
 public abstract class AbstractKeywordAction implements KeywordAction {
 
-    private String controlWord;
+  private String controlWord;
 
-    private int begin = -1;
+  private int begin = -1;
 
-    private int end = -1;
+  private int end = -1;
 
-    @Nullable
-    private Integer parameter = null;
+  @Nullable
+  private Integer parameter = null;
 
-    @XmlTransient
-    @Override
-    public int getBegin() {
-        return begin;
-    }
+  @XmlTransient
+  @Override
+  public int getBegin() {
+    return begin;
+  }
 
-    @XmlTransient
-    @Override
-    public int getEnd() {
-        return end;
-    }
+  @Override
+  public void setBegin(int begin) {
+    this.begin = begin;
+  }
 
-    @Override
-    public void setBegin(int begin) {
-        this.begin = begin;
-    }
+  @XmlTransient
+  @Override
+  public int getEnd() {
+    return end;
+  }
 
-    @Override
-    public void setEnd(int end) {
-        this.end = end;
-    }
+  @Override
+  public void setEnd(int end) {
+    this.end = end;
+  }
 
-    @Override
-    public void setParameter(@Nullable Integer parameter) {
-        this.parameter = parameter;
-    }
+  @XmlTransient
+  @Override
+  public int getParameter() {
+    return Objects.requireNonNull(parameter);
+  }
 
-    @XmlTransient
-    @Override
-    public int getParameter() {
-        return Objects.requireNonNull(parameter);
-    }
+  @Override
+  public void setParameter(@Nullable Integer parameter) {
+    this.parameter = parameter;
+  }
 
-    @Override
-    public boolean hasParameter() {
-        return parameter != null;
-    }
+  @Override
+  public boolean hasParameter() {
+    return parameter != null;
+  }
 
-    @XmlTransient
-    @Override
-    public String getControlWord() {
-        return controlWord;
-    }
+  @XmlTransient
+  @Override
+  public String getControlWord() {
+    return controlWord;
+  }
 
-    @Override
-    public void setControlWord(String controlWord) {
-        this.controlWord = controlWord;
-    }
+  @Override
+  public void setControlWord(String controlWord) {
+    this.controlWord = controlWord;
+  }
 
-    @XmlTransient
-    @Override
-    public boolean isKnown() {
-        return true;
-    }
+  @XmlTransient
+  @Override
+  public boolean isKnown() {
+    return true;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import org.apache.uima.cas.TypeSystem;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.nio.file.Path;
+import org.apache.uima.cas.TypeSystem;
+import org.xml.sax.SAXException;
 
 /**
  * Responsible for writing the type system.
@@ -28,12 +27,14 @@ import java.nio.file.Path;
  * @since 1.3.0
  */
 public interface TypeSystemWriterResource {
-    /**
-     * Writes the type system to the path if it has not already been written.
-     * @param path path to write to
-     * @param typeSystem type system to write
-     * @throws IOException if getting the path fails
-     * @throws SAXException if writing XML fails
-     */
-    void writeToPath(Path path, TypeSystem typeSystem) throws IOException, SAXException;
+
+  /**
+   * Writes the type system to the path if it has not already been written.
+   *
+   * @param path path to write to
+   * @param typeSystem type system to write
+   * @throws IOException if getting the path fails
+   * @throws SAXException if writing XML fails
+   */
+  void writeToPath(Path path, TypeSystem typeSystem) throws IOException, SAXException;
 }

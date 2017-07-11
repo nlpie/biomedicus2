@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
-import edu.umn.biomedicus.framework.*;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.AggregatorRunner;
+import edu.umn.biomedicus.framework.Application;
+import edu.umn.biomedicus.framework.DocumentProcessorRunner;
+import edu.umn.biomedicus.framework.DocumentSourceRunner;
 import org.apache.uima.resource.Resource_ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,25 +33,34 @@ import org.slf4j.LoggerFactory;
  * @since 1.4
  */
 public final class GuiceInjector extends Resource_ImplBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GuiceInjector.class);
 
-    private final Injector injector;
+  private static final Logger LOGGER = LoggerFactory.getLogger(GuiceInjector.class);
 
-    public GuiceInjector() {
-        LOGGER.info("Initializing Guice Injector Resource");
-        try {
-            Application application = UimaBootstrapper.create();
-            injector = application.getInjector();
-        } catch (BiomedicusException e) {
-            throw new IllegalStateException(e);
-        }
+  private final Injector injector;
+
+  public GuiceInjector() {
+    LOGGER.info("Initializing Guice Injector Resource");
+    try {
+      Application application = UimaBootstrapper.create();
+      injector = application.getInjector();
+    } catch (BiomedicusException e) {
+      throw new IllegalStateException(e);
     }
+  }
 
-    public Injector getInjector() {
-        return injector;
-    }
+  public Injector getInjector() {
+    return injector;
+  }
 
-    public DocumentProcessorRunner createDocumentProcessorRunner() {
-        return DocumentProcessorRunner.create(injector);
-    }
+  public DocumentProcessorRunner createDocumentProcessorRunner() {
+    return DocumentProcessorRunner.create(injector);
+  }
+
+  public DocumentSourceRunner createDocumentSourceRunner() {
+    return DocumentSourceRunner.create(injector);
+  }
+
+  public AggregatorRunner createAggregatorRunner() {
+    return AggregatorRunner.create(injector);
+  }
 }

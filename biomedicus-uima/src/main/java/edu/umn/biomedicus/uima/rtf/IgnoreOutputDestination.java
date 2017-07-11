@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,32 @@ import edu.umn.biomedicus.rtf.reader.State;
  *
  */
 public class IgnoreOutputDestination implements OutputDestination {
-    private final String destinationName;
 
-    private int count = 0;
+  private final String destinationName;
 
-    public IgnoreOutputDestination(String destinationName) {
-        this.destinationName = destinationName;
-    }
+  private int count = 0;
 
-    @Override
-    public int writeChar(char ch, State state) {
-        return count++;
-    }
+  public IgnoreOutputDestination(String destinationName) {
+    this.destinationName = destinationName;
+  }
 
-    @Override
-    public void finishDestination() {
+  @Override
+  public int writeChar(char ch, State state) {
+    return count++;
+  }
 
-    }
+  @Override
+  public void finishDestination() {
 
-    @Override
-    public void controlWordEncountered(KeywordAction keywordAction) {
+  }
 
-    }
+  @Override
+  public void controlWordEncountered(KeywordAction keywordAction) {
 
-    @Override
-    public String getName() {
-        return destinationName;
-    }
+  }
+
+  @Override
+  public String getName() {
+    return destinationName;
+  }
 }

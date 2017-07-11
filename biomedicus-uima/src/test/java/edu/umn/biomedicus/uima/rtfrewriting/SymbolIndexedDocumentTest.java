@@ -16,45 +16,52 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument;
-import edu.umn.biomedicus.uima.rtfrewriting.SymbolLocation;
+import static org.testng.Assert.assertEquals;
+
+import java.util.List;
+import java.util.Map;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import org.testng.annotations.Test;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.testng.Assert.assertEquals;
-
 /**
  * Unit test for {@link SymbolIndexedDocument}.
  */
 public class SymbolIndexedDocumentTest {
-    @Tested SymbolIndexedDocument symbolIndexedDocument;
 
-    @Injectable List<SymbolLocation> symbolLocations;
+  @Tested
+  SymbolIndexedDocument symbolIndexedDocument;
 
-    @Injectable Map<String, Map<Integer, Integer>> destinationMap;
+  @Injectable
+  List<SymbolLocation> symbolLocations;
 
-    @Injectable String document = "／人◕ ‿‿ ◕人＼";
+  @Injectable
+  Map<String, Map<Integer, Integer>> destinationMap;
 
-    @Mocked SymbolLocation symbolLocation;
+  @Injectable
+  String document = "／人◕ ‿‿ ◕人＼";
+
+  @Mocked
+  SymbolLocation symbolLocation;
 
 
-    @Test
-    public void testGetOriginalDocumentIndex() throws Exception {
-        new Expectations() {{
-            symbolLocation.getIndex(); result = 4;
-            symbolLocations.get(anyInt); returns(symbolLocation, symbolLocation, symbolLocation, symbolLocation);
-            symbolLocation.getOffset(); returns(4, 4, 4, 4, 4);
-            symbolLocation.getLength(); returns(3, 3, 3, 3);
-        }};
+  @Test
+  public void testGetOriginalDocumentIndex() throws Exception {
+    new Expectations() {{
+      symbolLocation.getIndex();
+      result = 4;
+      symbolLocations.get(anyInt);
+      returns(symbolLocation, symbolLocation, symbolLocation, symbolLocation);
+      symbolLocation.getOffset();
+      returns(4, 4, 4, 4, 4);
+      symbolLocation.getLength();
+      returns(3, 3, 3, 3);
+    }};
 
-        int originalDocumentIndex = symbolIndexedDocument.getOriginalDocumentIndex(symbolLocation);
+    int originalDocumentIndex = symbolIndexedDocument.getOriginalDocumentIndex(symbolLocation);
 
-        assertEquals(originalDocumentIndex, 32);
-    }
+    assertEquals(originalDocumentIndex, 32);
+  }
 }

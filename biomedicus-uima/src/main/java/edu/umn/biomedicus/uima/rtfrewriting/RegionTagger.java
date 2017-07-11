@@ -28,96 +28,98 @@ import org.slf4j.LoggerFactory;
  */
 public class RegionTagger {
 
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RegionTagger.class);
+  /**
+   * Class logger.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegionTagger.class);
 
-    /**
-     * The destination name of the document.
-     */
-    private final String destinationName;
+  /**
+   * The destination name of the document.
+   */
+  private final String destinationName;
 
-    /**
-     * The begin index of the region.
-     */
-    private final int beginIndex;
+  /**
+   * The begin index of the region.
+   */
+  private final int beginIndex;
 
-    /**
-     * The end index of the region.
-     */
-    private final int endIndex;
+  /**
+   * The end index of the region.
+   */
+  private final int endIndex;
 
-    /**
-     * Tag to insert at begin of region.
-     */
-    private final String beginTag;
+  /**
+   * Tag to insert at begin of region.
+   */
+  private final String beginTag;
 
-    /**
-     * Tag to insert at the end of the region.
-     */
-    private final String endTag;
+  /**
+   * Tag to insert at the end of the region.
+   */
+  private final String endTag;
 
-    /**
-     * Rewriter cursor to use.
-     */
-    private final RtfRewriterCursor rtfRewriterCursor;
+  /**
+   * Rewriter cursor to use.
+   */
+  private final RtfRewriterCursor rtfRewriterCursor;
 
-    /**
-     * Default constructor.
-     *
-     * @param symbolIndexedDocument The document to tag a region in.
-     * @param destinationName       The destination name of the document.
-     * @param beginDestinationIndex The begin index of the region.
-     * @param endDestinationIndex   The end index of the region.
-     * @param beginTag              Tag to insert at begin of region.
-     * @param endTag                Tag to insert at the end of the region.
-     */
-    public RegionTagger(SymbolIndexedDocument symbolIndexedDocument,
-                        String destinationName,
-                        int beginDestinationIndex,
-                        int endDestinationIndex,
-                        String beginTag,
-                        String endTag) {
-        this.destinationName = destinationName;
-        this.beginIndex = symbolIndexedDocument.symbolIndex(beginDestinationIndex, destinationName);
-        this.endIndex = symbolIndexedDocument.symbolIndex(endDestinationIndex - 1, destinationName);
-        this.beginTag = beginTag;
-        this.endTag = endTag;
-        rtfRewriterCursor =  new RtfRewriterCursor(symbolIndexedDocument);
-    }
+  /**
+   * Default constructor.
+   *
+   * @param symbolIndexedDocument The document to tag a region in.
+   * @param destinationName The destination name of the document.
+   * @param beginDestinationIndex The begin index of the region.
+   * @param endDestinationIndex The end index of the region.
+   * @param beginTag Tag to insert at begin of region.
+   * @param endTag Tag to insert at the end of the region.
+   */
+  public RegionTagger(SymbolIndexedDocument symbolIndexedDocument,
+      String destinationName,
+      int beginDestinationIndex,
+      int endDestinationIndex,
+      String beginTag,
+      String endTag) {
+    this.destinationName = destinationName;
+    this.beginIndex = symbolIndexedDocument.symbolIndex(beginDestinationIndex, destinationName);
+    this.endIndex = symbolIndexedDocument.symbolIndex(endDestinationIndex - 1, destinationName);
+    this.beginTag = beginTag;
+    this.endTag = endTag;
+    rtfRewriterCursor = new RtfRewriterCursor(symbolIndexedDocument);
+  }
 
-    /**
-     * Performs the tagging of the region in the document. May insert more than one tag pair.
-     */
-    public void tagRegion() {
-        LOGGER.debug("Tagging a region between symbols {} and {} in {}", beginIndex, endIndex, destinationName);
+  /**
+   * Performs the tagging of the region in the document. May insert more than one tag pair.
+   */
+  public void tagRegion() {
+    LOGGER.debug("Tagging a region between symbols {} and {} in {}", beginIndex, endIndex,
+        destinationName);
 
-        rtfRewriterCursor.setSymbolIndex(beginIndex);
-        rtfRewriterCursor.insertBefore(beginTag);
+    rtfRewriterCursor.setSymbolIndex(beginIndex);
+    rtfRewriterCursor.insertBefore(beginTag);
 
-        int remaining;
-        while ((remaining = endIndex - rtfRewriterCursor.getSymbolIndex()) != 0) {
-            if (remaining < 0) {
-                String msg = String.format("Passed the end symbol in document by %d symbols, context: \"%s\"",
-                        remaining * -1, rtfRewriterCursor.getContext());
-                LOGGER.error(msg);
-                throw new IllegalStateException(msg);
-            }
+    int remaining;
+    while ((remaining = endIndex - rtfRewriterCursor.getSymbolIndex()) != 0) {
+      if (remaining < 0) {
+        String msg = String
+            .format("Passed the end symbol in document by %d symbols, context: \"%s\"",
+                remaining * -1, rtfRewriterCursor.getContext());
+        LOGGER.error(msg);
+        throw new IllegalStateException(msg);
+      }
 
-            if (rtfRewriterCursor.nextIsOutsideDestination(destinationName)) {
-                rtfRewriterCursor.insertAfter(endTag);
-                rtfRewriterCursor.forward();
-                rtfRewriterCursor.advanceToDestination(destinationName);
-                rtfRewriterCursor.insertBefore(beginTag);
-            } else if (rtfRewriterCursor.nextOffsetNonZero()) {
-                rtfRewriterCursor.insertAfter(endTag);
-                rtfRewriterCursor.forward();
-                rtfRewriterCursor.insertBefore(beginTag);
-            } else {
-                rtfRewriterCursor.forward();
-            }
-        }
+      if (rtfRewriterCursor.nextIsOutsideDestination(destinationName)) {
         rtfRewriterCursor.insertAfter(endTag);
+        rtfRewriterCursor.forward();
+        rtfRewriterCursor.advanceToDestination(destinationName);
+        rtfRewriterCursor.insertBefore(beginTag);
+      } else if (rtfRewriterCursor.nextOffsetNonZero()) {
+        rtfRewriterCursor.insertAfter(endTag);
+        rtfRewriterCursor.forward();
+        rtfRewriterCursor.insertBefore(beginTag);
+      } else {
+        rtfRewriterCursor.forward();
+      }
     }
+    rtfRewriterCursor.insertAfter(endTag);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,13 @@ import edu.umn.biomedicus.framework.store.TextLocation;
  * @since 1.3.0
  */
 public interface IndexListener {
-    /**
-     * Alerts a listener that a character was written to an output destination.
-     *
-     * @param destinationName  destination the character was written to.
-     * @param destinationIndex the index in the destination.
-     * @param originalDocumentTextLocation
-     */
-    void wroteToDestination(String destinationName, int destinationIndex, TextLocation originalDocumentTextLocation);
+
+  /**
+   * Alerts a listener that a character was written to an output destination.
+   *
+   * @param destinationName destination the character was written to.
+   * @param destinationIndex the index in the destination.
+   */
+  void wroteToDestination(String destinationName, int destinationIndex,
+      TextLocation originalDocumentTextLocation);
 }

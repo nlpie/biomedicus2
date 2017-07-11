@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,45 +16,46 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import mockit.Tested;
-import org.testng.annotations.Test;
-
 import static mockit.Deencapsulation.getField;
 import static mockit.Deencapsulation.setField;
 import static org.testng.Assert.assertEquals;
+
+import mockit.Tested;
+import org.testng.annotations.Test;
 
 /**
  * Unit test for {@link DestinationCasMapping}.
  */
 public class DestinationCasMappingTest {
 
-    @Tested DestinationCasMapping destinationCasMapping;
+  @Tested
+  DestinationCasMapping destinationCasMapping;
 
-    @Test
-    public void testGetDestinationName() throws Exception {
-        setField(destinationCasMapping, "destinationName", "dest");
+  @Test
+  public void testGetDestinationName() throws Exception {
+    setField(destinationCasMapping, "destinationName", "dest");
 
-        assertEquals(destinationCasMapping.getDestinationName(), "dest");
-    }
+    assertEquals(destinationCasMapping.getDestinationName(), "dest");
+  }
 
-    @Test
-    public void testSetDestinationName() throws Exception {
-        destinationCasMapping.setDestinationName("destName");
+  @Test
+  public void testSetDestinationName() throws Exception {
+    destinationCasMapping.setDestinationName("destName");
 
-        assertEquals(getField(destinationCasMapping, "destinationName"), "destName");
-    }
+    assertEquals(getField(destinationCasMapping, "destinationName"), "destName");
+  }
 
-    @Test
-    public void testGetViewName() throws Exception {
-        setField(destinationCasMapping, "viewName", "view");
+  @Test
+  public void testGetViewName() throws Exception {
+    setField(destinationCasMapping, "viewName", "view");
 
-        assertEquals(destinationCasMapping.getViewName(), "view");
-    }
+    assertEquals(destinationCasMapping.getViewName(), "view");
+  }
 
-    @Test
-    public void testSetViewName() throws Exception {
-        destinationCasMapping.setViewName("viewName");
+  @Test
+  public void testSetViewName() throws Exception {
+    destinationCasMapping.setViewName("viewName");
 
-        assertEquals(getField(destinationCasMapping, "viewName"), "viewName");
-    }
+    assertEquals(getField(destinationCasMapping, "viewName"), "viewName");
+  }
 }

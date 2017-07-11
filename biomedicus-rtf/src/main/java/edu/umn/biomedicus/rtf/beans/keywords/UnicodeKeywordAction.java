@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -31,15 +30,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class UnicodeKeywordAction extends AbstractKeywordAction {
 
-    @Override
-    public void executeKeyword(State state) throws RtfReaderException {
-        state.directWriteCharacter((char) getParameter(), Span.create(getBegin(), getEnd()));
-        int propertyValue = state.getPropertyValue("DocumentFormatting", "UnicodeByteCount");
-        state.setIgnoreNextChars(propertyValue);
-    }
+  @Override
+  public void executeKeyword(State state) throws RtfReaderException {
+    state.directWriteCharacter((char) getParameter(), Span.create(getBegin(), getEnd()));
+    int propertyValue = state.getPropertyValue("DocumentFormatting", "UnicodeByteCount");
+    state.setIgnoreNextChars(propertyValue);
+  }
 
-    @Override
-    public KeywordAction copy() {
-        return new UnicodeKeywordAction();
-    }
+  @Override
+  public KeywordAction copy() {
+    return new UnicodeKeywordAction();
+  }
 }

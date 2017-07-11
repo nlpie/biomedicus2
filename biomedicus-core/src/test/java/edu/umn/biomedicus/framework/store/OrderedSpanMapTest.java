@@ -16,45 +16,45 @@
 
 package edu.umn.biomedicus.framework.store;
 
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
 
 import java.util.Iterator;
 import java.util.Set;
-
-import static org.testng.Assert.*;
+import org.testng.annotations.Test;
 
 /**
  *
  */
 public class OrderedSpanMapTest {
-    @Test
-    public void testEntriesSize() throws Exception {
 
-        OrderedSpanMap<String> spanMap = new OrderedSpanMap<>();
-        spanMap.put(Span.create(0, 10), "");
-        spanMap.put(Span.create(7, 9), "");
-        spanMap.put(Span.create(3, 6), "");
-        spanMap.put(Span.create(11, 20), "");
-        spanMap.put(Span.create(4, 5), "");
-        spanMap.put(Span.create(0, 2), "");
+  @Test
+  public void testEntriesSize() throws Exception {
 
-        assertEquals(spanMap.size(), 6);
-    }
+    OrderedSpanMap<String> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 10), "");
+    spanMap.put(Span.create(7, 9), "");
+    spanMap.put(Span.create(3, 6), "");
+    spanMap.put(Span.create(11, 20), "");
+    spanMap.put(Span.create(4, 5), "");
+    spanMap.put(Span.create(0, 2), "");
 
-    @Test
-    public void testEntriesIt() throws Exception {
-        OrderedSpanMap<String> spanMap = new OrderedSpanMap<>();
-        spanMap.put(Span.create(0, 10), "");
-        spanMap.put(Span.create(7, 9), "");
-        spanMap.put(Span.create(3, 6), "");
-        spanMap.put(Span.create(11, 20), "");
-        spanMap.put(Span.create(4, 5), "");
-        spanMap.put(Span.create(0, 2), "");
+    assertEquals(spanMap.size(), 6);
+  }
 
-        Set<Label<String>> entries = spanMap.entries();
-        Iterator<Label<String>> it = entries.iterator();
-        assertEquals(it.next(), new Label<>(Span.create(0, 2), ""));
-        assertEquals(it.next(), new Label<>(Span.create(0, 10), ""));
+  @Test
+  public void testEntriesIt() throws Exception {
+    OrderedSpanMap<String> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 10), "");
+    spanMap.put(Span.create(7, 9), "");
+    spanMap.put(Span.create(3, 6), "");
+    spanMap.put(Span.create(11, 20), "");
+    spanMap.put(Span.create(4, 5), "");
+    spanMap.put(Span.create(0, 2), "");
 
-    }
+    Set<Label<String>> entries = spanMap.entries();
+    Iterator<Label<String>> it = entries.iterator();
+    assertEquals(it.next(), new Label<>(Span.create(0, 2), ""));
+    assertEquals(it.next(), new Label<>(Span.create(0, 10), ""));
+
+  }
 }

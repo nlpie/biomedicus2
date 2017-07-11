@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,75 +16,76 @@
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.copying.ViewMigratorJCasMultiplier</annotatorImplementationName>
-    <analysisEngineMetaData>
-        <name>Move System to Gold View Cas Multiplier</name>
-        <description>Moves the SystemView CAS view to the GoldView CAS view</description>
-        <version>${project.version}</version>
-        <vendor>${organization.name}</vendor>
-        <configurationParameters>
-            <configurationParameter>
-                <name>sourceViewName</name>
-                <description>The name of the view to copy</description>
-                <type>String</type>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>targetViewName</name>
-                <description>The name to create for a new view</description>
-                <type>String</type>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>deleteOriginalView</name>
-                <description>Whether the original view should be deleted</description>
-                <type>Boolean</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>viewMigratorClass</name>
-                <description>Class to use for migration.</description>
-                <type>String</type>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-        </configurationParameters>
-        <configurationParameterSettings>
-            <nameValuePair>
-                <name>sourceViewName</name>
-                <value>
-                    <string>SystemView</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>targetViewName</name>
-                <value>
-                    <string>GoldView</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>deleteOriginalView</name>
-                <value>
-                    <boolean>true</boolean>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>viewMigratorClass</name>
-                <value>
-                    <string>edu.umn.biomedicus.uima.copying.ViewCopier</string>
-                </value>
-            </nameValuePair>
-        </configurationParameterSettings>
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <fsIndexCollection/>
-        <operationalProperties>
-            <modifiesCas>true</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>true</outputsNewCASes>
-        </operationalProperties>
-    </analysisEngineMetaData>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>edu.umn.biomedicus.uima.copying.ViewMigratorJCasMultiplier
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Move System to Gold View Cas Multiplier</name>
+    <description>Moves the SystemView CAS view to the GoldView CAS view</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>sourceViewName</name>
+        <description>The name of the view to copy</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>targetViewName</name>
+        <description>The name to create for a new view</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>deleteOriginalView</name>
+        <description>Whether the original view should be deleted</description>
+        <type>Boolean</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>viewMigratorClass</name>
+        <description>Class to use for migration.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>sourceViewName</name>
+        <value>
+          <string>SystemView</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>targetViewName</name>
+        <value>
+          <string>GoldView</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>deleteOriginalView</name>
+        <value>
+          <boolean>true</boolean>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>viewMigratorClass</name>
+        <value>
+          <string>edu.umn.biomedicus.uima.copying.ViewCopier</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <fsIndexCollection/>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>true</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
 </analysisEngineDescription>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,600 +17,727 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.types.semantics.*;
+import edu.umn.biomedicus.common.types.semantics.Acronym;
+import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
+import edu.umn.biomedicus.common.types.semantics.DictionaryTermModifier;
+import edu.umn.biomedicus.common.types.semantics.Historical;
+import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
+import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
+import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
+import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
+import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
+import edu.umn.biomedicus.common.types.semantics.Misspelling;
+import edu.umn.biomedicus.common.types.semantics.Negated;
+import edu.umn.biomedicus.common.types.semantics.Probable;
+import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
+import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType;
+import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
+import edu.umn.biomedicus.common.types.structure.Cell;
+import edu.umn.biomedicus.common.types.structure.NestedCell;
+import edu.umn.biomedicus.common.types.structure.NestedRow;
+import edu.umn.biomedicus.common.types.structure.Row;
 import edu.umn.biomedicus.common.types.style.Bold;
 import edu.umn.biomedicus.common.types.style.Underlined;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.*;
+import edu.umn.biomedicus.common.types.text.ConstituencyParse;
+import edu.umn.biomedicus.common.types.text.DependencyParse;
+import edu.umn.biomedicus.common.types.text.ImmutableConstituencyParse;
+import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
+import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
+import edu.umn.biomedicus.common.types.text.ImmutableNormIndex;
+import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
+import edu.umn.biomedicus.common.types.text.ImmutableSection;
+import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
+import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
+import edu.umn.biomedicus.common.types.text.NormForm;
+import edu.umn.biomedicus.common.types.text.NormIndex;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Section;
+import edu.umn.biomedicus.common.types.text.SectionContent;
+import edu.umn.biomedicus.common.types.text.SectionTitle;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.common.types.text.TextSegment;
+import edu.umn.biomedicus.common.types.text.WordIndex;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
-import org.apache.uima.cas.*;
-import org.apache.uima.cas.text.AnnotationFS;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import org.apache.uima.cas.ArrayFS;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 
+/**
+ * Plugin containing all the label adapters that change BioMedICUS types to UIMA types.
+ *
+ * @author Ben Knoll
+ * @since 1.5.0
+ */
 public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
 
+  @Override
+  public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
+    Map<Class<?>, LabelAdapterFactory> map = new HashMap<>();
+    map.put(Section.class, SectionLabelAdapter::new);
+    map.put(SectionTitle.class, SectionTitleLabelAdapter::new);
+    map.put(SectionContent.class, SectionContentLabelAdapter::new);
+    map.put(TextSegment.class, TextSegmentLabelAdapter::new);
+    map.put(Sentence.class, SentenceLabelAdapter::new);
+    map.put(DependencyParse.class, DependencyParseLabelAdapter::new);
+    map.put(DictionaryTerm.class, DictionaryTermLabelAdapter::new);
+    map.put(Negated.class, NegatedLabelAdapter::new);
+    map.put(Historical.class, HistoricalLabelAdapter::new);
+    map.put(Probable.class, ProbableLabelAdapter::new);
+    map.put(TermToken.class, TermTokenLabelAdapter::new);
+    map.put(Acronym.class, AcronymLabelAdapter::new);
+    map.put(ParseToken.class, ParseTokenLabelAdapter::new);
+    map.put(PartOfSpeech.class, PartOfSpeechLabelAdapter::new);
+    map.put(WordIndex.class, WordIndexLabelAdapter::new);
+    map.put(NormForm.class, NormFormLabelAdapter::new);
+    map.put(NormIndex.class, NormIndexLabelAdapter::new);
+    map.put(Misspelling.class, MisspellingLabelAdapter::new);
+    map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
+    map.put(Bold.class, BoldLabelAdapter::new);
+    map.put(Underlined.class, UnderlinedLabelAdapter::new);
+    map.put(SocialHistoryCandidate.class,
+        SocialHistoryCandidateLabelAdapter::new);
+    map.put(SubstanceUsageElement.class,
+        SubstanceUsageElementLabelAdapter::new);
+    map.put(ConstituencyParse.class, ConstituencyParseLabelAdapter::new);
+    map.put(Row.class, RowLabelAdapter::new);
+    map.put(Cell.class, CellLabelAdapter::new);
+    map.put(NestedRow.class, NestedRowLabelAdapter::new);
+    map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
+    return map;
+  }
+
+  public static class SectionLabelAdapter extends AbstractLabelAdapter<Section> {
+
+    private final Feature kindFeature;
+
+    @Inject
+    SectionLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.Section"));
+      kindFeature = type.getFeatureByBaseName("kind");
+    }
+
     @Override
-    public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
-        Map<Class<?>, LabelAdapterFactory> map = new HashMap<>();
-        map.put(Section.class, SectionLabelAdapter::new);
-        map.put(SectionTitle.class, SectionTitleLabelAdapter::new);
-        map.put(SectionContent.class, SectionContentLabelAdapter::new);
-        map.put(TextSegment.class, TextSegmentLabelAdapter::new);
-        map.put(Sentence.class, SentenceLabelAdapter::new);
-        map.put(DependencyParse.class, DependencyParseLabelAdapter::new);
-        map.put(DictionaryTerm.class, DictionaryTermLabelAdapter::new);
-        map.put(Negated.class, NegatedLabelAdapter::new);
-        map.put(Historical.class, HistoricalLabelAdapter::new);
-        map.put(Probable.class, ProbableLabelAdapter::new);
-        map.put(TermToken.class, TermTokenLabelAdapter::new);
-        map.put(Acronym.class, AcronymLabelAdapter::new);
-        map.put(ParseToken.class, ParseTokenLabelAdapter::new);
-        map.put(PartOfSpeech.class, PartOfSpeechLabelAdapter::new);
-        map.put(WordIndex.class, WordIndexLabelAdapter::new);
-        map.put(NormForm.class, NormFormLabelAdapter::new);
-        map.put(NormIndex.class, NormIndexLabelAdapter::new);
-        map.put(Misspelling.class, MisspellingLabelAdapter::new);
-        map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
-        map.put(Bold.class, BoldLabelAdapter::new);
-        map.put(Underlined.class, UnderlinedLabelAdapter::new);
-        map.put(SocialHistoryCandidate.class,
-                SocialHistoryCandidateLabelAdapter::new);
-        map.put(SubstanceUsageElement.class,
-                SubstanceUsageElementLabelAdapter::new);
-        map.put(ConstituencyParse.class, ConstituencyParseLabelAdapter::new);
-        return map;
+    protected Section createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableSection.builder()
+          .kind(featureStructure.getStringValue(kindFeature))
+          .build();
     }
 
-    public static class SectionLabelAdapter extends AbstractLabelAdapter<Section> {
+    @Override
+    protected void fillAnnotation(Label<Section> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setStringValue(kindFeature, label.value().kind());
+    }
+  }
 
-        private final Feature kindFeature;
+  public static class SectionTitleLabelAdapter extends AbstractLabelAdapter<SectionTitle> {
 
-        @Inject
-        SectionLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.Section"));
-            kindFeature = type.getFeatureByBaseName("kind");
-        }
-
-        @Override
-        protected Section createLabelValue(FeatureStructure featureStructure) {
-            return ImmutableSection.builder()
-                    .kind(featureStructure.getStringValue(kindFeature))
-                    .build();
-        }
-
-        @Override
-        protected void fillAnnotation(Label<Section> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setStringValue(kindFeature, label.value().kind());
-        }
+    @Inject
+    SectionTitleLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.SectionTitle"));
     }
 
-    public static class SectionTitleLabelAdapter extends AbstractLabelAdapter<SectionTitle> {
+    @Override
+    protected SectionTitle createLabelValue(FeatureStructure featureStructure) {
+      return new SectionTitle();
+    }
+  }
 
-        @Inject
-        SectionTitleLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.SectionTitle"));
-        }
+  public static class SectionContentLabelAdapter extends AbstractLabelAdapter<SectionContent> {
 
-        @Override
-        protected SectionTitle createLabelValue(FeatureStructure featureStructure) {
-            return new SectionTitle();
-        }
+    @Inject
+    SectionContentLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.SectionContent"));
     }
 
-    public static class SectionContentLabelAdapter extends AbstractLabelAdapter<SectionContent> {
+    @Override
+    protected SectionContent createLabelValue(FeatureStructure featureStructure) {
+      return new SectionContent();
+    }
+  }
 
-        @Inject
-        SectionContentLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.SectionContent"));
-        }
+  public static class SentenceLabelAdapter extends AbstractLabelAdapter<Sentence> {
 
-        @Override
-        protected SectionContent createLabelValue(FeatureStructure featureStructure) {
-            return new SectionContent();
-        }
+    @Inject
+    public SentenceLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.Sentence"));
     }
 
-    public static class SentenceLabelAdapter extends AbstractLabelAdapter<Sentence> {
-        @Inject
-        public SentenceLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.Sentence"));
-        }
-
-        @Override
-        protected Sentence createLabelValue(FeatureStructure featureStructure) {
-            return new Sentence();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Override
+    protected Sentence createLabelValue(FeatureStructure featureStructure) {
+      return new Sentence();
     }
 
-    public static class TextSegmentLabelAdapter extends AbstractLabelAdapter<TextSegment> {
-        @Inject
-        public TextSegmentLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.type.TextSegmentAnnotation"));
-        }
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        @Override
-        protected TextSegment createLabelValue(FeatureStructure featureStructure) {
-            return new TextSegment();
-        }
+  public static class TextSegmentLabelAdapter extends AbstractLabelAdapter<TextSegment> {
 
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Inject
+    public TextSegmentLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.type.TextSegmentAnnotation"));
     }
 
-    public static class DependencyParseLabelAdapter extends AbstractLabelAdapter<DependencyParse> {
-        private final Feature parseTreeFeature;
-
-        @Inject
-        public DependencyParseLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.DependencyParse"));
-            parseTreeFeature = getType().getFeatureByBaseName("parseTree");
-        }
-
-
-        @Override
-        protected void fillAnnotation(Label<DependencyParse> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setStringValue(parseTreeFeature,
-                    label.value().parseTree());
-        }
-
-        @Override
-        protected DependencyParse createLabelValue(FeatureStructure featureStructure) {
-            return ImmutableDependencyParse.builder()
-                    .parseTree(
-                            featureStructure.getStringValue(parseTreeFeature))
-                    .build();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Override
+    protected TextSegment createLabelValue(FeatureStructure featureStructure) {
+      return new TextSegment();
     }
 
-    static abstract class DictionaryTermModifierLabelAdapter<T extends DictionaryTermModifier>
-            extends AbstractLabelAdapter<T> {
-        private final Feature cues;
-        private final Type cueType;
-        private final Function<List<Span>, T> constructor;
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        DictionaryTermModifierLabelAdapter(CAS cas,
-                                           Type type,
-                                           Function<List<Span>, T> constructor) {
-            super(cas, type);
-            this.constructor = constructor;
-            cues = type.getFeatureByBaseName("cues");
-            cueType = cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.ModificationCue");
-        }
+  public static class DependencyParseLabelAdapter extends AbstractLabelAdapter<DependencyParse> {
 
-        @Override
-        protected void fillAnnotation(Label<T> label,
-                                      AnnotationFS annotationFS) {
-            T value = label.value();
-            List<Span> cueTerms = value.cueTerms();
-            ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
-            for (int i = 0; i < cueTerms.size(); i++) {
-                Span cueTerm = cueTerms.get(i);
-                AnnotationFS cueAnnotation = cas
-                        .createAnnotation(cueType, cueTerm.getBegin(),
-                                cueTerm.getEnd());
-                cas.addFsToIndexes(cueAnnotation);
-                fsArray.set(i, cueAnnotation);
-            }
-            cas.addFsToIndexes(fsArray);
-            annotationFS.setFeatureValue(cues, fsArray);
-        }
+    private final Feature parseTreeFeature;
 
-        @Override
-        protected T createLabelValue(FeatureStructure featureStructure) {
-            FeatureStructure cuesValue = featureStructure.getFeatureValue(cues);
-            if (!(cuesValue instanceof ArrayFS)) {
-                throw new IllegalStateException("Cues is not ArrayFS");
-            }
-            ArrayFS cuesArray = (ArrayFS) cuesValue;
-
-            int size = cuesArray.size();
-            List<Span> cueTerms = new ArrayList<>(size);
-            for (int i = 0; i < size; i++) {
-                FeatureStructure cueFs = cuesArray.get(i);
-                if (!(cueFs instanceof AnnotationFS)) {
-                    throw new IllegalStateException();
-                }
-                AnnotationFS cueAnnotation = (AnnotationFS) cueFs;
-                Span span = new Span(cueAnnotation.getBegin(),
-                        cueAnnotation.getEnd());
-                cueTerms.add(span);
-            }
-
-            return constructor.apply(cueTerms);
-        }
+    @Inject
+    public DependencyParseLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.DependencyParse"));
+      parseTreeFeature = getType().getFeatureByBaseName("parseTree");
     }
 
-    private static class NegatedLabelAdapter extends DictionaryTermModifierLabelAdapter<Negated> {
-        @Inject
-        public NegatedLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                            .getType("edu.umn.biomedicus.uima.type1_6.Negated"),
-                    (cues) -> ImmutableNegated.builder().addAllCueTerms(cues)
-                            .build());
-        }
+
+    @Override
+    protected void fillAnnotation(Label<DependencyParse> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setStringValue(parseTreeFeature,
+          label.value().parseTree());
     }
 
-    private static class HistoricalLabelAdapter extends DictionaryTermModifierLabelAdapter<Historical> {
-        @Inject
-        public HistoricalLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                            .getType("edu.umn.biomedicus.uima.type1_6.Historical"),
-                    (cues) -> ImmutableHistorical.builder().addAllCueTerms(cues)
-                            .build());
-        }
+    @Override
+    protected DependencyParse createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableDependencyParse.builder()
+          .parseTree(
+              featureStructure.getStringValue(parseTreeFeature))
+          .build();
     }
 
-    private static class ProbableLabelAdapter extends DictionaryTermModifierLabelAdapter<Probable> {
-        @Inject
-        public ProbableLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                            .getType("edu.umn.biomedicus.uima.type1_6.Probable"),
-                    (cues) -> ImmutableProbable.builder().addAllCueTerms(cues)
-                            .build());
-        }
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
+
+  static abstract class DictionaryTermModifierLabelAdapter<T extends DictionaryTermModifier>
+      extends AbstractLabelAdapter<T> {
+
+    private final Feature cues;
+    private final Type cueType;
+    private final Function<List<Span>, T> constructor;
+
+    DictionaryTermModifierLabelAdapter(CAS cas,
+        Type type,
+        Function<List<Span>, T> constructor) {
+      super(cas, type);
+      this.constructor = constructor;
+      cues = type.getFeatureByBaseName("cues");
+      cueType = cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.ModificationCue");
     }
 
-    public static class TermTokenLabelAdapter extends AbstractTokenLabelAdapter<TermToken> {
-        @Inject
-        public TermTokenLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.TermToken"));
-        }
-
-        @Override
-        protected TermToken createToken(String text, boolean hasSpaceAfter) {
-            return ImmutableTermToken.builder()
-                    .text(text)
-                    .hasSpaceAfter(hasSpaceAfter)
-                    .build();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Override
+    protected void fillAnnotation(Label<T> label,
+        AnnotationFS annotationFS) {
+      T value = label.value();
+      List<Span> cueTerms = value.cueTerms();
+      ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
+      for (int i = 0; i < cueTerms.size(); i++) {
+        Span cueTerm = cueTerms.get(i);
+        AnnotationFS cueAnnotation = cas
+            .createAnnotation(cueType, cueTerm.getBegin(),
+                cueTerm.getEnd());
+        cas.addFsToIndexes(cueAnnotation);
+        fsArray.set(i, cueAnnotation);
+      }
+      cas.addFsToIndexes(fsArray);
+      annotationFS.setFeatureValue(cues, fsArray);
     }
 
-    public static class AcronymLabelAdapter extends AbstractTokenLabelAdapter<Acronym> {
-        @Inject
-        public AcronymLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.Acronym"));
-        }
+    @Override
+    protected T createLabelValue(FeatureStructure featureStructure) {
+      FeatureStructure cuesValue = featureStructure.getFeatureValue(cues);
+      if (!(cuesValue instanceof ArrayFS)) {
+        throw new IllegalStateException("Cues is not ArrayFS");
+      }
+      ArrayFS cuesArray = (ArrayFS) cuesValue;
 
-        @Override
-        protected Acronym createToken(String text, boolean hasSpaceAfter) {
-            return ImmutableAcronym.builder()
-                    .text(text)
-                    .hasSpaceAfter(hasSpaceAfter)
-                    .build();
+      int size = cuesArray.size();
+      List<Span> cueTerms = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        FeatureStructure cueFs = cuesArray.get(i);
+        if (!(cueFs instanceof AnnotationFS)) {
+          throw new IllegalStateException();
         }
+        AnnotationFS cueAnnotation = (AnnotationFS) cueFs;
+        Span span = new Span(cueAnnotation.getBegin(),
+            cueAnnotation.getEnd());
+        cueTerms.add(span);
+      }
+
+      return constructor.apply(cueTerms);
+    }
+  }
+
+  private static class NegatedLabelAdapter extends DictionaryTermModifierLabelAdapter<Negated> {
+
+    @Inject
+    public NegatedLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+              .getType("edu.umn.biomedicus.uima.type1_6.Negated"),
+          (cues) -> ImmutableNegated.builder().addAllCueTerms(cues)
+              .build());
+    }
+  }
+
+  private static class HistoricalLabelAdapter extends
+      DictionaryTermModifierLabelAdapter<Historical> {
+
+    @Inject
+    public HistoricalLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+              .getType("edu.umn.biomedicus.uima.type1_6.Historical"),
+          (cues) -> ImmutableHistorical.builder().addAllCueTerms(cues)
+              .build());
+    }
+  }
+
+  private static class ProbableLabelAdapter extends DictionaryTermModifierLabelAdapter<Probable> {
+
+    @Inject
+    public ProbableLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+              .getType("edu.umn.biomedicus.uima.type1_6.Probable"),
+          (cues) -> ImmutableProbable.builder().addAllCueTerms(cues)
+              .build());
+    }
+  }
+
+  public static class TermTokenLabelAdapter extends AbstractTokenLabelAdapter<TermToken> {
+
+    @Inject
+    public TermTokenLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.TermToken"));
     }
 
-    public static class ParseTokenLabelAdapter extends AbstractTokenLabelAdapter<ParseToken> {
-        @Inject
-        public ParseTokenLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.ParseToken"));
-        }
-
-        @Override
-        protected ParseToken createToken(String text, boolean hasSpaceAfter) {
-            return ImmutableParseToken.builder()
-                    .text(text)
-                    .hasSpaceAfter(hasSpaceAfter)
-                    .build();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Override
+    protected TermToken createToken(String text, boolean hasSpaceAfter) {
+      return ImmutableTermToken.builder()
+          .text(text)
+          .hasSpaceAfter(hasSpaceAfter)
+          .build();
     }
 
-    public static class PartOfSpeechLabelAdapter extends AbstractLabelAdapter<PartOfSpeech> {
-        private final Feature partOfSpeechFeature;
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        @Inject
-        public PartOfSpeechLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag"));
-            partOfSpeechFeature = type.getFeatureByBaseName("partOfSpeech");
+  public static class AcronymLabelAdapter extends AbstractTokenLabelAdapter<Acronym> {
 
-        }
-
-        @Override
-        protected void fillAnnotation(Label<PartOfSpeech> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setStringValue(partOfSpeechFeature,
-                    label.value().toString());
-        }
-
-        @Override
-        protected PartOfSpeech createLabelValue(FeatureStructure featureStructure) {
-            return PartsOfSpeech.forTag(featureStructure
-                    .getStringValue(partOfSpeechFeature));
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Inject
+    public AcronymLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.Acronym"));
     }
 
-    public static class WordIndexLabelAdapter extends AbstractLabelAdapter<WordIndex> {
-        private final Feature indexFeature;
+    @Override
+    protected Acronym createToken(String text, boolean hasSpaceAfter) {
+      return ImmutableAcronym.builder()
+          .text(text)
+          .hasSpaceAfter(hasSpaceAfter)
+          .build();
+    }
+  }
 
-        @Inject
-        public WordIndexLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_5.WordIndex"));
-            indexFeature = type.getFeatureByBaseName("index");
-        }
+  public static class ParseTokenLabelAdapter extends AbstractTokenLabelAdapter<ParseToken> {
 
-        @Override
-        protected void fillAnnotation(Label<WordIndex> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature,
-                    label.value().term().termIdentifier());
-        }
-
-        @Override
-        protected WordIndex createLabelValue(FeatureStructure featureStructure) {
-            return ImmutableWordIndex.builder()
-                    .term(new IndexedTerm(
-                            featureStructure.getIntValue(indexFeature)))
-                    .build();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Inject
+    public ParseTokenLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.ParseToken"));
     }
 
-    public static class NormFormLabelAdapter extends AbstractLabelAdapter<NormForm> {
-        private final Feature normFormFeature;
-
-        @Inject
-        public NormFormLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.NormForm"));
-            normFormFeature = type.getFeatureByBaseName("normForm");
-
-        }
-
-        @Override
-        protected void fillAnnotation(Label<NormForm> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setStringValue(normFormFeature,
-                    label.value().normalForm());
-        }
-
-        @Override
-        protected NormForm createLabelValue(FeatureStructure featureStructure) {
-            return ImmutableNormForm.builder().normalForm(
-                    featureStructure.getStringValue(normFormFeature)).build();
-        }
-
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
+    @Override
+    protected ParseToken createToken(String text, boolean hasSpaceAfter) {
+      return ImmutableParseToken.builder()
+          .text(text)
+          .hasSpaceAfter(hasSpaceAfter)
+          .build();
     }
 
-    public static class NormIndexLabelAdapter extends AbstractLabelAdapter<NormIndex> {
-        private final Feature indexFeature;
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        @Inject
-        public NormIndexLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_5.NormIndex"));
-            indexFeature = type.getFeatureByBaseName("index");
-        }
+  public static class PartOfSpeechLabelAdapter extends AbstractLabelAdapter<PartOfSpeech> {
 
-        @Override
-        protected void fillAnnotation(Label<NormIndex> label,
-                                      AnnotationFS annotationFS) {
-            annotationFS.setIntValue(indexFeature,
-                    label.value().term().termIdentifier());
-        }
+    private final Feature partOfSpeechFeature;
 
-        @Override
-        protected NormIndex createLabelValue(FeatureStructure featureStructure) {
-            return ImmutableNormIndex.builder().term(new IndexedTerm(
-                    featureStructure.getIntValue(indexFeature))).build();
-        }
+    @Inject
+    public PartOfSpeechLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag"));
+      partOfSpeechFeature = type.getFeatureByBaseName("partOfSpeech");
 
-        @Override
-        public boolean isDistinct() {
-            return true;
-        }
     }
 
-    public static class MisspellingLabelAdapter extends AbstractLabelAdapter<Misspelling> {
-        @Inject
-        public MisspellingLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.uima.type1_6.Misspelling"));
-        }
-
-        @Override
-        protected Misspelling createLabelValue(FeatureStructure featureStructure) {
-            return new Misspelling();
-        }
+    @Override
+    protected void fillAnnotation(Label<PartOfSpeech> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setStringValue(partOfSpeechFeature,
+          label.value().toString());
     }
 
-    public static class SpellCorrectionLabelAdapter extends AbstractTokenLabelAdapter<SpellCorrection> {
-        @Inject
-        public SpellCorrectionLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.SpellCorrection"));
-        }
-
-        @Override
-        protected SpellCorrection createToken(String text,
-                                              boolean hasSpaceAfter) {
-            return ImmutableSpellCorrection.builder()
-                    .text(text)
-                    .hasSpaceAfter(hasSpaceAfter)
-                    .build();
-        }
+    @Override
+    protected PartOfSpeech createLabelValue(FeatureStructure featureStructure) {
+      return PartsOfSpeech.forTag(featureStructure
+          .getStringValue(partOfSpeechFeature));
     }
 
-    public static class BoldLabelAdapter extends AbstractLabelAdapter<Bold> {
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        @Inject
-        BoldLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.rtfuima.type.Bold"));
-        }
+  public static class WordIndexLabelAdapter extends AbstractLabelAdapter<WordIndex> {
 
-        @Override
-        protected Bold createLabelValue(FeatureStructure featureStructure) {
-            return new Bold();
-        }
+    private final Feature indexFeature;
+
+    @Inject
+    public WordIndexLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_5.WordIndex"));
+      indexFeature = type.getFeatureByBaseName("index");
     }
 
-    public static class UnderlinedLabelAdapter extends AbstractLabelAdapter<Underlined> {
-        @Inject
-        UnderlinedLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem()
-                    .getType("edu.umn.biomedicus.rtfuima.type.Underline"));
-        }
-
-        @Override
-        protected Underlined createLabelValue(FeatureStructure featureStructure) {
-            return new Underlined();
-        }
+    @Override
+    protected void fillAnnotation(Label<WordIndex> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setIntValue(indexFeature,
+          label.value().term().termIdentifier());
     }
 
-    public static class SocialHistoryCandidateLabelAdapter extends AbstractLabelAdapter<SocialHistoryCandidate> {
-        private final Feature substanceUsageKind;
-
-        SocialHistoryCandidateLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate"));
-            substanceUsageKind = type
-                    .getFeatureByBaseName("substanceUsageKind");
-        }
-
-        @Override
-        protected void fillAnnotation(Label<SocialHistoryCandidate> label,
-                                      AnnotationFS annotationFS) {
-            SocialHistoryCandidate socialHistoryCandidate = label.value();
-            SubstanceUsageKind substanceUsageKind = socialHistoryCandidate
-                    .substanceUsageKind();
-            annotationFS.setStringValue(this.substanceUsageKind,
-                    substanceUsageKind.name());
-        }
-
-        @Override
-        protected SocialHistoryCandidate createLabelValue(FeatureStructure featureStructure) {
-            String strVal = featureStructure.getStringValue(substanceUsageKind);
-            SubstanceUsageKind kind = SubstanceUsageKind.valueOf(strVal);
-            return ImmutableSocialHistoryCandidate.builder()
-                    .substanceUsageKind(kind)
-                    .build();
-        }
+    @Override
+    protected WordIndex createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableWordIndex.builder()
+          .term(new IndexedTerm(
+              featureStructure.getIntValue(indexFeature)))
+          .build();
     }
 
-    public static class SubstanceUsageElementLabelAdapter extends AbstractLabelAdapter<SubstanceUsageElement> {
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
 
-        private final Feature kindFeature;
-        private final Feature elementTypeFeature;
+  public static class NormFormLabelAdapter extends AbstractLabelAdapter<NormForm> {
 
-        SubstanceUsageElementLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
-            kindFeature = type.getFeatureByBaseName("substanceUsageKind");
-            elementTypeFeature = type
-                    .getFeatureByBaseName("substanceUsageElementType");
-        }
+    private final Feature normFormFeature;
 
+    @Inject
+    public NormFormLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.NormForm"));
+      normFormFeature = type.getFeatureByBaseName("normForm");
 
-        @Override
-        protected void fillAnnotation(Label<SubstanceUsageElement> label,
-                                      AnnotationFS annotationFS) {
-            SubstanceUsageElement value = label.value();
-            annotationFS.setStringValue(kindFeature,
-                    value.kind().name());
-            annotationFS.setStringValue(elementTypeFeature,
-                    value.type().name());
-        }
-
-        @Override
-        protected SubstanceUsageElement createLabelValue(FeatureStructure featureStructure) {
-            String typeVal = featureStructure
-                    .getStringValue(elementTypeFeature);
-            SubstanceUsageElementType type = SubstanceUsageElementType
-                    .valueOf(typeVal);
-            String kindVal = featureStructure.getStringValue(kindFeature);
-            SubstanceUsageKind kind = SubstanceUsageKind.valueOf(kindVal);
-            return ImmutableSubstanceUsageElement.builder()
-                    .type(type)
-                    .kind(kind)
-                    .build();
-        }
     }
 
-    public static class ConstituencyParseLabelAdapter extends AbstractLabelAdapter<ConstituencyParse> {
-
-        private final Feature parseFeature;
-
-        ConstituencyParseLabelAdapter(CAS cas) {
-            super(cas, cas.getTypeSystem().getType(
-                    "edu.umn.biomedicus.uima.type1_6.ConstituencyParse"));
-            parseFeature = type.getFeatureByBaseName("parse");
-        }
-
-        @Override
-        protected void fillAnnotation(Label<ConstituencyParse> label,
-                                      AnnotationFS annotationFS) {
-            ConstituencyParse constituencyParse = label.value();
-            annotationFS
-                    .setStringValue(parseFeature, constituencyParse.parse());
-        }
-
-        @Override
-        protected ConstituencyParse createLabelValue(FeatureStructure featureStructure) {
-            String stringValue = featureStructure.getStringValue(parseFeature);
-            return ImmutableConstituencyParse.builder()
-                    .parse(stringValue)
-                    .build();
-        }
+    @Override
+    protected void fillAnnotation(Label<NormForm> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setStringValue(normFormFeature,
+          label.value().normalForm());
     }
+
+    @Override
+    protected NormForm createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableNormForm.builder().normalForm(
+          featureStructure.getStringValue(normFormFeature)).build();
+    }
+
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
+
+  public static class NormIndexLabelAdapter extends AbstractLabelAdapter<NormIndex> {
+
+    private final Feature indexFeature;
+
+    @Inject
+    public NormIndexLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_5.NormIndex"));
+      indexFeature = type.getFeatureByBaseName("index");
+    }
+
+    @Override
+    protected void fillAnnotation(Label<NormIndex> label,
+        AnnotationFS annotationFS) {
+      annotationFS.setIntValue(indexFeature,
+          label.value().term().termIdentifier());
+    }
+
+    @Override
+    protected NormIndex createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableNormIndex.builder().term(new IndexedTerm(
+          featureStructure.getIntValue(indexFeature))).build();
+    }
+
+    @Override
+    public boolean isDistinct() {
+      return true;
+    }
+  }
+
+  public static class MisspellingLabelAdapter extends AbstractLabelAdapter<Misspelling> {
+
+    @Inject
+    public MisspellingLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_6.Misspelling"));
+    }
+
+    @Override
+    protected Misspelling createLabelValue(FeatureStructure featureStructure) {
+      return new Misspelling();
+    }
+  }
+
+  public static class SpellCorrectionLabelAdapter extends
+      AbstractTokenLabelAdapter<SpellCorrection> {
+
+    @Inject
+    public SpellCorrectionLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.SpellCorrection"));
+    }
+
+    @Override
+    protected SpellCorrection createToken(String text,
+        boolean hasSpaceAfter) {
+      return ImmutableSpellCorrection.builder()
+          .text(text)
+          .hasSpaceAfter(hasSpaceAfter)
+          .build();
+    }
+  }
+
+  public static class BoldLabelAdapter extends AbstractLabelAdapter<Bold> {
+
+    @Inject
+    BoldLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.rtfuima.type.Bold"));
+    }
+
+    @Override
+    protected Bold createLabelValue(FeatureStructure featureStructure) {
+      return new Bold();
+    }
+  }
+
+  public static class UnderlinedLabelAdapter extends AbstractLabelAdapter<Underlined> {
+
+    @Inject
+    UnderlinedLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.rtfuima.type.Underline"));
+    }
+
+    @Override
+    protected Underlined createLabelValue(FeatureStructure featureStructure) {
+      return new Underlined();
+    }
+  }
+
+  public static class SocialHistoryCandidateLabelAdapter extends
+      AbstractLabelAdapter<SocialHistoryCandidate> {
+
+    private final Feature substanceUsageKind;
+
+    SocialHistoryCandidateLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate"));
+      substanceUsageKind = type
+          .getFeatureByBaseName("substanceUsageKind");
+    }
+
+    @Override
+    protected void fillAnnotation(Label<SocialHistoryCandidate> label,
+        AnnotationFS annotationFS) {
+      SocialHistoryCandidate socialHistoryCandidate = label.value();
+      SubstanceUsageKind substanceUsageKind = socialHistoryCandidate
+          .substanceUsageKind();
+      annotationFS.setStringValue(this.substanceUsageKind,
+          substanceUsageKind.name());
+    }
+
+    @Override
+    protected SocialHistoryCandidate createLabelValue(FeatureStructure featureStructure) {
+      String strVal = featureStructure.getStringValue(substanceUsageKind);
+      SubstanceUsageKind kind = SubstanceUsageKind.valueOf(strVal);
+      return ImmutableSocialHistoryCandidate.builder()
+          .substanceUsageKind(kind)
+          .build();
+    }
+  }
+
+  public static class SubstanceUsageElementLabelAdapter extends
+      AbstractLabelAdapter<SubstanceUsageElement> {
+
+    private final Feature kindFeature;
+    private final Feature elementTypeFeature;
+
+    SubstanceUsageElementLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
+      kindFeature = type.getFeatureByBaseName("substanceUsageKind");
+      elementTypeFeature = type
+          .getFeatureByBaseName("substanceUsageElementType");
+    }
+
+
+    @Override
+    protected void fillAnnotation(Label<SubstanceUsageElement> label,
+        AnnotationFS annotationFS) {
+      SubstanceUsageElement value = label.value();
+      annotationFS.setStringValue(kindFeature,
+          value.kind().name());
+      annotationFS.setStringValue(elementTypeFeature,
+          value.type().name());
+    }
+
+    @Override
+    protected SubstanceUsageElement createLabelValue(FeatureStructure featureStructure) {
+      String typeVal = featureStructure
+          .getStringValue(elementTypeFeature);
+      SubstanceUsageElementType type = SubstanceUsageElementType
+          .valueOf(typeVal);
+      String kindVal = featureStructure.getStringValue(kindFeature);
+      SubstanceUsageKind kind = SubstanceUsageKind.valueOf(kindVal);
+      return ImmutableSubstanceUsageElement.builder()
+          .type(type)
+          .kind(kind)
+          .build();
+    }
+  }
+
+  public static class ConstituencyParseLabelAdapter
+      extends AbstractLabelAdapter<ConstituencyParse> {
+
+    private final Feature parseFeature;
+
+    ConstituencyParseLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType(
+          "edu.umn.biomedicus.uima.type1_6.ConstituencyParse"));
+      parseFeature = type.getFeatureByBaseName("parse");
+    }
+
+    @Override
+    protected void fillAnnotation(Label<ConstituencyParse> label,
+        AnnotationFS annotationFS) {
+      ConstituencyParse constituencyParse = label.value();
+      annotationFS
+          .setStringValue(parseFeature, constituencyParse.parse());
+    }
+
+    @Override
+    protected ConstituencyParse createLabelValue(FeatureStructure featureStructure) {
+      String stringValue = featureStructure.getStringValue(parseFeature);
+      return ImmutableConstituencyParse.builder()
+          .parse(stringValue)
+          .build();
+    }
+  }
+
+  public static class RowLabelAdapter extends AbstractLabelAdapter<Row> {
+
+    RowLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.type.RowAnnotation"));
+    }
+
+    @Override
+    protected Row createLabelValue(FeatureStructure featureStructure) {
+      return new Row();
+    }
+  }
+
+  public static class CellLabelAdapter extends AbstractLabelAdapter<Cell> {
+
+    CellLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.type.CellAnnotation"));
+    }
+
+    @Override
+    protected Cell createLabelValue(FeatureStructure featureStructure) {
+      return new Cell();
+    }
+  }
+
+  public static class NestedRowLabelAdapter extends AbstractLabelAdapter<NestedRow> {
+
+    NestedRowLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.type.NestedRowAnnotation"));
+    }
+
+    @Override
+    protected NestedRow createLabelValue(FeatureStructure featureStructure) {
+      return new NestedRow();
+    }
+  }
+
+  public static class NestedCellLabelAdapter extends AbstractLabelAdapter<NestedCell> {
+
+    NestedCellLabelAdapter(CAS cas) {
+      super(cas,
+          cas.getTypeSystem().getType("edu.umn.biomedicus.type.NestedCellAnnotation"));
+    }
+
+    @Override
+    protected NestedCell createLabelValue(FeatureStructure featureStructure) {
+      return new NestedCell();
+    }
+  }
 }

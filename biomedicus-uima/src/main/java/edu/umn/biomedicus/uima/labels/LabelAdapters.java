@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,32 +19,33 @@ package edu.umn.biomedicus.uima.labels;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.framework.LabelAliases;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
 public class LabelAdapters {
-    private final Map<Class<?>, LabelAdapterFactory<?>> factoryMap = new HashMap<>();
-    private final LabelAliases labelAliases;
 
-    @Inject
-    public LabelAdapters(LabelAliases labelAliases) {
-        this.labelAliases = labelAliases;
+  private final Map<Class<?>, LabelAdapterFactory<?>> factoryMap = new HashMap<>();
+  private final LabelAliases labelAliases;
+
+  @Inject
+  public LabelAdapters(LabelAliases labelAliases) {
+    this.labelAliases = labelAliases;
+  }
+
+  public void addLabelAdapter(Class tClass, LabelAdapterFactory labelAdapterFactory) {
+    factoryMap.put(tClass, labelAdapterFactory);
+    labelAliases.addAlias(tClass.getSimpleName(), tClass);
+  }
+
+  public <T> LabelAdapterFactory<T> getLabelAdapterFactory(Class<T> tClass) {
+    @SuppressWarnings("unchecked")
+    LabelAdapterFactory<T> labelAdapterFactory = (LabelAdapterFactory<T>) factoryMap.get(tClass);
+    if (labelAdapterFactory == null) {
+      throw new IllegalArgumentException(
+          "No label adapter found for class: " + tClass.getCanonicalName());
     }
 
-    public void addLabelAdapter(Class tClass, LabelAdapterFactory labelAdapterFactory) {
-        factoryMap.put(tClass, labelAdapterFactory);
-        labelAliases.addAlias(tClass.getSimpleName(), tClass);
-    }
-
-    public <T> LabelAdapterFactory<T> getLabelAdapterFactory(Class<T> tClass) {
-        @SuppressWarnings("unchecked")
-        LabelAdapterFactory<T> labelAdapterFactory = (LabelAdapterFactory<T>) factoryMap.get(tClass);
-        if (labelAdapterFactory == null) {
-            throw new IllegalArgumentException("No label adapter found for class: " + tClass.getCanonicalName());
-        }
-
-        return labelAdapterFactory;
-    }
+    return labelAdapterFactory;
+  }
 }

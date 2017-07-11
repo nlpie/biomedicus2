@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,50 +17,55 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
-
 /**
+ * Takes the text of words from parse tokens and labels their index value.
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public final class WordLabeler implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(WordLabeler.class);
-    private final TermIndex wordIndex;
-    private final LabelIndex<ParseToken> parseTokenLabelIndex;
-    private final Labeler<WordIndex> wordIndexLabeler;
 
-    @Inject
-    public WordLabeler(Vocabulary vocabulary, TextView document) {
-        wordIndex = vocabulary.getWordsIndex();
-        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
-        wordIndexLabeler = document.getLabeler(WordIndex.class);
-    }
+  private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
 
-    @Override
-    public void process() throws BiomedicusException {
-        LOGGER.debug("Labeling word term index identifiers in a document.");
-        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
-            ParseToken token = parseTokenLabel.value();
-            IndexedTerm indexedTerm = wordIndex
-                    .getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
-            WordIndex wordIndex = ImmutableWordIndex.builder()
-                    .term(indexedTerm)
-                    .build();
-            wordIndexLabeler.value(wordIndex).label(parseTokenLabel);
-        }
+  private final TermIndex wordIndex;
+
+  @Inject
+  public WordLabeler(Vocabulary vocabulary) {
+    wordIndex = vocabulary.getWordsIndex();
+  }
+
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    LOGGER.debug("Labeling word term index identifiers in a document.");
+
+    TextView systemView = StandardViews.getSystemView(document);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+    Labeler<WordIndex> wordIndexLabeler = systemView.getLabeler(WordIndex.class);
+
+    for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
+      ParseToken token = parseTokenLabel.value();
+      IndexedTerm indexedTerm = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
+      WordIndex wordIndex = ImmutableWordIndex.builder()
+          .term(indexedTerm)
+          .build();
+      wordIndexLabeler.value(wordIndex).label(parseTokenLabel);
     }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.utilities.Strings;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,31 +26,34 @@ import java.util.stream.Collectors;
  *
  */
 class MslSuffixModelTrainer extends WordModelTrainer {
-    private MslSuffixModelTrainer(Set<PartOfSpeech> tagSet) {
-        super(tagSet);
+
+  private MslSuffixModelTrainer(Set<PartOfSpeech> tagSet) {
+    super(tagSet);
+  }
+
+  public static MslSuffixModelTrainer get(Set<PartOfSpeech> tagSet) {
+    return new MslSuffixModelTrainer(tagSet);
+  }
+
+  @Override
+  protected double getProbability(WordPosFrequencies wordPosFrequencies, String word,
+      PartOfSpeech partOfSpeech) {
+    List<String> suffixes = Strings.generateSuffixes(word, word.length())
+        .collect(Collectors.toList());
+    suffixes.remove("");
+
+    int prev = 0;
+    int max = 0;
+    for (String suffix : suffixes) {
+      int freq = wordPosFrequencies.frequencyOfWordAndPartOfSpeech(suffix, partOfSpeech);
+      int disjointFreq = freq - prev;
+      if (disjointFreq > max) {
+        max = disjointFreq;
+      }
+      prev = freq;
     }
 
-    public static MslSuffixModelTrainer get(Set<PartOfSpeech> tagSet) {
-        return new MslSuffixModelTrainer(tagSet);
-    }
-
-    @Override
-    protected double getProbability(WordPosFrequencies wordPosFrequencies, String word, PartOfSpeech partOfSpeech) {
-        List<String> suffixes = Strings.generateSuffixes(word, word.length()).collect(Collectors.toList());
-        suffixes.remove("");
-
-        int prev = 0;
-        int max = 0;
-        for (String suffix : suffixes) {
-            int freq = wordPosFrequencies.frequencyOfWordAndPartOfSpeech(suffix, partOfSpeech);
-            int disjointFreq = freq - prev;
-            if (disjointFreq > max) {
-                max = disjointFreq;
-            }
-            prev = freq;
-        }
-
-        int posFreq = wordPosFrequencies.frequencyOfPartOfSpeech(partOfSpeech);
-        return posFreq == 0 ? Double.NEGATIVE_INFINITY : Math.log10((double) max / (double) posFreq);
-    }
+    int posFreq = wordPosFrequencies.frequencyOfPartOfSpeech(partOfSpeech);
+    return posFreq == 0 ? Double.NEGATIVE_INFINITY : Math.log10((double) max / (double) posFreq);
+  }
 }

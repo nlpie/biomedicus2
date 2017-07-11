@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,31 @@ package edu.umn.biomedicus.rtf.reader;
  * @since 1.3.0
  */
 public interface OutputDestination {
-    /**
-     * Writes a character to the output destination.
-     *
-     * @param ch    the character to write.
-     * @param state the current state.
-     * @return the index in the output destination that the character was written to, or -1 if the character was not
-     * written.
-     */
-    int writeChar(char ch, State state);
 
-    /**
-     * Finishes the destination, performing any wrap-up computations.
-     */
-    void finishDestination();
+  /**
+   * Writes a character to the output destination.
+   *
+   * @param ch the character to write.
+   * @param state the current state.
+   * @return the index in the output destination that the character was written to, or -1 if the
+   * character was not written.
+   */
+  int writeChar(char ch, State state);
 
-    /**
-     * Called when the rtf reader encounters a control word.
-     *
-     * @param keywordAction
-     */
-    void controlWordEncountered(KeywordAction keywordAction);
+  /**
+   * Finishes the destination, performing any wrap-up computations.
+   */
+  void finishDestination();
 
-    /**
-     * Returns the name of the output destination.
-     *
-     * @return the name of the output destination.
-     */
-    String getName();
+  /**
+   * Called when the rtf reader encounters a control word.
+   */
+  void controlWordEncountered(KeywordAction keywordAction);
+
+  /**
+   * Returns the name of the output destination.
+   *
+   * @return the name of the output destination.
+   */
+  String getName();
 }

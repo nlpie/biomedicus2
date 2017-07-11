@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,12 +82,12 @@ public class TermVector implements Iterable<IndexedTerm> {
 
   @Override
   public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     TermVector that = (TermVector) o;
 
@@ -121,6 +121,7 @@ public class TermVector implements Iterable<IndexedTerm> {
   }
 
   private static class ListView extends AbstractList<IndexedTerm> {
+
     private final TermVector backing;
 
     private ListView(TermVector backing) {

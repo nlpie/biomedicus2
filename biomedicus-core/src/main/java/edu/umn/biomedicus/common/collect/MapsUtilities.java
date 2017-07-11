@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,19 @@ import java.util.function.BiFunction;
  *
  */
 public final class MapsUtilities {
-    private MapsUtilities() {
-        throw new UnsupportedOperationException();
-    }
 
-    public static <T> BiFunction<T, Integer, Integer> computeIncrementFunction() {
-        return (key, value) -> {
-            if (value == null) {
-                value = 0;
-            }
-            return value + 1;
-        };
-    }
+  public static final BiFunction<String, Integer, Integer> STRING_COMPUTE_INCREMENT = computeIncrementFunction();
 
-    public static final BiFunction<String, Integer, Integer> STRING_COMPUTE_INCREMENT = computeIncrementFunction();
+  private MapsUtilities() {
+    throw new UnsupportedOperationException();
+  }
+
+  public static <T> BiFunction<T, Integer, Integer> computeIncrementFunction() {
+    return (key, value) -> {
+      if (value == null) {
+        value = 0;
+      }
+      return value + 1;
+    };
+  }
 }

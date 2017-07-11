@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,45 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import static org.testng.Assert.assertEquals;
+
 import mockit.Deencapsulation;
 import mockit.Tested;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * Unit test for {@link ControlWordCasMapping}.
  */
 public class ControlWordCasMappingTest {
 
-    @Tested ControlWordCasMapping controlWordCasMapping;
+  @Tested
+  ControlWordCasMapping controlWordCasMapping;
 
-    @Test
-    public void testGetAnnotationName() throws Exception {
-        Deencapsulation.setField(controlWordCasMapping, "annotationName", "anno");
+  @Test
+  public void testGetAnnotationName() throws Exception {
+    Deencapsulation.setField(controlWordCasMapping, "annotationName", "anno");
 
-        assertEquals(controlWordCasMapping.getAnnotationName(), "anno");
-    }
+    assertEquals(controlWordCasMapping.getAnnotationName(), "anno");
+  }
 
-    @Test
-    public void testSetAnnotationName() throws Exception {
-        controlWordCasMapping.setAnnotationName("annot");
+  @Test
+  public void testSetAnnotationName() throws Exception {
+    controlWordCasMapping.setAnnotationName("annot");
 
-        assertEquals(Deencapsulation.getField(controlWordCasMapping, "annotationName"), "annot");
-    }
+    assertEquals(Deencapsulation.getField(controlWordCasMapping, "annotationName"), "annot");
+  }
 
-    @Test
-    public void testGetControlWord() throws Exception {
-        Deencapsulation.setField(controlWordCasMapping, "controlWord", "cw");
+  @Test
+  public void testGetControlWord() throws Exception {
+    Deencapsulation.setField(controlWordCasMapping, "controlWord", "cw");
 
-        assertEquals(controlWordCasMapping.getControlWord(), "cw");
-    }
+    assertEquals(controlWordCasMapping.getControlWord(), "cw");
+  }
 
-    @Test
-    public void testSetControlWord() throws Exception {
-        controlWordCasMapping.setControlWord("cw2");
+  @Test
+  public void testSetControlWord() throws Exception {
+    controlWordCasMapping.setControlWord("cw2");
 
-        assertEquals(Deencapsulation.getField(controlWordCasMapping, "controlWord"), "cw2");
-    }
+    assertEquals(Deencapsulation.getField(controlWordCasMapping, "controlWord"), "cw2");
+  }
 }

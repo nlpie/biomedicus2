@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,46 +17,53 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.common.types.text.ImmutableNormIndex;
 import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.NormIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Takes the normal form and labels the index of the normal form.
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public final class NormLabeler implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NormLabeler.class);
-    private final TermIndex wordIndex;
-    private final LabelIndex<NormForm> normFormLabelIndex;
-    private final Labeler<NormIndex> normIndexLabeler;
 
-    @Inject
-    public NormLabeler(Vocabulary vocabulary, TextView document) {
-        this.wordIndex = vocabulary.getNormsIndex();
-        normFormLabelIndex = document.getLabelIndex(NormForm.class);
-        normIndexLabeler = document.getLabeler(NormIndex.class);
-    }
+  private static final Logger LOGGER = LoggerFactory.getLogger(NormLabeler.class);
 
-    @Override
-    public void process() throws BiomedicusException {
-        LOGGER.info("Labeling norm term index identifiers in a document.");
-        for (Label<NormForm> normFormLabel : normFormLabelIndex) {
-            String normalForm = normFormLabel.value().normalForm();
-            IndexedTerm term = wordIndex.getIndexedTerm(normalForm);
-            NormIndex normIndex = ImmutableNormIndex.builder()
-                    .term(term)
-                    .build();
-            normIndexLabeler.value(normIndex).label(normFormLabel);
-        }
+  private final TermIndex wordIndex;
+
+  @Inject
+  public NormLabeler(Vocabulary vocabulary) {
+    this.wordIndex = vocabulary.getNormsIndex();
+  }
+
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    TextView systemView = StandardViews.getSystemView(document);
+    LabelIndex<NormForm> normFormLabelIndex = systemView.getLabelIndex(NormForm.class);
+    Labeler<NormIndex> normIndexLabeler = systemView.getLabeler(NormIndex.class);
+
+    LOGGER.info("Labeling norm term index identifiers in a document.");
+    for (Label<NormForm> normFormLabel : normFormLabelIndex) {
+      String normalForm = normFormLabel.value().normalForm();
+      IndexedTerm term = wordIndex.getIndexedTerm(normalForm);
+      NormIndex normIndex = ImmutableNormIndex.builder()
+          .term(term)
+          .build();
+      normIndexLabeler.value(normIndex).label(normFormLabel);
     }
+  }
 }

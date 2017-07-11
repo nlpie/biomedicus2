@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,25 +25,26 @@ import java.util.Scanner;
  * @since 1.2.0
  */
 public final class Resources {
-    /**
-     * Private constructor to prevent instantiation of a utility class.
-     */
-    private Resources() {
-        throw new UnsupportedOperationException();
-    }
 
-    /**
-     * Loads a resource to a String using the UTF_8 encoding.
-     *
-     * @param resourceName the qualified classpath name of the resource.
-     * @return String with the contents of the resource.
-     * @throws IOException
-     */
-    public static String toString(String resourceName) throws IOException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+  /**
+   * Private constructor to prevent instantiation of a utility class.
+   */
+  private Resources() {
+    throw new UnsupportedOperationException();
+  }
 
-        try (Scanner scanner = new Scanner(classLoader.getResourceAsStream(resourceName), "UTF_8").useDelimiter("\\A")) {
-            return scanner.hasNext() ? scanner.next() : "";
-        }
+  /**
+   * Loads a resource to a String using the UTF_8 encoding.
+   *
+   * @param resourceName the qualified classpath name of the resource.
+   * @return String with the contents of the resource.
+   */
+  public static String toString(String resourceName) throws IOException {
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+    try (Scanner scanner = new Scanner(classLoader.getResourceAsStream(resourceName), "UTF_8")
+        .useDelimiter("\\A")) {
+      return scanner.hasNext() ? scanner.next() : "";
     }
+  }
 }

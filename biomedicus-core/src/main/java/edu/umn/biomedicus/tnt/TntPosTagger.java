@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
@@ -28,11 +29,11 @@ import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -44,92 +45,87 @@ import java.util.List;
  * @since 1.0.0
  */
 public class TntPosTagger implements DocumentProcessor {
-    /**
-     * A pos cap for before the beginning of sentences.
-     */
-    public static final PosCap BBS = PosCap.getNotCapitalized(PartOfSpeech.BBS);
 
-    /**
-     * The pos cap for the beginning of the sentence.
-     */
-    public static final PosCap BOS = PosCap.getNotCapitalized(PartOfSpeech.BOS);
+  /**
+   * A pos cap for before the beginning of sentences.
+   */
+  public static final PosCap BBS = PosCap.getNotCapitalized(PartOfSpeech.BBS);
 
-    /**
-     * The pos cap for skipping
-     */
-    public static final PosCap SKIP = PosCap.getNotCapitalized(PartOfSpeech.XX);
+  /**
+   * The pos cap for the beginning of the sentence.
+   */
+  public static final PosCap BOS = PosCap.getNotCapitalized(PartOfSpeech.BOS);
 
-    /**
-     * The pos cap for end of sentences.
-     */
-    public static final PosCap EOS = PosCap.getNotCapitalized(PartOfSpeech.EOS);
+  /**
+   * The pos cap for skipping
+   */
+  public static final PosCap SKIP = PosCap.getNotCapitalized(PartOfSpeech.XX);
 
-    /**
-     * The beam threshold in log base 10. Difference from most probable to exclude.
-     */
-    private final double beamThreshold;
+  /**
+   * The pos cap for end of sentences.
+   */
+  public static final PosCap EOS = PosCap.getNotCapitalized(PartOfSpeech.EOS);
 
-    /**
-     * The tnt model to use.
-     */
-    private final TntModel tntModel;
-    private final LabelIndex<Sentence> sentenceLabelIndex;
-    private final LabelIndex<ParseToken> parseTokenLabelIndex;
-    private final TextView document;
-    private final Labeler<PartOfSpeech> partOfSpeechLabeler;
+  /**
+   * The beam threshold in log base 10. Difference from most probable to exclude.
+   */
+  private final double beamThreshold;
 
-    /**
-     * Default constructor. Initializes the beam threshold and tnt model.
-     *
-     * @param tntModel      tnt model.
-     * @param beamThreshold beam threshold in log base 10. The difference from the most probable to exclude.
-     */
-    @Inject
-    public TntPosTagger(TntModel tntModel,
-                        @Setting("tnt.beam.threshold") Double beamThreshold,
-                        TextView document) {
-        this.tntModel = tntModel;
-        this.beamThreshold = beamThreshold;
-        this.document = document;
-        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
-        parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
-        partOfSpeechLabeler = document.getLabeler(PartOfSpeech.class);
+  /**
+   * The tnt model to use.
+   */
+  private final TntModel tntModel;
+
+  /**
+   * Default constructor. Initializes the beam threshold and tnt model.
+   *
+   * @param tntModel tnt model.
+   * @param beamThreshold beam threshold in log base 10. The difference from the most probable to
+   * exclude.
+   */
+  @Inject
+  public TntPosTagger(
+      TntModel tntModel,
+      @Setting("tnt.beam.threshold") Double beamThreshold
+  ) {
+    this.tntModel = tntModel;
+    this.beamThreshold = beamThreshold;
+  }
+
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    TextView systemView = StandardViews.getSystemView(document);
+
+    LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+    Labeler<PartOfSpeech> partOfSpeechLabeler = systemView.getLabeler(PartOfSpeech.class);
+
+    for (Label<Sentence> sentence2Label : sentenceLabelIndex) {
+      Collection<Label<ParseToken>> tokens = parseTokenLabelIndex.insideSpan(sentence2Label);
+      ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel,
+          Ngram.create(BBS, BOS), Ngram::create);
+
+      String docText = systemView.getText();
+      for (Label<ParseToken> token : tokens) {
+        CharSequence text = token.getCovered(docText);
+        boolean isCapitalized = Character.isUpperCase(text.charAt(0));
+        viterbiProcessor
+            .advance(new WordCap(text.toString(), isCapitalized));
+        viterbiProcessor.beamFilter(beamThreshold);
+      }
+
+      List<PosCap> tags = viterbiProcessor.end(SKIP, EOS);
+
+      if (tokens.size() + 2 != tags.size()) {
+        throw new AssertionError(
+            "Tags should be same size as number of tokens in sentence");
+      }
+
+      Iterator<PosCap> it = tags.subList(2, tags.size()).iterator();
+      for (Label<ParseToken> token : tokens) {
+        PartOfSpeech partOfSpeech = it.next().getPartOfSpeech();
+        partOfSpeechLabeler.value(partOfSpeech).label(token);
+      }
     }
-
-    public void tagSentence(Label<Sentence> sentence2Label)
-            throws BiomedicusException {
-        Collection<Label<ParseToken>> tokens = parseTokenLabelIndex
-                .insideSpan(sentence2Label);
-        ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi
-                .secondOrder(tntModel, tntModel, Ngram.create(BBS, BOS),
-                        Ngram::create);
-
-        for (Label<ParseToken> token : tokens) {
-            CharSequence text = token.getCovered(document.getText());
-            boolean isCapitalized = Character.isUpperCase(text.charAt(0));
-            viterbiProcessor
-                    .advance(new WordCap(text.toString(), isCapitalized));
-            viterbiProcessor.beamFilter(beamThreshold);
-        }
-
-        List<PosCap> tags = viterbiProcessor.end(SKIP, EOS);
-
-        if (tokens.size() + 2 != tags.size()) {
-            throw new AssertionError(
-                    "Tags should be same size as number of tokens in sentence");
-        }
-
-        Iterator<PosCap> it = tags.subList(2, tags.size()).iterator();
-        for (Label<ParseToken> token : tokens) {
-            PartOfSpeech partOfSpeech = it.next().getPartOfSpeech();
-            partOfSpeechLabeler.value(partOfSpeech).label(token);
-        }
-    }
-
-    @Override
-    public void process() throws BiomedicusException {
-        for (Label<Sentence> sentence2Label : sentenceLabelIndex) {
-            tagSentence(sentence2Label);
-        }
-    }
+  }
 }

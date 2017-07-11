@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package edu.umn.biomedicus.rtf.beans.keywords;
 
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -28,13 +27,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement
 @XmlType
 public class HexKeywordAction extends AbstractKeywordAction {
-    @Override
-    public void executeKeyword(State state) {
-        state.setToHexInputType(getBegin());
-    }
 
-    @Override
-    public KeywordAction copy() {
-        return new HexKeywordAction();
-    }
+  @Override
+  public void executeKeyword(State state) {
+    state.setToHexInputType(getBegin());
+  }
+
+  @Override
+  public KeywordAction copy() {
+    return new HexKeywordAction();
+  }
 }

@@ -17,5 +17,6 @@
 package edu.umn.biomedicus.vocabulary;
 
 public interface TermIndexBuilder {
-    void addTerm(String term);
+
+  void addTerm(String term);
 }

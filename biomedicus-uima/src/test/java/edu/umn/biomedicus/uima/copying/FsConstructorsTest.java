@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package edu.umn.biomedicus.uima.copying;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
-import org.apache.uima.cas.*;
+import org.apache.uima.cas.BooleanArrayFS;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
 import org.testng.annotations.Test;
-
-import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * Test class for {@link FsConstructors}.
@@ -30,40 +34,56 @@ import static org.testng.AssertJUnit.assertEquals;
  * @author Ben Knoll
  */
 public class FsConstructorsTest {
-    @Tested FsConstructors fsConstructors;
 
-    @Injectable CAS targetCas;
+  @Tested
+  FsConstructors fsConstructors;
 
-    @Injectable TypeSystem targetTypeSystem;
+  @Injectable
+  CAS targetCas;
 
-    @Injectable Type type, targetType;
+  @Injectable
+  TypeSystem targetTypeSystem;
 
-    @Injectable FeatureStructure newFs;
+  @Injectable
+  Type type, targetType;
 
-    @Injectable BooleanArrayFS newBooleanArray;
+  @Injectable
+  FeatureStructure newFs;
 
-    @Test
-    public void testCreateArrayFs(@Injectable BooleanArrayFS featureStructure) throws Exception {
-        new Expectations() {{
-            featureStructure.getType(); result = type;
-            type.getName(); result = "uima.cas.BooleanArray";
-            featureStructure.size(); result = 4;
-            targetCas.createBooleanArrayFS(4); result = newBooleanArray;
-        }};
+  @Injectable
+  BooleanArrayFS newBooleanArray;
 
-        assertEquals(newBooleanArray, fsConstructors.createNewInstanceOfSameType(featureStructure));
-    }
+  @Test
+  public void testCreateArrayFs(@Injectable BooleanArrayFS featureStructure) throws Exception {
+    new Expectations() {{
+      featureStructure.getType();
+      result = type;
+      type.getName();
+      result = "uima.cas.BooleanArray";
+      featureStructure.size();
+      result = 4;
+      targetCas.createBooleanArrayFS(4);
+      result = newBooleanArray;
+    }};
 
-    @Test
-    public void testCreateGenericFs(@Injectable FeatureStructure featureStructure) throws Exception {
-        new Expectations() {{
-            featureStructure.getType(); result = type;
-            type.getName(); result = "someType";
-            targetCas.getTypeSystem(); result = targetTypeSystem;
-            targetTypeSystem.getType("someType"); result = targetType;
-            targetCas.createFS(targetType); result = newFs;
-        }};
+    assertEquals(newBooleanArray, fsConstructors.createNewInstanceOfSameType(featureStructure));
+  }
 
-        assertEquals(newFs, fsConstructors.createNewInstanceOfSameType(featureStructure));
-    }
+  @Test
+  public void testCreateGenericFs(@Injectable FeatureStructure featureStructure) throws Exception {
+    new Expectations() {{
+      featureStructure.getType();
+      result = type;
+      type.getName();
+      result = "someType";
+      targetCas.getTypeSystem();
+      result = targetTypeSystem;
+      targetTypeSystem.getType("someType");
+      result = targetType;
+      targetCas.createFS(targetType);
+      result = newFs;
+    }};
+
+    assertEquals(newFs, fsConstructors.createNewInstanceOfSameType(featureStructure));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,18 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.types.semantics.Misspelling;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.utilities.Patterns;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.framework.store.ValueLabeler;
-import edu.umn.biomedicus.common.types.semantics.Misspelling;
-import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,28 +37,32 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class MisspellingDetector implements DocumentProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingDetector.class);
-    private final TermIndex wordIndex;
-    private final LabelIndex<ParseToken> parseTokenLabelIndex;
-    private final ValueLabeler mispellingLabeler;
 
-    @Inject
-    public MisspellingDetector(Vocabulary vocabulary,
-                               TextView document) {
-        wordIndex = vocabulary.getWordsIndex();
-        this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
-        mispellingLabeler = document.getLabeler(Misspelling.class).value(new Misspelling());
-    }
+  private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingDetector.class);
 
-    @Override
-    public void process() throws BiomedicusException {
-        LOGGER.info("Finding any misspelled words in a document.");
-        for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
-            ParseToken parseToken = parseTokenLabel.value();
-            String text = parseToken.text();
-            if (Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
-                mispellingLabeler.label(parseTokenLabel);
-            }
-        }
+  private final TermIndex wordIndex;
+
+  @Inject
+  public MisspellingDetector(Vocabulary vocabulary) {
+    wordIndex = vocabulary.getWordsIndex();
+  }
+
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    LOGGER.info("Finding any misspelled words in a document.");
+
+    TextView systemView = StandardViews.getSystemView(document);
+
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+    ValueLabeler mispellingLabeler = systemView.getLabeler(Misspelling.class)
+        .value(new Misspelling());
+
+    for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
+      ParseToken parseToken = parseTokenLabel.value();
+      String text = parseToken.text();
+      if (Patterns.ALPHABETIC_WORD.matcher(text).matches() && !wordIndex.contains(text)) {
+        mispellingLabeler.label(parseTokenLabel);
+      }
     }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,32 +18,26 @@ package edu.umn.biomedicus.framework;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import com.google.inject.multibindings.OptionalBinder;
-
 import java.util.Collection;
 
 /**
  * Module w
  */
 final class ProcessorSettingsModule extends AbstractModule {
-    private final Collection<Key<?>> processorSettings;
 
-    ProcessorSettingsModule(Collection<Key<?>> processorSettings) {
-        this.processorSettings = processorSettings;
-    }
+  private final Collection<Key<?>> processorSettings;
 
-    @Override
-    protected void configure() {
-        OptionalBinder
-                .newOptionalBinder(binder(), ProcessorSettings.VIEW_NAME_KEY)
-                .setDefault()
-                .toInstance(ProcessorSettings.DEFAULT_VIEW_NOT_SET);
+  ProcessorSettingsModule(Collection<Key<?>> processorSettings) {
+    this.processorSettings = processorSettings;
+  }
 
-        processorSettings.forEach(this::bindToScope);
-    }
+  @Override
+  protected void configure() {
+    processorSettings.forEach(this::bindToScope);
+  }
 
-    private <T> void bindToScope(Key<T> key) {
-        bind(key).toProvider(BiomedicusScopes.providedViaSeeding())
-                .in(BiomedicusScopes.PROCESSOR_SCOPE);
-    }
+  private <T> void bindToScope(Key<T> key) {
+    bind(key).toProvider(BiomedicusScopes.providedViaSeeding())
+        .in(BiomedicusScopes.PROCESSOR_SCOPE);
+  }
 }

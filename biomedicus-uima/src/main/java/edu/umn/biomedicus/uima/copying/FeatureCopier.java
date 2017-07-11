@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,20 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 
 /**
- * Interface for a method for copying the value of a {@link Feature} from one {@link FeatureStructure} to another.
+ * Interface for a method for copying the value of a {@link Feature} from one {@link
+ * FeatureStructure} to another.
  *
  * @since 1.3.0
  */
 @FunctionalInterface
 public interface FeatureCopier {
-    /**
-     * Copy the {@code Feature} from one {@code FeatureStructure} to another.
-     *
-     * @param fromFeature {@code Feature} to copy
-     * @param from        {@code FeatureStructure} to copy from
-     * @param to          {@code FeatureStructure} to copy to
-     */
-    void copy(Feature fromFeature, FeatureStructure from, FeatureStructure to);
+
+  /**
+   * Copy the {@code Feature} from one {@code FeatureStructure} to another.
+   *
+   * @param fromFeature {@code Feature} to copy
+   * @param from {@code FeatureStructure} to copy from
+   * @param to {@code FeatureStructure} to copy to
+   */
+  void copy(Feature fromFeature, FeatureStructure from, FeatureStructure to);
 }

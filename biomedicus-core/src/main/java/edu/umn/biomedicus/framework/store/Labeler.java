@@ -17,9 +17,10 @@
 package edu.umn.biomedicus.framework.store;
 
 public interface Labeler<T> {
-    ValueLabeler value(T value);
 
-    void label(Label<T> label);
+  ValueLabeler value(T value);
 
-    void finish();
+  void label(Label<T> label);
+
+  void finish();
 }

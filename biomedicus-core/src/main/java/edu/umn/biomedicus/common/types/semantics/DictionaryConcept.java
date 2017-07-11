@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,23 @@ package edu.umn.biomedicus.common.types.semantics;
 import org.immutables.value.Value;
 
 /**
- * Biomedicus basic unit for concepts. Represents an idea in some kind of ontology, for example UMLS concepts with CUIs.
+ * Biomedicus basic unit for concepts. Represents an idea in some kind of ontology, for example UMLS
+ * concepts with CUIs.
  *
  * @since 1.5.0
  */
 @Value.Immutable
 public interface DictionaryConcept extends Concept {
-    @Override
-    String getIdentifier();
 
-    @Override
-    String getSource();
+  @Override
+  String getIdentifier();
 
-    @Override
-    String getType();
+  @Override
+  String getSource();
 
-    @Override
-    double getConfidence();
+  @Override
+  String getType();
+
+  @Override
+  double getConfidence();
 }

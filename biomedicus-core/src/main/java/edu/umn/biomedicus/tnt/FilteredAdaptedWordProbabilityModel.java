@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,80 +16,80 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
-
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.util.Set;
 
 /**
- * Probability model for words used in calculating probabilities in the TnT tagger's viterbi algorithm. This will be
- * used along with trigram probability to calculate the emission probability of a word given the part of speech tag
- * history.
+ * Probability model for words used in calculating probabilities in the TnT tagger's viterbi
+ * algorithm. This will be used along with trigram probability to calculate the emission probability
+ * of a word given the part of speech tag history.
  *
  * @author Ben Knoll
  * @since 1.0.0
  */
 public class FilteredAdaptedWordProbabilityModel implements WordProbabilityModel {
-    private int priority;
-    private WordProbabilityModel wordProbabilityModel;
-    private WordCapAdapter wordCapAdapter;
-    private WordCapFilter filter;
 
-    public FilteredAdaptedWordProbabilityModel() {
-    }
+  private int priority;
+  private WordProbabilityModel wordProbabilityModel;
+  private WordCapAdapter wordCapAdapter;
+  private WordCapFilter filter;
 
-    @Override
-    public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
-        WordCap adapted = wordCapAdapter.apply(wordCap);
-        return wordProbabilityModel.logProbabilityOfWord(candidate, adapted);
-    }
+  public FilteredAdaptedWordProbabilityModel() {
+  }
 
-    @Override
-    public Set<PartOfSpeech> getCandidates(WordCap wordCap) {
-        WordCap adapted = wordCapAdapter.apply(wordCap);
-        return wordProbabilityModel.getCandidates(adapted);
-    }
+  @Override
+  public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
+    WordCap adapted = wordCapAdapter.apply(wordCap);
+    return wordProbabilityModel.logProbabilityOfWord(candidate, adapted);
+  }
 
-    @Override
-    public boolean isKnown(WordCap wordCap) {
-        WordCap adapted = wordCapAdapter.apply(wordCap);
-        return filter.test(adapted) && wordProbabilityModel.isKnown(adapted);
-    }
+  @Override
+  public Set<PartOfSpeech> getCandidates(WordCap wordCap) {
+    WordCap adapted = wordCapAdapter.apply(wordCap);
+    return wordProbabilityModel.getCandidates(adapted);
+  }
 
-    public int getPriority() {
-        return priority;
-    }
+  @Override
+  public boolean isKnown(WordCap wordCap) {
+    WordCap adapted = wordCapAdapter.apply(wordCap);
+    return filter.test(adapted) && wordProbabilityModel.isKnown(adapted);
+  }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
+  public int getPriority() {
+    return priority;
+  }
 
-    public WordCapFilter getFilter() {
-        return filter;
-    }
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
 
-    public void setFilter(WordCapFilter filter) {
-        this.filter = filter;
-    }
+  public WordCapFilter getFilter() {
+    return filter;
+  }
 
-    public WordCapAdapter getWordCapAdapter() {
-        return wordCapAdapter;
-    }
+  public void setFilter(WordCapFilter filter) {
+    this.filter = filter;
+  }
 
-    public void setWordCapAdapter(WordCapAdapter wordCapAdapter) {
-        this.wordCapAdapter = wordCapAdapter;
-    }
+  public WordCapAdapter getWordCapAdapter() {
+    return wordCapAdapter;
+  }
 
-    public WordProbabilityModel getWordProbabilityModel() {
-        return wordProbabilityModel;
-    }
+  public void setWordCapAdapter(WordCapAdapter wordCapAdapter) {
+    this.wordCapAdapter = wordCapAdapter;
+  }
 
-    public void setWordProbabilityModel(WordProbabilityModel wordProbabilityModel) {
-        this.wordProbabilityModel = wordProbabilityModel;
-    }
+  public WordProbabilityModel getWordProbabilityModel() {
+    return wordProbabilityModel;
+  }
 
-    @Override
-    public void reduce() {
-        wordProbabilityModel.reduce();
-    }
+  public void setWordProbabilityModel(WordProbabilityModel wordProbabilityModel) {
+    this.wordProbabilityModel = wordProbabilityModel;
+  }
+
+  @Override
+  public void reduce() {
+    wordProbabilityModel.reduce();
+  }
 }

@@ -19,7 +19,8 @@ package edu.umn.biomedicus.framework.store;
 import edu.umn.biomedicus.exc.BiomedicusException;
 
 public interface ValueLabeler {
-    void label(int begin, int end) throws BiomedicusException;
 
-    void label(TextLocation textLocation) throws BiomedicusException;
+  void label(int begin, int end) throws BiomedicusException;
+
+  void label(TextLocation textLocation) throws BiomedicusException;
 }

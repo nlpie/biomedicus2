@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,49 +16,54 @@
 
 package edu.umn.biomedicus.concepts;
 
-import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 /**
  *
  */
 public class CUI {
-    public static final Pattern CUI_PATTERN = Pattern.compile("C([\\d]{7})");
 
-    private final int identifier;
+  public static final Pattern CUI_PATTERN = Pattern.compile("C([\\d]{7})");
 
-    public CUI(int identifier) {
-        this.identifier = identifier;
+  private final int identifier;
+
+  public CUI(int identifier) {
+    this.identifier = identifier;
+  }
+
+  public CUI(String wordForm) {
+    Matcher matcher = CUI_PATTERN.matcher(wordForm);
+    if (matcher.find()) {
+      String identifier = matcher.group(1);
+      this.identifier = Integer.parseInt(identifier);
+    } else {
+      throw new IllegalArgumentException("Word form does not match CUI pattern");
+    }
+  }
+
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public CUI(String wordForm) {
-        Matcher matcher = CUI_PATTERN.matcher(wordForm);
-        if (matcher.find()) {
-            String identifier = matcher.group(1);
-            this.identifier = Integer.parseInt(identifier);
-        } else {
-            throw new IllegalArgumentException("Word form does not match CUI pattern");
-        }
-    }
+    CUI cui = (CUI) o;
 
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    return identifier == cui.identifier;
+  }
 
-        CUI cui = (CUI) o;
+  @Override
+  public int hashCode() {
+    return identifier;
+  }
 
-        return identifier == cui.identifier;
-    }
-
-    @Override
-    public int hashCode() {
-        return identifier;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("C%07d", identifier);
-    }
+  @Override
+  public String toString() {
+    return String.format("C%07d", identifier);
+  }
 }

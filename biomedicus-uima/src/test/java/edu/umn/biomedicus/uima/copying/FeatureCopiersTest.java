@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,19 @@
 
 package edu.umn.biomedicus.uima.copying;
 
-import mockit.*;
-import org.apache.uima.cas.*;
-import org.testng.annotations.Test;
-
 import java.util.function.UnaryOperator;
+import mockit.Expectations;
+import mockit.FullVerificationsInOrder;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.Verifications;
+import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.Feature;
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.cas.Type;
+import org.apache.uima.cas.TypeSystem;
+import org.testng.annotations.Test;
 
 /**
  * Test class for {@link FeatureCopiers}.
@@ -28,78 +36,97 @@ import java.util.function.UnaryOperator;
  * @author Ben Knoll
  */
 public class FeatureCopiersTest {
-    @Tested
-    FeatureCopiers featureCopiers;
 
-    @Injectable
-    UnaryOperator<FeatureStructure> callback;
+  @Tested
+  FeatureCopiers featureCopiers;
 
-    @Injectable
-    Type fromType, toType, stringType;
+  @Injectable
+  UnaryOperator<FeatureStructure> callback;
 
-    @Mocked
-    CAS cas;
+  @Injectable
+  Type fromType, toType, stringType;
 
-    @Mocked
-    TypeSystem typeSystem;
+  @Mocked
+  CAS cas;
 
-    @Injectable
-    Feature fromFeature, toFeature;
+  @Mocked
+  TypeSystem typeSystem;
 
-    @Injectable
-    FeatureStructure fromFs, toFs, fromReference, toReference;
+  @Injectable
+  Feature fromFeature, toFeature;
 
-    @Test
-    public void testPrimitiveCopier() throws Exception {
-        new Expectations() {{
-            onInstance(fromFeature).getRange(); result = fromType;
-            onInstance(fromType).getName(); result = CAS.TYPE_NAME_BOOLEAN;
-            onInstance(fromFs).getBooleanValue(fromFeature); result = true;
-            onInstance(toFs).getType(); result = toType;
-            onInstance(fromFeature).getShortName(); result = "featName";
-            onInstance(toType).getFeatureByBaseName("featName"); result = toFeature;
-        }};
+  @Injectable
+  FeatureStructure fromFs, toFs, fromReference, toReference;
 
-        featureCopiers.copyFeature(fromFeature, fromFs, toFs);
+  @Test
+  public void testPrimitiveCopier() throws Exception {
+    new Expectations() {{
+      onInstance(fromFeature).getRange();
+      result = fromType;
+      onInstance(fromType).getName();
+      result = CAS.TYPE_NAME_BOOLEAN;
+      onInstance(fromFs).getBooleanValue(fromFeature);
+      result = true;
+      onInstance(toFs).getType();
+      result = toType;
+      onInstance(fromFeature).getShortName();
+      result = "featName";
+      onInstance(toType).getFeatureByBaseName("featName");
+      result = toFeature;
+    }};
 
-        new FullVerificationsInOrder() {{
-            onInstance(toFs).setBooleanValue(toFeature, true);
-        }};
-    }
+    featureCopiers.copyFeature(fromFeature, fromFs, toFs);
 
-    @Test
-    public void testReferenceCopier() throws Exception {
-        new Expectations() {{
-            onInstance(fromFeature).getRange(); result = fromType;
-            onInstance(fromType).getName(); result = "SomeOtherTypeName";
-            onInstance(fromFs).getFeatureValue(fromFeature); result = fromReference;
-            callback.apply(onInstance(fromReference)); result = toReference;
-            typeSystem.getType(CAS.TYPE_NAME_STRING); result = stringType;
-            typeSystem.subsumes(onInstance(stringType), onInstance(fromType)); result = false;
-        }};
+    new FullVerificationsInOrder() {{
+      onInstance(toFs).setBooleanValue(toFeature, true);
+    }};
+  }
 
-        featureCopiers.copyFeature(fromFeature, fromFs, toFs);
+  @Test
+  public void testReferenceCopier() throws Exception {
+    new Expectations() {{
+      onInstance(fromFeature).getRange();
+      result = fromType;
+      onInstance(fromType).getName();
+      result = "SomeOtherTypeName";
+      onInstance(fromFs).getFeatureValue(fromFeature);
+      result = fromReference;
+      callback.apply(onInstance(fromReference));
+      result = toReference;
+      typeSystem.getType(CAS.TYPE_NAME_STRING);
+      result = stringType;
+      typeSystem.subsumes(onInstance(stringType), onInstance(fromType));
+      result = false;
+    }};
 
-        new Verifications() {{
-            toFs.setFeatureValue(toFeature, toReference);
-        }};
-    }
+    featureCopiers.copyFeature(fromFeature, fromFs, toFs);
 
-    @Test
-    public void testEnumeratedStringCopier() throws Exception {
-        new Expectations() {{
-            onInstance(fromFeature).getRange(); result = fromType;
-            onInstance(fromType).getName(); result = "SomeOtherTypeName";
-            onInstance(fromFs).getStringValue(fromFeature); result = "aString";
-            typeSystem.getType(CAS.TYPE_NAME_STRING); result = stringType;
-            typeSystem.subsumes(onInstance(stringType), onInstance(fromType)); result = true;
-        }};
+    new Verifications() {{
+      toFs.setFeatureValue(toFeature, toReference);
+    }};
+  }
 
-        featureCopiers.copyFeature(fromFeature, fromFs, toFs);
+  @Test
+  public void testEnumeratedStringCopier() throws Exception {
+    new Expectations() {{
+      onInstance(fromFeature).getRange();
+      result = fromType;
+      onInstance(fromType).getName();
+      result = "SomeOtherTypeName";
+      onInstance(fromFs).getStringValue(fromFeature);
+      result = "aString";
+      typeSystem.getType(CAS.TYPE_NAME_STRING);
+      result = stringType;
+      typeSystem.subsumes(onInstance(stringType), onInstance(fromType));
+      result = true;
+    }};
 
-        new Verifications() {{
-            onInstance(toFs).setStringValue(onInstance(toFeature), "aString");
-            callback.apply(withInstanceOf(FeatureStructure.class)); times = 0;
-        }};
-    }
+    featureCopiers.copyFeature(fromFeature, fromFs, toFs);
+
+    new Verifications() {{
+      onInstance(toFs).setStringValue(onInstance(toFeature), "aString");
+      callback.apply(withInstanceOf(FeatureStructure.class));
+      times = 0;
+    }};
+  }
 }

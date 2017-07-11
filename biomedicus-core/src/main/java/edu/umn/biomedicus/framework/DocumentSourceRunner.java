@@ -16,27 +16,103 @@
 
 package edu.umn.biomedicus.framework;
 
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
-import edu.umn.biomedicus.framework.BiomedicusScopes.Context;
+import com.google.inject.Key;
+import com.google.inject.name.Named;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
  * Responsible for running document sources.
+ *
+ * @author Ben Knoll
+ * @since 1.7.0
  */
-public final class DocumentSourceRunner {
-  private final Injector injector;
-  private final SettingsTransformer settingsTransformer;
-  private final Map<String, Object> globalSettings;
-
-  @Nullable
-  private Injector settingsInjector;
+public final class DocumentSourceRunner extends ScopedWork {
 
   @Nullable
   private Class<? extends DocumentSource> documentSourceClass;
 
   @Nullable
-  private Context context;
+  private DocumentSource documentSource;
 
+  @Inject
+  public DocumentSourceRunner(
+      Injector injector,
+      @Named("globalSettings") Map<String, Object> globalSettings,
+      SettingsTransformer settingsTransformer
+  ) {
+    super(injector, globalSettings, settingsTransformer);
+  }
 
+  public static DocumentSourceRunner create(Injector injector) {
+    return injector.getInstance(DocumentSourceRunner.class);
+  }
+
+  public void setDocumentSourceClass(Class<? extends DocumentSource> documentSourceClass) {
+    this.documentSourceClass = documentSourceClass;
+  }
+
+  public void setDocumentSourceClassName(String documentSourceClassName)
+      throws ClassNotFoundException {
+    this.documentSourceClass = Class.forName(documentSourceClassName)
+        .asSubclass(DocumentSource.class);
+  }
+
+  @Override
+  public void initialize(
+      @Nullable Map<String, Object> processorSettings,
+      @Nullable Map<Key<?>, Object> processorScopedObjects
+  ) throws BiomedicusException {
+    super.initialize(processorSettings, processorScopedObjects);
+
+    Preconditions.checkNotNull(processorContext);
+    Preconditions.checkNotNull(settingsInjector);
+    Preconditions.checkNotNull(documentSourceClass);
+
+    try {
+      processorContext.call(() -> {
+        documentSource = settingsInjector.getInstance(documentSourceClass);
+        return null;
+      });
+    } catch (Exception e) {
+      throw new BiomedicusException(e);
+    }
+  }
+
+  public boolean hasNext() throws BiomedicusException {
+    Preconditions.checkNotNull(processorContext);
+    Preconditions.checkNotNull(documentSource);
+    try {
+      return processorContext.call(() -> documentSource.hasNext());
+    } catch (Exception e) {
+      throw new BiomedicusException(e);
+    }
+  }
+
+  public void populateNext(DocumentBuilder documentBuilder) throws BiomedicusException {
+    Preconditions.checkNotNull(processorContext);
+    Preconditions.checkNotNull(documentSource);
+    try {
+      processorContext.call(() -> {
+        documentSource.next(documentBuilder);
+        return null;
+      });
+    } catch (Exception e) {
+      throw new BiomedicusException(e);
+    }
+  }
+
+  public long estimateTotal() throws BiomedicusException {
+    Preconditions.checkNotNull(processorContext);
+    Preconditions.checkNotNull(documentSource);
+    try {
+      return processorContext.call(() -> documentSource.estimateTotal());
+    } catch (Exception e) {
+      throw new BiomedicusException(e);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,23 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertNotNull;
 
 import java.util.List;
-
-import static org.testng.Assert.assertNotNull;
+import org.testng.annotations.Test;
 
 /**
  *
  */
 public class RtfXmlConfigIT {
-    @Test
-    public void testLoadCasMappings() throws Exception {
-        CasMappings casMappings = CasMappings.loadFromFile("edu/umn/biomedicus/config/rtf/CasMappings.xml");
-        assertNotNull(casMappings);
-        List<PropertyCasMapping> propertyCasMappings = casMappings.getPropertyCasMappings();
-        PropertyCasMapping propertyCasMapping = propertyCasMappings.get(0);
-        assertNotNull(propertyCasMapping);
-    }
+
+  @Test
+  public void testLoadCasMappings() throws Exception {
+    CasMappings casMappings = CasMappings
+        .loadFromFile("edu/umn/biomedicus/config/rtf/CasMappings.xml");
+    assertNotNull(casMappings);
+    List<PropertyCasMapping> propertyCasMappings = casMappings.getPropertyCasMappings();
+    PropertyCasMapping propertyCasMapping = propertyCasMappings.get(0);
+    assertNotNull(propertyCasMapping);
+  }
 }

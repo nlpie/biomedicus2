@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,63 +17,64 @@
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.xmi.MongoDbXmiWriter</annotatorImplementationName>
-    <analysisEngineMetaData>
-        <name>Mongo Db Writer</name>
-        <description>writes xmi files to GridFS on a mongo db</description>
-        <version>${project.version}</version>
-        <vendor>${organization.name}</vendor>
-        <configurationParameters>
-            <configurationParameter>
-                <name>mongoServer</name>
-                <description>MongoDB server</description>
-                <type>String</type>
-                <multiValued>false</multiValued>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>mongoPort</name>
-                <description>MongoDB port</description>
-                <type>Integer</type>
-                <multiValued>false</multiValued>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>mongoDbName</name>
-                <description>MongoDB name</description>
-                <type>String</type>
-                <multiValued>false</multiValued>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-        </configurationParameters>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>edu.umn.biomedicus.uima.xmi.MongoDbXmiWriter
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Mongo Db Writer</name>
+    <description>writes xmi files to GridFS on a mongo db</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>mongoServer</name>
+        <description>MongoDB server</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>mongoPort</name>
+        <description>MongoDB port</description>
+        <type>Integer</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>mongoDbName</name>
+        <description>MongoDB name</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
 
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <typePriorities>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
-            </imports>
-        </typePriorities>
-        <fsIndexCollection/>
-        <capabilities>
-            <capability>
-                <inputs/>
-                <outputs/>
-                <languagesSupported>
-                    <language>en</language>
-                </languagesSupported>
-            </capability>
-        </capabilities>
-        <operationalProperties>
-            <modifiesCas>false</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>false</outputsNewCASes>
-        </operationalProperties>
-    </analysisEngineMetaData>
-    <resourceManagerConfiguration/>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
+    <fsIndexCollection/>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs/>
+        <languagesSupported>
+          <language>en</language>
+        </languagesSupported>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>false</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+  <resourceManagerConfiguration/>
 </analysisEngineDescription>

@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <name>Biomedicus UIMA Type System</name>
+  <description>The UIMA storage types for the Biomedicus system.</description>
+  <version>1.4.0</version>
+  <vendor>${project.organization.name}</vendor>
+  <types>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.ClinicalNoteAnnotation</name>
+      <description>
+        All documents have a large amount of metadata that may be useful for other purposes later.
+        For
+        now, this data goes here. Some examples are the identifiers used to find the original
+        document, the type
+        of document, inpatient/outpatient, discharge note, etc.
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>analyzerVersion</name>
+          <description>
+            The version identifier for the analysis engine used to generate cas annotations
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>documentId</name>
+          <description>
+            The identification string for the document. This should be the file name for files, or
+            the unique identifier used in a database if the document source is a database collection
+            reader.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>note_text_length</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>pat_mrn</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>service_date</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>filing_date</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>prov_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>prov_type</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>prov_name</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_dept</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_dept_specialty</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_center_type</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_clinic_type</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>encounter_center</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>kod</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>tos</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>setting</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>smd</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>role</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>note_status_c</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>retrievalTime</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>category</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>csnId</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>system</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>epic_note_csn_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>epic_note_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>hl7_note_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>note_uuid</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>rtf_id</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>metadata</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.MapEntry</elementType>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.MapEntry</name>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>key</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>value</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SectionAnnotation</name>
+      <description>A document section</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>sectionTitle</name>
+          <description>Title of the section</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>level</name>
+          <description>0 for section or 1 for subsection</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>contentStart</name>
+          <description>Start of the content of the section, not including the header</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>hasSubsections</name>
+          <description>Whether the section contains subsection annotations.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>kind</name>
+          <description>The kind of section this is.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubSectionAnnotation</name>
+      <description>A document sub-section</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>title</name>
+          <description>Title of the subsection</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>contentStart</name>
+          <description>Start of the content of the subsection, not including the header
+          </description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>kind</name>
+          <description>The kind of subsection this is.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.ParagraphAnnotation</name>
+      <description>A paragraph in text.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.RowAnnotation</name>
+      <description>A row in a table.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.CellAnnotation</name>
+      <description>A cell in a row.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.NestedRowAnnotation</name>
+      <description>A nested row in a cell.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.NestedCellAnnotation</name>
+      <description>A nested cell in a nested row.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TextSegmentAnnotation</name>
+      <description>
+        A segment of text over which sentence annotations should not bridge. Defined by the physical
+        structure
+        of the document.
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SentenceAnnotation</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>isHeading</name>
+          <description>
+            Indicates if this sentence is some sort of a heading (e.g. a section heading).
+          </description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isSocialHistoryCandidate</name>
+          <description>Indicates if this sentence is a social history candidate.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>substanceUsageTypes</name>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>parseTree</name>
+          <description>
+            The constituent parse tree.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>dependencies</name>
+          <description>
+            The list of dependencies in Stanford Dependency format.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageAnnotation</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>sentence</name>
+          <rangeTypeName>edu.umn.biomedicus.type.SentenceAnnotation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>substanceType</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>amounts</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageAmount</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>frequencies</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageFrequency</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>types</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageType</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>statuses</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageStatus</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>temporal</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageTemporal</elementType>
+        </featureDescription>
+        <featureDescription>
+          <name>methods</name>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.SubstanceUsageMethod</elementType>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageAmount</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageFrequency</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageType</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageStatus</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageTemporal</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SubstanceUsageMethod</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TermAnnotation</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>meaning</name>
+          <description>
+            The meaning of the term in the context in which it appears, expressed as plain text.
+            For an unambiguous term, this will be the term itself. For an acronym, this will be the
+            acronym
+            expansion.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isNegated</name>
+          <description/>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>certainty</name>
+          <description>
+            If this term has a certainty modifier like
+            1. confirmed
+            2. probable
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>aspect</name>
+          <description>
+            The nature of the state of the condition to which the term referrs:
+
+            1. current (ongoing condition)
+            2. past (past medical history)
+            3. future (has not happened yet but may)
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>attribution</name>
+          <description>
+            Indicates if this term describes something about the patient or someone else (e.g. a
+            family member).
+
+            1. patient
+            2. family
+            3. other
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isAcronym</name>
+          <description>Flag to indicate if this term is an acronym</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>primaryConcept</name>
+          <description>
+            Formalized meaning of the term if it could be mapped to an ontology. If not, use the
+            termMeaning field. A term concept has to have three fields - id, source and confidence
+            score.
+
+            Ideally, we want to have only one concept per term that best fits the context in which
+            the term
+            occurs.
+            So, this feature represents the concept that most likely fits.
+            Alternative concepts should be stored in another attribute of Term, called
+            termAltConcepts
+          </description>
+          <rangeTypeName>edu.umn.biomedicus.type.ConceptAnnotation</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>alternativeConcepts</name>
+          <description>This attribute represents ALL concepts that are associated with a given term.
+          </description>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.ConceptAnnotation</elementType>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.ChunkAnnotation</name>
+      <description>Marks a recognized chunk (shallow parse element).</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.DateAnnotation</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.MeasurementAnnotation</name>
+      <description>Any kind of measurement or lab value like BP or BUN or head circumference
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.SymbolAnnotation</name>
+      <description>Any kind of symbol like x10, #5, @</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>symbolMeaning</name>
+          <description>The meaning of the symbol in the specific context in which it appears
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TimeAnnotation</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.ConceptAnnotation</name>
+      <description>This is a type to capture meanings of different terms in a formalized manner
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>identifier</name>
+          <description>The unique identifier for a given concept/sense</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>source</name>
+          <description>The ontology/vocabulary from which the concept came</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>confidence</name>
+          <description>A confidence score, which indicates how confident the annotator is in
+            assigning this
+            concept to the term
+          </description>
+          <rangeTypeName>uima.cas.Float</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>semanticType</name>
+          <description>Semantic type of the concept (e.g. Finding, disorder, symptom, procedure,
+            drug.)
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.QuantityAnnotation</name>
+      <description>
+        Similar to Measurement type but applies to substances and items that are external to the
+        patient (e.g. drug dosages)
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.NamedEntityAnnotation</name>
+      <description>
+        Named entities other than medical terms - typically places and proper names of various items
+        and locations, etc. (e.g. "ABCD General Hospital Operating Room #1")
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.NewInformationAnnotation</name>
+      <description>
+        Represents some kind of new information in a document that wasn't contained in previous
+        documents from
+        the same patient.
+      </description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>kind</name>
+          <description>The kind of new information.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TokenAnnotation</name>
+      <description/>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>partOfSpeech</name>
+          <description>The penn treebank part of speech of the token.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>normalForm</name>
+          <description>Canonical, stem form of the word.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isStopword</name>
+          <description>Whether or not the token is a stopword.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isMisspelled</name>
+          <description>Whether or not the token is misspelled in the source document.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>correctSpelling</name>
+          <description>The correct spelling for the token if it is misspelled, otherwise null.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isAcronymAbbrev</name>
+          <description>Whether or not the token is an acronym or an abbreviation.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>acronymAbbrevExpansion</name>
+          <description>If the token is an acronym or abbreviation, this is its expanded form.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>acronymLongFormNorm</name>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>wordTerm</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>normTerm</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.NewLineAnnotation</name>
+      <description>Used to mark and index newline symbols.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TermVectorFS</name>
+      <description>A sparse vector of terms.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>identifier</name>
+          <description>A unique identifier for the term vector.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>terms</name>
+          <description>An array of terms.</description>
+          <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+          <elementType>edu.umn.biomedicus.type.TermVectorEntryFS</elementType>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.TermVectorEntryFS</name>
+      <description>An entry in the term vector.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>index</name>
+          <description>The index of a term in the term vector space.</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>count</name>
+          <description>The number of times the term occurs.</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+
+    <!-- RTF types below here -->
+    <typeDescription>
+      <name>edu.umn.biomedicus.type.IllegalXmlCharacter</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>value</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.OriginalDocumentOffsets</name>
+      <description>The offsets to the original document for a destination view.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>offsets</name>
+          <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.ViewIndex</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>destinationName</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>destinationIndex</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.ControlWord</name>
+      <description>A control word.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>name</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>param</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>index</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>known</name>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.UnknownControlWord</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+      <features>
+        <featureDescription>
+          <name>keyword</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.RowEnd</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.CellEnd</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.NestRowEnd</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.NestCellEnd</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.LineBreak</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.TableRowFormattingDefaults</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.CellDefinitionEnd</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.NewParagraph</name>
+      <description>Used whenever the par keyword is omitted.</description>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.PropertyValue</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>value</name>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.Bold</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.Italic</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.Underline</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.rtfuima.type.ParagraphInTable</name>
+      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
+    </typeDescription>
+  </types>
+</typeSystemDescription>

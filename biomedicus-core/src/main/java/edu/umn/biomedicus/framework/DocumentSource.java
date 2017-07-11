@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.framework;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
 
 /**
@@ -33,9 +34,16 @@ public interface DocumentSource {
   boolean hasNext();
 
   /**
-   * Calls on the document source to populate the document.
+   * Calls on the document source to next the document.
    *
-   * @param document document created by the system that the document source needs to fill
+   * @param factory a factory that can be used to create documents.
    */
-  void populate(Document document);
+  Document next(DocumentBuilder factory) throws BiomedicusException;
+
+  /**
+   * Returns an estimate of the total number of documents to be created by this document source.
+   *
+   * @return long estimate of total number of documents.
+   */
+  long estimateTotal();
 }
