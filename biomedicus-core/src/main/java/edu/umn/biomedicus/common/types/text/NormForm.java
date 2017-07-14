@@ -16,10 +16,17 @@
 
 package edu.umn.biomedicus.common.types.text;
 
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface NormForm {
 
   String normalForm();
+
+  int normTermIdentifier();
+
+  default IndexedTerm normIndexedTerm() {
+    return new IndexedTerm(normTermIdentifier());
+  }
 }

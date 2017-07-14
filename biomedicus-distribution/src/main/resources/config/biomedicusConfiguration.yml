@@ -18,8 +18,8 @@ settings:
     model: fileBased
     fileBased.path: stopwords/PubMedStopwords.txt
   normalization:
-    lexicon.path: normalization/lexicon.yml
-    fallback.path: normalization/fallbackLexicon.yml
+    db.path: normalization.db
+    inMemory: yes
   acronym:
     useAlignment: false
     expansionsModel.path: acronym/expansions.txt

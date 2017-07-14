@@ -27,17 +27,27 @@ import javax.annotation.Nullable;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
+/**
+ * Vocabulary store implemented using MapDB term indexes.
+ *
+ * @author Ben Knoll
+ * @since 1.6.0
+ */
 class MapDbVocabStore extends VocabularyStore {
 
   private final Path dbPath;
+
   private final Boolean inMemory;
 
   @Nullable
   private DB db;
+
   @Nullable
   private TermIndex words;
+
   @Nullable
   private TermIndex terms;
+
   @Nullable
   private TermIndex norms;
 

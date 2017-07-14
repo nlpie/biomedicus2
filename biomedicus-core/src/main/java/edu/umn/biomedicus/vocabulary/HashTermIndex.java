@@ -25,13 +25,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * Term Index implemented using java hash maps.
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public class HashTermIndex extends AbstractTermIndex {
 
   private final Map<String, Integer> map = new HashMap<>();
+
   private final String[] terms;
 
+  /**
+   * Creates a hash term index from an array of string terms.
+   *
+   * @param terms the terms to create a term index from.
+   */
   public HashTermIndex(String[] terms) {
     this.terms = terms;
     for (int i = 0; i < terms.length; i++) {
@@ -39,6 +48,11 @@ public class HashTermIndex extends AbstractTermIndex {
     }
   }
 
+  /**
+   * Creates a hash term index by reading in all the strings in a collection.
+   *
+   * @param collection a collection of strings, each string representing a single term
+   */
   public HashTermIndex(Collection<String> collection) {
     int size = collection.size();
     terms = new String[size];
@@ -49,6 +63,11 @@ public class HashTermIndex extends AbstractTermIndex {
     }
   }
 
+  /**
+   * Creates a hash term index by reading in all the terms from an existing term index
+   *
+   * @param termIndex the term index to copy into a hash term index.
+   */
   public HashTermIndex(TermIndex termIndex) {
     int size = termIndex.size();
     terms = new String[size];

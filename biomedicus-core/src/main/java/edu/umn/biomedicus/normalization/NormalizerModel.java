@@ -20,105 +20,103 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.tuples.WordPos;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
-import java.io.IOException;
-import java.nio.file.Files;
+import edu.umn.biomedicus.framework.LifecycleManaged;
+import edu.umn.biomedicus.normalization.NormalizerModel.Loader;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.mapdb.BTreeMap;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 /**
- * Token normalizer which uses a table of parts of speech and terms to provide a base term.
- * <p/>
- * <p>It provides functionality for a fallback table in potential cases where the part of speech has
- * been incorrectly labeled by the part of speech tagger.</p>
+ * Provides a map backed normalizer model. Will either use a MapDB bt
  *
- * @author Serguei Pakhomov
  * @author Ben Knoll
- * @since 0.3.0
+ * @since 1.7.0
  */
-@ProvidedBy(NormalizerModel.Loader.class)
-class NormalizerModel {
+@Singleton
+@ProvidedBy(Loader.class)
+final class NormalizerModel implements LifecycleManaged {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NormalizerModel.class);
-  private Map<WordPos, String> lexicon;
-  private Map<WordPos, String> fallbackLexicon;
 
-  /**
-   * Default constructor. Initializes two tables.
-   *
-   * @param lexicon the primary lexicon to use.
-   * @param fallbackLexicon a lexicon to use if we fail to find the token in the first lexicon, this
-   * for cases like mis-tagged tokens
-   */
-  private NormalizerModel(Map<WordPos, String> lexicon, Map<WordPos, String> fallbackLexicon) {
-    this.lexicon = lexicon;
-    this.fallbackLexicon = fallbackLexicon;
+  private final Map<TermPos, TermString> normalizationMap;
+
+  @Nullable
+  private final DB db;
+
+  @Inject
+  NormalizerModel(Map<TermPos, TermString> normalizationMap, @Nullable DB db) {
+    this.normalizationMap = normalizationMap;
+    this.db = db;
+  }
+
+  void add(IndexedTerm variant, PartOfSpeech pos, IndexedTerm normIndex, String baseForm) {
+    normalizationMap.put(new TermPos(variant, pos), new TermString(normIndex, baseForm));
   }
 
   /**
-   * Normalizes the token.
+   * Gets the term index identifier and its string form
    *
-   * @param token token to normalize
+   * @param termPos
+   * @return
    */
-  public String normalize(Token token, @Nullable PartOfSpeech partOfSpeech) {
-    String text = token.text();
-    LOGGER.trace("Normalizing a token: {}", text);
-    String key = text.trim().toLowerCase();
-    String normalForm = null;
-    if (partOfSpeech != null) {
-      WordPos wordPos = new WordPos(key, partOfSpeech);
-      normalForm = lexicon.get(wordPos);
-      if (normalForm == null) {
-        normalForm = fallbackLexicon.get(wordPos);
-      }
-    }
-    if (normalForm == null) {
-      normalForm = key;
-    }
-    return normalForm.toLowerCase();
+  @Nullable
+  public TermString get(TermPos termPos) {
+    return normalizationMap.get(termPos);
   }
 
-  /**
-   *
-   */
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    if (db != null) {
+      ((BTreeMap) normalizationMap).close();
+      db.close();
+    }
+  }
+
   @Singleton
-  public static class Loader extends DataLoader<NormalizerModel> {
+  public static final class Loader extends DataLoader<NormalizerModel> {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
-    private final Path lexiconFile;
-    private final Path fallbackLexiconFile;
+    private final Path dbPath;
+
+    private final boolean inMemory;
 
     @Inject
-    public Loader(@Setting("normalization.lexicon.path") Path lexiconFile,
-        @Setting("normalization.fallback.path") Path fallbackLexiconFile) {
-      this.lexiconFile = lexiconFile;
-      this.fallbackLexiconFile = fallbackLexiconFile;
+    Loader(@Setting("normalization.db.path") Path dbPath,
+        @Setting("normalization.inMemory") boolean inMemory) {
+      this.dbPath = dbPath;
+      this.inMemory = inMemory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected NormalizerModel loadModel() {
-      Yaml yaml = new Yaml();
-      try {
-        LOGGER.info("Loading normalization lexicon file: {}", lexiconFile);
-        @SuppressWarnings("unchecked")
-        Map<WordPos, String> lexicon = (Map<WordPos, String>) yaml
-            .load(Files.newInputStream(lexiconFile));
+    protected NormalizerModel loadModel() throws BiomedicusException {
+      DB db = DBMaker.fileDB(dbPath.toFile()).readOnly()
+          .fileMmapEnableIfSupported()
+          .make();
 
-        LOGGER.info("Loading normalization fallback lexicon file: {}", fallbackLexiconFile);
-        @SuppressWarnings("unchecked")
-        Map<WordPos, String> fallbackLexicon = (Map<WordPos, String>) yaml
-            .load(Files.newInputStream(fallbackLexiconFile));
+      LOGGER.info("Loading normalization model: " + dbPath.toString());
 
-        return new NormalizerModel(lexicon, fallbackLexicon);
-      } catch (IOException e) {
-        throw new IllegalStateException("Failed to load Normalizer model", e);
+      BTreeMap<TermPos, TermString> norms = (BTreeMap<TermPos, TermString>) db
+          .treeMap("norms", Serializer.JAVA, Serializer.JAVA)
+          .open();
+
+      if (inMemory) {
+        LOGGER.info("Transferring normalization model to memory.");
+        HashMap<TermPos, TermString> normalizationMap = new HashMap<>(norms);
+        db.close();
+        return new NormalizerModel(normalizationMap, null);
+      } else {
+        return new NormalizerModel(norms, db);
       }
     }
   }

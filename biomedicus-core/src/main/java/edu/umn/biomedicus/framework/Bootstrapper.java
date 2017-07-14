@@ -240,7 +240,7 @@ public final class Bootstrapper {
       throw new IllegalStateException(
           "BioMedICUS home directory is not configured. "
               + "Use the the Java property "
-              + "-Dbiomedicus.path.home=[home dir], or "
+              + "-Dbiomedicus.paths.home=[home dir], or "
               + "set it in the biomedicusConfiguration.yml file "
               + "and set the -Dbiomedicus.paths.conf Java "
               + "property to the directory containing "

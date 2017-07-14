@@ -57,9 +57,13 @@ public class Searcher {
   static final int LOOP_LIMIT = 10_000;
 
   private final Node root;
+
   private final Node searchRoot;
+
   private final int numberGroups;
+
   private final int numberLocals;
+
   private final Map<String, Integer> groupNames;
 
   Searcher(Node root,
@@ -497,8 +501,7 @@ public class Searcher {
         return new Chain(pinned);
       }
 
-      InnerConditions innerConditions
-          = new InnerConditions(localsCount++, covered);
+      InnerConditions innerConditions = new InnerConditions(localsCount++, covered);
 
       do {
         Node inner = alts(ACCEPT);

@@ -110,7 +110,6 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(PartOfSpeech.class, PartOfSpeechLabelAdapter::new);
     map.put(WordIndex.class, WordIndexLabelAdapter::new);
     map.put(NormForm.class, NormFormLabelAdapter::new);
-    map.put(NormIndex.class, NormIndexLabelAdapter::new);
     map.put(Misspelling.class, MisspellingLabelAdapter::new);
     map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
     map.put(Bold.class, BoldLabelAdapter::new);
@@ -472,26 +471,30 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
   public static class NormFormLabelAdapter extends AbstractLabelAdapter<NormForm> {
 
     private final Feature normFormFeature;
+    private final Feature indexFeature;
 
     @Inject
     public NormFormLabelAdapter(CAS cas) {
       super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.uima.type1_6.NormForm"));
+          .getType("edu.umn.biomedicus.uima.type1_7.NormForm"));
       normFormFeature = type.getFeatureByBaseName("normForm");
-
+      indexFeature = type.getFeatureByBaseName("index");
     }
 
     @Override
     protected void fillAnnotation(Label<NormForm> label,
         AnnotationFS annotationFS) {
-      annotationFS.setStringValue(normFormFeature,
-          label.value().normalForm());
+      NormForm value = label.value();
+      annotationFS.setStringValue(normFormFeature, value.normalForm());
+      annotationFS.setIntValue(indexFeature, value.normTermIdentifier());
     }
 
     @Override
     protected NormForm createLabelValue(FeatureStructure featureStructure) {
       return ImmutableNormForm.builder().normalForm(
-          featureStructure.getStringValue(normFormFeature)).build();
+          featureStructure.getStringValue(normFormFeature))
+          .normTermIdentifier(featureStructure.getIntValue(indexFeature))
+          .build();
     }
 
     @Override

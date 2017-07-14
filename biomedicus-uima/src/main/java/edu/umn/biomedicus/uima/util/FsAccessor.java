@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 
 /**
  * Allows you to set and retrieve features dynamically on UIMA FeatureStructures. It's probably
@@ -40,6 +41,10 @@ public class FsAccessor {
     type = featureStructure.getType();
   }
 
+  public static FsAccessor create(AnnotationFS newNormForm) {
+    return new FsAccessor(newNormForm);
+  }
+
   /**
    * Sets the feature value based on the type that you're using to set, make sure that your
    * primitives are casted to the right type.
@@ -47,7 +52,7 @@ public class FsAccessor {
    * @param name the feature name
    * @param value the value to set
    */
-  public void setFeatureValue(String name, Object value) {
+  public void setFeatureValue(String name, @Nullable Object value) {
     Feature feature = getFeature(name);
     if (value instanceof String) {
       featureStructure.setStringValue(feature, (String) value);

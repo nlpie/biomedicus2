@@ -35,7 +35,7 @@ import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.NormIndex;
+import edu.umn.biomedicus.common.types.text.NormForm;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
@@ -86,7 +86,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
   private LabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
 
   @Nullable
-  private LabelIndex<NormIndex> normIndexes;
+  private LabelIndex<NormForm> normIndexes;
 
   /**
    * Creates a dictionary concept recognizer from a concept dictionary and a document.
@@ -154,7 +154,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     Span phraseAsSpan = new Span(tokenSet.get(0).getBegin(),
         tokenSet.get(tokenSet.size() - 1).getEnd());
     TermsBag.Builder builder = TermsBag.builder();
-    for (Label<NormIndex> normIndexLabel : normIndexes.insideSpan(phraseAsSpan)) {
+    for (Label<NormForm> normIndexLabel : normIndexes.insideSpan(phraseAsSpan)) {
 
       Optional<Label<PartOfSpeech>> partOfSpeechLabel = partOfSpeechLabelIndex
           .withTextLocation(normIndexLabel);
@@ -163,7 +163,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         continue;
       }
 
-      builder.addTerm(normIndexLabel.value().term());
+      builder.addTerm(normIndexLabel.value().normIndexedTerm());
     }
     TermsBag normVector = builder.build();
 
@@ -196,7 +196,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     TextView systemView = StandardViews.getSystemView(document);
 
     LabelIndex<Sentence> sentences = systemView.getLabelIndex(Sentence.class);
-    normIndexes = systemView.getLabelIndex(NormIndex.class);
+    normIndexes = systemView.getLabelIndex(NormForm.class);
     termLabeler = systemView.getLabeler(DictionaryTerm.class);
     partOfSpeechLabelIndex = systemView.getLabelIndex(PartOfSpeech.class);
     LabelIndex<TermToken> termTokenLabelIndex = systemView.getLabelIndex(TermToken.class);
