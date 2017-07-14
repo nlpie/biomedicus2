@@ -44,8 +44,7 @@
       <type>edu.umn.biomedicus.uima.type1_6.ParseToken</type>
       <type>edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag</type>
       <type>edu.umn.biomedicus.uima.type1_5.WordIndex</type>
-      <type>edu.umn.biomedicus.uima.type1_6.NormForm</type>
-      <type>edu.umn.biomedicus.uima.type1_5.NormIndex</type>
+      <type>edu.umn.biomedicus.uima.type1_7.NormForm</type>
       <type>edu.umn.biomedicus.uima.type1_6.Misspelling</type>
       <type>edu.umn.biomedicus.uima.type1_6.SpellCorrection</type>
       <type>edu.umn.biomedicus.uima.type1_6.Token</type>

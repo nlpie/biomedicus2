@@ -27,7 +27,10 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
 /**
+ * Class responsible for building the vocabulary db.
  *
+ * @author Ben knoll
+ * @since 1.6.0
  */
 public class MapDbVocabularyBuilder extends VocabularyBuilder {
 

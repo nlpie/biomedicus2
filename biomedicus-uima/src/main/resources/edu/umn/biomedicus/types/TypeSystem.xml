@@ -521,20 +521,13 @@
     </typeDescription>
 
     <typeDescription>
-      <name>edu.umn.biomedicus.uima.type1_6.NormForm</name>
+      <name>edu.umn.biomedicus.uima.type1_7.NormForm</name>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
           <name>normForm</name>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
-      </features>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.uima.type1_5.NormIndex</name>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
         <featureDescription>
           <name>index</name>
           <rangeTypeName>uima.cas.Integer</rangeTypeName>

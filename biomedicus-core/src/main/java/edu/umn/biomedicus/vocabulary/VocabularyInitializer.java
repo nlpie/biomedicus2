@@ -36,21 +36,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.PathOptionHandler;
 
 /**
+ * Initializes the BioMedICUS vocabulary using the specialist lexicon and a UMLS installation
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public class VocabularyInitializer {
 
   private static final Pattern PIPE_SPLITTER = Pattern.compile("\\|");
+
   private final TermIndexBuilder normsIndexBuilder;
+
   private final TermIndexBuilder termsIndexBuilder;
+
   private final TermIndexBuilder wordsIndexBuilder;
+
   private final VocabularyBuilder builder;
 
   @Nullable
@@ -60,12 +66,8 @@ public class VocabularyInitializer {
 
   @Nullable
   @Option(name = "-u", required = true, handler = PathOptionHandler.class,
-      usage = "path to UMLS Lexicon installation.")
+      usage = "path to UMLS installation.")
   private Path umlsPath;
-
-  @Nullable
-  @Argument(handler = PathOptionHandler.class)
-  private Path outputPath;
 
   @Inject
   private VocabularyInitializer(VocabularyBuilder builder) {
@@ -77,8 +79,7 @@ public class VocabularyInitializer {
 
   public static void main(String[] args) {
     try {
-      Bootstrapper.create().getInstance(VocabularyInitializer.class)
-          .doMain(args);
+      Bootstrapper.create().getInstance(VocabularyInitializer.class).doMain(args);
     } catch (BiomedicusException e) {
       e.printStackTrace();
     }
@@ -137,8 +138,7 @@ public class VocabularyInitializer {
     } catch (CmdLineException e) {
       System.err.println(e.getLocalizedMessage());
       System.err.println(
-          "java edu.umn.biomedicus.vocabulary.VocabularyInitializer "
-              + "[options...] /path/to/outputPath");
+          "java edu.umn.biomedicus.vocabulary.VocabularyInitializer [options...]");
       parser.printUsage(System.err);
       return;
     }

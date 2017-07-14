@@ -32,21 +32,20 @@ import org.mapdb.Serializer;
  * @author Ben Knoll
  * @since 1.6.0
  */
-class MapDbTermIndex extends AbstractTermIndex
-    implements Closeable, TermIndexBuilder {
+class MapDbTermIndex extends AbstractTermIndex implements Closeable, TermIndexBuilder {
 
   private final IndexTreeList<String> instances;
+
   private final BTreeMap<String, Integer> indexes;
+
   private boolean open = true;
 
   MapDbTermIndex(DB db, String dbIdentifier) {
-    instances = db.indexTreeList(dbIdentifier + "Instances",
-        Serializer.STRING)
+    instances = db.indexTreeList(dbIdentifier + "Instances", Serializer.STRING)
         .createOrOpen();
 
-    indexes = db.treeMap(dbIdentifier + "Indexes",
-        Serializer.STRING_DELTA, Serializer.INTEGER)
-        .createOrOpen();
+    indexes = db.treeMap(dbIdentifier + "Indexes", Serializer.STRING_DELTA,
+        Serializer.INTEGER).createOrOpen();
   }
 
   @Override

@@ -19,13 +19,36 @@ package edu.umn.biomedicus.vocabulary;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import java.io.Closeable;
 
+/**
+ * Provides the term indexes for the vocabulary.
+ *
+ * @since 1.6.0
+ */
 abstract class VocabularyStore implements Closeable {
 
+  /**
+   * Opens the vocabulary store
+   */
   abstract void open();
 
+  /**
+   * Gets the term index of words.
+   *
+   * @return the word index
+   */
   abstract TermIndex getWords();
 
+  /**
+   * Gets the term index of terms (one or more words with a single semantic meaning).
+   *
+   * @return the terms
+   */
   abstract TermIndex getTerms();
 
+  /**
+   * Gets the term index of norms (normalized forms of words)
+   *
+   * @return term index of norms
+   */
   abstract TermIndex getNorms();
 }

@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.exc;
 
+import java.util.function.Supplier;
+
 /**
  * <p>This is the superclass for all exceptions in BioMedICUS.</p>
  *
@@ -55,5 +57,9 @@ public class BiomedicusException extends Exception {
 
   public BiomedicusException(String message, Throwable cause) {
     super(message, cause);
+  }
+
+  public static Supplier<BiomedicusException> supplier(String desc) {
+    return () -> new BiomedicusException(desc);
   }
 }

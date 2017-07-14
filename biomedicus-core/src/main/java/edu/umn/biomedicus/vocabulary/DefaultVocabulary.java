@@ -37,8 +37,11 @@ import java.io.IOException;
 class DefaultVocabulary implements LifecycleManaged, Vocabulary {
 
   private final VocabularyStore store;
+
   private final TermIndex wordsIndex;
+
   private final TermIndex termIndex;
+
   private final TermIndex normsIndex;
 
   DefaultVocabulary(VocabularyStore store) {

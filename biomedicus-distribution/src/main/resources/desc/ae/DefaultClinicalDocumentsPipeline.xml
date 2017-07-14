@@ -43,9 +43,6 @@
     <delegateAnalysisEngine key="normalizer">
       <import location="annotator/lexical/Normalizer.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="normIndexes">
-      <import location="annotator/lexical/NormLabeler.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="termTokens">
       <import location="annotator/syntax/TermTokenMerger.xml"/>
     </delegateAnalysisEngine>
@@ -72,7 +69,6 @@
         <node>misspellings</node>
         <node>posAnnotator</node>
         <node>normalizer</node>
-        <node>normIndexes</node>
         <node>termTokens</node>
         <node>acronyms</node>
         <node>dictionaryMapper</node>
