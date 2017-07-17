@@ -18,6 +18,7 @@ package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryConcept;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -25,7 +26,7 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class SuiCuiTui {
+public class SuiCuiTui implements Serializable {
 
   private static final Pattern PATTERN = Pattern.compile("S([\\d]{7})C([\\d]{7})T([\\d]{3})");
 

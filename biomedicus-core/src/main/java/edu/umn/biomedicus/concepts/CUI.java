@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class CUI {
+public class CUI implements Serializable {
 
   public static final Pattern CUI_PATTERN = Pattern.compile("C([\\d]{7})");
 

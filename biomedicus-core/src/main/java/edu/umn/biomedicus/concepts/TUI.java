@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -23,7 +24,7 @@ import javax.annotation.Nullable;
 /**
  *
  */
-public class TUI {
+public class TUI implements Serializable {
 
   public static final Pattern TUI_PATTERN = Pattern.compile("T([\\d]{3})");
 

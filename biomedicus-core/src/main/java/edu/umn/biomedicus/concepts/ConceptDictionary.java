@@ -17,24 +17,24 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.terms.TermsBagSerializer;
+import edu.umn.biomedicus.concepts.ConceptDictionary.Loader;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.framework.LifecycleManaged;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +45,13 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  */
 @Singleton
-class ConceptDictionary {
+@ProvidedBy(Loader.class)
+class ConceptDictionary implements LifecycleManaged {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDictionary.class);
+
+  @Nullable
+  private final DB db;
 
   private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
 
@@ -55,72 +59,15 @@ class ConceptDictionary {
 
   private final Map<String, List<SuiCuiTui>> lowercasePhrases;
 
-  @Inject
-  ConceptDictionary(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
-      @Setting("concepts.filters.cui.path") Path filteredCuisPath,
-      @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-      @Setting("concepts.filters.tui.path") Path filteredTuisPath,
-      @Setting("concepts.phrases.path") Path phrasesPath,
-      @Setting("concepts.norms.path") Path normsPath,
-      Vocabulary vocabulary) throws IOException {
-    Pattern splitter = Pattern.compile(",");
-
-    Set<SUI> filteredSuis = Files.lines(filteredSuisPath).map(SUI::new).collect(Collectors.toSet());
-
-    Set<CUI> filteredCuis = Files.lines(filteredCuisPath).map(CUI::new).collect(Collectors.toSet());
-
-    Set<SuiCui> filteredSuiCuis = Files.lines(filteredSuiCuisPath)
-        .map(splitter::split)
-        .map(line -> new SuiCui(new SUI(line[0]), new CUI(line[1])))
-        .collect(Collectors.toSet());
-
-    Set<TUI> filteredTuis = Files.lines(filteredTuisPath).map(TUI::new).collect(Collectors.toSet());
-
-    LOGGER.info("Loading concepts phrases: {}", phrasesPath);
-    phrases = new HashMap<>();
-    lowercasePhrases = new HashMap<>();
-    try (BufferedReader normsReader = Files.newBufferedReader(phrasesPath)) {
-      String line;
-      while ((line = normsReader.readLine()) != null) {
-        String concepts = normsReader.readLine();
-        List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
-            .collect(Collectors.toList());
-        suiCuiTuis
-            .removeIf(sct -> filteredSuis.contains(sct.sui()) || filteredCuis.contains(sct.cui())
-                || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
-                || filteredTuis.contains(sct.tui()));
-        List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-        phrases.put(line, unmodifiableList);
-        lowercasePhrases.put(line.toLowerCase(), unmodifiableList);
-      }
-    }
-
-    LOGGER.info("Loading concept norm vectors: {}", normsPath);
-    normDictionary = new HashMap<>();
-    try (BufferedReader normsReader = Files.newBufferedReader(normsPath)) {
-      String line;
-      while ((line = normsReader.readLine()) != null) {
-        String[] split = splitter.split(line);
-        List<String> terms = Arrays.asList(split);
-        terms.replaceAll(string -> {
-          if (string.equals("scull")) {
-            return "skull";
-          }
-          return string;
-        });
-        TermsBag termsBag = vocabulary.getNormsIndex()
-            .getTermsBag(terms);
-        String concepts = normsReader.readLine();
-        List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
-            .collect(Collectors.toList());
-        suiCuiTuis
-            .removeIf(sct -> filteredSuis.contains(sct.sui()) || filteredCuis.contains(sct.cui())
-                || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
-                || filteredTuis.contains(sct.tui()));
-        List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-        normDictionary.put(termsBag, unmodifiableList);
-      }
-    }
+  ConceptDictionary(
+      @Nullable DB db,
+      Map<TermsBag, List<SuiCuiTui>> normDictionary,
+      Map<String, List<SuiCuiTui>> phrases,
+      Map<String, List<SuiCuiTui>> lowercasePhrases) {
+    this.db = db;
+    this.normDictionary = normDictionary;
+    this.phrases = phrases;
+    this.lowercasePhrases = lowercasePhrases;
   }
 
   @Nullable
@@ -141,39 +88,59 @@ class ConceptDictionary {
     return normDictionary.get(norms);
   }
 
-  private static final class SuiCui {
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    if (db != null) {
 
-    private final SUI sui;
-    private final CUI cui;
+      db.close();
+    }
+  }
 
-    public SuiCui(SUI sui, CUI cui) {
-      this.sui = sui;
-      this.cui = cui;
+  @Singleton
+  static final class Loader extends DataLoader<ConceptDictionary> {
+
+    private final boolean inMemory;
+
+    private final Path dbPath;
+
+    @Inject
+    Loader(@Setting("concepts.db.path") Path dbPath,
+        @Setting("concepts.inMemory") boolean inMemory) {
+      this.dbPath = dbPath;
+      this.inMemory = inMemory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(@Nullable Object o) {
-      if (this == o) {
-        return true;
+    protected ConceptDictionary loadModel() throws BiomedicusException {
+
+      LOGGER.info("Loading concepts database: {}", dbPath);
+
+      DB db = DBMaker.fileDB(dbPath.toFile()).readOnly()
+          .fileMmapEnableIfSupported()
+          .make();
+
+      Map<TermsBag, List<SuiCuiTui>> normDictionary = (Map<TermsBag, List<SuiCuiTui>>) db
+          .treeMap("norms", Serializer.JAVA, Serializer.JAVA)
+          .open();
+
+      Map<String, List<SuiCuiTui>> phrases = (Map<String, List<SuiCuiTui>>) db
+          .treeMap("phrases", Serializer.STRING, Serializer.JAVA)
+          .open();
+
+      Map<String, List<SuiCuiTui>> lowercase = (Map<String, List<SuiCuiTui>>) db
+          .treeMap("lowercase", Serializer.STRING, Serializer.JAVA)
+          .open();
+
+      if (inMemory) {
+        normDictionary = new HashMap<>(normDictionary);
+        phrases = new HashMap<>(phrases);
+        lowercase = new HashMap<>(lowercase);
+
+        db.close();
+        db = null;
       }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-
-      SuiCui suiCui = (SuiCui) o;
-
-      if (!sui.equals(suiCui.sui)) {
-        return false;
-      }
-      return cui.equals(suiCui.cui);
-
-    }
-
-    @Override
-    public int hashCode() {
-      int result = sui.hashCode();
-      result = 31 * result + cui.hashCode();
-      return result;
+      return new ConceptDictionary(db, normDictionary, phrases, lowercase);
     }
   }
 }
