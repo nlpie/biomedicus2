@@ -38,8 +38,8 @@ settings:
     srdef.path: semnetwork/SRDEF
     semgroups.path: semnetwork/SemGroups.txt
   concepts:
-    db.path: concepts.db
-    inMemory: no
+    db.path: concepts
+    inMemory: yes
     filters:
       sui.path: conceptFilters/filteredSuis.txt
       suicui.path: conceptFilters/filteredSuiCuis.txt
