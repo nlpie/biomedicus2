@@ -16,13 +16,16 @@
 
 package edu.umn.biomedicus.common.terms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A bag of terms and their counts.
@@ -30,7 +33,7 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public final class TermsBag implements Comparable<TermsBag> {
+public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTerm>, Serializable {
 
   /**
    * The term identifiers, sorted increasing.
@@ -119,6 +122,28 @@ public final class TermsBag implements Comparable<TermsBag> {
       }
     }
     return 0;
+  }
+
+  @NotNull
+  @Override
+  public Iterator<IndexedTerm> iterator() {
+    return new Iterator<IndexedTerm>() {
+      int index = 0;
+
+      @Override
+      public boolean hasNext() {
+        return index != identifiers.length;
+      }
+
+      @Override
+      public IndexedTerm next() {
+        if (index == identifiers.length) {
+          throw new NoSuchElementException();
+        }
+
+        return new IndexedTerm(identifiers[index++]);
+      }
+    };
   }
 
   public static class Builder {

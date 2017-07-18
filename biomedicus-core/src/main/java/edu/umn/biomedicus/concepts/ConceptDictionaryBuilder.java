@@ -16,6 +16,359 @@
 
 package edu.umn.biomedicus.concepts;
 
+import com.google.common.base.Splitter;
+import com.google.inject.Inject;
+import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.terms.TermVector;
+import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.Bootstrapper;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.spi.PathOptionHandler;
+import org.mapdb.Serializer;
+import org.mapdb.SortedTableMap;
+import org.mapdb.volume.MappedFileVol;
+import org.mapdb.volume.Volume;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ConceptDictionaryBuilder {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDictionaryBuilder.class);
+
+  private static final Pattern SPLITTER = Pattern.compile("\\|");
+
+  private static final Pattern SPACE_SPLITTER = Pattern.compile(" ");
+
+  private final Set<SUI> filteredSuis;
+
+  private final Set<CUI> filteredCuis;
+
+  private final Set<SuiCui> filteredSuiCuis;
+
+  private final Set<TUI> filteredTuis;
+
+  private final Vocabulary vocabulary;
+
+  @Nullable
+  @Argument(required = true, handler = PathOptionHandler.class, usage = "Path to UMLS installation")
+  private Path umlsPath;
+
+  @Nullable
+  @Argument(index = 1, required = true, handler = PathOptionHandler.class,
+      usage = "Path to TUIs of interest")
+  private Path tuisOfInterestFile;
+
+  @Nullable
+  @Argument(index = 2, required = true, handler = PathOptionHandler.class,
+      usage = "Banned TTYs file")
+  private Path bannedTtysFile;
+
+  @Nullable
+  @Argument(index = 3, handler = PathOptionHandler.class, usage = "Path to write db out to.")
+  private Path dbPath;
+
+  @Inject
+  ConceptDictionaryBuilder(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
+      @Setting("concepts.filters.cui.path") Path filteredCuisPath,
+      @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
+      @Setting("concepts.filters.tui.path") Path filteredTuisPath,
+      Vocabulary vocabulary
+  ) throws IOException {
+    Pattern splitter = Pattern.compile(",");
+
+    filteredSuis = Files.lines(filteredSuisPath).map(SUI::new)
+        .collect(Collectors.toSet());
+
+    filteredCuis = Files.lines(filteredCuisPath).map(CUI::new)
+        .collect(Collectors.toSet());
+
+    filteredSuiCuis = Files.lines(filteredSuiCuisPath)
+        .map(splitter::split)
+        .map(line -> new ConceptDictionaryBuilder.SuiCui(new SUI(line[0]), new CUI(line[1])))
+        .collect(Collectors.toSet());
+
+    filteredTuis = Files.lines(filteredTuisPath).map(TUI::new)
+        .collect(Collectors.toSet());
+
+    this.vocabulary = vocabulary;
+  }
+
+  public static void main(String[] args) {
+    try {
+      Bootstrapper.create().getInstance(ConceptDictionaryBuilder.class).doWork(args);
+    } catch (BiomedicusException | IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void doWork(String[] args) throws IOException {
+    CmdLineParser parser = new CmdLineParser(this);
+
+    try {
+      parser.parseArgument(args);
+    } catch (CmdLineException e) {
+      System.err.println(e.getLocalizedMessage());
+      System.err.println("java edu.umn.biomedicus.concepts.ConceptDictionaryBuilder [umls path]"
+          + " [tuis of interest path] [banned ttys path] [output path]");
+      parser.printUsage(System.err);
+      return;
+    }
+
+    if (Files.exists(dbPath)) {
+
+      Files.deleteIfExists(dbPath.resolve("phrases.db"));
+      Files.deleteIfExists(dbPath.resolve("lowercase.db"));
+      Files.deleteIfExists(dbPath.resolve("norms.db"));
+    }
+
+    System.out.println("Loading TUIs of interest");
+    Set<TUI> whitelist = Files.lines(tuisOfInterestFile).map(SPLITTER::split)
+        .filter(line -> line.length >= 3)
+        .map(line -> line[1])
+        .map(TUI::new)
+        .collect(Collectors.toSet());
+
+    Set<String> ttyBanlist = Files.lines(bannedTtysFile).collect(Collectors.toSet());
+
+    Path mrstyPath = umlsPath.resolve("MRSTY.RRF");
+    System.out.println("Loading CUI -> TUIs map from MRSTY: " + mrstyPath);
+    Map<CUI, List<TUI>> cuiToTUIs = Files.lines(mrstyPath)
+        .map(SPLITTER::split)
+        .map(line -> {
+          CUI cui = new CUI(line[0]);
+          TUI tui = new TUI(line[1]);
+          List<TUI> tuis = new ArrayList<>();
+          if (whitelist.contains(tui)) {
+            tuis.add(tui);
+            return new AbstractMap.SimpleImmutableEntry<>(cui, tuis);
+          }
+          return null;
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(Map.Entry::getKey,
+            Map.Entry::getValue,
+            (firstList, secondList) -> {
+              for (TUI tui : secondList) {
+                if (!firstList.contains(tui)) {
+                  firstList.add(tui);
+                }
+              }
+              return firstList;
+            }));
+
+    TermIndex normIndex = vocabulary.getWordsIndex();
+
+    Path mrconsoPath = umlsPath.resolve("MRCONSO.RRF");
+    System.out.println("Loading phrases and SUI -> CUIs from MRCONSO: " + mrconsoPath);
+    Set<SUI> bannedSUIs = new HashSet<>();
+
+    // block so phrase dictionary gets freed once it's no longer needed
+    {
+      Map<String, List<SuiCuiTui>> phraseDictionary = new TreeMap<>();
+      Map<String, List<SuiCuiTui>> phrasesLowerCase = new TreeMap<>();
+
+      int mrConsoTotalLines = 0;
+      int mrConsoCompletedLines = 0;
+
+      try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
+        while (bufferedReader.readLine() != null) mrConsoTotalLines++;
+      }
+
+      try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
+        String line;
+        while((line = bufferedReader.readLine()) != null) {
+          if (++mrConsoCompletedLines % 10_000 == 0) {
+            System.out.println("Read " + mrConsoCompletedLines + " of " + mrConsoTotalLines);
+          }
+          String[] splitLine = SPLITTER.split(line);
+          CUI cui = new CUI(splitLine[0]);
+          if ("ENG".equals(splitLine[1])) {
+            SUI sui = new SUI(splitLine[5]);
+            String obsoleteOrSuppressible = splitLine[16];
+            String tty = splitLine[12];
+            String phrase = splitLine[14];
+
+            if (phrase.length() < 3) {
+              continue;
+            }
+
+            if (!"N".equals(obsoleteOrSuppressible)) {
+              bannedSUIs.add(sui);
+              continue;
+            }
+
+            if (ttyBanlist.contains(tty)) {
+              bannedSUIs.add(sui);
+              continue;
+            }
+
+            List<TUI> tuis = cuiToTUIs.get(cui);
+            if (tuis == null || tuis.size() == 0) {
+              LOGGER.trace("Filtering \"{}\" because it has no interesting types", phrase);
+              continue;
+            }
+            for (TUI tui : tuis) {
+              if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
+                  || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis.contains(sui)) {
+                continue;
+              }
+
+              SuiCuiTui value = new SuiCuiTui(sui, cui, tui);
+              multimapPut(phraseDictionary, phrase, value);
+              multimapPut(phrasesLowerCase, phrase.toLowerCase(), value);
+            }
+          }
+        }
+      }
+
+      Files.createDirectories(dbPath);
+
+      Volume phrasesVolume = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("phrases.db").toString(), false);
+      SortedTableMap phrases = SortedTableMap.create(phrasesVolume, Serializer.STRING, Serializer.JAVA)
+          .createFrom(phraseDictionary);
+      phrases.close();
+      phrasesVolume.close();
+
+      Volume lowercaseVolume = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("lowercase.db").toString(), false);
+      SortedTableMap lowercase = SortedTableMap.create(lowercaseVolume, Serializer.STRING, Serializer.JAVA)
+          .createFrom(phrasesLowerCase);
+      lowercase.close();
+      lowercaseVolume.close();
+    }
+
+    Path mrxnsPath = umlsPath.resolve("MRXNS_ENG.RRF");
+    System.out.println("Loading lowercase normalized strings from MRXNS_ENG: " + mrxnsPath);
+
+    Map<TermsBag, List<SuiCuiTui>> normMap = new TreeMap<>();
+
+    int totalLines = 0;
+    int lineCount = 0;
+
+
+    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
+      while(bufferedReader.readLine() != null) totalLines++;
+    }
+
+    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
+      String line;
+      while((line = bufferedReader.readLine()) != null) {
+        if (++lineCount % 10_000 == 0) {
+          System.out.println("Read " + lineCount + " of " + totalLines);
+        }
+        Iterable<String> columns = Splitter.on("|").split(line);
+        Iterator<String> it = columns.iterator();
+        if ("ENG".equals(it.next())) {
+          List<String> norms = Arrays.asList(SPACE_SPLITTER.split(it.next()));
+          CUI cui = new CUI(it.next());
+          it.next();
+          SUI sui = new SUI(it.next());
+
+          if (norms.size() < 2) {
+            continue;
+          }
+
+          if (bannedSUIs.contains(sui)) {
+            continue;
+          }
+
+          TermVector termsBag = normIndex.getTermVector(norms);
+          List<TUI> tuis = cuiToTUIs.get(cui);
+          if (tuis == null || tuis.size() == 0) {
+            LOGGER.trace("Filtering \"{}\" because it has no interesting types", termsBag);
+            continue;
+          }
+          for (TUI tui : tuis) {
+            if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
+                || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis.contains(sui)) {
+              continue;
+            }
+
+            multimapPut(normMap, termsBag.toBag(), new SuiCuiTui(sui, cui, tui));
+          }
+        }
+      }
+
+      Volume normsVolume = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("norms.db").toString(), false);
+
+      SortedTableMap normsMap = SortedTableMap.create(normsVolume, Serializer.JAVA, Serializer.JAVA)
+          .createFrom(normMap);
+
+      normsMap.close();
+
+      normsVolume.close();
+    }
+  }
+
+  private <K, V> void multimapPut(Map<K, List<V>> map, K key, V value) {
+    map.compute(key, (unused, list) -> {
+      if (list == null) {
+        list = new ArrayList<>();
+      } else if (list.contains(value)) {
+        return list;
+      }
+      list.add(value);
+      return list;
+    });
+  }
+
+  private static final class SuiCui {
+
+    private final SUI sui;
+    private final CUI cui;
+
+    public SuiCui(SUI sui, CUI cui) {
+      this.sui = sui;
+      this.cui = cui;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      SuiCui suiCui = (SuiCui) o;
+
+      if (!sui.equals(suiCui.sui)) {
+        return false;
+      }
+      return cui.equals(suiCui.cui);
+
+    }
+
+    @Override
+    public int hashCode() {
+      int result = sui.hashCode();
+      result = 31 * result + cui.hashCode();
+      return result;
+    }
+  }
 }
