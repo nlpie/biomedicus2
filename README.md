@@ -20,7 +20,9 @@ use, and development of BioMedICUS.
 Contact and Support
 ========================================================================================================================
 
-BioMedICUS has a [Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting developers 
+For issues or enhancement requests, feel free to submit to the Issues tab on GitHub.
+
+BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) and a [Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting developers
 with questions, suggestions or feedback. Also, bug reports and feature suggestions can be submitted to the Issues tab on 
 GitHub.
 
