@@ -29,7 +29,10 @@ import java.nio.file.Path;
 import java.util.Iterator;
 
 /**
+ * Document source that reads text files from a directory and dumps the content into a view
  *
+ * @author Ben Knoll
+ * @since 1.7.0
  */
 public class TextFilesDocumentSource implements DocumentSource {
 

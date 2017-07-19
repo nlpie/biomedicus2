@@ -58,15 +58,6 @@ public interface TextView {
   <T> Labeler<T> getLabeler(Class<T> labelClass);
 
   /**
-   * Labels a label without having to use a labeler, still follows the same rules as far as
-   * immutability after the first processor that labels a specific type.
-   *
-   * @param label the label to label
-   * @param <T> the type of the label
-   */
-  <T> void label(Label<T> label);
-
-  /**
    * Returns the {@link Span} of the entire document.
    *
    * @return the Span of the entire document.

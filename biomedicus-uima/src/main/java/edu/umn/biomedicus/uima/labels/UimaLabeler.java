@@ -56,8 +56,4 @@ public final class UimaLabeler<T> implements Labeler<T> {
     labelAdapter.labelToAnnotation(label);
   }
 
-  @Override
-  public void finish() {
-
-  }
 }

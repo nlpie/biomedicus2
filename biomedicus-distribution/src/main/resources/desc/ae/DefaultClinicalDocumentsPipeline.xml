@@ -28,12 +28,6 @@
     <delegateAnalysisEngine key="parseTokens">
       <import location="annotator/syntax/PennLikeTokenizer.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="misspellings">
-      <import location="annotator/lexical/MisspellingDetector.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="spellCorrect">
-      <import location="annotator/lexical/MisspellingCorrector.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="words">
       <import location="annotator/lexical/WordLabeler.xml"/>
     </delegateAnalysisEngine>
@@ -66,7 +60,6 @@
         <node>section</node>
         <node>parseTokens</node>
         <node>words</node>
-        <node>misspellings</node>
         <node>posAnnotator</node>
         <node>normalizer</node>
         <node>termTokens</node>

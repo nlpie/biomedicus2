@@ -23,17 +23,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -44,20 +42,6 @@ import javax.annotation.Nullable;
  */
 public class PtbReader {
 
-  private static final Map<String, String> WORD_REPLACEMENTS;
-
-  static {
-    WORD_REPLACEMENTS = new HashMap<>();
-    WORD_REPLACEMENTS.put("-LRB-", "(");
-    WORD_REPLACEMENTS.put("-RRB-", ")");
-    WORD_REPLACEMENTS.put("-LCB-", "{");
-    WORD_REPLACEMENTS.put("-RCB-", "}");
-    WORD_REPLACEMENTS.put("-LSB-", "[");
-    WORD_REPLACEMENTS.put("-RSB-", "]");
-    WORD_REPLACEMENTS.put("``", "\"");
-    WORD_REPLACEMENTS.put("''", "\"");
-  }
-
   private final Reader reader;
 
   private PtbReader(Reader reader) {
@@ -65,33 +49,113 @@ public class PtbReader {
   }
 
   /**
-   * Creates a new {@code PtbReader} which from the reader.
+   * Creates a new {@code PtbReader} from a reader.
    *
    * @param reader a "fresh" reader of the PTB text.
-   * @return {@code PtbReader} which can be used to retrieve the sentence
+   * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
    */
   public static PtbReader create(Reader reader) {
     return new PtbReader(reader);
   }
 
+  /**
+   * Creates a new ptb reader from an input stream, uses default charset.
+   *
+   * @param inputStream the inputstream to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
+   */
   public static PtbReader create(InputStream inputStream) {
     return new PtbReader(new InputStreamReader(inputStream));
   }
 
+  /**
+   * Creates a new ptb reader from an input stream and a charset
+   *
+   * @param inputStream the input stream to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   */
+  public static PtbReader create(InputStream inputStream, Charset charset) {
+    return new PtbReader(new InputStreamReader(inputStream, charset));
+  }
+
+  /**
+   * Creates a new ptb reader directly from a string.
+   *
+   * @param string string to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   */
   public static PtbReader create(String string) {
     return new PtbReader(new StringReader(string));
   }
 
+  /**
+   * Creates a new ptb reader from a path to a file to read from, using the default charset
+   *
+   * @param path the path to the file to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
   public static PtbReader createFromFile(Path path) throws IOException {
     return new PtbReader(Files.newBufferedReader(path));
   }
 
+  /**
+   * Creates a new ptb reader from a path to a file to read from, using a specified charset.
+   *
+   * @param path the path to the file to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
+  public static PtbReader createFromFile(Path path, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(path, charset));
+  }
+
+  /**
+   * Create a new ptb reader from a string path to a file to read from, using the default charset.
+   *
+   * @param path the path to the file to read from.
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
   public static PtbReader createFromFile(String path) throws IOException {
     return new PtbReader(Files.newBufferedReader(Paths.get(path)));
   }
 
+  /**
+   * Create a new ptb reader from a string path to a file to read from, using a specified charset.
+   *
+   * @param path the string path to the file to read from.
+   * @param charset the specified charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
+  public static PtbReader createFromFile(String path, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(Paths.get(path), charset));
+  }
+
+  /**
+   * Creates a new ptb reader by reading from file, using the default charset.
+   *
+   * @param file the file to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is an error reading from the file.
+   */
   public static PtbReader createFromFile(File file) throws IOException {
     return new PtbReader(Files.newBufferedReader(file.toPath()));
+  }
+
+  /**
+   * Creates a new ptb reader by reading from the file, using a specified from a charset
+   *
+   * @param file the file to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is an error reading from the file.
+   */
+  public static PtbReader createFromFile(File file, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(file.toPath(), charset));
   }
 
   public static void main(String args[]) {
@@ -107,6 +171,12 @@ public class PtbReader {
     }
   }
 
+  /**
+   * Returns the next top level node in the penn tree set.
+   *
+   * @return a top level node.
+   * @throws IOException if there is a failure reading.
+   */
   public Optional<Node> nextNode() throws IOException {
     Node current = null;
 
@@ -165,7 +235,7 @@ public class PtbReader {
     }
   }
 
-  @Nonnull
+  @Nullable
   private String readWord(int in) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append((char) in);
@@ -177,12 +247,28 @@ public class PtbReader {
     }
     String word = stringBuilder.toString();
 
-    String replacement = WORD_REPLACEMENTS.get(word);
-    if (replacement != null) {
-      word = WORD_REPLACEMENTS.get(word);
+    switch (word) {
+      case "-LRB-":
+        return "(";
+      case "-RRB-":
+        return ")";
+      case "-LCB-":
+        return "{";
+      case "-RCB-":
+        return "}";
+      case "-LSB-":
+        return "[";
+      case "-RSB-":
+        return "]";
+      case "``":
+        return "\"";
+      case "''":
+        return "\"";
+      case "-NONE-":
+        return null;
+      default:
+        return word;
     }
-
-    return word;
   }
 
   /**
@@ -233,6 +319,11 @@ public class PtbReader {
       return leaves;
     }
 
+    /**
+     * Returns an iterator which goes through all the leafs underneath this node.
+     *
+     * @return the iterator of leafs
+     */
     public Iterator<Node> leafIterator() {
       return new Iterator<Node>() {
         @Nullable
