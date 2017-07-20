@@ -21,7 +21,10 @@ import com.google.inject.Key;
 import java.util.Collection;
 
 /**
- * Module w
+ * Module used for creating child injectors
+ *
+ * @author Ben Knoll
+ * @since 1.5.0
  */
 final class ProcessorSettingsModule extends AbstractModule {
 

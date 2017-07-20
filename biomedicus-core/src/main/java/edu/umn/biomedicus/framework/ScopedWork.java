@@ -29,7 +29,10 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
+ * Used for performing work that runs in a processing scope.
  *
+ * @author Ben Knoll
+ * @since 1.7.0
  */
 public class ScopedWork {
 
