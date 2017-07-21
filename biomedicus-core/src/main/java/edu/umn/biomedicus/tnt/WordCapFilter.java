@@ -20,7 +20,10 @@ import edu.umn.biomedicus.common.tuples.WordCap;
 import java.util.function.Predicate;
 
 /**
+ * Used to filter certain words from entering the statistics model
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public class WordCapFilter implements Predicate<WordCap> {
 

@@ -20,12 +20,17 @@ import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 
 /**
+ * A filter that goes on top of the word-part-of-speech frequencies used
+ * to train the TnT model.
  *
+ * @since 1.1.0
  */
 class FilteredWordPosFrequencies {
 
   private final WordPosFrequencies wordPosFrequencies;
+
   private final WordCapFilter filter;
+
   private final WordCapAdapter wordCapAdapter;
 
   FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter,

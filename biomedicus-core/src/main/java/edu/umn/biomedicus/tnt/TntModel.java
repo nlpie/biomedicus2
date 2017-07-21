@@ -27,21 +27,20 @@ import edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.framework.LifecycleManaged;
 import edu.umn.biomedicus.serialization.YamlSerialization;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -51,7 +50,8 @@ import org.yaml.snakeyaml.Yaml;
  */
 @ProvidedBy(TntModel.Loader.class)
 public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
-    TransitionProbabilityModel<PosCap, Bigram<PosCap>> {
+    TransitionProbabilityModel<PosCap, Bigram<PosCap>>,
+    LifecycleManaged {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TntModel.class);
 
@@ -64,15 +64,20 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
   /**
    * Word probability models used for emission probability.
    */
-  private final List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities;
+  private final List<WordProbabilityModel> wordModels;
+
+  @Nullable
+  private final DB db;
 
   TntModel(PosCapTrigramModel posCapTrigramModel,
-      List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities) {
+      List<WordProbabilityModel> wordModels,
+      @Nullable DB db) {
     this.posCapTrigramModel = posCapTrigramModel;
-    this.filteredAdaptedWordProbabilities = filteredAdaptedWordProbabilities;
+    this.wordModels = wordModels;
+    this.db = db;
   }
 
-  public void write(Path folder) throws IOException {
+  public void write(Path folder, DB db) throws IOException {
     Yaml yaml = YamlSerialization.createYaml();
 
     Files.createDirectories(folder);
@@ -83,17 +88,16 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
     Path words = folder.resolve("words");
     Files.createDirectories(words);
 
-    for (FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbability : filteredAdaptedWordProbabilities) {
-      filteredAdaptedWordProbability.reduce();
-      yaml.dump(filteredAdaptedWordProbability,
-          Files.newBufferedWriter(
-              words.resolve(filteredAdaptedWordProbability.getPriority() + ".yml")));
+    yaml.dump(wordModels, Files.newBufferedWriter(folder.resolve("wordMetadata.yml")));
+
+    for (WordProbabilityModel wordModel : wordModels) {
+      wordModel.writeData(db);
     }
   }
 
-  private FilteredAdaptedWordProbabilityModel getWordProbabilityModel(WordCap emittedValue) {
-    FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbability = null;
-    for (FilteredAdaptedWordProbabilityModel probabilityModel : filteredAdaptedWordProbabilities) {
+  private WordProbabilityModel getWordProbabilityModel(WordCap emittedValue) {
+    WordProbabilityModel filteredAdaptedWordProbability = null;
+    for (WordProbabilityModel probabilityModel : wordModels) {
       if (probabilityModel.isKnown(emittedValue)) {
         filteredAdaptedWordProbability = probabilityModel;
         break;
@@ -108,8 +112,7 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
 
   @Override
   public Collection<CandidateProbability<PosCap>> getCandidates(WordCap emittedValue) {
-    FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbability = getWordProbabilityModel(
-        emittedValue);
+    WordProbabilityModel filteredAdaptedWordProbability = getWordProbabilityModel(emittedValue);
 
     return filteredAdaptedWordProbability.getCandidates(emittedValue)
         .stream()
@@ -128,6 +131,13 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
         statesReduction.getSecond(), candidate));
   }
 
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    if (db != null) {
+      db.close();
+    }
+  }
+
   /**
    *
    */
@@ -135,46 +145,47 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
   static class Loader extends DataLoader<TntModel> {
 
     private final Path trigram;
-
-    private final Path wordModels;
+    private final Path wordMetadata;
+    private final Path dbPath;
+    private final boolean inMemory;
 
     @Inject
     public Loader(@Setting("tnt.trigram.path") Path trigram,
-        @Setting("tnt.word.path") Path wordModels) {
+        @Setting("tnt.word.metadataPath") Path wordMetadata,
+        @Setting("tnt.word.dbPath") Path dbPath,
+        @Setting("tnt.word.inMemory") boolean inMemory) {
       this.trigram = trigram;
-      this.wordModels = wordModels;
+      this.wordMetadata = wordMetadata;
+      this.dbPath = dbPath;
+      this.inMemory = inMemory;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected TntModel loadModel() throws BiomedicusException {
       Yaml yaml = YamlSerialization.createYaml();
 
       try {
         LOGGER.info("Loading TnT trigram model: {}", trigram);
-        @SuppressWarnings("unchecked")
         Map<String, Object> store = (Map<String, Object>) yaml.load(Files.newInputStream(trigram));
+
         PosCapTrigramModel posCapTrigramModel = PosCapTrigramModel.createFromStore(store);
 
-        List<FilteredAdaptedWordProbabilityModel> filteredAdaptedWordProbabilities = new ArrayList<>();
-        Files.walkFileTree(wordModels, Collections.emptySet(), 1, new SimpleFileVisitor<Path>() {
-          @Override
-          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-              throws IOException {
-            if (file.getFileName().toString().endsWith(".yml")) {
-              LOGGER.info("Loading TnT word model #{}: {}",
-                  filteredAdaptedWordProbabilities.size() + 1, file);
-              FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = (FilteredAdaptedWordProbabilityModel) yaml
-                  .load(Files.newInputStream(file));
-              filteredAdaptedWordProbabilities.add(filteredAdaptedWordProbabilityModel);
-            }
-            return FileVisitResult.CONTINUE;
-          }
-        });
+        List<WordProbabilityModel> wordModels = (List<WordProbabilityModel>)
+            yaml.load(Files.newInputStream(wordMetadata));
 
-        Collections.sort(filteredAdaptedWordProbabilities,
-            (m1, m2) -> Integer.compare(m1.getPriority(), m2.getPriority()));
+        DB db = DBMaker.fileDB(dbPath.toFile()).readOnly().fileChannelEnable().make();
 
-        return new TntModel(posCapTrigramModel, filteredAdaptedWordProbabilities);
+        LOGGER.info("Loading TnT word models.");
+        wordModels.forEach(wm -> wm.loadData(db, inMemory));
+
+        if (inMemory) {
+          db.close();
+          return new TntModel(posCapTrigramModel, wordModels, null  );
+        } else {
+          return new TntModel(posCapTrigramModel, wordModels, db);
+        }
+
       } catch (IOException e) {
         throw new BiomedicusException(e);
       }

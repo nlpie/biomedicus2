@@ -12,7 +12,10 @@ settings:
     maxEditDistance: 4
   tnt:
     trigram.path: tnt/trigram.yml
-    word.path: tnt/words/
+    word:
+      inMemory: yes
+      dbPath: tnt/words.db
+      metadataPath: tnt/wordMetadata.yml
     beam.threshold: 2.0
   stopwords:
     model: fileBased

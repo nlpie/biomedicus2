@@ -19,10 +19,9 @@ package edu.umn.biomedicus.tnt;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,9 +111,9 @@ public class TntModelTrainer {
    * @param tokens the tokens in the sentence
    * @param partOfSpeeches the part of speeches of the tokens in the sentence.
    */
-  public void addSentence(List<Token> tokens, List<PartOfSpeech> partOfSpeeches) {
+  public void addSentence(List<ParseToken> tokens, List<PartOfSpeech> partOfSpeeches) {
     for (int i = 0; i < tokens.size(); i++) {
-      Token token = tokens.get(i);
+      ParseToken token = tokens.get(i);
       String tokenText = token.text();
       boolean isCapitalized = Character.isUpperCase(tokenText.charAt(0));
       WordCap wordCap = new WordCap(tokenText, isCapitalized);
@@ -140,8 +139,8 @@ public class TntModelTrainer {
     Set<PartOfSpeech> tagSet =
         restrictToOpenClass ? PartsOfSpeech.getOpenClass() : PartsOfSpeech.getRealTags();
 
-    final List<FilteredAdaptedWordProbabilityModel> knownWordModels = new ArrayList<>();
-    final List<FilteredAdaptedWordProbabilityModel> suffixModels = new ArrayList<>();
+    final List<WordProbabilityModel> knownWordModels = new ArrayList<>();
+    final List<WordProbabilityModel> suffixModels = new ArrayList<>();
     int priority = 0;
     for (FilteredWordPosFrequencies filteredFreqs : filteredWordPosFrequencies) {
       WordPosFrequencies wordPosFrequencies = filteredFreqs.getWordPosFrequencies();
@@ -149,44 +148,37 @@ public class TntModelTrainer {
       WordCapFilter filter = filteredFreqs.getFilter();
       WordCapAdapter wordCapAdapter = filteredFreqs.getWordCapAdapter();
 
-      Map<String, Map<PartOfSpeech, Double>> frequencies = KnownWordModelTrainer.get()
-          .apply(wordPosFrequencies);
       KnownWordProbabilityModel knownWordProbabilityModel = new KnownWordProbabilityModel();
-      knownWordProbabilityModel.setLexicalProbabilities(frequencies);
+      knownWordProbabilityModel.setId(priority);
+      knownWordProbabilityModel.setFilter(filter);
+      knownWordProbabilityModel.setWordCapAdapter(wordCapAdapter);
+      knownWordProbabilityModel.train(wordPosFrequencies, tagSet);
 
-      FilteredAdaptedWordProbabilityModel filteredAdaptedWordProbabilityModel = new FilteredAdaptedWordProbabilityModel();
-      filteredAdaptedWordProbabilityModel.setPriority(priority);
-      filteredAdaptedWordProbabilityModel.setFilter(filter);
-      filteredAdaptedWordProbabilityModel.setWordCapAdapter(wordCapAdapter);
-      filteredAdaptedWordProbabilityModel.setWordProbabilityModel(knownWordProbabilityModel);
-
-      knownWordModels.add(filteredAdaptedWordProbabilityModel);
+      knownWordModels.add(knownWordProbabilityModel);
       WordPosFrequencies suffixFrequencies = wordPosFrequencies
           .onlyWordsOccurringUpTo(maxWordFrequency)
           .expandSuffixes(maxSuffixLength);
 
-      Map<String, Map<PartOfSpeech, Double>> suffixFreqs = useMslSuffixModel ?
-          MslSuffixModelTrainer.get(tagSet).apply(suffixFrequencies) :
-          PiSuffixModelTrainer.get(tagSet).apply(suffixFrequencies);
-
       SuffixWordProbabilityModel suffixWordProbabilityModel = new SuffixWordProbabilityModel();
       suffixWordProbabilityModel.setMaxSuffixLength(maxSuffixLength);
-      suffixWordProbabilityModel.setProbabilities(suffixFreqs);
+      suffixWordProbabilityModel.setId(filteredWordPosFrequencies.size() + priority++);
+      suffixWordProbabilityModel.setWordProbabilityModel(suffixWordProbabilityModel);
+      suffixWordProbabilityModel.setWordCapAdapter(wordCapAdapter);
+      suffixWordProbabilityModel.setFilter(filter);
+      if (useMslSuffixModel) {
+        suffixWordProbabilityModel.trainMsl(suffixFrequencies, tagSet);
+      } else {
+        suffixWordProbabilityModel.trainPI(suffixFrequencies, tagSet);
+      }
 
-      FilteredAdaptedWordProbabilityModel suffixFilteredAdapted = new FilteredAdaptedWordProbabilityModel();
-      suffixFilteredAdapted.setPriority(filteredWordPosFrequencies.size() + priority++);
-      suffixFilteredAdapted.setWordProbabilityModel(suffixWordProbabilityModel);
-      suffixFilteredAdapted.setWordCapAdapter(wordCapAdapter);
-      suffixFilteredAdapted.setFilter(filter);
-
-      suffixModels.add(suffixFilteredAdapted);
+      suffixModels.add(suffixWordProbabilityModel);
     }
 
     knownWordModels.addAll(suffixModels);
 
     LOGGER.debug("Word models: {}", knownWordModels);
 
-    return new TntModel(posCapTrigramModel, knownWordModels);
+    return new TntModel(posCapTrigramModel, knownWordModels, null);
   }
 
   /**
@@ -298,19 +290,10 @@ public class TntModelTrainer {
       if (useCapitalization) {
         filteredWordPosFrequencies
             .add(new FilteredWordPosFrequencies(new WordCapFilter(true, false),
-                new WordCapAdapter(false, false)));
-        filteredWordPosFrequencies
-            .add(new FilteredWordPosFrequencies(new WordCapFilter(true, false),
                 new WordCapAdapter(true, false)));
         filteredWordPosFrequencies
             .add(new FilteredWordPosFrequencies(new WordCapFilter(false, true),
-                new WordCapAdapter(false, false)));
-        filteredWordPosFrequencies
-            .add(new FilteredWordPosFrequencies(new WordCapFilter(false, true),
                 new WordCapAdapter(true, false)));
-        filteredWordPosFrequencies
-            .add(new FilteredWordPosFrequencies(new WordCapFilter(false, false),
-                new WordCapAdapter(true, true)));
       } else {
         filteredWordPosFrequencies
             .add(new FilteredWordPosFrequencies(new WordCapFilter(false, false),
@@ -320,8 +303,7 @@ public class TntModelTrainer {
       PosCapTrigramModelTrainer posCapTrigramModelTrainer = new PosCapTrigramModelTrainer();
 
       return new TntModelTrainer(filteredWordPosFrequencies, posCapTrigramModelTrainer,
-          maxSuffixLength,
-          maxWordFrequency, useMslSuffixModel, restrictToOpenClass);
+          maxSuffixLength, maxWordFrequency, useMslSuffixModel, restrictToOpenClass);
     }
   }
 }
