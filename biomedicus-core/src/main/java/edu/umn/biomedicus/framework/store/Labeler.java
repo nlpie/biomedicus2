@@ -16,11 +16,37 @@
 
 package edu.umn.biomedicus.framework.store;
 
+/**
+ * Adds labels of the parameterized type to the parent text view.
+ *
+ * @param <T> the type to label
+ * @since 1.5.0
+ */
 public interface Labeler<T> {
 
+  /**
+   * Starts a label with the specified value before being prompted for a location to label.
+   *
+   * @param value the value to label
+   * @return a value labeler object which allows this value to be applied to multiple locations.
+   */
   ValueLabeler value(T value);
 
+  /**
+   * Adds the label directly to the view.
+   *
+   * @param label the label to add
+   */
   void label(Label<T> label);
 
-  void finish();
+  /**
+   * Adds all of the labels from an iterable to the view
+   *
+   * @param labels labels to add.
+   */
+  default void labelAll(Iterable<Label<T>> labels) {
+    for (Label<T> label : labels) {
+      label(label);
+    }
+  }
 }

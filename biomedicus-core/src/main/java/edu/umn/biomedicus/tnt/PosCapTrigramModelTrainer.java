@@ -18,7 +18,7 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.common.types.text.ParseToken;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -88,7 +88,7 @@ class PosCapTrigramModelTrainer {
    * Adds the count of part of speech tag and capitalization unigram, bigrams and trigrams in the
    * sentence to the running counts in the trainer.
    */
-  public void addSentence(List<Token> tokens, List<PartOfSpeech> partsOfSpeech) {
+  public void addSentence(List<ParseToken> tokens, List<PartOfSpeech> partsOfSpeech) {
     int[] tokenPosCaps = new int[tokens.size()];
     for (int i = 0; i < tokens.size(); i++) {
       tokenPosCaps[i] = PosCap.create(partsOfSpeech.get(i),

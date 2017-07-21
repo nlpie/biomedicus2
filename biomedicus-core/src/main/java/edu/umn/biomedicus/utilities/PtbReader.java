@@ -23,18 +23,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for parsing penn treebank style parse trees into a structured tree.
@@ -44,145 +44,261 @@ import javax.annotation.Nullable;
  */
 public class PtbReader {
 
-  private static final Map<String, String> WORD_REPLACEMENTS;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PtbReader.class);
 
-  static {
-    WORD_REPLACEMENTS = new HashMap<>();
-    WORD_REPLACEMENTS.put("-LRB-", "(");
-    WORD_REPLACEMENTS.put("-RRB-", ")");
-    WORD_REPLACEMENTS.put("-LCB-", "{");
-    WORD_REPLACEMENTS.put("-RCB-", "}");
-    WORD_REPLACEMENTS.put("-LSB-", "[");
-    WORD_REPLACEMENTS.put("-RSB-", "]");
-    WORD_REPLACEMENTS.put("``", "\"");
-    WORD_REPLACEMENTS.put("''", "\"");
-  }
+  private final BufferedReader reader;
 
-  private final Reader reader;
+  private int line = 0;
+  private Node current;
 
-  private PtbReader(Reader reader) {
+  private PtbReader(BufferedReader reader) {
     this.reader = reader;
   }
 
   /**
-   * Creates a new {@code PtbReader} which from the reader.
+   * Creates a new {@code PtbReader} from a reader.
    *
    * @param reader a "fresh" reader of the PTB text.
-   * @return {@code PtbReader} which can be used to retrieve the sentence
+   * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
    */
   public static PtbReader create(Reader reader) {
-    return new PtbReader(reader);
+    return new PtbReader(new BufferedReader(reader));
   }
 
+  /**
+   * Creates a new ptb reader from an input stream, uses default charset.
+   *
+   * @param inputStream the inputstream to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
+   */
   public static PtbReader create(InputStream inputStream) {
-    return new PtbReader(new InputStreamReader(inputStream));
+    return new PtbReader(new BufferedReader(new InputStreamReader(inputStream)));
   }
 
+  /**
+   * Creates a new ptb reader from an input stream and a charset
+   *
+   * @param inputStream the input stream to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   */
+  public static PtbReader create(InputStream inputStream, Charset charset) {
+    return new PtbReader(new BufferedReader(new InputStreamReader(inputStream, charset)));
+  }
+
+  /**
+   * Creates a new ptb reader directly from a string.
+   *
+   * @param string string to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   */
   public static PtbReader create(String string) {
-    return new PtbReader(new StringReader(string));
+    return new PtbReader(new BufferedReader(new StringReader(string)));
   }
 
+  /**
+   * Creates a new ptb reader from a path to a file to read from, using the default charset
+   *
+   * @param path the path to the file to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
   public static PtbReader createFromFile(Path path) throws IOException {
     return new PtbReader(Files.newBufferedReader(path));
   }
 
+  /**
+   * Creates a new ptb reader from a path to a file to read from, using a specified charset.
+   *
+   * @param path the path to the file to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
+  public static PtbReader createFromFile(Path path, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(path, charset));
+  }
+
+  /**
+   * Create a new ptb reader from a string path to a file to read from, using the default charset.
+   *
+   * @param path the path to the file to read from.
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
   public static PtbReader createFromFile(String path) throws IOException {
     return new PtbReader(Files.newBufferedReader(Paths.get(path)));
   }
 
+  /**
+   * Create a new ptb reader from a string path to a file to read from, using a specified charset.
+   *
+   * @param path the string path to the file to read from.
+   * @param charset the specified charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is a failure with creating the reader
+   */
+  public static PtbReader createFromFile(String path, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(Paths.get(path), charset));
+  }
+
+  /**
+   * Creates a new ptb reader by reading from file, using the default charset.
+   *
+   * @param file the file to read from
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is an error reading from the file.
+   */
   public static PtbReader createFromFile(File file) throws IOException {
     return new PtbReader(Files.newBufferedReader(file.toPath()));
   }
 
+  /**
+   * Creates a new ptb reader by reading from the file, using a specified from a charset
+   *
+   * @param file the file to read from
+   * @param charset the charset to use
+   * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
+   * @throws IOException if there is an error reading from the file.
+   */
+  public static PtbReader createFromFile(File file, Charset charset) throws IOException {
+    return new PtbReader(Files.newBufferedReader(file.toPath(), charset));
+  }
+
   public static void main(String args[]) {
-    Path path = Paths.get(args[0]);
-    try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
+    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {
       PtbReader ptbReader = new PtbReader(bufferedReader);
       Optional<Node> nextNode;
       while ((nextNode = ptbReader.nextNode()).isPresent()) {
-        System.out.println(nextNode);
+        System.out.println(nextNode.get());
       }
     } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
+  /**
+   * Returns the next top level node in the penn tree set.
+   *
+   * @return a top level node.
+   * @throws IOException if there is a failure reading.
+   */
   public Optional<Node> nextNode() throws IOException {
-    Node current = null;
+    current = null;
 
     int in;
     while (true) {
       if (current == null) {
         // we need a node
-        in = reader.read();
-        if (in == -1) {
+        in = readCountingLines();
+        if (in == '*') {
+          reader.readLine();
+          line++;
+        } else if (in == -1) {
           return Optional.empty();
         } else if (in == '(') {
           current = new Node();
         } else if (!Character.isWhitespace(in)) {
-          throw new IllegalStateException("Unexpected character \'" + (char) in + "\'");
+          LOGGER.error("Failed on line: {} on character: {}", line, (char) in);
+          throw new IOException("Unexpected character \'" + (char) in + "\'");
         }
       } else if (current.label == null) {
         // we need a label
         StringBuilder stringBuilder = new StringBuilder();
-        while (!Character.isWhitespace(in = reader.read())) {
-          stringBuilder.append((char) in);
-        }
-        current.label = stringBuilder.toString();
-      } else if (current.children.size() == 0) {
-        // we need a value or a first child
-        in = reader.read();
-        if (in == '(') {
-          Node child = new Node();
-          child.parent = current;
-          current.children.add(child);
-          current = child;
-        } else if (!Character.isWhitespace(in)) {
-          current.word = readWord(in);
-          current = current.parent;
-        } else {
-          throw new IllegalStateException("Unexpected character: \'" + in + "\'");
-        }
-      } else {
-        // we need another child or an end to the current node
-        do {
-          in = reader.read();
-        } while (Character.isWhitespace(in));
-        if (in == '(') {
-          Node child = new Node();
-          child.parent = current;
-          current.children.add(child);
-          current = child;
-        } else if (in == ')') {
+        in = readCountingLines();
+        if (goChildNode(in)) continue;
+        if (in == ')') {
           if (current.parent == null) {
             return Optional.of(current);
           }
           current = current.parent;
         } else {
-          throw new IllegalStateException("Unexpected character: \'" + in + "\'");
+          while (!Character.isWhitespace(in)) {
+            stringBuilder.append((char) in);
+            in = readCountingLines();
+          }
+          current.label = stringBuilder.toString();
+        }
+      } else if (current.children.size() == 0) {
+        // we need a value or a first child
+        in = readCountingLines();
+        if (goChildNode(in)) continue;
+        if (!Character.isWhitespace(in)) {
+          current.word = readWord(in);
+          current = current.parent;
+        }
+      } else {
+        // we need another child or an end to the current node
+        do {
+          in = readCountingLines();
+          if (in == -1) {
+            throw new IOException("Unexpected end to document at line: " + line);
+          }
+        } while (Character.isWhitespace(in));
+        if (goChildNode(in)) continue;
+        if (in == ')') {
+          if (current.parent == null) {
+            return Optional.of(current);
+          }
+          current = current.parent;
+        } else {
+          throw new IOException("Unexpected character: \'" + in + "\'");
         }
       }
     }
   }
 
-  @Nonnull
+  private boolean goChildNode(int in) {
+    if (in == '(') {
+      Node child = new Node();
+      child.parent = current;
+      current.children.add(child);
+      current = child;
+      return true;
+    }
+    return false;
+  }
+
+  private int readCountingLines() throws IOException {
+    int in = reader.read();
+    if (in == '\n') line++;
+    return in;
+  }
+
+  @Nullable
   private String readWord(int in) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append((char) in);
-    while ((in = reader.read()) != ')') {
+    while ((in = readCountingLines()) != ')') {
       if (Character.isWhitespace(in)) {
-        throw new IllegalStateException("Unexpected whitespace");
+        throw new IOException("Unexpected whitespace");
       }
       stringBuilder.append((char) in);
     }
     String word = stringBuilder.toString();
 
-    String replacement = WORD_REPLACEMENTS.get(word);
-    if (replacement != null) {
-      word = WORD_REPLACEMENTS.get(word);
+    switch (word) {
+      case "-LRB-":
+        return "(";
+      case "-RRB-":
+        return ")";
+      case "-LCB-":
+        return "{";
+      case "-RCB-":
+        return "}";
+      case "-LSB-":
+        return "[";
+      case "-RSB-":
+        return "]";
+      case "``":
+        return "\"";
+      case "''":
+        return "\"";
+      case "-NONE-":
+        return null;
+      default:
+        return word;
     }
-
-    return word;
   }
 
   /**
@@ -205,10 +321,16 @@ public class PtbReader {
     @Override
     public String toString() {
       StringBuilder childBuilder = new StringBuilder();
+      boolean prev = false;
       for (Node child : children) {
+        if (prev) {
+          childBuilder.append(" ");
+        }
         childBuilder.append(child.toString());
+        prev = true;
       }
-      return "(" + label + " " + ((word != null) ? word : "") + childBuilder + ")";
+      return "(" + (label != null ? label + " " : "") + ((word != null) ? word : "") + childBuilder
+          + ")";
     }
 
     /**
@@ -233,6 +355,11 @@ public class PtbReader {
       return leaves;
     }
 
+    /**
+     * Returns an iterator which goes through all the leafs underneath this node.
+     *
+     * @return the iterator of leafs
+     */
     public Iterator<Node> leafIterator() {
       return new Iterator<Node>() {
         @Nullable

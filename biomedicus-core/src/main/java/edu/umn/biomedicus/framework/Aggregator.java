@@ -18,13 +18,29 @@ package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
+import javax.annotation.Nonnull;
 
 /**
+ * A class that processes multiple documents and maintains state between them.
  *
+ * @since 1.7.0
  */
 public interface Aggregator {
 
-  void addDocument(Document document) throws BiomedicusException;
+  /**
+   * Called to add documents to the aggregator.
+   *
+   * @param document the document data
+   * @throws BiomedicusException in case of any exception during processing that prevents the
+   * completion of the document.
+   */
+  void addDocument(@Nonnull Document document) throws BiomedicusException;
 
+  /**
+   * Called after the completion of all documents
+   *
+   * @throws BiomedicusException in case of any exception that prevents the aggregator from
+   * completing its work.
+   */
   void done() throws BiomedicusException;
 }

@@ -18,41 +18,44 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+  <!-- Do not change this -->
+  <annotatorImplementationName>
+    edu.umn.biomedicus.uima.adapter.AggregatorUimaAdapter
   </annotatorImplementationName>
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
   <analysisEngineMetaData>
-    <name>Word Labeler</name>
-    <description>Adds word term index identifiers to tokens.</description>
+    <name>TnT Model Trainer</name>
+    <description>Trains the TnT part of speech model</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>documentProcessor</name>
-        <description>The document processor class to instantiate.</description>
+        <name>tnt.train.viewName</name>
+        <description>The view to read the part of speeches from.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>tnt.train.outputDir</name>
+        <description>Where to output the part of speeches.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>aggregator</name>
+        <description>The Aggregator to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
-        <description>The name of the UIMA view to use.</description>
-        <type>String</type>
-      </configurationParameter>
-      <configurationParameter>
         <name>eagerLoad</name>
         <description>
-          The name of any classes that need to be eagerly loaded by the Guice injector. Classes
-          which are
-          instances of LoadableDataModel will have the loadData method called.
-        </description>
-        <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>postProcessors</name>
-        <description>
-          The class names of any post processors that should be run after all documents have been
-          processed.
+          The name of any classes that need to be eagerly loaded by
+          the Guice injector. Classes which are
+          instances of LoadableDataModel will have the loadData method
+          called.
         </description>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -61,23 +64,15 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>documentProcessor</name>
-        <value>
-          <string>edu.umn.biomedicus.vocabulary.WordLabeler</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>viewName</name>
+        <name>tnt.train.viewName</name>
         <value>
           <string>SystemView</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>eagerLoad</name>
+        <name>aggregator</name>
         <value>
-          <array>
-            <string>edu.umn.biomedicus.vocabulary.Vocabulary</string>
-          </array>
+          <string>edu.umn.biomedicus.tnt.TntModelTrainerAggregator</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -92,7 +87,7 @@
       </imports>
     </typePriorities>
     <operationalProperties>
-      <modifiesCas>true</modifiesCas>
+      <modifiesCas>false</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
@@ -111,7 +106,9 @@
         <name>guiceInjector</name>
         <description>The guice resource.</description>
         <customResourceSpecifier>
-          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+          <resourceClassName>
+            edu.umn.biomedicus.uima.adapter.GuiceInjector
+          </resourceClassName>
         </customResourceSpecifier>
       </externalResource>
     </externalResources>

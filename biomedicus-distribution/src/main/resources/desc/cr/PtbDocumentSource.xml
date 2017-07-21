@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
@@ -15,55 +16,64 @@
   ~ limitations under the License.
   -->
 
-<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+<!-- A simple collections reader that reads text files from a directory in the
+     filesystem.  The Java class for this collections reader is in uima_core.jar. -->
+
+<collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <primitive>true</primitive>
-  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
-  </annotatorImplementationName>
-  <analysisEngineMetaData>
-    <name>Word Labeler</name>
-    <description>Adds word term index identifiers to tokens.</description>
+  <implementationName>
+    edu.umn.biomedicus.uima.adapter.DocumentSourceUimaAdapter
+  </implementationName>
+  <processingResourceMetaData>
+    <name>PTB Document Source</name>
+    <description>Reads in documents in the penn treebank format.</description>
     <version>${project.version}</version>
-    <vendor>${organization.name}</vendor>
+    <vendor>${project.organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>documentProcessor</name>
-        <description>The document processor class to instantiate.</description>
+        <name>inputDirectory</name>
+        <description>The input directory to read files from.</description>
         <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>extension</name>
+        <description>The file extension to select files to read.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>charsetName</name>
+        <description>The charset to use to read the files.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>viewName</name>
-        <description>The name of the UIMA view to use.</description>
+        <description>The view to read into.</description>
         <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>eagerLoad</name>
-        <description>
-          The name of any classes that need to be eagerly loaded by the Guice injector. Classes
-          which are
-          instances of LoadableDataModel will have the loadData method called.
-        </description>
+        <name>documentSource</name>
         <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>postProcessors</name>
-        <description>
-          The class names of any post processors that should be run after all documents have been
-          processed.
-        </description>
-        <type>String</type>
-        <multiValued>true</multiValued>
-        <mandatory>false</mandatory>
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>documentProcessor</name>
+        <name>extension</name>
         <value>
-          <string>edu.umn.biomedicus.vocabulary.WordLabeler</string>
+          <string>mrg</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>charsetName</name>
+        <value>
+          <string>UTF-8</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -73,14 +83,16 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>eagerLoad</name>
+        <name>documentSource</name>
         <value>
-          <array>
-            <string>edu.umn.biomedicus.vocabulary.Vocabulary</string>
-          </array>
+          <string>edu.umn.biomedicus.io.PtbDocumentSource</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
+
+    <!-- Type System of CASes returned by this Collection Reader -->
+
+
     <typeSystemDescription>
       <imports>
         <import name="edu.umn.biomedicus.types.TypeSystem"/>
@@ -91,12 +103,24 @@
         <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
       </imports>
     </typePriorities>
+
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
+        </outputs>
+        <outputSofas>
+          <sofaName>SystemView</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
-      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-      <outputsNewCASes>false</outputsNewCASes>
+      <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
+      <outputsNewCASes>true</outputsNewCASes>
     </operationalProperties>
-  </analysisEngineMetaData>
+  </processingResourceMetaData>
 
   <externalResourceDependencies>
     <externalResourceDependency>
@@ -122,5 +146,4 @@
       </externalResourceBinding>
     </externalResourceBindings>
   </resourceManagerConfiguration>
-</analysisEngineDescription>
-
+</collectionReaderDescription>

@@ -18,31 +18,39 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+  <!-- Do not change this -->
+  <annotatorImplementationName>
+    edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
   </annotatorImplementationName>
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
   <analysisEngineMetaData>
-    <name>Word Labeler</name>
-    <description>Adds word term index identifiers to tokens.</description>
+    <name>Ptb Tags Writer</name>
+    <description>
+      Writes documents with their Part of Speech tags to files in a directory.
+    </description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>documentProcessor</name>
-        <description>The document processor class to instantiate.</description>
+        <name>writer.ptbTags.outputDir.path</name>
+        <description>Output directory to write files</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
-        <description>The name of the UIMA view to use.</description>
+        <name>documentProcessor</name>
+        <description>The document processor class to instantiate.
+        </description>
         <type>String</type>
+        <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>eagerLoad</name>
         <description>
-          The name of any classes that need to be eagerly loaded by the Guice injector. Classes
-          which are
-          instances of LoadableDataModel will have the loadData method called.
+          The name of any classes that need to be eagerly loaded by
+          the Guice injector. Classes which are
+          instances of LoadableDataModel will have the loadData method
+          called.
         </description>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -51,8 +59,8 @@
       <configurationParameter>
         <name>postProcessors</name>
         <description>
-          The class names of any post processors that should be run after all documents have been
-          processed.
+          The class names of any post processors that should be run
+          after all documents have been processed.
         </description>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -61,23 +69,15 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
+        <name>writer.ptbTags.outputDir.path</name>
+        <value>
+          <string>.</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
         <name>documentProcessor</name>
         <value>
-          <string>edu.umn.biomedicus.vocabulary.WordLabeler</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>viewName</name>
-        <value>
-          <string>SystemView</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>eagerLoad</name>
-        <value>
-          <array>
-            <string>edu.umn.biomedicus.vocabulary.Vocabulary</string>
-          </array>
+          <string>edu.umn.biomedicus.io.PtbTagsWriter</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -93,6 +93,7 @@
     </typePriorities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
+      <!-- TODO: change to false if multithreading not supported -->
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
@@ -111,7 +112,9 @@
         <name>guiceInjector</name>
         <description>The guice resource.</description>
         <customResourceSpecifier>
-          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+          <resourceClassName>
+            edu.umn.biomedicus.uima.adapter.GuiceInjector
+          </resourceClassName>
         </customResourceSpecifier>
       </externalResource>
     </externalResources>

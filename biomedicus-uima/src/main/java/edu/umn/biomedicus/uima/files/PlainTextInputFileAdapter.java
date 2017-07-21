@@ -67,7 +67,7 @@ public class PlainTextInputFileAdapter implements InputFileAdapter {
 
   @Override
   public void adaptFile(CAS cas, Path path) throws CollectionException, IOException {
-    LOGGER.info("Reading text into a CAS view.");
+    LOGGER.debug("Reading text into a CAS view.");
     CAS targetView = cas.createView(viewName);
 
     byte[] bytes = Files.readAllBytes(path);

@@ -138,7 +138,6 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     for (Label<IllegalXmlCharacter> illChar : illegalXmlCharacters) {
       illCharLabeler.label(illChar);
     }
-    illCharLabeler.finish();
   }
 
   @Override

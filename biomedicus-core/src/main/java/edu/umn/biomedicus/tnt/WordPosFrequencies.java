@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
+ * Used in training the tnt pos tagger, counts the frequencies of words along with how often they
+ * occur with certain parts of speech.
+ *
  * @author Ben Knoll
  * @since 1.1.0
  */

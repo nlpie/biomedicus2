@@ -139,6 +139,7 @@ class ConceptDictionary implements LifecycleManaged {
 
       List<Volume> volumes = Arrays.asList(normsVol, phrasesVol, lowercaseVol);
       if (inMemory) {
+        LOGGER.info("Transferring concepts to memory.");
         normDictionary = new HashMap<>(normDictionary);
         phrases = new HashMap<>(phrases);
         lowercase = new HashMap<>(lowercase);

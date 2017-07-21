@@ -26,11 +26,18 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Responsible for running aggregator classes.
  *
+ * @author Ben Knoll
+ * @since 1.7.0
  */
-public class AggregatorRunner extends ScopedWork {
+public final class AggregatorRunner extends ScopedWork {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AggregatorRunner.class);
 
   @Nullable
   private Class<? extends Aggregator> aggClass;
@@ -45,14 +52,31 @@ public class AggregatorRunner extends ScopedWork {
     super(injector, globalSettings, settingsTransformer);
   }
 
+  /**
+   * Creates an aggregator runner from a guice injector
+   *
+   * @param injector the guice injector
+   * @return aggregator runner
+   */
   public static AggregatorRunner create(Injector injector) {
     return injector.getInstance(AggregatorRunner.class);
   }
 
+  /**
+   * Set the aggregator class for this to run.
+   *
+   * @param aggClass aggregator class
+   */
   public void setAggregatorClass(Class<? extends Aggregator> aggClass) {
     this.aggClass = aggClass;
   }
 
+  /**
+   * Set the aggregator class to run from a class name
+   *
+   * @param name the name of the class
+   * @throws ClassNotFoundException if the class is not found
+   */
   public void setAggregatorClassName(String name) throws ClassNotFoundException {
     this.aggClass = Class.forName(name).asSubclass(Aggregator.class);
   }
@@ -92,6 +116,7 @@ public class AggregatorRunner extends ScopedWork {
         return null;
       });
     } catch (Exception e) {
+      LOGGER.error("Error while sending a document to an aggregator", e);
       throw new BiomedicusException(e);
     }
   }
@@ -110,6 +135,7 @@ public class AggregatorRunner extends ScopedWork {
         return null;
       });
     } catch (Exception e) {
+      LOGGER.error("Exception while finishing an aggregator", e);
       throw new BiomedicusException(e);
     }
   }
