@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for parsing penn treebank style parse trees into a structured tree.
@@ -42,9 +44,14 @@ import javax.annotation.Nullable;
  */
 public class PtbReader {
 
-  private final Reader reader;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PtbReader.class);
 
-  private PtbReader(Reader reader) {
+  private final BufferedReader reader;
+
+  private int line = 0;
+  private Node current;
+
+  private PtbReader(BufferedReader reader) {
     this.reader = reader;
   }
 
@@ -55,7 +62,7 @@ public class PtbReader {
    * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
    */
   public static PtbReader create(Reader reader) {
-    return new PtbReader(reader);
+    return new PtbReader(new BufferedReader(reader));
   }
 
   /**
@@ -65,7 +72,7 @@ public class PtbReader {
    * @return {@code PtbReader} which can be used to retrieve nodes in the penn tree
    */
   public static PtbReader create(InputStream inputStream) {
-    return new PtbReader(new InputStreamReader(inputStream));
+    return new PtbReader(new BufferedReader(new InputStreamReader(inputStream)));
   }
 
   /**
@@ -76,7 +83,7 @@ public class PtbReader {
    * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
    */
   public static PtbReader create(InputStream inputStream, Charset charset) {
-    return new PtbReader(new InputStreamReader(inputStream, charset));
+    return new PtbReader(new BufferedReader(new InputStreamReader(inputStream, charset)));
   }
 
   /**
@@ -86,7 +93,7 @@ public class PtbReader {
    * @return {@code PtbReader} which can be used to retrieve nodes in a penn tree
    */
   public static PtbReader create(String string) {
-    return new PtbReader(new StringReader(string));
+    return new PtbReader(new BufferedReader(new StringReader(string)));
   }
 
   /**
@@ -159,12 +166,11 @@ public class PtbReader {
   }
 
   public static void main(String args[]) {
-    Path path = Paths.get(args[0]);
-    try (BufferedReader bufferedReader = Files.newBufferedReader(path)) {
+    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {
       PtbReader ptbReader = new PtbReader(bufferedReader);
       Optional<Node> nextNode;
       while ((nextNode = ptbReader.nextNode()).isPresent()) {
-        System.out.println(nextNode);
+        System.out.println(nextNode.get());
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -178,70 +184,94 @@ public class PtbReader {
    * @throws IOException if there is a failure reading.
    */
   public Optional<Node> nextNode() throws IOException {
-    Node current = null;
+    current = null;
 
     int in;
     while (true) {
       if (current == null) {
         // we need a node
-        in = reader.read();
-        if (in == -1) {
+        in = readCountingLines();
+        if (in == '*') {
+          reader.readLine();
+          line++;
+        } else if (in == -1) {
           return Optional.empty();
         } else if (in == '(') {
           current = new Node();
         } else if (!Character.isWhitespace(in)) {
-          throw new IllegalStateException("Unexpected character \'" + (char) in + "\'");
+          LOGGER.error("Failed on line: {} on character: {}", line, (char) in);
+          throw new IOException("Unexpected character \'" + (char) in + "\'");
         }
       } else if (current.label == null) {
         // we need a label
         StringBuilder stringBuilder = new StringBuilder();
-        while (!Character.isWhitespace(in = reader.read())) {
-          stringBuilder.append((char) in);
-        }
-        current.label = stringBuilder.toString();
-      } else if (current.children.size() == 0) {
-        // we need a value or a first child
-        in = reader.read();
-        if (in == '(') {
-          Node child = new Node();
-          child.parent = current;
-          current.children.add(child);
-          current = child;
-        } else if (!Character.isWhitespace(in)) {
-          current.word = readWord(in);
-          current = current.parent;
-        } else {
-          throw new IllegalStateException("Unexpected character: \'" + in + "\'");
-        }
-      } else {
-        // we need another child or an end to the current node
-        do {
-          in = reader.read();
-        } while (Character.isWhitespace(in));
-        if (in == '(') {
-          Node child = new Node();
-          child.parent = current;
-          current.children.add(child);
-          current = child;
-        } else if (in == ')') {
+        in = readCountingLines();
+        if (goChildNode(in)) continue;
+        if (in == ')') {
           if (current.parent == null) {
             return Optional.of(current);
           }
           current = current.parent;
         } else {
-          throw new IllegalStateException("Unexpected character: \'" + in + "\'");
+          while (!Character.isWhitespace(in)) {
+            stringBuilder.append((char) in);
+            in = readCountingLines();
+          }
+          current.label = stringBuilder.toString();
+        }
+      } else if (current.children.size() == 0) {
+        // we need a value or a first child
+        in = readCountingLines();
+        if (goChildNode(in)) continue;
+        if (!Character.isWhitespace(in)) {
+          current.word = readWord(in);
+          current = current.parent;
+        }
+      } else {
+        // we need another child or an end to the current node
+        do {
+          in = readCountingLines();
+          if (in == -1) {
+            throw new IOException("Unexpected end to document at line: " + line);
+          }
+        } while (Character.isWhitespace(in));
+        if (goChildNode(in)) continue;
+        if (in == ')') {
+          if (current.parent == null) {
+            return Optional.of(current);
+          }
+          current = current.parent;
+        } else {
+          throw new IOException("Unexpected character: \'" + in + "\'");
         }
       }
     }
+  }
+
+  private boolean goChildNode(int in) {
+    if (in == '(') {
+      Node child = new Node();
+      child.parent = current;
+      current.children.add(child);
+      current = child;
+      return true;
+    }
+    return false;
+  }
+
+  private int readCountingLines() throws IOException {
+    int in = reader.read();
+    if (in == '\n') line++;
+    return in;
   }
 
   @Nullable
   private String readWord(int in) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append((char) in);
-    while ((in = reader.read()) != ')') {
+    while ((in = readCountingLines()) != ')') {
       if (Character.isWhitespace(in)) {
-        throw new IllegalStateException("Unexpected whitespace");
+        throw new IOException("Unexpected whitespace");
       }
       stringBuilder.append((char) in);
     }
@@ -291,10 +321,16 @@ public class PtbReader {
     @Override
     public String toString() {
       StringBuilder childBuilder = new StringBuilder();
+      boolean prev = false;
       for (Node child : children) {
+        if (prev) {
+          childBuilder.append(" ");
+        }
         childBuilder.append(child.toString());
+        prev = true;
       }
-      return "(" + label + " " + ((word != null) ? word : "") + childBuilder + ")";
+      return "(" + (label != null ? label + " " : "") + ((word != null) ? word : "") + childBuilder
+          + ")";
     }
 
     /**

@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Document source that reads penn treebank format files.
@@ -49,6 +51,8 @@ import java.util.Optional;
  * @since 1.7.0
  */
 public class PtbDocumentSource implements DocumentSource {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PtbDocumentSource.class);
 
   private final Charset charset;
 
@@ -96,6 +100,10 @@ public class PtbDocumentSource implements DocumentSource {
         Iterator<Node> leafIterator = node.leafIterator();
         while (leafIterator.hasNext()) {
           Node leaf = leafIterator.next();
+          if ("-NONE-".equals(leaf.getLabel())) {
+            continue;
+          }
+
           Optional<String> optionalWord = leaf.getWord();
           if (!optionalWord.isPresent()) {
             continue;
@@ -134,6 +142,7 @@ public class PtbDocumentSource implements DocumentSource {
 
       return document;
     } catch (IOException e) {
+      LOGGER.error("Error reading PTB document: {}", next.toString());
       throw new BiomedicusException(e);
     }
   }
