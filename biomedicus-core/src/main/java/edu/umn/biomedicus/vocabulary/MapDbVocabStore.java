@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import javax.annotation.Nullable;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Vocabulary store implemented using MapDB term indexes.
@@ -34,6 +36,8 @@ import org.mapdb.DBMaker;
  * @since 1.6.0
  */
 class MapDbVocabStore extends VocabularyStore {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MapDbVocabStore.class);
 
   private final Path dbPath;
 
@@ -60,10 +64,14 @@ class MapDbVocabStore extends VocabularyStore {
 
   @Override
   public void open() {
-    db = DBMaker.fileDB(dbPath.toString()).readOnly()
-        .fileMmapEnableIfSupported().make();
+    String dbPathString = dbPath.toString();
+    db = DBMaker.fileDB(dbPathString).readOnly().make();
+    LOGGER.info("Loading vocabulary indices from database: {}", dbPathString);
+    LOGGER.info("Vocabulary: loading words index");
     words = new MapDbTermIndex(db, "words").inMemory(inMemory);
+    LOGGER.info("Vocabulary: loading terms index");
     terms = new MapDbTermIndex(db, "terms").inMemory(inMemory);
+    LOGGER.info("Vocabulary: loading norms index");
     norms = new MapDbTermIndex(db, "norms").inMemory(inMemory);
   }
 

@@ -39,8 +39,7 @@ public class MapDbVocabularyBuilder extends VocabularyBuilder {
 
   @Inject
   public MapDbVocabularyBuilder(@Setting("vocabulary.db.path") Path dbPath) {
-    db = DBMaker.fileDB(dbPath.toString()).fileMmapEnableIfSupported()
-        .readOnly().make();
+    db = DBMaker.fileDB(dbPath.toString()).readOnly().make();
   }
 
   @Override

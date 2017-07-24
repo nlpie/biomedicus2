@@ -174,7 +174,7 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
         List<WordProbabilityModel> wordModels = (List<WordProbabilityModel>)
             yaml.load(Files.newInputStream(wordMetadata));
 
-        DB db = DBMaker.fileDB(dbPath.toFile()).readOnly().fileChannelEnable().make();
+        DB db = DBMaker.fileDB(dbPath.toFile()).readOnly().make();
 
         LOGGER.info("Loading TnT word models.");
         wordModels.forEach(wm -> wm.loadData(db, inMemory));

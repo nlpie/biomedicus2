@@ -100,9 +100,7 @@ final class NormalizerModel implements LifecycleManaged {
     @SuppressWarnings("unchecked")
     @Override
     protected NormalizerModel loadModel() throws BiomedicusException {
-      DB db = DBMaker.fileDB(dbPath.toFile()).readOnly()
-          .fileMmapEnableIfSupported()
-          .make();
+      DB db = DBMaker.fileDB(dbPath.toFile()).readOnly().make();
 
       LOGGER.info("Loading normalization model: " + dbPath.toString());
 

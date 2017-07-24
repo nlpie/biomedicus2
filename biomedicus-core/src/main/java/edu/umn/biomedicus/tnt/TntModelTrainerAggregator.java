@@ -84,7 +84,7 @@ public class TntModelTrainerAggregator implements Aggregator {
   public void done() throws BiomedicusException {
     TntModel model = tntModelTrainer.createModel();
 
-    DB db = DBMaker.fileDB(outputDir.resolve("words.db").toFile()).fileChannelEnable().make();
+    DB db = DBMaker.fileDB(outputDir.resolve("words.db").toFile()).make();
 
     try {
       model.write(outputDir, db);
