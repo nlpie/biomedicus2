@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,11 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.framework.store.Span;
-import mockit.*;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mocked;
+import mockit.Tested;
+import mockit.Verifications;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
@@ -28,25 +32,29 @@ import org.testng.annotations.Test;
  * Unit test for {@link CasIndexListener}.
  */
 public class CasIndexListenerTest {
-    @Tested CasIndexListener casIndexListener;
 
-    @Injectable CAS originalDocumentView;
+  @Tested
+  CasIndexListener casIndexListener;
 
-    @Test
-    public void testWroteToDestination(@Mocked Type type,
-                                       @Mocked Feature feature,
-                                       @Mocked AnnotationFS annotationFS)
-            throws Exception {
-        new Expectations() {{
-            originalDocumentView.createAnnotation(type, 200, 201); result = annotationFS;
-        }};
+  @Injectable
+  CAS originalDocumentView;
 
-        casIndexListener.wroteToDestination("aDestination", 20, Span.create(200, 201));
+  @Test
+  public void testWroteToDestination(@Mocked Type type,
+      @Mocked Feature feature,
+      @Mocked AnnotationFS annotationFS)
+      throws Exception {
+    new Expectations() {{
+      originalDocumentView.createAnnotation(type, 200, 201);
+      result = annotationFS;
+    }};
 
-        new Verifications() {{
-            annotationFS.setIntValue(feature, 20);
-            annotationFS.setStringValue(feature, "aDestination");
-            originalDocumentView.addFsToIndexes(annotationFS);
-        }};
-    }
+    casIndexListener.wroteToDestination("aDestination", 20, Span.create(200, 201));
+
+    new Verifications() {{
+      annotationFS.setIntValue(feature, 20);
+      annotationFS.setStringValue(feature, "aDestination");
+      originalDocumentView.addFsToIndexes(annotationFS);
+    }};
+  }
 }

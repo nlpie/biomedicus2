@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,19 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.common.types.text.Token;
-
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.Span;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * Iterator over a collection of merged tokens. Tokens that are connected by
@@ -33,83 +38,85 @@ import java.util.*;
  * @since 1.6.0
  */
 public final class TermTokenMerger implements Iterator<Label<TermToken>> {
-    private static final Set<Character> MERGE
-            = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
-    private final List<Label<Token>> running = new ArrayList<>();
-    private final Iterator<Label<Token>> iterator;
-    @Nullable private Label<TermToken> next;
 
-    public TermTokenMerger(Iterator<Label<Token>> iterator) {
-        this.iterator = iterator;
-        findNext();
+  private static final Set<Character> MERGE
+      = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
+  private final List<Label<Token>> running = new ArrayList<>();
+  private final Iterator<Label<Token>> iterator;
+  @Nullable
+  private Label<TermToken> next;
+
+  public TermTokenMerger(Iterator<Label<Token>> iterator) {
+    this.iterator = iterator;
+    findNext();
+  }
+
+  public TermTokenMerger(Iterable<Label<Token>> iterable) {
+    this(iterable.iterator());
+  }
+
+  private void findNext() {
+    next = null;
+    while (next == null && iterator.hasNext()) {
+      Label<Token> tokenLabel = iterator.next();
+      if (running.size() == 0) {
+        running.add(tokenLabel);
+        continue;
+      }
+
+      Label<Token> lastLabel = running.get(running.size() - 1);
+      Token lastToken = lastLabel.value();
+      String lastTokenText = lastToken.text();
+      char lastTokenLastChar = lastTokenText
+          .charAt(lastTokenText.length() - 1);
+      char curTokenFirstChar = tokenLabel.value().text().charAt(0);
+      if (lastToken.hasSpaceAfter()
+          || (!MERGE.contains(curTokenFirstChar)
+          && !MERGE.contains(lastTokenLastChar))) {
+        makeTermToken();
+      }
+      running.add(tokenLabel);
     }
 
-    public TermTokenMerger(Iterable<Label<Token>> iterable) {
-        this(iterable.iterator());
+    if (next == null && !running.isEmpty()) {
+      makeTermToken();
     }
+  }
 
-    private void findNext() {
-        next = null;
-        while (next == null && iterator.hasNext()) {
-            Label<Token> tokenLabel = iterator.next();
-            if (running.size() == 0) {
-                running.add(tokenLabel);
-                continue;
-            }
-
-            Label<Token> lastLabel = running.get(running.size() - 1);
-            Token lastToken = lastLabel.value();
-            String lastTokenText = lastToken.text();
-            char lastTokenLastChar = lastTokenText
-                    .charAt(lastTokenText.length() - 1);
-            char curTokenFirstChar = tokenLabel.value().text().charAt(0);
-            if (lastToken.hasSpaceAfter()
-                    || (!MERGE.contains(curTokenFirstChar)
-                    && !MERGE.contains(lastTokenLastChar))) {
-                makeTermToken();
-            }
-            running.add(tokenLabel);
-        }
-
-        if (next == null && !running.isEmpty()) {
-            makeTermToken();
-        }
+  private void makeTermToken() {
+    if (running.size() == 0) {
+      return;
     }
-
-    private void makeTermToken() {
-        if (running.size() == 0) {
-            return;
-        }
-        StringBuilder tokenText = new StringBuilder();
-        for (Label<? extends Token> label : running) {
-            Token token = label.value();
-            tokenText.append(token.text());
-        }
-        Label<? extends Token> lastTokenLabel = running.get(running.size() - 1);
-        boolean hasSpaceAfter = lastTokenLabel.value().hasSpaceAfter();
-
-        Span span = new Span(running.get(0).getBegin(),
-                lastTokenLabel.getEnd());
-        TermToken termToken = ImmutableTermToken.builder()
-                .text(tokenText.toString())
-                .hasSpaceAfter(hasSpaceAfter)
-                .build();
-        next = new Label<>(span, termToken);
-        running.clear();
+    StringBuilder tokenText = new StringBuilder();
+    for (Label<? extends Token> label : running) {
+      Token token = label.value();
+      tokenText.append(token.text());
     }
+    Label<? extends Token> lastTokenLabel = running.get(running.size() - 1);
+    boolean hasSpaceAfter = lastTokenLabel.value().hasSpaceAfter();
 
-    @Override
-    public boolean hasNext() {
-        return next != null;
-    }
+    Span span = new Span(running.get(0).getBegin(),
+        lastTokenLabel.getEnd());
+    TermToken termToken = ImmutableTermToken.builder()
+        .text(tokenText.toString())
+        .hasSpaceAfter(hasSpaceAfter)
+        .build();
+    next = new Label<>(span, termToken);
+    running.clear();
+  }
 
-    @Override
-    public Label<TermToken> next() {
-        if (next == null) {
-            throw new NoSuchElementException();
-        }
-        Label<TermToken> copy = next;
-        findNext();
-        return copy;
+  @Override
+  public boolean hasNext() {
+    return next != null;
+  }
+
+  @Override
+  public Label<TermToken> next() {
+    if (next == null) {
+      throw new NoSuchElementException();
     }
+    Label<TermToken> copy = next;
+    findNext();
+    return copy;
+  }
 }

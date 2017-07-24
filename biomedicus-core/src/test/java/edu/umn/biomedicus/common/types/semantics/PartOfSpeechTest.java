@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
+import static org.testng.Assert.assertEquals;
+
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * Unit test for {@link PartOfSpeech}.
  */
 public class PartOfSpeechTest {
-    @Test
-    public void testToString() throws Exception {
-        assertEquals(".", PartOfSpeech.SENTENCE_CLOSER_PUNCTUATION.toString());
-    }
+
+  @Test
+  public void testToString() throws Exception {
+    assertEquals(".", PartOfSpeech.SENTENCE_CLOSER_PUNCTUATION.toString());
+  }
 }

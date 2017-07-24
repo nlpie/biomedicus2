@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,36 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import com.google.inject.Inject;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Sentence;
+import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.LabelsUtilities;
-import edu.umn.biomedicus.common.types.text.*;
-import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.store.TextView;
 
 public final class TermTokenMergerProcessor implements DocumentProcessor {
-    private final LabelIndex<ParseToken> parseTokens;
-    private final LabelIndex<Sentence> sentenceLabelIndex;
-    private final Labeler<TermToken> termTokenLabeler;
 
-    @Inject
-    public TermTokenMergerProcessor(TextView document) {
-        parseTokens = document.getLabelIndex(ParseToken.class);
-        sentenceLabelIndex = document.getLabelIndex(Sentence.class);
-        termTokenLabeler = document.getLabeler(TermToken.class);
-    }
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    TextView systemView = StandardViews.getSystemView(document);
 
-    @Override
-    public void process() throws BiomedicusException {
-        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
-            LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentenceLabel);
-            TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labelIndex));
-            while (tokenMerger.hasNext()) {
-                Label<TermToken> termTokenLabel = tokenMerger.next();
-                termTokenLabeler.label(termTokenLabel);
-            }
-        }
+    LabelIndex<ParseToken> parseTokens = systemView.getLabelIndex(ParseToken.class);
+    LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
+    Labeler<TermToken> termTokenLabeler = systemView.getLabeler(TermToken.class);
+
+    for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+      LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentenceLabel);
+      TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labelIndex));
+      while (tokenMerger.hasNext()) {
+        Label<TermToken> termTokenLabel = tokenMerger.next();
+        termTokenLabeler.label(termTokenLabel);
+      }
     }
+  }
 }

@@ -17,15 +17,16 @@
 package edu.umn.biomedicus.utilities;
 
 import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.Search;
 import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.biomedicus.framework.SearcherFactory;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.exc.BiomedicusException;
-
+import edu.umn.biomedicus.framework.store.TextView;
 import javax.inject.Inject;
 
 /**
@@ -33,42 +34,43 @@ import javax.inject.Inject;
  */
 public class SearcherPrinter implements DocumentProcessor {
 
-    private final Searcher searcher;
-    private final TextView document;
+  private final Searcher searcher;
 
-    @Inject
-    public SearcherPrinter(SearcherFactory searcherFactory,
-                           @ProcessorSetting("searchPattern") String searchPattern,
-                           TextView document) {
+  @Inject
+  public SearcherPrinter(
+      SearcherFactory searcherFactory,
+      @ProcessorSetting("searchPattern") String searchPattern
+  ) {
+    searcher = searcherFactory.searcher(searchPattern);
+  }
 
-        searcher = searcherFactory.searcher(searchPattern);
-        this.document = document;
-    }
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    TextView systemView = StandardViews.getSystemView(document);
 
-    @Override
-    public void process() throws BiomedicusException {
-        Search search = searcher.createSearcher(document);
+    Search search = searcher.createSearcher(systemView);
 
-        while (true) {
-            boolean found = search.search();
-            if (!found) {
-                break;
-            }
-            System.out.println("Matching Text: " + search.getSpan().get().getCovered(document.getText()));
+    while (true) {
+      boolean found = search.search();
+      if (!found) {
+        break;
+      }
+      System.out
+          .println("Matching Text: " + search.getSpan().get().getCovered(systemView.getText()));
 
-            for (String group : search.getGroups()) {
-                System.out.println("\tGroup Name: " + group);
+      for (String group : search.getGroups()) {
+        System.out.println("\tGroup Name: " + group);
 
-                if (search.getSpan(group).isPresent()) {
-                    Span span = search.getSpan(group).get();
-                    System.out.println("\t\tCovered Text: " + span.getCovered(document.getText()));
-                }
-
-                if (search.getLabel(group).isPresent()) {
-                    Label<?> label = search.getLabel(group).get();
-                    System.out.println("\t\tStored Label: " + label.getValue().toString());
-                }
-            }
+        if (search.getSpan(group).isPresent()) {
+          Span span = search.getSpan(group).get();
+          System.out.println("\t\tCovered Text: " + span.getCovered(systemView.getText()));
         }
+
+        if (search.getLabel(group).isPresent()) {
+          Label<?> label = search.getLabel(group).get();
+          System.out.println("\t\tStored Label: " + label.getValue().toString());
+        }
+      }
     }
+  }
 }

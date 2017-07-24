@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,28 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.Inject;
+import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.biomedicus.concepts.ConceptDictionary.Loader;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.framework.LifecycleManaged;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
+import org.mapdb.SortedTableMap;
+import org.mapdb.volume.MappedFileVol;
+import org.mapdb.volume.Volume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Stores UMLS Concepts in a multimap (Map from String to List of Concepts).
@@ -41,125 +47,110 @@ import java.util.stream.Stream;
  * @since 1.0.0
  */
 @Singleton
-class ConceptDictionary {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDictionary.class);
+@ProvidedBy(Loader.class)
+class ConceptDictionary implements LifecycleManaged {
 
-    private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDictionary.class);
 
-    private final Map<String, List<SuiCuiTui>> phrases;
+  @Nullable
+  private final List<Volume> volumes;
 
-    private final Map<String, List<SuiCuiTui>> lowercasePhrases;
+  private final Map<TermsBag, List<SuiCuiTui>> normDictionary;
+
+  private final Map<String, List<SuiCuiTui>> phrases;
+
+  private final Map<String, List<SuiCuiTui>> lowercasePhrases;
+
+  ConceptDictionary(
+      @Nullable List<Volume> volumes,
+      Map<TermsBag, List<SuiCuiTui>> normDictionary,
+      Map<String, List<SuiCuiTui>> phrases,
+      Map<String, List<SuiCuiTui>> lowercasePhrases) {
+    this.volumes = volumes;
+    this.normDictionary = normDictionary;
+    this.phrases = phrases;
+    this.lowercasePhrases = lowercasePhrases;
+  }
+
+  @Nullable
+  List<SuiCuiTui> forPhrase(String phrase) {
+    return phrases.get(phrase);
+  }
+
+  @Nullable
+  List<SuiCuiTui> forLowercasePhrase(String phrase) {
+    return lowercasePhrases.get(phrase);
+  }
+
+  @Nullable
+  List<SuiCuiTui> forNorms(TermsBag norms) {
+    if (norms.size() == 0) {
+      return null;
+    }
+    return normDictionary.get(norms);
+  }
+
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    if (volumes != null) {
+      for (Volume volume : volumes) {
+        volume.close();
+      }
+    }
+  }
+
+  @Singleton
+  static final class Loader extends DataLoader<ConceptDictionary> {
+
+    private final boolean inMemory;
+
+    private final Path dbPath;
 
     @Inject
-    ConceptDictionary(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
-                      @Setting("concepts.filters.cui.path") Path filteredCuisPath,
-                      @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-                      @Setting("concepts.filters.tui.path") Path filteredTuisPath,
-                      @Setting("concepts.phrases.path") Path phrasesPath,
-                      @Setting("concepts.norms.path") Path normsPath,
-                      Vocabulary vocabulary) throws IOException {
-        Pattern splitter = Pattern.compile(",");
-
-        Set<SUI> filteredSuis = Files.lines(filteredSuisPath).map(SUI::new).collect(Collectors.toSet());
-
-        Set<CUI> filteredCuis = Files.lines(filteredCuisPath).map(CUI::new).collect(Collectors.toSet());
-
-        Set<SuiCui> filteredSuiCuis = Files.lines(filteredSuiCuisPath)
-                .map(splitter::split)
-                .map(line -> new SuiCui(new SUI(line[0]), new CUI(line[1])))
-                .collect(Collectors.toSet());
-
-        Set<TUI> filteredTuis = Files.lines(filteredTuisPath).map(TUI::new).collect(Collectors.toSet());
-
-        LOGGER.info("Loading concepts phrases: {}", phrasesPath);
-        phrases = new HashMap<>();
-        lowercasePhrases = new HashMap<>();
-        try (BufferedReader normsReader = Files.newBufferedReader(phrasesPath)) {
-            String line;
-            while ((line = normsReader.readLine()) != null) {
-                String concepts = normsReader.readLine();
-                List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
-                        .collect(Collectors.toList());
-                suiCuiTuis.removeIf(sct -> filteredSuis.contains(sct.sui()) || filteredCuis.contains(sct.cui())
-                        || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
-                        || filteredTuis.contains(sct.tui()));
-                List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-                phrases.put(line, unmodifiableList);
-                lowercasePhrases.put(line.toLowerCase(), unmodifiableList);
-            }
-        }
-
-        LOGGER.info("Loading concept norm vectors: {}", normsPath);
-        normDictionary = new HashMap<>();
-        try (BufferedReader normsReader = Files.newBufferedReader(normsPath)) {
-            String line;
-            while ((line = normsReader.readLine()) != null) {
-                String[] split = splitter.split(line);
-                List<String> terms = Arrays.asList(split);
-                terms.replaceAll(string -> {
-                    if (string.equals("scull")) {
-                        return "skull";
-                    }
-                    return string;
-                });
-                TermsBag termsBag = vocabulary.getNormsIndex()
-                        .getTermsBag(terms);
-                String concepts = normsReader.readLine();
-                List<SuiCuiTui> suiCuiTuis = Stream.of(splitter.split(concepts)).map(SuiCuiTui::fromString)
-                        .collect(Collectors.toList());
-                suiCuiTuis.removeIf(sct -> filteredSuis.contains(sct.sui()) || filteredCuis.contains(sct.cui())
-                        || filteredSuiCuis.contains(new SuiCui(sct.sui(), sct.cui()))
-                        || filteredTuis.contains(sct.tui()));
-                List<SuiCuiTui> unmodifiableList = Collections.unmodifiableList(suiCuiTuis);
-                normDictionary.put(termsBag, unmodifiableList);
-            }
-        }
+    Loader(@Setting("concepts.db.path") Path dbPath,
+        @Setting("concepts.inMemory") boolean inMemory) {
+      this.dbPath = dbPath;
+      this.inMemory = inMemory;
     }
 
-    @Nullable
-    List<SuiCuiTui> forPhrase(String phrase) {
-        return phrases.get(phrase);
-    }
+    @SuppressWarnings("unchecked")
+    @Override
+    protected ConceptDictionary loadModel() throws BiomedicusException {
 
-    @Nullable
-    List<SuiCuiTui> forLowercasePhrase(String phrase) {
-        return lowercasePhrases.get(phrase);
-    }
+      LOGGER.info("Loading concepts database: {}", dbPath);
 
-    @Nullable
-    List<SuiCuiTui> forNorms(TermsBag norms) {
-        if (norms.size() == 0) {
-            return null;
-        }
-        return normDictionary.get(norms);
-    }
+      Volume normsVol = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("norms.db").toString(), true);
 
-    private static final class SuiCui {
-        private final SUI sui;
-        private final CUI cui;
+      Map<TermsBag, List<SuiCuiTui>> normDictionary = SortedTableMap
+          .open(normsVol, Serializer.JAVA, Serializer.JAVA);
 
-        public SuiCui(SUI sui, CUI cui) {
-            this.sui = sui;
-            this.cui = cui;
-        }
+      Volume phrasesVol = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("phrases.db").toString(), true);
 
-        @Override
-        public boolean equals(@Nullable Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+      Map<String, List<SuiCuiTui>> phrases = SortedTableMap
+          .open(phrasesVol, Serializer.STRING, Serializer.JAVA);
 
-            SuiCui suiCui = (SuiCui) o;
+      Volume lowercaseVol = MappedFileVol.FACTORY
+          .makeVolume(dbPath.resolve("lowercase.db").toString(), true);
 
-            if (!sui.equals(suiCui.sui)) return false;
-            return cui.equals(suiCui.cui);
+      Map<String, List<SuiCuiTui>> lowercase = SortedTableMap
+          .open(lowercaseVol, Serializer.STRING, Serializer.JAVA);
 
+      List<Volume> volumes = Arrays.asList(normsVol, phrasesVol, lowercaseVol);
+      if (inMemory) {
+        LOGGER.info("Transferring concepts to memory.");
+        normDictionary = new HashMap<>(normDictionary);
+        phrases = new HashMap<>(phrases);
+        lowercase = new HashMap<>(lowercase);
+
+        for (Volume volume : volumes) {
+          volume.close();
         }
 
-        @Override
-        public int hashCode() {
-            int result = sui.hashCode();
-            result = 31 * result + cui.hashCode();
-            return result;
-        }
+        volumes = null;
+      }
+      return new ConceptDictionary(volumes, normDictionary, phrases, lowercase);
     }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
 public interface LabelAdapter<T> {
-    boolean isDistinct();
 
-    Type getType();
+  boolean isDistinct();
 
-    AnnotationFS labelToAnnotation(Label<T> label);
+  Type getType();
 
-    Label<T> annotationToLabel(AnnotationFS annotationFS);
+  AnnotationFS labelToAnnotation(Label<T> label);
+
+  Label<T> annotationToLabel(AnnotationFS annotationFS);
 }

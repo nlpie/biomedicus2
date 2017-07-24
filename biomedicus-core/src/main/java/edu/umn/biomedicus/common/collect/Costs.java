@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,36 +20,37 @@ package edu.umn.biomedicus.common.collect;
  *
  */
 public class Costs {
-    public static final Costs LEVENSHTEIN = new Costs(0, 1, 1, 1);
 
-    private final int match;
+  public static final Costs LEVENSHTEIN = new Costs(0, 1, 1, 1);
 
-    private final int replace;
+  private final int match;
 
-    private final int delete;
+  private final int replace;
 
-    private final int insert;
+  private final int delete;
 
-    public Costs(int match, int replace, int delete, int insert) {
-        this.match = match;
-        this.replace = replace;
-        this.delete = delete;
-        this.insert = insert;
-    }
+  private final int insert;
 
-    public int getMatch() {
-        return match;
-    }
+  public Costs(int match, int replace, int delete, int insert) {
+    this.match = match;
+    this.replace = replace;
+    this.delete = delete;
+    this.insert = insert;
+  }
 
-    public int getReplace() {
-        return replace;
-    }
+  public int getMatch() {
+    return match;
+  }
 
-    public int getDelete() {
-        return delete;
-    }
+  public int getReplace() {
+    return replace;
+  }
 
-    public int getInsert() {
-        return insert;
-    }
+  public int getDelete() {
+    return delete;
+  }
+
+  public int getInsert() {
+    return insert;
+  }
 }

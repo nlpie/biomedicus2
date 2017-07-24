@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import org.apache.uima.cas.FeatureStructure;
  */
 @FunctionalInterface
 public interface FeatureGetter<T> {
-    /**
-     * Returns the value of a feature from a {@code FeatureStructure} given the {@code Feature}.
-     *
-     * @param featureStructure {@code FeatureStructure} to retrieve value from
-     * @param feature          {@code Feature} to retrieve
-     * @return the value of the feature
-     */
-    T get(FeatureStructure featureStructure, Feature feature);
+
+  /**
+   * Returns the value of a feature from a {@code FeatureStructure} given the {@code Feature}.
+   *
+   * @param featureStructure {@code FeatureStructure} to retrieve value from
+   * @param feature {@code Feature} to retrieve
+   * @return the value of the feature
+   */
+  T get(FeatureStructure featureStructure, Feature feature);
 }

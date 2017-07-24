@@ -19,10 +19,11 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.AbstractModule;
 
 public class VocabularyModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
-        bind(VocabularyStore.class).to(MapDbVocabStore.class);
-        bind(VocabularyBuilder.class).to(MapDbVocabularyBuilder.class);
-    }
+
+  @Override
+  protected void configure() {
+    bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
+    bind(VocabularyStore.class).to(MapDbVocabStore.class);
+    bind(VocabularyBuilder.class).to(MapDbVocabularyBuilder.class);
+  }
 }

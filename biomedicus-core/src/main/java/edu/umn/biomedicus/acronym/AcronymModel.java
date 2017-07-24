@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.common.types.text.Token;
-
 import java.util.List;
 import java.util.Set;
 
@@ -32,21 +31,21 @@ import java.util.Set;
  */
 interface AcronymModel {
 
-    boolean hasAcronym(Token token);
+  boolean hasAcronym(Token token);
 
-    String findBestSense(List<Token> allTokens, int forTokenIndex);
+  String findBestSense(List<Token> allTokens, int forTokenIndex);
 
-    /**
-     * For deidentification: remove a single word from the model entirely
-     *
-     * @param word the word to remove
-     */
-    void removeWord(String word);
+  /**
+   * For deidentification: remove a single word from the model entirely
+   *
+   * @param word the word to remove
+   */
+  void removeWord(String word);
 
-    /**
-     * Remove all words except a determined set from the model
-     *
-     * @param words a set of the words to keep
-     */
-    void removeWordsExcept(Set<String> words);
+  /**
+   * Remove all words except a determined set from the model
+   *
+   * @param words a set of the words to keep
+   */
+  void removeWordsExcept(Set<String> words);
 }

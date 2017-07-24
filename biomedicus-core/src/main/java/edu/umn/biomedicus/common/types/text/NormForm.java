@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,17 @@
 
 package edu.umn.biomedicus.common.types.text;
 
+import edu.umn.biomedicus.common.terms.IndexedTerm;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface NormForm {
-    String normalForm();
+
+  String normalForm();
+
+  int normTermIdentifier();
+
+  default IndexedTerm normIndexedTerm() {
+    return new IndexedTerm(normTermIdentifier());
+  }
 }

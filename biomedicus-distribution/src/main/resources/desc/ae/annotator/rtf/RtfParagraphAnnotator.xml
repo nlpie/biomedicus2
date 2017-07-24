@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,39 +17,40 @@
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.rtf.ParagraphAnnotator</annotatorImplementationName>
-    <analysisEngineMetaData>
-        <name>RTF Paragraph Annotator</name>
-        <description>Annotates RTF paragraphs.</description>
-        <version>${project.version}</version>
-        <vendor>${project.organization.name}</vendor>
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <capabilities>
-            <capability>
-                <inputs>
-                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
-                </inputs>
-                <outputs>
-                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
-                </outputs>
-                <inputSofas>
-                    <sofaName>SystemView</sofaName>
-                </inputSofas>
-                <outputSofas>
-                    <sofaName>SystemView</sofaName>
-                </outputSofas>
-            </capability>
-        </capabilities>
-        <operationalProperties>
-            <modifiesCas>true</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>false</outputsNewCASes>
-        </operationalProperties>
-    </analysisEngineMetaData>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>edu.umn.biomedicus.uima.rtf.ParagraphAnnotator
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>RTF Paragraph Annotator</name>
+    <description>Annotates RTF paragraphs.</description>
+    <version>${project.version}</version>
+    <vendor>${project.organization.name}</vendor>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <capabilities>
+      <capability>
+        <inputs>
+          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
+        </inputs>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
+        </outputs>
+        <inputSofas>
+          <sofaName>SystemView</sofaName>
+        </inputSofas>
+        <outputSofas>
+          <sofaName>SystemView</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
 </analysisEngineDescription>

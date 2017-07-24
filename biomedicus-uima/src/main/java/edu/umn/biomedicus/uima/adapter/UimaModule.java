@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.AbstractModule;
-import edu.umn.biomedicus.annotations.DocumentScoped;
-import edu.umn.biomedicus.framework.BiomedicusScopes;
-import org.apache.uima.cas.CAS;
 
 final class UimaModule extends AbstractModule {
-    @Override
-    protected void configure() {
-        bind(CAS.class).toProvider(BiomedicusScopes.providedViaSeeding()).in(DocumentScoped.class);
-    }
+
+  @Override
+  protected void configure() {
+
+  }
 }

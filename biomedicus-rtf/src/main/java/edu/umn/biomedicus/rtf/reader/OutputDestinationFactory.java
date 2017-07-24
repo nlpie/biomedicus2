@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import edu.umn.biomedicus.rtf.exc.RtfReaderException;
  * @since 1.3.0
  */
 public interface OutputDestinationFactory {
-    /**
-     * Creates the output destination when the Rtf reader needs it.
-     *
-     * @param destinationName name of the rtf destination.
-     * @return newly created {@link OutputDestination}, or null if we want to ignore.
-     * @throws RtfReaderException
-     */
-    OutputDestination create(String destinationName) throws RtfReaderException;
+
+  /**
+   * Creates the output destination when the Rtf reader needs it.
+   *
+   * @param destinationName name of the rtf destination.
+   * @return newly created {@link OutputDestination}, or null if we want to ignore.
+   */
+  OutputDestination create(String destinationName) throws RtfReaderException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,40 +16,70 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.tuples.WordPosCap;
-
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.util.Set;
+import org.mapdb.DB;
 
 /**
+ * Interface for word probability models.
  *
+ * @since 1.7.0
  */
 public interface WordProbabilityModel {
 
 
-    /**
-     * Convenience method for #logProbabilityOfWord(edu.umn.biomedicus.syntax.tnt.models.WordPosCap). Constructs a new
-     * {@link WordPosCap} from the arguments.
-     *
-     * @param candidate     the conditional PartOfSpeech
-     * @return a negative double representing the log10 probability of the word
-     */
-    double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap);
+  /**
+   * Convenience method for #logProbabilityOfWord(edu.umn.biomedicus.syntax.tnt.models.WordPosCap).
+   * Constructs a new {@link WordPosCap} from the arguments.
+   *
+   * @param candidate the conditional PartOfSpeech
+   * @return a negative double representing the log10 probability of the word
+   */
+  double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap);
 
-    /**
-     * Returns the potential part of speech candidates for a given word
-     *
-     * @return a set of {@link PartOfSpeech} enum values
-     */
-    Set<PartOfSpeech> getCandidates(WordCap wordCap);
+  /**
+   * Returns the potential part of speech candidates for a given word
+   *
+   * @return a set of {@link PartOfSpeech} enum values
+   */
+  Set<PartOfSpeech> getCandidates(WordCap wordCap);
 
-    /**
-     * Given a word, returns if this model can account for its probability.
-     *
-     * @return true if this model can provide a probability for the word, false otherwise
-     */
-    boolean isKnown(WordCap wordCap);
+  /**
+   * Given a word, returns if this model can account for its probability.
+   *
+   * @return true if this model can provide a probability for the word, false otherwise
+   */
+  boolean isKnown(WordCap wordCap);
 
-    void reduce();
+  /**
+   * Loads the data from a map db database.
+   *
+   * @param db map db database to read from
+   * @param inMemory true to store the data in java data structures, false to keep them in the map
+   * db data structures
+   */
+  void loadData(DB db, boolean inMemory);
+
+  /**
+   * Writes the data to a MapDB database.
+   *
+   * @param db map db database to write to.
+   */
+  void writeData(DB db);
+
+  /**
+   * Gets the identifier for this word probability model
+   *
+   * @return integer identifier
+   */
+  int getId();
+
+  /**
+   * Sets the integer identifier for this word probability model.
+   *
+   * @param id integer identifier
+   */
+  void setId(int id);
 }

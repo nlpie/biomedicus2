@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.common.base.Preconditions;
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.Span;
@@ -93,15 +92,6 @@ final class CASTextView implements TextView {
     LabelAdapter<T> labelAdapter = labelAdapters
         .getLabelAdapterFactory(labelClass).create(view);
     return new UimaLabeler<>(labelAdapter);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> void label(Label<T> label) {
-    Preconditions.checkNotNull(labelAdapters);
-    LabelAdapter<?> labelAdapter = labelAdapters
-        .getLabelAdapterFactory(label.value().getClass()).create(view);
-    new UimaLabeler<>(labelAdapter).label((Label) label);
   }
 
   @Override

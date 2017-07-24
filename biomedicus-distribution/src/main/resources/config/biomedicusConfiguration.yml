@@ -12,14 +12,17 @@ settings:
     maxEditDistance: 4
   tnt:
     trigram.path: tnt/trigram.yml
-    word.path: tnt/words/
+    word:
+      inMemory: yes
+      dbPath: tnt/words.db
+      metadataPath: tnt/wordMetadata.yml
     beam.threshold: 2.0
   stopwords:
     model: fileBased
     fileBased.path: stopwords/PubMedStopwords.txt
   normalization:
-    lexicon.path: normalization/lexicon.yml
-    fallback.path: normalization/fallbackLexicon.yml
+    db.path: normalization.db
+    inMemory: yes
   acronym:
     useAlignment: false
     expansionsModel.path: acronym/expansions.txt
@@ -38,8 +41,8 @@ settings:
     srdef.path: semnetwork/SRDEF
     semgroups.path: semnetwork/SemGroups.txt
   concepts:
-    phrases.path: concepts/phrases.txt
-    norms.path: concepts/norms.txt
+    db.path: concepts
+    inMemory: yes
     filters:
       sui.path: conceptFilters/filteredSuis.txt
       suicui.path: conceptFilters/filteredSuiCuis.txt
@@ -49,8 +52,8 @@ settings:
   parser.implementation: opennlp
   opennlp:
     sentence:
-      model.path: opennlp/sentenceME.bin
-      trainerOutput.path: opennlp/sentence-out.bin
+      model.path: opennlp/sentence.bin
+      trainerOutputDirectory: opennlp/sentence-out.bin
   syntaxnet:
     installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface

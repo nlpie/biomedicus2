@@ -19,7 +19,7 @@
       "type": "shell",
       "inline": [
         "cd /tmp/app",
-	"mvn clean package"
+        "mvn clean package"
       ]
     },
     {
@@ -33,7 +33,9 @@
     [
       {
         "type": "artifice",
-        "files": ["biomedicus-1.4.2.zip"]
+        "files": [
+          "biomedicus-1.4.2.zip"
+        ]
       },
       {
         "type": "atlas",

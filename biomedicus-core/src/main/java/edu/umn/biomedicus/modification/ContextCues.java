@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 class ContextCues {
+
   private final List<List<String>> leftPhrases;
   private final List<ModificationType> leftTypes;
   private final int maxSizeLeftPhrase;
@@ -121,6 +122,7 @@ class ContextCues {
   }
 
   static class Builder {
+
     private final List<List<String>> leftPhrases = new ArrayList<>();
     private final List<ModificationType> leftTypes = new ArrayList<>();
     private final List<List<String>> rightPhrases = new ArrayList<>();

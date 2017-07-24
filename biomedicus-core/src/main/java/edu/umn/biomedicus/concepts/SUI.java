@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,53 +16,59 @@
 
 package edu.umn.biomedicus.concepts;
 
-import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 /**
  *
  */
-public class SUI {
-    public static final Pattern SUI_PATTERN = Pattern.compile("S([\\d]{7})");
+public class SUI implements Serializable {
 
-    private final int identifier;
+  public static final Pattern SUI_PATTERN = Pattern.compile("S([\\d]{7})");
 
-    public SUI(int identifier) {
-        this.identifier = identifier;
+  private final int identifier;
+
+  public SUI(int identifier) {
+    this.identifier = identifier;
+  }
+
+  public SUI(String wordForm) {
+    Matcher matcher = SUI_PATTERN.matcher(wordForm);
+    if (matcher.find()) {
+      String identifier = matcher.group(1);
+      this.identifier = Integer.parseInt(identifier);
+    } else {
+      throw new IllegalArgumentException("Word form does not match SUI pattern");
+    }
+  }
+
+  public int identifier() {
+    return identifier;
+  }
+
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public SUI(String wordForm) {
-        Matcher matcher = SUI_PATTERN.matcher(wordForm);
-        if (matcher.find()) {
-            String identifier = matcher.group(1);
-            this.identifier = Integer.parseInt(identifier);
-        } else {
-            throw new IllegalArgumentException("Word form does not match SUI pattern");
-        }
-    }
+    SUI sui = (SUI) o;
 
-    public int identifier() {
-        return identifier;
-    }
+    return identifier == sui.identifier;
+  }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  @Override
+  public int hashCode() {
+    return identifier;
+  }
 
-        SUI sui = (SUI) o;
-
-        return identifier == sui.identifier;
-    }
-
-    @Override
-    public int hashCode() {
-        return identifier;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("S%07d", identifier);
-    }
+  @Override
+  public String toString() {
+    return String.format("S%07d", identifier);
+  }
 }

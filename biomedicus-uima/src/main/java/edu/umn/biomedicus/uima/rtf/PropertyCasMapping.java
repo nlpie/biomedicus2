@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtf.reader.State;
+import javax.annotation.Nullable;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
-
-import javax.annotation.Nullable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * A mapping from some kind of rtf property state to an annotation type for emission in UIMA.
@@ -34,96 +33,98 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlJavaTypeAdapter(PropertyCasMappingAdapter.class)
 public class PropertyCasMapping {
-    private final String propertyGroup;
 
-    private final String propertyName;
+  private final String propertyGroup;
 
-    private final String annotationClassName;
+  private final String propertyName;
 
-    private final int minimumValue;
+  private final String annotationClassName;
 
-    @Nullable
-    private final Integer maximumValue;
+  private final int minimumValue;
 
-    private final boolean valueIncluded;
+  @Nullable
+  private final Integer maximumValue;
 
-    private final boolean zeroLengthEmitted;
+  private final boolean valueIncluded;
 
-    public PropertyCasMapping(String propertyGroup,
-                              String propertyName,
-                              String annotationClassName,
-                              int minimumValue,
-                              @Nullable Integer maximumValue,
-                              boolean valueIncluded,
-                              boolean zeroLengthEmitted) {
-        this.propertyGroup = propertyGroup;
-        this.propertyName = propertyName;
-        this.annotationClassName = annotationClassName;
-        this.minimumValue = minimumValue;
-        this.maximumValue = maximumValue;
-        this.valueIncluded = valueIncluded;
-        this.zeroLengthEmitted = zeroLengthEmitted;
+  private final boolean zeroLengthEmitted;
+
+  public PropertyCasMapping(String propertyGroup,
+      String propertyName,
+      String annotationClassName,
+      int minimumValue,
+      @Nullable Integer maximumValue,
+      boolean valueIncluded,
+      boolean zeroLengthEmitted) {
+    this.propertyGroup = propertyGroup;
+    this.propertyName = propertyName;
+    this.annotationClassName = annotationClassName;
+    this.minimumValue = minimumValue;
+    this.maximumValue = maximumValue;
+    this.valueIncluded = valueIncluded;
+    this.zeroLengthEmitted = zeroLengthEmitted;
+  }
+
+  @Nullable
+  AnnotationFS getAnnotation(CAS cas, int begin, int end, int value) {
+    if (begin < 0) {
+      throw new IllegalArgumentException("Begin: " + begin + "before 0.");
     }
 
-    @Nullable
-    AnnotationFS getAnnotation(CAS cas, int begin, int end, int value) {
-        if (begin < 0) {
-            throw new IllegalArgumentException("Begin: " + begin + "before 0.");
-        }
-
-        if (end < begin) {
-            throw new IllegalArgumentException(annotationClassName + " - illegal annotation span at begin: " + begin
-                    + " end: " + end);
-        }
-
-        if (!zeroLengthEmitted && end == begin) {
-            return null;
-        }
-
-        TypeSystem typeSystem = cas.getTypeSystem();
-        Type type = typeSystem.getType(annotationClassName);
-        AnnotationFS annotation = cas.createAnnotation(type, begin, end);
-        if (valueIncluded) {
-            Feature valueFeature = type.getFeatureByBaseName("value");
-            annotation.setIntValue(valueFeature, value);
-        }
-        return annotation;
+    if (end < begin) {
+      throw new IllegalArgumentException(
+          annotationClassName + " - illegal annotation span at begin: " + begin
+              + " end: " + end);
     }
 
-    boolean test(int value) {
-        return (value >= minimumValue && (maximumValue == null || value <= maximumValue));
+    if (!zeroLengthEmitted && end == begin) {
+      return null;
     }
 
-    int getPropertyValue(State state) {
-        return state.getPropertyValue(propertyGroup, propertyName);
+    TypeSystem typeSystem = cas.getTypeSystem();
+    Type type = typeSystem.getType(annotationClassName);
+    AnnotationFS annotation = cas.createAnnotation(type, begin, end);
+    if (valueIncluded) {
+      Feature valueFeature = type.getFeatureByBaseName("value");
+      annotation.setIntValue(valueFeature, value);
     }
+    return annotation;
+  }
 
-    public String getPropertyGroup() {
-        return propertyGroup;
-    }
+  boolean test(int value) {
+    return (value >= minimumValue && (maximumValue == null || value <= maximumValue));
+  }
 
-    public String getPropertyName() {
-        return propertyName;
-    }
+  int getPropertyValue(State state) {
+    return state.getPropertyValue(propertyGroup, propertyName);
+  }
 
-    public String getAnnotationClassName() {
-        return annotationClassName;
-    }
+  public String getPropertyGroup() {
+    return propertyGroup;
+  }
 
-    public int getMinimumValue() {
-        return minimumValue;
-    }
+  public String getPropertyName() {
+    return propertyName;
+  }
 
-    @Nullable
-    public Integer getMaximumValue() {
-        return maximumValue;
-    }
+  public String getAnnotationClassName() {
+    return annotationClassName;
+  }
 
-    public boolean isValueIncluded() {
-        return valueIncluded;
-    }
+  public int getMinimumValue() {
+    return minimumValue;
+  }
 
-    public boolean isZeroLengthEmitted() {
-        return zeroLengthEmitted;
-    }
+  @Nullable
+  public Integer getMaximumValue() {
+    return maximumValue;
+  }
+
+  public boolean isValueIncluded() {
+    return valueIncluded;
+  }
+
+  public boolean isZeroLengthEmitted() {
+    return zeroLengthEmitted;
+  }
 }

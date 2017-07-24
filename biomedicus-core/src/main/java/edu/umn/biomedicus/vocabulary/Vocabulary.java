@@ -24,18 +24,19 @@ import edu.umn.biomedicus.common.terms.TermIndex;
  * @since 1.6.0
  */
 public interface Vocabulary {
-    /**
-     * The words that would appear in parse tokens.
-     */
-    TermIndex getWordsIndex();
 
-    /**
-     * The words that would occur in term tokens.
-     */
-    TermIndex getTermsIndex();
+  /**
+   * The words that would appear in parse tokens.
+   */
+  TermIndex getWordsIndex();
 
-    /**
-     * The words that would occur as normalized forms of term tokens.
-     */
-    TermIndex getNormsIndex();
+  /**
+   * The words that would occur in term tokens.
+   */
+  TermIndex getTermsIndex();
+
+  /**
+   * The words that would occur as normalized forms of term tokens.
+   */
+  TermIndex getNormsIndex();
 }

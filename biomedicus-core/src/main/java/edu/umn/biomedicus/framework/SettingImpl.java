@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.annotations.Setting;
-
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
@@ -25,42 +24,43 @@ import java.lang.annotation.Annotation;
  *
  */
 class SettingImpl implements Setting, Serializable {
-    private final String value;
 
-    SettingImpl(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Setting key cannot be null");
-        }
+  private final String value;
 
-        this.value = value;
+  SettingImpl(String value) {
+    if (value == null) {
+      throw new IllegalArgumentException("Setting key cannot be null");
     }
 
-    @Override
-    public String value() {
-        return value;
-    }
+    this.value = value;
+  }
 
-    @Override
-    public int hashCode() {
-        return (127 * "value".hashCode()) ^ value.hashCode();
-    }
+  @Override
+  public String value() {
+    return value;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Setting)) {
-            return false;
-        }
-        Setting other = (Setting) obj;
-        return value.equals(other.value());
-    }
+  @Override
+  public int hashCode() {
+    return (127 * "value".hashCode()) ^ value.hashCode();
+  }
 
-    @Override
-    public Class<? extends Annotation> annotationType() {
-        return Setting.class;
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Setting)) {
+      return false;
     }
+    Setting other = (Setting) obj;
+    return value.equals(other.value());
+  }
 
-    @Override
-    public String toString() {
-        return "Setting(" + value + ")";
-    }
+  @Override
+  public Class<? extends Annotation> annotationType() {
+    return Setting.class;
+  }
+
+  @Override
+  public String toString() {
+    return "Setting(" + value + ")";
+  }
 }

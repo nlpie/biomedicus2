@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.common.utilities;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,73 +29,73 @@ import java.util.stream.Collectors;
  *
  */
 public final class Patterns {
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     */
-    private Patterns() {
-        throw new UnsupportedOperationException();
+
+  /**
+   * A Pattern that will match against any character that is not whitespace. <p> Using {@link
+   * java.util.regex.Matcher#find} will return whether or not a string has any non-whitespace
+   * characters.
+   */
+  public static final Pattern NON_WHITESPACE = Pattern.compile("\\S");
+  /**
+   * A Pattern that will match against a string that only contains one or more unicode alphabetic
+   * characters.
+   */
+  public static final Pattern ALPHABETIC_WORD = Pattern
+      .compile("[\\p{L}]+");
+  /**
+   * A pattern that will match against a string that only contains one or more unicode alphanumeric
+   * characters.
+   */
+  public static final Pattern ALPHANUMERIC_WORD = Pattern
+      .compile("[\\p{L}\\p{Nd}]+");
+  /**
+   * A pattern that will match any unicode alphanumeric character
+   */
+  public static final Pattern A_LETTER_OR_NUMBER = Pattern
+      .compile("[\\p{Nd}\\p{L}]");
+  /**
+   * A pattern that will match the newline character.
+   */
+  public static final Pattern NEWLINE = Pattern.compile("\n");
+
+  /**
+   * Private constructor to prevent instantiation of utility class.
+   */
+  private Patterns() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Loads a pattern from a file in the resource path by joining all of the lines of the file with
+   * an OR symbol '|'
+   *
+   * @param resourceName the path to the resource of regex statements to be joined
+   * @return newly created pattern
+   */
+  public static Pattern loadPatternByJoiningLines(String resourceName) {
+    ClassLoader classLoader = Thread.currentThread()
+        .getContextClassLoader();
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(
+            classLoader.getResourceAsStream(resourceName)))) {
+      return getPattern(reader);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    /**
-     * A Pattern that will match against any character that is not whitespace.
-     * <p>
-     * Using {@link java.util.regex.Matcher#find} will return whether or not a string has any non-whitespace characters.
-     */
-    public static final Pattern NON_WHITESPACE = Pattern.compile("\\S");
+  private static Pattern getPattern(BufferedReader reader) {
+    return Pattern
+        .compile(reader.lines().collect(Collectors.joining("|")),
+            Pattern.MULTILINE);
+  }
 
-    /**
-     * A Pattern that will match against a string that only contains one or more unicode alphabetic characters.
-     */
-    public static final Pattern ALPHABETIC_WORD = Pattern
-            .compile("[\\p{L}]+");
-
-    /**
-     * A pattern that will match against a string that only contains one or more unicode alphanumeric characters.
-     */
-    public static final Pattern ALPHANUMERIC_WORD = Pattern
-            .compile("[\\p{L}\\p{Nd}]+");
-
-    /**
-     * A pattern that will match any unicode alphanumeric character
-     */
-    public static final Pattern A_LETTER_OR_NUMBER = Pattern
-            .compile("[\\p{Nd}\\p{L}]");
-
-    /**
-     * A pattern that will match the newline character.
-     */
-    public static final Pattern NEWLINE = Pattern.compile("\n");
-
-    /**
-     * Loads a pattern from a file in the resource path by joining all of the lines of the file with an OR symbol '|'
-     *
-     * @param resourceName the path to the resource of regex statements to be joined
-     * @return newly created pattern
-     */
-    public static Pattern loadPatternByJoiningLines(String resourceName) {
-        ClassLoader classLoader = Thread.currentThread()
-                .getContextClassLoader();
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        classLoader.getResourceAsStream(resourceName)))) {
-            return getPattern(reader);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+  public static Pattern loadPatternByJoiningLines(Path path)
+      throws BiomedicusException {
+    try (BufferedReader reader = Files.newBufferedReader(path)) {
+      return getPattern(reader);
+    } catch (IOException e) {
+      throw new BiomedicusException("Failed to load pattern.", e);
     }
-
-    private static Pattern getPattern(BufferedReader reader) {
-        return Pattern
-                .compile(reader.lines().collect(Collectors.joining("|")),
-                        Pattern.MULTILINE);
-    }
-
-    public static Pattern loadPatternByJoiningLines(Path path)
-            throws BiomedicusException {
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            return getPattern(reader);
-        } catch (IOException e) {
-            throw new BiomedicusException("Failed to load pattern.", e);
-        }
-    }
+  }
 }

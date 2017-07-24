@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,33 +30,34 @@ import org.slf4j.LoggerFactory;
  * @since 1.3.0
  */
 public class TextSegmenter extends CasAnnotator_ImplBase {
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TextSegmenter.class);
+
+  /**
+   * Class logger.
+   */
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(TextSegmenter.class);
 
 
-    @Override
-    public void process(CAS aCAS) throws AnalysisEngineProcessException {
-        LOGGER.info("Segmenting rtf text.");
-        CAS systemView = aCAS.getView("SystemView");
-        TextSegmentsBuilder textSegmentsBuilder
-                = new TextSegmentsBuilder(systemView);
+  @Override
+  public void process(CAS aCAS) throws AnalysisEngineProcessException {
+    LOGGER.info("Segmenting rtf text.");
+    CAS systemView = aCAS.getView("SystemView");
+    TextSegmentsBuilder textSegmentsBuilder
+        = new TextSegmentsBuilder(systemView);
 
-        TypeSystem typeSystem = systemView.getTypeSystem();
+    TypeSystem typeSystem = systemView.getTypeSystem();
 
-        textSegmentsBuilder.addAnnotations(typeSystem
-                .getType("edu.umn.biomedicus.type.ParagraphAnnotation"));
-        textSegmentsBuilder.addAnnotations(typeSystem
-                .getType("edu.umn.biomedicus.type.RowAnnotation"));
-        textSegmentsBuilder.addAnnotations(typeSystem
-                .getType("edu.umn.biomedicus.type.CellAnnotation"));
-        textSegmentsBuilder.addAnnotations(typeSystem
-                .getType("edu.umn.biomedicus.type.NestedRowAnnotation"));
-        textSegmentsBuilder.addAnnotations(typeSystem
-                .getType("edu.umn.biomedicus.type.NestedCellAnnotation"));
+    textSegmentsBuilder.addAnnotations(typeSystem
+        .getType("edu.umn.biomedicus.type.ParagraphAnnotation"));
+    textSegmentsBuilder.addAnnotations(typeSystem
+        .getType("edu.umn.biomedicus.type.RowAnnotation"));
+    textSegmentsBuilder.addAnnotations(typeSystem
+        .getType("edu.umn.biomedicus.type.CellAnnotation"));
+    textSegmentsBuilder.addAnnotations(typeSystem
+        .getType("edu.umn.biomedicus.type.NestedRowAnnotation"));
+    textSegmentsBuilder.addAnnotations(typeSystem
+        .getType("edu.umn.biomedicus.type.NestedCellAnnotation"));
 
-        textSegmentsBuilder.buildInView();
-    }
+    textSegmentsBuilder.buildInView();
+  }
 }

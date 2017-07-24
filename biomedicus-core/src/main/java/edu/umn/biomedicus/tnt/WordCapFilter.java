@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,47 @@
 package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.tuples.WordCap;
-
 import java.util.function.Predicate;
 
 /**
+ * Used to filter certain words from entering the statistics model
  *
+ * @author Ben Knoll
+ * @since 1.6.0
  */
 public class WordCapFilter implements Predicate<WordCap> {
-    private boolean filterCapitalized = false;
 
-    private boolean filterNotCapitalized = false;
+  private boolean filterCapitalized = false;
 
-    public WordCapFilter() {
-    }
+  private boolean filterNotCapitalized = false;
 
-    public WordCapFilter(boolean filterCapitalized, boolean filterNotCapitalized) {
-        this.filterCapitalized = filterCapitalized;
-        this.filterNotCapitalized = filterNotCapitalized;
-    }
+  public WordCapFilter() {
+  }
 
-    @Override
-    public boolean test(WordCap wordCap) {
-        return !(filterCapitalized && wordCap.isCapitalized() || filterNotCapitalized && !wordCap.isCapitalized());
-    }
+  public WordCapFilter(boolean filterCapitalized, boolean filterNotCapitalized) {
+    this.filterCapitalized = filterCapitalized;
+    this.filterNotCapitalized = filterNotCapitalized;
+  }
 
-    public boolean isFilterCapitalized() {
-        return filterCapitalized;
-    }
+  @Override
+  public boolean test(WordCap wordCap) {
+    return !(filterCapitalized && wordCap.isCapitalized() || filterNotCapitalized && !wordCap
+        .isCapitalized());
+  }
 
-    public void setFilterCapitalized(boolean filterCapitalized) {
-        this.filterCapitalized = filterCapitalized;
-    }
+  public boolean isFilterCapitalized() {
+    return filterCapitalized;
+  }
 
-    public boolean isFilterNotCapitalized() {
-        return filterNotCapitalized;
-    }
+  public void setFilterCapitalized(boolean filterCapitalized) {
+    this.filterCapitalized = filterCapitalized;
+  }
 
-    public void setFilterNotCapitalized(boolean filterNotCapitalized) {
-        this.filterNotCapitalized = filterNotCapitalized;
-    }
+  public boolean isFilterNotCapitalized() {
+    return filterNotCapitalized;
+  }
+
+  public void setFilterNotCapitalized(boolean filterNotCapitalized) {
+    this.filterNotCapitalized = filterNotCapitalized;
+  }
 }

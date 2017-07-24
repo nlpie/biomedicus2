@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
   -->
 
 <Configuration>
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout>
-                <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
-            </PatternLayout>
-        </Console>
-        <File name="LogFile" fileName="${sys:biomedicus.paths.home}/logs/biomedicus.log" append="false">
-            <PatternLayout>
-                <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
-            </PatternLayout>
-        </File>
-    </Appenders>
-    <Loggers>
-        <Logger name="edu.umn.biomedicus" level="info"/>
-        <Logger name="org.apache.uima" level="warn"/>
-        <Root level="info">
-            <AppenderRef ref="Console" level="info"/>
-            <AppenderRef ref="LogFile"/>
-        </Root>
-    </Loggers>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
+      </PatternLayout>
+    </Console>
+    <File append="false" fileName="${sys:biomedicus.paths.home}/logs/biomedicus.log" name="LogFile">
+      <PatternLayout>
+        <Pattern>%d %-5p [%t] %C{1} (%F:%L) - %m%n</Pattern>
+      </PatternLayout>
+    </File>
+  </Appenders>
+  <Loggers>
+    <Logger level="info" name="edu.umn.biomedicus"/>
+    <Logger level="warn" name="org.apache.uima"/>
+    <Root level="info">
+      <AppenderRef level="info" ref="Console"/>
+      <AppenderRef ref="LogFile"/>
+    </Root>
+  </Loggers>
 </Configuration>

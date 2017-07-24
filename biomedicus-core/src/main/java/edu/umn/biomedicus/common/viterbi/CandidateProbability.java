@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,25 @@
 package edu.umn.biomedicus.common.viterbi;
 
 /**
- * A pair of a hidden state candidate and the log10 probability that this candidate will emit a specific output.
+ * A pair of a hidden state candidate and the log10 probability that this candidate will emit a
+ * specific output.
  *
  * @param <S> the type for the hidden state
  * @since 1.2.0
  */
 public interface CandidateProbability<S> {
-    /**
-     * A candidate hidden state.
-     *
-     * @return the candidate hidden state
-     */
-    S getCandidate();
 
-    /**
-     * The log base 10 probability that the candidate will emit a value or output.
-     *
-     * @return log base 10 probability double-precision floating point number
-     */
-    double getEmissionLogProbability();
+  /**
+   * A candidate hidden state.
+   *
+   * @return the candidate hidden state
+   */
+  S getCandidate();
+
+  /**
+   * The log base 10 probability that the candidate will emit a value or output.
+   *
+   * @return log base 10 probability double-precision floating point number
+   */
+  double getEmissionLogProbability();
 }

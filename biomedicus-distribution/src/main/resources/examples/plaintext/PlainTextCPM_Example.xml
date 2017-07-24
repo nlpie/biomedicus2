@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,59 +17,59 @@
   -->
 
 <cpeDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <collectionReader>
-        <collectionIterator>
-            <descriptor>
-                <import location="../../desc/cr/FileSystemCollectionReader.xml"/>
-            </descriptor>
-            <configurationParameterSettings>
-                <nameValuePair>
-                    <name>inputDirectory</name>
-                    <value>
-                        <string>examples/plaintext/input</string>
-                    </value>
-                </nameValuePair>
-            </configurationParameterSettings>
-        </collectionIterator>
-    </collectionReader>
-    <casProcessors casPoolSize="3" processingUnitThreadCount="1">
+  <collectionReader>
+    <collectionIterator>
+      <descriptor>
+        <import location="../../desc/cr/FileSystemCollectionReader.xml"/>
+      </descriptor>
+      <configurationParameterSettings>
+        <nameValuePair>
+          <name>inputDirectory</name>
+          <value>
+            <string>examples/plaintext/input</string>
+          </value>
+        </nameValuePair>
+      </configurationParameterSettings>
+    </collectionIterator>
+  </collectionReader>
+  <casProcessors casPoolSize="3" processingUnitThreadCount="1">
     <casProcessor deployment="integrated" name="Default BioMedICUS Pipeline">
-        <descriptor>
-            <import location="../../desc/ae/DefaultClinicalDocumentsPipeline.xml"/>
-        </descriptor>
-            <deploymentParameters/>
-        <errorHandling>
-            <errorRateThreshold action="terminate" value="0/1000"/>
-            <maxConsecutiveRestarts action="terminate" value="30"/>
-            <timeout max="100000" default="-1"/>
-        </errorHandling>
-        <checkpoint batch="10000" time="1000ms"/>
+      <descriptor>
+        <import location="../../desc/ae/DefaultClinicalDocumentsPipeline.xml"/>
+      </descriptor>
+      <deploymentParameters/>
+      <errorHandling>
+        <errorRateThreshold action="terminate" value="0/1000"/>
+        <maxConsecutiveRestarts action="terminate" value="30"/>
+        <timeout default="-1" max="100000"/>
+      </errorHandling>
+      <checkpoint batch="10000" time="1000ms"/>
     </casProcessor>
     <casProcessor deployment="integrated" name="XMI Writer">
-        <descriptor>
-            <import location="../../desc/ae/writer/XmiWriter.xml"/>
-        </descriptor>
-            <deploymentParameters/>
-        <errorHandling>
-            <errorRateThreshold action="terminate" value="0/1000"/>
-            <maxConsecutiveRestarts action="terminate" value="30"/>
-            <timeout max="100000" default="-1"/>
-        </errorHandling>
-        <checkpoint batch="10000" time="1000ms"/>
-        <configurationParameterSettings>
-            <nameValuePair>
-                <name>outputDirectory</name>
-                <value>
-                    <string>examples/plaintext/output</string>
-                </value>
-            </nameValuePair>
-        </configurationParameterSettings>
+      <descriptor>
+        <import location="../../desc/ae/writer/XmiWriter.xml"/>
+      </descriptor>
+      <deploymentParameters/>
+      <errorHandling>
+        <errorRateThreshold action="terminate" value="0/1000"/>
+        <maxConsecutiveRestarts action="terminate" value="30"/>
+        <timeout default="-1" max="100000"/>
+      </errorHandling>
+      <checkpoint batch="10000" time="1000ms"/>
+      <configurationParameterSettings>
+        <nameValuePair>
+          <name>outputDirectory</name>
+          <value>
+            <string>examples/plaintext/output</string>
+          </value>
+        </nameValuePair>
+      </configurationParameterSettings>
     </casProcessor>
-    </casProcessors>
-    <cpeConfig>
-        <numToProcess>-1</numToProcess>
-        <deployAs>immediate</deployAs>
-        <checkpoint batch="0" time="300000ms"/>
-        <timerImpl/>
-    </cpeConfig>
+  </casProcessors>
+  <cpeConfig>
+    <numToProcess>-1</numToProcess>
+    <deployAs>immediate</deployAs>
+    <checkpoint batch="0" time="300000ms"/>
+    <timerImpl/>
+  </cpeConfig>
 </cpeDescription>

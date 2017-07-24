@@ -20,7 +20,7 @@ import static edu.umn.biomedicus.modification.ModificationType.HISTORICAL;
 import static edu.umn.biomedicus.modification.ModificationType.NEGATED;
 import static edu.umn.biomedicus.modification.ModificationType.PROBABLE;
 
-import com.google.inject.Inject;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.Historical;
@@ -32,10 +32,10 @@ import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
@@ -132,30 +132,24 @@ public class ModificationDetector implements DocumentProcessor {
       .addScopeDelimitingWord(":")
       .build();
 
-  private final LabelIndex<TermToken> tokenLabelIndex;
-  private final LabelIndex<DictionaryTerm> dictionaryTermLabelIndex;
-  private final LabelIndex<Sentence> sentenceLabelIndex;
-  private final DefaultLabelIndex<WordIndex> wordIndexLabelIndex;
-  private final Labeler<Probable> probableLabeler;
-  private final Labeler<Historical> historicalLabeler;
-  private final Labeler<Negated> negatedLabeler;
-  private final DefaultLabelIndex<PartOfSpeech> partOfSpeechLabelIndex;
-
-  @Inject
-  public ModificationDetector(TextView textView) {
-    tokenLabelIndex = new DefaultLabelIndex<>(textView.getLabelIndex(TermToken.class));
-    dictionaryTermLabelIndex = textView.getLabelIndex(DictionaryTerm.class);
-    sentenceLabelIndex = new DefaultLabelIndex<>(textView.getLabelIndex(Sentence.class));
-    wordIndexLabelIndex = new DefaultLabelIndex<>(textView.getLabelIndex(WordIndex.class));
-    partOfSpeechLabelIndex = new DefaultLabelIndex<>(textView.getLabelIndex(PartOfSpeech.class));
-
-    probableLabeler = textView.getLabeler(Probable.class);
-    historicalLabeler = textView.getLabeler(Historical.class);
-    negatedLabeler = textView.getLabeler(Negated.class);
-  }
-
   @Override
-  public void process() throws BiomedicusException {
+  public void process(Document document) throws BiomedicusException {
+    TextView textView = document.getTextView(StandardViews.SYSTEM)
+        .orElseThrow(() -> new BiomedicusException("No system view"));
+
+    LabelIndex<TermToken> tokenLabelIndex = new DefaultLabelIndex<>(
+        textView.getLabelIndex(TermToken.class));
+    LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = textView
+        .getLabelIndex(DictionaryTerm.class);
+    LabelIndex<Sentence> sentenceLabelIndex = new DefaultLabelIndex<>(
+        textView.getLabelIndex(Sentence.class));
+    LabelIndex<PartOfSpeech> partOfSpeechLabelIndex = new DefaultLabelIndex<>(
+        textView.getLabelIndex(PartOfSpeech.class));
+
+    Labeler<Probable> probableLabeler = textView.getLabeler(Probable.class);
+    Labeler<Historical> historicalLabeler = textView.getLabeler(Historical.class);
+    Labeler<Negated> negatedLabeler = textView.getLabeler(Negated.class);
+
     for (Label<DictionaryTerm> termLabel : dictionaryTermLabelIndex) {
       Label<Sentence> sentenceLabel = sentenceLabelIndex.containing(termLabel).first()
           .orElseThrow(IllegalStateException::new);
@@ -178,7 +172,8 @@ public class ModificationDetector implements DocumentProcessor {
                 .label(termLabel);
             break;
           case PROBABLE:
-            probableLabeler.value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
+            probableLabeler
+                .value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
                 .label(termLabel);
             break;
           default:
@@ -202,7 +197,8 @@ public class ModificationDetector implements DocumentProcessor {
                 .label(termLabel);
             break;
           case PROBABLE:
-            probableLabeler.value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
+            probableLabeler
+                .value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
                 .label(termLabel);
             break;
           default:

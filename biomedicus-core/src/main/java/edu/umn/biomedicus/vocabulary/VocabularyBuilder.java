@@ -18,10 +18,17 @@ package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.framework.LifecycleManaged;
 
+/**
+ * Assists in building vocabulary stores by creating the builders for the individual term indices.
+ *
+ * @author Ben Knoll
+ * @since 1.6.0
+ */
 abstract class VocabularyBuilder implements LifecycleManaged {
-    abstract TermIndexBuilder createWordsIndexBuilder();
 
-    abstract TermIndexBuilder createTermsIndexBuilder();
+  abstract TermIndexBuilder createWordsIndexBuilder();
 
-    abstract TermIndexBuilder createNormsIndexBuilder();
+  abstract TermIndexBuilder createTermsIndexBuilder();
+
+  abstract TermIndexBuilder createNormsIndexBuilder();
 }

@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.util;
 
+import java.util.Iterator;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -26,8 +27,6 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-
 /**
  * Logs any illegal annotations that will cause {@link AnnotationFS#getCoveredText()} to fail.
  *
@@ -35,46 +34,50 @@ import java.util.Iterator;
  * @since 1.3.0
  */
 public class AnnotationVerifier extends JCasAnnotator_ImplBase {
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationVerifier.class);
 
-    @Override
-    public void process(JCas aJCas) throws AnalysisEngineProcessException {
-        try {
-            Iterator<JCas> viewIterator = aJCas.getViewIterator();
+  /**
+   * Class logger.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationVerifier.class);
 
-            while (viewIterator.hasNext()) {
-                JCas view = viewIterator.next();
+  @Override
+  public void process(JCas aJCas) throws AnalysisEngineProcessException {
+    try {
+      Iterator<JCas> viewIterator = aJCas.getViewIterator();
 
-                String sofaDataString = view.getSofaDataString();
-                int length = sofaDataString != null ? sofaDataString.length() : -1;
+      while (viewIterator.hasNext()) {
+        JCas view = viewIterator.next();
 
-                AnnotationIndex<Annotation> annotationIndex = view.getAnnotationIndex();
+        String sofaDataString = view.getSofaDataString();
+        int length = sofaDataString != null ? sofaDataString.length() : -1;
 
-                for (Annotation annotation : annotationIndex) {
-                    int begin = annotation.getBegin();
-                    int end = annotation.getEnd();
+        AnnotationIndex<Annotation> annotationIndex = view.getAnnotationIndex();
 
-                    if (begin > end) {
-                        LOGGER.error("Annotation {} begin {} after end {}", annotation.getType().getName(), begin, end);
-                    }
+        for (Annotation annotation : annotationIndex) {
+          int begin = annotation.getBegin();
+          int end = annotation.getEnd();
 
-                    if (begin < 0) {
-                        LOGGER.error("Annotation {} begin {} before 0", annotation.getType().getName(), begin);
-                    }
+          if (begin > end) {
+            LOGGER
+                .error("Annotation {} begin {} after end {}", annotation.getType().getName(), begin,
+                    end);
+          }
 
-                    if (end > length) {
-                        LOGGER.error("Annotation {} end {} after length of sofa {}", annotation.getType().getName(),
-                                end, length);
-                    }
+          if (begin < 0) {
+            LOGGER.error("Annotation {} begin {} before 0", annotation.getType().getName(), begin);
+          }
 
-                }
-            }
+          if (end > length) {
+            LOGGER.error("Annotation {} end {} after length of sofa {}",
+                annotation.getType().getName(),
+                end, length);
+          }
 
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
         }
+      }
+
+    } catch (CASException e) {
+      throw new AnalysisEngineProcessException(e);
     }
+  }
 }

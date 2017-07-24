@@ -16,24 +16,25 @@
 
 package edu.umn.biomedicus.framework;
 
-import javax.annotation.Nullable;
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
 
 /**
  *
  */
 @Singleton
 public class LabelAliases {
-    private final Map<String, Class<?>> aliases = new HashMap<>();
 
-    public void addAlias(String alias, Class<?> labelableClass) {
-        aliases.put(alias, labelableClass);
-    }
+  private final Map<String, Class<?>> aliases = new HashMap<>();
 
-    @Nullable
-    public Class<?> getLabelable(String alias) {
-        return aliases.get(alias);
-    }
+  public void addAlias(String alias, Class<?> labelableClass) {
+    aliases.put(alias, labelableClass);
+  }
+
+  @Nullable
+  public Class<?> getLabelable(String alias) {
+    return aliases.get(alias);
+  }
 }

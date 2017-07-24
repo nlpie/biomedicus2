@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,35 @@
 
 package edu.umn.biomedicus.normalization;
 
+import com.google.inject.Inject;
+import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.tuples.WordPos;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.BufferedWriter;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.Bootstrapper;
+import edu.umn.biomedicus.vocabulary.Vocabulary;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import javax.annotation.Nullable;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.PathOptionHandler;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for loading a SPECIALIST LRAGR file and creating a normalizer from it.
@@ -38,170 +52,210 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
  * @author Ben Knoll
  * @author Serguei Pakhomov
  */
-public class NormalizerModelBuilder {
+public final class NormalizerModelBuilder {
 
-    private static final int IGNORE_WHEN_LONGER = 100;
+  /**
+   * Index of the inflectional variant (Term to lookup) in the LRAGR table.
+   */
+  public static final int LRAGR_INFLECTIONAL_VARIANT = 1;
 
-    private static final Map<LragrPos, PartOfSpeech> LRAGR_TO_PENN;
+  /**
+   * Index of the syntactic category (part of speech) in the LRAGR table.
+   */
+  public static final int LRAGR_SYNTACTIC_CATEGORY = 2;
 
-    static {
-        Map<LragrPos, PartOfSpeech> builder = new HashMap<>();
-        builder.put(new LragrPos("noun", "uncount(thr_plur)"), PartOfSpeech.NNS);
-        builder.put(new LragrPos("noun", "count(thr_plur)"), PartOfSpeech.NNS);
-        builder.put(new LragrPos("noun", "uncount(thr_sing)"), PartOfSpeech.NN);
-        builder.put(new LragrPos("noun", "count(thr_sing)"), PartOfSpeech.NN);
-        builder.put(new LragrPos("verb", "infinitive"), PartOfSpeech.VB);
-        builder.put(new LragrPos("verb", "pres(thr_sing)"), PartOfSpeech.VBZ);
-        builder.put(new LragrPos("verb", "past"), PartOfSpeech.VBD);
-        builder.put(new LragrPos("verb", "past_part"), PartOfSpeech.VBN);
-        builder.put(new LragrPos("verb", "pres_part"), PartOfSpeech.VBG);
-        builder.put(new LragrPos("adj", "comparative"), PartOfSpeech.JJR);
-        builder.put(new LragrPos("adj", "superlative"), PartOfSpeech.JJS);
-        builder.put(new LragrPos("adj", "positive"), PartOfSpeech.JJ);
-        builder.put(new LragrPos("adv", "comparative"), PartOfSpeech.RBR);
-        builder.put(new LragrPos("adv", "superlative"), PartOfSpeech.RBS);
-        builder.put(new LragrPos("adv", "positive"), PartOfSpeech.RB);
-        LRAGR_TO_PENN = Collections.unmodifiableMap(builder);
+  /**
+   * Index of the agreement inflection code in the LRAGR table.
+   */
+  public static final int LRAGR_AGREEMENT_INFLECTION_CODE = 3;
+
+  /**
+   * Index of the base for in the LRAGR table.
+   */
+  public static final int LRAGR_BASE_FORM = 4;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(NormalizerModelBuilder.class);
+
+  private static final int IGNORE_WHEN_LONGER = 100;
+
+  private static final Map<LragrPos, PartOfSpeech> LRAGR_TO_PENN;
+
+  private static final Map<LragrPos, PartOfSpeech> LRAGR_TO_PENN_FALLBACK;
+
+  static {
+    Map<LragrPos, PartOfSpeech> builder = new HashMap<>();
+    builder.put(new LragrPos("noun", "uncount(thr_plur)"), PartOfSpeech.NNS);
+    builder.put(new LragrPos("noun", "count(thr_plur)"), PartOfSpeech.NNS);
+    builder.put(new LragrPos("noun", "uncount(thr_sing)"), PartOfSpeech.NN);
+    builder.put(new LragrPos("noun", "count(thr_sing)"), PartOfSpeech.NN);
+    builder.put(new LragrPos("verb", "infinitive"), PartOfSpeech.VB);
+    builder.put(new LragrPos("verb", "pres(thr_sing)"), PartOfSpeech.VBZ);
+    builder.put(new LragrPos("verb", "past"), PartOfSpeech.VBD);
+    builder.put(new LragrPos("verb", "past_part"), PartOfSpeech.VBN);
+    builder.put(new LragrPos("verb", "pres_part"), PartOfSpeech.VBG);
+    builder.put(new LragrPos("adj", "comparative"), PartOfSpeech.JJR);
+    builder.put(new LragrPos("adj", "superlative"), PartOfSpeech.JJS);
+    builder.put(new LragrPos("adj", "positive"), PartOfSpeech.JJ);
+    builder.put(new LragrPos("adv", "comparative"), PartOfSpeech.RBR);
+    builder.put(new LragrPos("adv", "superlative"), PartOfSpeech.RBS);
+    builder.put(new LragrPos("adv", "positive"), PartOfSpeech.RB);
+    LRAGR_TO_PENN = Collections.unmodifiableMap(builder);
+  }
+
+  static {
+    Map<LragrPos, PartOfSpeech> builder = new HashMap<>();
+    builder.put(new LragrPos("noun", "uncount(thr_plur)"), PartOfSpeech.NN);
+    builder.put(new LragrPos("noun", "count(thr_plur)"), PartOfSpeech.NN);
+    builder.put(new LragrPos("noun", "uncount(thr_sing)"), PartOfSpeech.NNS);
+    builder.put(new LragrPos("noun", "count(thr_sing)"), PartOfSpeech.NNS);
+    LRAGR_TO_PENN_FALLBACK = Collections.unmodifiableMap(builder);
+  }
+
+  private final TermIndex normsIndex;
+
+  private final TermIndex wordsIndex;
+
+  @Nullable
+  @Option(name = "-l", required = true, handler = PathOptionHandler.class,
+      usage = "path to SPECIALIST Lexicon LRAGR file.")
+  private Path lragrPath;
+
+  @Nullable
+  @Argument(required = true, handler = PathOptionHandler.class, usage = "output path of normalization model")
+  private Path dbPath;
+
+  @SuppressWarnings("unchecked")
+  @Inject
+  public NormalizerModelBuilder(Vocabulary vocabulary) {
+    normsIndex = vocabulary.getNormsIndex();
+    wordsIndex = vocabulary.getWordsIndex();
+  }
+
+  public static void main(String[] args) {
+    try {
+      Bootstrapper.create().getInstance(NormalizerModelBuilder.class).process(args);
+    } catch (IOException | BiomedicusException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void process(String[] args) throws IOException {
+    CmdLineParser parser = new CmdLineParser(this);
+
+    try {
+      parser.parseArgument(args);
+    } catch (CmdLineException e) {
+      System.err.println(e.getLocalizedMessage());
+      System.err.println("java edu.umn.biomedicus.normalization.NormalizerModelBuilder "
+          + "-l path-to-lragr");
+      parser.printUsage(System.err);
+      return;
     }
 
-    private static final Map<LragrPos, PartOfSpeech> LRAGR_TO_PENN_FALLBACK;
+    assert lragrPath != null : "should be non-null by this point based on required = true";
 
-    static {
-        Map<LragrPos, PartOfSpeech> builder = new HashMap<>();
-        builder.put(new LragrPos("noun", "uncount(thr_plur)"), PartOfSpeech.NN);
-        builder.put(new LragrPos("noun", "count(thr_plur)"), PartOfSpeech.NN);
-        builder.put(new LragrPos("noun", "uncount(thr_sing)"), PartOfSpeech.NNS);
-        builder.put(new LragrPos("noun", "count(thr_sing)"), PartOfSpeech.NNS);
-        LRAGR_TO_PENN_FALLBACK = Collections.unmodifiableMap(builder);
+    System.out.println("Starting building normalizer model from: " + lragrPath.toString());
+
+    try {
+      Files.deleteIfExists(dbPath);
+    } catch (IOException e) {
+      System.out.println("Failed to delete an existing db at location: " + dbPath.toString());
+      e.printStackTrace();
+    }
+    DB db = DBMaker.fileDB(dbPath.toFile()).make();
+
+    @SuppressWarnings("unchecked")
+    Map<TermPos, TermString> norms =  (Map<TermPos, TermString>) db
+        .treeMap("norms", Serializer.JAVA, Serializer.JAVA).create();
+    NormalizerModel builder = new NormalizerModel(norms, db);
+
+    Pattern exclusionPattern = Pattern.compile(".*[\\|\\$#,@;:<>\\?\\[\\]\\{\\}\\d\\.].*");
+
+    Files.lines(lragrPath)
+        .map(line -> line.split("\\|"))
+        .forEach(lragrArray -> {
+          String inflectionalVariant = lragrArray[LRAGR_INFLECTIONAL_VARIANT];
+
+          Matcher exclusionMatcher = exclusionPattern.matcher(inflectionalVariant);
+          if (exclusionMatcher.matches() || inflectionalVariant.length() > IGNORE_WHEN_LONGER) {
+            return;
+          }
+
+          String syntacticCategory = lragrArray[LRAGR_SYNTACTIC_CATEGORY].trim();
+          String agreementInflectionCode = lragrArray[LRAGR_AGREEMENT_INFLECTION_CODE].trim();
+          String baseForm = lragrArray[LRAGR_BASE_FORM].trim();
+
+          LragrPos lragrPos = new LragrPos(syntacticCategory, agreementInflectionCode);
+
+          if (!inflectionalVariant.endsWith(baseForm)) {
+            PartOfSpeech pennPos = LRAGR_TO_PENN.get(lragrPos);
+            IndexedTerm indexedTerm = wordsIndex.getIndexedTerm(inflectionalVariant);
+            if (indexedTerm.isUnknown()) {
+              return;
+            }
+
+            if (pennPos != null) {
+              builder.add(indexedTerm, pennPos,
+                  normsIndex.getIndexedTerm(baseForm), baseForm);
+            }
+
+            PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
+            if (fallbackPos != null) {
+              builder.add(indexedTerm, fallbackPos,
+                  normsIndex.getIndexedTerm(baseForm), baseForm);
+            }
+          }
+        });
+
+    try {
+      builder.doShutdown();
+    } catch (BiomedicusException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static class LragrPos implements Comparable<LragrPos> {
+
+    private final String syntacticCategory;
+    private final String agreementInflectionCode;
+
+    public LragrPos(String syntacticCategory, String agreementInflectionCode) {
+      this.syntacticCategory = Objects.requireNonNull(syntacticCategory);
+      this.agreementInflectionCode = Objects.requireNonNull(agreementInflectionCode);
     }
 
-    /**
-     * Index of the inflectional variant (Term to lookup) in the LRAGR table.
-     */
-    public static final int LRAGR_INFLECTIONAL_VARIANT = 1;
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
 
-    /**
-     * Index of the syntactic category (part of speech) in the LRAGR table.
-     */
-    public static final int LRAGR_SYNTACTIC_CATEGORY = 2;
+      LragrPos lragrPos = (LragrPos) o;
 
-    /**
-     * Index of the agreement inflection code in the LRAGR table.
-     */
-    public static final int LRAGR_AGREEMENT_INFLECTION_CODE = 3;
+      if (!agreementInflectionCode.equals(lragrPos.agreementInflectionCode)) {
+        return false;
+      }
+      return syntacticCategory.equals(lragrPos.syntacticCategory);
 
-    /**
-     * Index of the base for in the LRAGR table.
-     */
-    public static final int LRAGR_BASE_FORM = 4;
-
-    private final Path lragrFile;
-
-    private final Path lexiconFile;
-
-    private final Path fallbackLexiconFile;
-
-    public NormalizerModelBuilder(Path lragrFile, Path lexiconFile, Path fallbackLexiconFile) {
-        this.lragrFile = lragrFile;
-        this.lexiconFile = lexiconFile;
-        this.fallbackLexiconFile = fallbackLexiconFile;
     }
 
-    public void process() throws IOException {
-        Map<WordPos, String> lexiconBuilder = new HashMap<>();
-        Map<WordPos, String> fallbackLexiconBuilder = new HashMap<>();
-        Pattern exclusionPattern = Pattern.compile(".*[\\|\\$#,@;:<>\\?\\[\\]\\{\\}\\d\\.].*");
-
-        Set<String> visited = new HashSet<>();
-        Files.lines(lragrFile)
-                .map(line -> line.split("\\|"))
-                .forEach(lragrArray -> {
-                    String inflectionalVariant = lragrArray[LRAGR_INFLECTIONAL_VARIANT].trim().toLowerCase();
-
-                    Matcher exclusionMatcher = exclusionPattern.matcher(inflectionalVariant);
-                    if (visited.contains(inflectionalVariant) || exclusionMatcher.matches() || inflectionalVariant.length() > IGNORE_WHEN_LONGER) {
-                        return;
-                    }
-                    visited.add(inflectionalVariant);
-
-                    String syntacticCategory = lragrArray[LRAGR_SYNTACTIC_CATEGORY].trim();
-                    String agreementInflectionCode = lragrArray[LRAGR_AGREEMENT_INFLECTION_CODE].trim();
-                    String baseForm = lragrArray[LRAGR_BASE_FORM].trim();
-
-                    LragrPos lragrPos = new LragrPos(syntacticCategory, agreementInflectionCode);
-
-                    if (!inflectionalVariant.endsWith(baseForm)) {
-                        PartOfSpeech pennPos = LRAGR_TO_PENN.get(lragrPos);
-                        if (pennPos != null) {
-                            lexiconBuilder.put(new WordPos(inflectionalVariant, pennPos), baseForm);
-                        }
-
-                        PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
-                        if (fallbackPos != null) {
-                            fallbackLexiconBuilder.put(new WordPos(inflectionalVariant, fallbackPos), baseForm);
-                        }
-                    }
-                });
-
-        Files.createDirectories(lexiconFile.getParent());
-        Files.createDirectories(fallbackLexiconFile.getParent());
-
-        Yaml yaml = new Yaml();
-        try (BufferedWriter output = Files.newBufferedWriter(lexiconFile, CREATE, TRUNCATE_EXISTING)) {
-            yaml.dump(lexiconBuilder, output);
-        }
-        try (BufferedWriter output = Files.newBufferedWriter(fallbackLexiconFile, CREATE, TRUNCATE_EXISTING)) {
-            yaml.dump(fallbackLexiconBuilder, output);
-        }
+    @Override
+    public int hashCode() {
+      int result = syntacticCategory.hashCode();
+      result = 31 * result + agreementInflectionCode.hashCode();
+      return result;
     }
 
-    public static void main(String[] args) {
-        Path lragrFile = Paths.get(args[0]);
-        Path lexiconFile = Paths.get(args[1]);
-        Path fallbackLexiconFile = Paths.get(args[2]);
-
-        NormalizerModelBuilder builder = new NormalizerModelBuilder(lragrFile, lexiconFile, fallbackLexiconFile);
-
-        try {
-            builder.process();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public int compareTo(LragrPos o) {
+      int result = syntacticCategory.compareTo(o.syntacticCategory);
+      if (result == 0) {
+        result = agreementInflectionCode.compareTo(o.agreementInflectionCode);
+      }
+      return result;
     }
-
-    private static class LragrPos implements Comparable<LragrPos> {
-        private final String syntacticCategory;
-        private final String agreementInflectionCode;
-
-        public LragrPos(String syntacticCategory, String agreementInflectionCode) {
-            this.syntacticCategory = Objects.requireNonNull(syntacticCategory);
-            this.agreementInflectionCode = Objects.requireNonNull(agreementInflectionCode);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            LragrPos lragrPos = (LragrPos) o;
-
-            if (!agreementInflectionCode.equals(lragrPos.agreementInflectionCode)) return false;
-            return syntacticCategory.equals(lragrPos.syntacticCategory);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = syntacticCategory.hashCode();
-            result = 31 * result + agreementInflectionCode.hashCode();
-            return result;
-        }
-
-        @Override
-        public int compareTo(LragrPos o) {
-            int result = this.syntacticCategory.compareTo(o.syntacticCategory);
-            if (result == 0) result = this.agreementInflectionCode.compareTo(o.agreementInflectionCode);
-            return result;
-        }
-    }
+  }
 }

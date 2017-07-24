@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,110 +16,112 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
-import static org.testng.Assert.*;
+import org.testng.annotations.Test;
 
 /**
  * Unit test for {@link WordCap}.
  */
 public class WordCapTest {
 
-    @Test
-    public void testGetWord() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testGetWord() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertEquals(wordCap.getWord(), "aWord");
-    }
+    assertEquals(wordCap.getWord(), "aWord");
+  }
 
-    @Test
-    public void testIsCapitalized() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testIsCapitalized() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertEquals(wordCap.isCapitalized(), false);
-    }
+    assertEquals(wordCap.isCapitalized(), false);
+  }
 
-    @Test
-    public void testEqualsSameObject() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testEqualsSameObject() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertTrue(wordCap.equals(wordCap));
-    }
+    assertTrue(wordCap.equals(wordCap));
+  }
 
-    @Test
-    public void testEqualsNull() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testEqualsNull() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertFalse(wordCap.equals(null));
-    }
+    assertFalse(wordCap.equals(null));
+  }
 
-    @Test
-    public void testEqualsDifferentType() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testEqualsDifferentType() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertFalse(wordCap.equals("aString"));
-    }
+    assertFalse(wordCap.equals("aString"));
+  }
 
-    @Test
-    public void testEqualsDifferentWord() throws Exception {
-        WordCap first = new WordCap("first", false);
-        WordCap second = new WordCap("second", false);
+  @Test
+  public void testEqualsDifferentWord() throws Exception {
+    WordCap first = new WordCap("first", false);
+    WordCap second = new WordCap("second", false);
 
-        assertFalse(first.equals(second));
-    }
+    assertFalse(first.equals(second));
+  }
 
-    @Test
-    public void testEqualsDifferentCap() throws Exception {
-        WordCap first = new WordCap("aWord", true);
-        WordCap second = new WordCap("aWord", false);
+  @Test
+  public void testEqualsDifferentCap() throws Exception {
+    WordCap first = new WordCap("aWord", true);
+    WordCap second = new WordCap("aWord", false);
 
-        assertFalse(first.equals(second));
-    }
+    assertFalse(first.equals(second));
+  }
 
-    @Test
-    public void testEquals() throws Exception {
-        WordCap first = new WordCap("aWord", true);
-        WordCap second = new WordCap("aWord", true);
+  @Test
+  public void testEquals() throws Exception {
+    WordCap first = new WordCap("aWord", true);
+    WordCap second = new WordCap("aWord", true);
 
-        assertTrue(first.equals(second));
-    }
+    assertTrue(first.equals(second));
+  }
 
-    @Test
-    public void testHashCode() throws Exception {
-        WordCap first = new WordCap("aWord", true);
-        WordCap second = new WordCap("aWord", true);
+  @Test
+  public void testHashCode() throws Exception {
+    WordCap first = new WordCap("aWord", true);
+    WordCap second = new WordCap("aWord", true);
 
-        assertTrue(first.hashCode() == second.hashCode());
-    }
+    assertTrue(first.hashCode() == second.hashCode());
+  }
 
-    @Test
-    public void testHashCodeNonEqual() throws Exception {
-        WordCap first = new WordCap("aWord", true);
-        WordCap second = new WordCap("aWord", false);
+  @Test
+  public void testHashCodeNonEqual() throws Exception {
+    WordCap first = new WordCap("aWord", true);
+    WordCap second = new WordCap("aWord", false);
 
-        assertFalse(first.hashCode() == second.hashCode());
-    }
+    assertFalse(first.hashCode() == second.hashCode());
+  }
 
-    @Test
-    public void testCompareToWord() throws Exception {
-        WordCap first = new WordCap("first", false);
-        WordCap second = new WordCap("second", false);
+  @Test
+  public void testCompareToWord() throws Exception {
+    WordCap first = new WordCap("first", false);
+    WordCap second = new WordCap("second", false);
 
-        assertEquals(first.compareTo(second), "first".compareTo("second"));
-    }
+    assertEquals(first.compareTo(second), "first".compareTo("second"));
+  }
 
-    @Test
-    public void testCompareToCapitalization() throws Exception {
-        WordCap first = new WordCap("aWord", true);
-        WordCap second = new WordCap("aWord", false);
+  @Test
+  public void testCompareToCapitalization() throws Exception {
+    WordCap first = new WordCap("aWord", true);
+    WordCap second = new WordCap("aWord", false);
 
-        assertEquals(first.compareTo(second), Boolean.compare(true, false));
-    }
+    assertEquals(first.compareTo(second), Boolean.compare(true, false));
+  }
 
-    @Test
-    public void testToString() throws Exception {
-        WordCap wordCap = new WordCap("aWord", false);
+  @Test
+  public void testToString() throws Exception {
+    WordCap wordCap = new WordCap("aWord", false);
 
-        assertEquals(wordCap.toString(), "WordCap{word='aWord', isCapitalized=false}");
-    }
+    assertEquals(wordCap.toString(), "WordCap{word='aWord', isCapitalized=false}");
+  }
 }

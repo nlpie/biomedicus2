@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import org.apache.uima.jcas.JCas;
  * Analysis engine that doesn't do anything.
  */
 public class NullAE extends JCasAnnotator_ImplBase {
-    @Override
-    public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-    }
+  @Override
+  public void process(JCas jCas) throws AnalysisEngineProcessException {
+
+  }
 }

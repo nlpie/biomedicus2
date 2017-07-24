@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,32 +25,36 @@ import org.apache.uima.jcas.JCas;
  *
  */
 public final class UimaCopying {
-    private UimaCopying() {
-        throw new UnsupportedOperationException("Instantiation of utility class");
-    }
 
-    public static void copyFeatureStructure(FeatureStructure featureStructure, CAS destinationView) {
-        CAS source = featureStructure.getCAS();
-        FeatureStructureCopyingQueue featureStructureCopyingQueue = new FeatureStructureCopyingQueue(source,
-                destinationView);
-        featureStructureCopyingQueue.enqueue(featureStructure);
-        featureStructureCopyingQueue.run();
-    }
+  private UimaCopying() {
+    throw new UnsupportedOperationException("Instantiation of utility class");
+  }
 
-    public static void copyFeatureStructuresOfType(String typeName, CAS sourceView, CAS destinationView) {
-        FeatureStructureCopyingQueue featureStructureCopyingQueue = new FeatureStructureCopyingQueue(sourceView,
-                destinationView);
-        FSIterator<FeatureStructure> iterator = sourceView.getIndexRepository()
-                .getAllIndexedFS(sourceView.getTypeSystem().getType(typeName));
-        while (iterator.hasNext()) {
-            FeatureStructure featureStructure = iterator.get();
-            featureStructureCopyingQueue.enqueue(featureStructure);
-        }
-        featureStructureCopyingQueue.run();
-    }
+  public static void copyFeatureStructure(FeatureStructure featureStructure, CAS destinationView) {
+    CAS source = featureStructure.getCAS();
+    FeatureStructureCopyingQueue featureStructureCopyingQueue = new FeatureStructureCopyingQueue(
+        source,
+        destinationView);
+    featureStructureCopyingQueue.enqueue(featureStructure);
+    featureStructureCopyingQueue.run();
+  }
 
-    public static void copyFeatureStructuresOfType(int type, JCas sourceView, JCas destinationView) {
-        copyFeatureStructuresOfType(sourceView.getType(type).casType.getName(), sourceView.getCas(),
-                destinationView.getCas());
+  public static void copyFeatureStructuresOfType(String typeName, CAS sourceView,
+      CAS destinationView) {
+    FeatureStructureCopyingQueue featureStructureCopyingQueue = new FeatureStructureCopyingQueue(
+        sourceView,
+        destinationView);
+    FSIterator<FeatureStructure> iterator = sourceView.getIndexRepository()
+        .getAllIndexedFS(sourceView.getTypeSystem().getType(typeName));
+    while (iterator.hasNext()) {
+      FeatureStructure featureStructure = iterator.get();
+      featureStructureCopyingQueue.enqueue(featureStructure);
     }
+    featureStructureCopyingQueue.run();
+  }
+
+  public static void copyFeatureStructuresOfType(int type, JCas sourceView, JCas destinationView) {
+    copyFeatureStructuresOfType(sourceView.getType(type).casType.getName(), sourceView.getCas(),
+        destinationView.getCas());
+  }
 }

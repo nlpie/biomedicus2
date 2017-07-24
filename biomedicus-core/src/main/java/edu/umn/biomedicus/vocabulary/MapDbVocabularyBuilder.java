@@ -16,50 +16,55 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import java.nio.file.Path;
+import javax.annotation.Nullable;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
-import javax.annotation.Nullable;
-import java.nio.file.Path;
-
-import static com.google.common.base.Preconditions.checkState;
-
 /**
+ * Class responsible for building the vocabulary db.
  *
+ * @author Ben knoll
+ * @since 1.6.0
  */
 public class MapDbVocabularyBuilder extends VocabularyBuilder {
-    @Nullable private DB db;
 
-    @Inject
-    public MapDbVocabularyBuilder(@Setting("vocabulary.db.path") Path dbPath) {
-        db = DBMaker.fileDB(dbPath.toString()).fileMmapEnableIfSupported()
-                .readOnly().make();
-    }
+  @Nullable
+  private DB db;
 
-    @Override
-    TermIndexBuilder createWordsIndexBuilder() {
-        checkState(db != null, "Not open");
-        return new MapDbTermIndex(db, "words");
-    }
+  @Inject
+  public MapDbVocabularyBuilder(@Setting("vocabulary.db.path") Path dbPath) {
+    db = DBMaker.fileDB(dbPath.toString()).readOnly().make();
+  }
 
-    @Override
-    TermIndexBuilder createTermsIndexBuilder() {
-        checkState(db != null, "Not open");
-        return new MapDbTermIndex(db, "terms");
-    }
+  @Override
+  TermIndexBuilder createWordsIndexBuilder() {
+    checkState(db != null, "Not open");
+    return new MapDbTermIndex(db, "words");
+  }
 
-    @Override
-    TermIndexBuilder createNormsIndexBuilder() {
-        checkState(db != null, "Not open");
-        return new MapDbTermIndex(db, "norms");
-    }
+  @Override
+  TermIndexBuilder createTermsIndexBuilder() {
+    checkState(db != null, "Not open");
+    return new MapDbTermIndex(db, "terms");
+  }
 
-    @Override
-    public void doShutdown() throws BiomedicusException {
-        if (db != null) db.close();
-        db = null;
+  @Override
+  TermIndexBuilder createNormsIndexBuilder() {
+    checkState(db != null, "Not open");
+    return new MapDbTermIndex(db, "norms");
+  }
+
+  @Override
+  public void doShutdown() throws BiomedicusException {
+    if (db != null) {
+      db.close();
     }
+    db = null;
+  }
 }

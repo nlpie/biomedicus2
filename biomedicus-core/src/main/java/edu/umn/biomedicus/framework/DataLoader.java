@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package edu.umn.biomedicus.framework;
 
 import com.google.inject.Provider;
 import edu.umn.biomedicus.exc.BiomedicusException;
-
 import javax.annotation.Nullable;
 
 /**
@@ -28,47 +27,49 @@ import javax.annotation.Nullable;
  * @since 1.5.0
  */
 public abstract class DataLoader<T> implements Provider<T>, EagerLoadable {
-    private transient final Object lock = new Object();
-    private transient volatile boolean loaded = false;
-    @Nullable private transient volatile T instance;
 
-    @Override
-    public void eagerLoad() throws BiomedicusException {
-        if (!loaded) {
-            load();
-        }
+  private transient final Object lock = new Object();
+  private transient volatile boolean loaded = false;
+  @Nullable
+  private transient volatile T instance;
+
+  @Override
+  public void eagerLoad() throws BiomedicusException {
+    if (!loaded) {
+      load();
     }
+  }
 
-    @Override
-    public T get() {
-        if (!loaded) {
-            try {
-                load();
-            } catch (BiomedicusException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return instance;
+  @Override
+  public T get() {
+    if (!loaded) {
+      try {
+        load();
+      } catch (BiomedicusException e) {
+        throw new IllegalStateException(e);
+      }
     }
+    return instance;
+  }
 
-    private void load() throws BiomedicusException {
-        synchronized (lock) {
-            if (!loaded) {
-                instance = loadModel();
-                if (instance == null) {
-                    throw new IllegalStateException("Loader returned null");
-                }
-                loaded = true;
-            }
+  private void load() throws BiomedicusException {
+    synchronized (lock) {
+      if (!loaded) {
+        instance = loadModel();
+        if (instance == null) {
+          throw new IllegalStateException("Loader returned null");
         }
+        loaded = true;
+      }
     }
+  }
 
-    /**
-     * To be implemented by subclasses, performs the initialization of the
-     * object.
-     *
-     * @return full initialized object.
-     * @throws BiomedicusException if there is an issue loading the object
-     */
-    protected abstract T loadModel() throws BiomedicusException;
+  /**
+   * To be implemented by subclasses, performs the initialization of the
+   * object.
+   *
+   * @return full initialized object.
+   * @throws BiomedicusException if there is an issue loading the object
+   */
+  protected abstract T loadModel() throws BiomedicusException;
 }

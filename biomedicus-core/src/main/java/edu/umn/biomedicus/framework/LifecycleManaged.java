@@ -25,9 +25,10 @@ import edu.umn.biomedicus.exc.BiomedicusException;
  * @since 1.6.0
  */
 public interface LifecycleManaged {
-    /**
-     *
-     * @throws BiomedicusException
-     */
-    void doShutdown() throws BiomedicusException;
+
+  /**
+   *
+   * @throws BiomedicusException
+   */
+  void doShutdown() throws BiomedicusException;
 }

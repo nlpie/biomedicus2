@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import org.apache.uima.cas.FeatureStructure;
  */
 @FunctionalInterface
 public interface FeatureSetter<T> {
-    /**
-     * Set the value of a {@code Feature} given the {@code FeatureStructure} and the value.
-     *
-     * @param featureStructure {@code FeatureStructure} to set the {@code Feature} on
-     * @param feature          {@code Feature} to set
-     * @param value            value to set
-     */
-    void set(FeatureStructure featureStructure, Feature feature, T value);
+
+  /**
+   * Set the value of a {@code Feature} given the {@code FeatureStructure} and the value.
+   *
+   * @param featureStructure {@code FeatureStructure} to set the {@code Feature} on
+   * @param feature {@code Feature} to set
+   * @param value value to set
+   */
+  void set(FeatureStructure featureStructure, Feature feature, T value);
 }

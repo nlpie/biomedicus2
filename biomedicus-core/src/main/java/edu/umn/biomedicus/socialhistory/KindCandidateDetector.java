@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,14 @@ package edu.umn.biomedicus.socialhistory;
 
 import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
-
 import java.util.List;
 
 public interface KindCandidateDetector {
 
-    boolean isSocialHistoryHeader(List<ParseToken> headerTokens);
+  boolean isSocialHistoryHeader(List<ParseToken> headerTokens);
 
-    boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens, List<ParseToken> sentenceTokens);
+  boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens,
+      List<ParseToken> sentenceTokens);
 
-    SubstanceUsageKind getSocialHistoryKind();
+  SubstanceUsageKind getSocialHistoryKind();
 }

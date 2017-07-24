@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,43 @@
 package edu.umn.biomedicus.rtf.reader;
 
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
-
 import javax.annotation.Nullable;
 
 /**
- * Interface for a keyword action, which performs some kind of manipulation of the state when a keyword is encountered
- * in the RTF document.
+ * Interface for a keyword action, which performs some kind of manipulation of the state when a
+ * keyword is encountered in the RTF document.
  *
  * @since 1.3.0
  */
 public interface KeywordAction {
-    /**
-     * Executes the keyword.
-     *
-     * @param state             current state.
-     * @throws RtfReaderException if there is some kind of error executing the action
-     */
-    void executeKeyword(State state) throws RtfReaderException;
 
-    KeywordAction copy();
+  /**
+   * Executes the keyword.
+   *
+   * @param state current state.
+   * @throws RtfReaderException if there is some kind of error executing the action
+   */
+  void executeKeyword(State state) throws RtfReaderException;
 
-    void setBegin(int begin);
+  KeywordAction copy();
 
-    int getBegin();
+  int getBegin();
 
-    void setEnd(int end);
+  void setBegin(int begin);
 
-    int getEnd();
+  int getEnd();
 
-    void setParameter(@Nullable Integer parameter);
+  void setEnd(int end);
 
-    int getParameter();
+  int getParameter();
 
-    boolean hasParameter();
+  void setParameter(@Nullable Integer parameter);
 
-    void setControlWord(String controlWord);
+  boolean hasParameter();
 
-    String getControlWord();
+  String getControlWord();
 
-    boolean isKnown();
+  void setControlWord(String controlWord);
+
+  boolean isKnown();
 }

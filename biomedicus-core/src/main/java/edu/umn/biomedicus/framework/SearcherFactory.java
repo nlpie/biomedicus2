@@ -24,14 +24,15 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SearcherFactory {
-    private final LabelAliases labelAliases;
 
-    @Inject
-    public SearcherFactory(LabelAliases labelAliases) {
-        this.labelAliases = labelAliases;
-    }
+  private final LabelAliases labelAliases;
 
-    public Searcher searcher(String pattern) {
-        return Searcher.parse(labelAliases, pattern);
-    }
+  @Inject
+  public SearcherFactory(LabelAliases labelAliases) {
+    this.labelAliases = labelAliases;
+  }
+
+  public Searcher searcher(String pattern) {
+    return Searcher.parse(labelAliases, pattern);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ import org.apache.uima.jcas.JCas;
  * Mock implementation of {@link ViewMigrator}.
  */
 public class MockViewMigrator implements ViewMigrator {
-    @Override
-    public void migrate(JCas source, JCas target) {
 
-    }
+  @Override
+  public void migrate(JCas source, JCas target) {
+
+  }
 }

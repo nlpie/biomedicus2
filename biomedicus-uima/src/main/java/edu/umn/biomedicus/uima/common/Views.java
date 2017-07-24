@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,33 +24,32 @@ import org.apache.uima.jcas.JCas;
  * A list of UIMA CAS views.
  */
 public final class Views {
-    private Views() { }
 
-    /**
-     * The system view is the primary view used for document text and nlp annotations.
-     */
-    public static final String SYSTEM_VIEW = "SystemView";
+  /**
+   * The system view is the primary view used for document text and nlp annotations.
+   */
+  public static final String SYSTEM_VIEW = "SystemView";
+  /**
+   * The gold view is used for the gold annotations for evaluation
+   */
+  public static final String GOLD_VIEW = "GoldView";
+  /**
+   * The Augmented document view is used for documents modified during processing
+   */
+  public static final String AUGMENTED_DOCUMENT_VIEW = "AugmentedDocumentView";
+  /**
+   * The original document view is used for the original document.
+   */
+  public static final String ORIGINAL_DOCUMENT_VIEW = "OriginalDocumentView";
 
-    /**
-     * The gold view is used for the gold annotations for evaluation
-     */
-    public static final String GOLD_VIEW = "GoldView";
+  private Views() {
+  }
 
-    /**
-     * The Augmented document view is used for documents modified during processing
-     */
-    public static final String AUGMENTED_DOCUMENT_VIEW = "AugmentedDocumentView";
-
-    /**
-     * The original document view is used for the original document.
-     */
-    public static final String ORIGINAL_DOCUMENT_VIEW = "OriginalDocumentView";
-
-    public static JCas getSystemView(JCas jCas) throws AnalysisEngineProcessException {
-        try {
-            return jCas.getView(Views.SYSTEM_VIEW);
-        } catch (CASException e) {
-            throw new AnalysisEngineProcessException(e);
-        }
+  public static JCas getSystemView(JCas jCas) throws AnalysisEngineProcessException {
+    try {
+      return jCas.getView(Views.SYSTEM_VIEW);
+    } catch (CASException e) {
+      throw new AnalysisEngineProcessException(e);
     }
+  }
 }

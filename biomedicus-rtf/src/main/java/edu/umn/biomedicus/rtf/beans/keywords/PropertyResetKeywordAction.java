@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package edu.umn.biomedicus.rtf.beans.keywords;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -30,26 +29,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement
 @XmlType
 public class PropertyResetKeywordAction extends AbstractKeywordAction {
-    private String propertyGroupName;
 
-    @XmlElement(required = true)
-    public String getPropertyGroupName() {
-        return propertyGroupName;
-    }
+  private String propertyGroupName;
 
-    public void setPropertyGroupName(String propertyGroupName) {
-        this.propertyGroupName = propertyGroupName;
-    }
+  @XmlElement(required = true)
+  public String getPropertyGroupName() {
+    return propertyGroupName;
+  }
 
-    @Override
-    public void executeKeyword(State state) throws RtfReaderException {
-        state.resetPropertyGroup(propertyGroupName);
-    }
+  public void setPropertyGroupName(String propertyGroupName) {
+    this.propertyGroupName = propertyGroupName;
+  }
 
-    @Override
-    public KeywordAction copy() {
-        PropertyResetKeywordAction propertyResetKeywordAction = new PropertyResetKeywordAction();
-        propertyResetKeywordAction.setPropertyGroupName(propertyGroupName);
-        return propertyResetKeywordAction;
-    }
+  @Override
+  public void executeKeyword(State state) throws RtfReaderException {
+    state.resetPropertyGroup(propertyGroupName);
+  }
+
+  @Override
+  public KeywordAction copy() {
+    PropertyResetKeywordAction propertyResetKeywordAction = new PropertyResetKeywordAction();
+    propertyResetKeywordAction.setPropertyGroupName(propertyGroupName);
+    return propertyResetKeywordAction;
+  }
 }

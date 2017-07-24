@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,28 +24,29 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType
 public class PropertyDescription {
-    private String name;
-    private Integer defaultValue;
 
-    @XmlElement(required = true)
-    public String getName() {
-        return name;
-    }
+  private String name;
+  private Integer defaultValue;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  @XmlElement(required = true)
+  public String getName() {
+    return name;
+  }
 
-    @XmlElement
-    public Integer getDefaultValue() {
-        return defaultValue;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setDefaultValue(Integer defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+  @XmlElement
+  public Integer getDefaultValue() {
+    return defaultValue;
+  }
 
-    public Integer getDefaultValueOrZero() {
-        return defaultValue == null ? 0 : defaultValue;
-    }
+  public void setDefaultValue(Integer defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+
+  public Integer getDefaultValueOrZero() {
+    return defaultValue == null ? 0 : defaultValue;
+  }
 }

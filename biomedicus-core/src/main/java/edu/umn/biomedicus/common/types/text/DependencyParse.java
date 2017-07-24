@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,6 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 public interface DependencyParse {
-    String parseTree();
+
+  String parseTree();
 }

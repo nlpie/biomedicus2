@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.common.tuples;
 
+import java.io.Serializable;
 import java.util.function.BiConsumer;
 import javax.annotation.Nonnull;
 
@@ -26,7 +27,7 @@ import javax.annotation.Nonnull;
  * @param <T> Type of the first object
  * @param <U> Type of the second object
  */
-public class Pair<T, U> {
+public class Pair<T, U> implements Serializable {
 
   private final T first;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,51 +17,51 @@
 package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.tuples.WordCap;
-
 import java.util.function.UnaryOperator;
 
 /**
  *
  */
 public class WordCapAdapter implements UnaryOperator<WordCap> {
-    private boolean toLowercase = false;
 
-    private boolean ignoreCapitalization = false;
+  private boolean toLowercase = false;
 
-    public WordCapAdapter() {
+  private boolean ignoreCapitalization = false;
+
+  public WordCapAdapter() {
+  }
+
+  public WordCapAdapter(boolean toLowercase, boolean ignoreCapitalization) {
+    this.toLowercase = toLowercase;
+    this.ignoreCapitalization = ignoreCapitalization;
+  }
+
+  @Override
+  public WordCap apply(WordCap wordCap) {
+    String word = wordCap.getWord();
+    boolean isCapitalized = wordCap.isCapitalized();
+    if (toLowercase) {
+      word = word.toLowerCase();
     }
-
-    public WordCapAdapter(boolean toLowercase, boolean ignoreCapitalization) {
-        this.toLowercase = toLowercase;
-        this.ignoreCapitalization = ignoreCapitalization;
+    if (ignoreCapitalization) {
+      isCapitalized = false;
     }
+    return new WordCap(word, isCapitalized);
+  }
 
-    @Override
-    public WordCap apply(WordCap wordCap) {
-        String word = wordCap.getWord();
-        boolean isCapitalized = wordCap.isCapitalized();
-        if (toLowercase) {
-            word = word.toLowerCase();
-        }
-        if (ignoreCapitalization) {
-            isCapitalized = false;
-        }
-        return new WordCap(word, isCapitalized);
-    }
+  public boolean isToLowercase() {
+    return toLowercase;
+  }
 
-    public boolean isToLowercase() {
-        return toLowercase;
-    }
+  public void setToLowercase(boolean toLowercase) {
+    this.toLowercase = toLowercase;
+  }
 
-    public void setToLowercase(boolean toLowercase) {
-        this.toLowercase = toLowercase;
-    }
+  public boolean isIgnoreCapitalization() {
+    return ignoreCapitalization;
+  }
 
-    public boolean isIgnoreCapitalization() {
-        return ignoreCapitalization;
-    }
-
-    public void setIgnoreCapitalization(boolean ignoreCapitalization) {
-        this.ignoreCapitalization = ignoreCapitalization;
-    }
+  public void setIgnoreCapitalization(boolean ignoreCapitalization) {
+    this.ignoreCapitalization = ignoreCapitalization;
+  }
 }

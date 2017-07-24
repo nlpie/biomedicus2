@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,31 +16,31 @@
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <primitive>true</primitive>
-    <annotatorImplementationName>
-        edu.umn.biomedicus.uima.adapter.NoOpAnnotator
-    </annotatorImplementationName>
-    <analysisEngineMetaData>
-        <name>No operation annotator</name>
-        <description>Does nothing.</description>
-        <version>${project.version}</version>
-        <vendor>${organization.name}</vendor>
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <typePriorities>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
-            </imports>
-        </typePriorities>
-        <operationalProperties>
-            <modifiesCas>false</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>false</outputsNewCASes>
-        </operationalProperties>
-    </analysisEngineMetaData>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>
+    edu.umn.biomedicus.uima.adapter.NoOpAnnotator
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>No operation annotator</name>
+    <description>Does nothing.</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
+    <operationalProperties>
+      <modifiesCas>false</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
 </analysisEngineDescription>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,145 +20,145 @@
      filesystem.  The Java class for this collections reader is in uima_core.jar. -->
 
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <implementationName>edu.umn.biomedicus.uima.files.FilesInDirectoryReader</implementationName>
-    <processingResourceMetaData>
-        <name>File System Collection Reader</name>
-        <description>Collection reader for plain files in the file system.</description>
-        <version>${project.version}</version>
-        <vendor>${project.organization.name}</vendor>
-        <configurationParameters>
-            <configurationParameter>
-                <name>inputDirectory</name>
-                <description>Directory containing input files</description>
-                <type>String</type>
-                <multiValued>false</multiValued>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>encoding</name>
-                <description>Character encoding for the documents.</description>
-                <type>String</type>
-                <multiValued>false</multiValued>
-                <mandatory>false</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>recurseDepth</name>
-                <description>The number of levels of directories to recurse.</description>
-                <type>Integer</type>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>extensionGlob</name>
-                <description>A glob matcher to determine which files to load.</description>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>inputFileAdapterClass</name>
-                <description>Class to use to adapt files to CAS.</description>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>targetViewName</name>
-                <description>The view name to write to.</description>
-                <type>String</type>
-                <multiValued>false</multiValued>
-                <mandatory>true</mandatory>
-            </configurationParameter>
-        </configurationParameters>
-        <configurationParameterSettings>
-            <nameValuePair>
-                <name>inputDirectory</name>
-                <value>
-                    <string>/path/to/inputDirectory</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>encoding</name>
-                <value>
-                    <string>UTF-8</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>recurseDepth</name>
-                <value>
-                    <integer>1</integer>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>extensionGlob</name>
-                <value>
-                    <string>**/*.txt</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>inputFileAdapterClass</name>
-                <value>
-                    <string>edu.umn.biomedicus.uima.files.PlainTextInputFileAdapter</string>
-                </value>
-            </nameValuePair>
-            <nameValuePair>
-                <name>targetViewName</name>
-                <value>
-                    <string>SystemView</string>
-                </value>
-            </nameValuePair>
-        </configurationParameterSettings>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <implementationName>edu.umn.biomedicus.uima.files.FilesInDirectoryReader</implementationName>
+  <processingResourceMetaData>
+    <name>File System Collection Reader</name>
+    <description>Collection reader for plain files in the file system.</description>
+    <version>${project.version}</version>
+    <vendor>${project.organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>inputDirectory</name>
+        <description>Directory containing input files</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>encoding</name>
+        <description>Character encoding for the documents.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>recurseDepth</name>
+        <description>The number of levels of directories to recurse.</description>
+        <type>Integer</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>extensionGlob</name>
+        <description>A glob matcher to determine which files to load.</description>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>inputFileAdapterClass</name>
+        <description>Class to use to adapt files to CAS.</description>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>targetViewName</name>
+        <description>The view name to write to.</description>
+        <type>String</type>
+        <multiValued>false</multiValued>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>inputDirectory</name>
+        <value>
+          <string>/path/to/inputDirectory</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>encoding</name>
+        <value>
+          <string>UTF-8</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>recurseDepth</name>
+        <value>
+          <integer>1</integer>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>extensionGlob</name>
+        <value>
+          <string>**/*.txt</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>inputFileAdapterClass</name>
+        <value>
+          <string>edu.umn.biomedicus.uima.files.PlainTextInputFileAdapter</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>targetViewName</name>
+        <value>
+          <string>SystemView</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
 
-        <!-- Type System of CASes returned by this Collection Reader -->
+    <!-- Type System of CASes returned by this Collection Reader -->
 
 
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <typePriorities>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
-            </imports>
-        </typePriorities>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
 
-        <capabilities>
-            <capability>
-                <inputs/>
-                <outputs>
-                    <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
-                </outputs>
-                <outputSofas>
-                    <sofaName>SystemView</sofaName>
-                </outputSofas>
-            </capability>
-        </capabilities>
-        <operationalProperties>
-            <modifiesCas>true</modifiesCas>
-            <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
-            <outputsNewCASes>true</outputsNewCASes>
-        </operationalProperties>
-    </processingResourceMetaData>
+    <capabilities>
+      <capability>
+        <inputs/>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
+        </outputs>
+        <outputSofas>
+          <sofaName>SystemView</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
+      <outputsNewCASes>true</outputsNewCASes>
+    </operationalProperties>
+  </processingResourceMetaData>
 
-    <externalResourceDependencies>
-        <externalResourceDependency>
-            <key>guiceInjector</key>
-            <description>The guice injector resource.</description>
-        </externalResourceDependency>
-    </externalResourceDependencies>
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
 
-    <resourceManagerConfiguration>
-        <externalResources>
-            <externalResource>
-                <name>guiceInjector</name>
-                <description>The guice resource.</description>
-                <customResourceSpecifier>
-                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
-                </customResourceSpecifier>
-            </externalResource>
-        </externalResources>
-        <externalResourceBindings>
-            <externalResourceBinding>
-                <key>guiceInjector</key>
-                <resourceName>guiceInjector</resourceName>
-            </externalResourceBinding>
-        </externalResourceBindings>
-    </resourceManagerConfiguration>
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
 </collectionReaderDescription>

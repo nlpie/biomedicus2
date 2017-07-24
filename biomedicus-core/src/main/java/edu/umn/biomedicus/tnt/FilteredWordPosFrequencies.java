@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,50 @@
 
 package edu.umn.biomedicus.tnt;
 
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.tuples.WordCap;
+import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 
 /**
+ * A filter that goes on top of the word-part-of-speech frequencies used
+ * to train the TnT model.
  *
+ * @since 1.1.0
  */
 class FilteredWordPosFrequencies {
-    private final WordPosFrequencies wordPosFrequencies;
-    private final WordCapFilter filter;
-    private final WordCapAdapter wordCapAdapter;
 
-    FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter, WordCapAdapter wordCapAdapter) {
-        this.wordPosFrequencies = wordPosFrequencies;
-        this.filter = filter;
-        this.wordCapAdapter = wordCapAdapter;
-    }
+  private final WordPosFrequencies wordPosFrequencies;
 
-    FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter) {
-        this(new WordPosFrequencies(), filter, wordCapAdapter);
-    }
+  private final WordCapFilter filter;
 
-    void addWord(WordCap wordCap, PartOfSpeech partOfSpeech) {
-        WordCap adapted = wordCapAdapter.apply(wordCap);
-        if (filter.test(adapted)) {
-            wordPosFrequencies.addCount(adapted.getWord(), partOfSpeech, 1);
-        }
-    }
+  private final WordCapAdapter wordCapAdapter;
 
-    WordCapFilter getFilter() {
-        return filter;
-    }
+  FilteredWordPosFrequencies(WordPosFrequencies wordPosFrequencies, WordCapFilter filter,
+      WordCapAdapter wordCapAdapter) {
+    this.wordPosFrequencies = wordPosFrequencies;
+    this.filter = filter;
+    this.wordCapAdapter = wordCapAdapter;
+  }
 
-    WordCapAdapter getWordCapAdapter() {
-        return wordCapAdapter;
-    }
+  FilteredWordPosFrequencies(WordCapFilter filter, WordCapAdapter wordCapAdapter) {
+    this(new WordPosFrequencies(), filter, wordCapAdapter);
+  }
 
-    WordPosFrequencies getWordPosFrequencies() {
-        return wordPosFrequencies;
+  void addWord(WordCap wordCap, PartOfSpeech partOfSpeech) {
+    WordCap adapted = wordCapAdapter.apply(wordCap);
+    if (filter.test(adapted)) {
+      wordPosFrequencies.addCount(adapted.getWord(), partOfSpeech, 1);
     }
+  }
+
+  WordCapFilter getFilter() {
+    return filter;
+  }
+
+  WordCapAdapter getWordCapAdapter() {
+    return wordCapAdapter;
+  }
+
+  WordPosFrequencies getWordPosFrequencies() {
+    return wordPosFrequencies;
+  }
 }

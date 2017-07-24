@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@
 package edu.umn.biomedicus.common.types.text;
 
 public interface Token {
-    /**
-     *
-     * @return
-     */
-    String text();
 
-    /**
-     *
-     * @return
-     */
-    boolean hasSpaceAfter();
+  /**
+   *
+   * @return
+   */
+  String text();
+
+  /**
+   *
+   * @return
+   */
+  boolean hasSpaceAfter();
 }

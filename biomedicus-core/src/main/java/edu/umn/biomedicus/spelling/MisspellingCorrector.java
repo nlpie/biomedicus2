@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.spelling;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
@@ -26,6 +27,7 @@ import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
@@ -37,25 +39,27 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class MisspellingCorrector implements DocumentProcessor {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(MisspellingCorrector.class);
+
   private final SpellingModel spellingModel;
-  private final LabelIndex<Sentence> sentence2LabelIndex;
-  private final LabelIndex<ParseToken> parseTokenLabelIndex;
-  private final LabelIndex<Misspelling> misspellingLabelIndex;
-  private final Labeler<SpellCorrection> spellCorrectionLabeler;
 
   @Inject
-  public MisspellingCorrector(SpellingModel spellingModel, TextView document) {
+  public MisspellingCorrector(SpellingModel spellingModel) {
     this.spellingModel = spellingModel;
-    this.sentence2LabelIndex = document.getLabelIndex(Sentence.class);
-    this.parseTokenLabelIndex = document.getLabelIndex(ParseToken.class);
-    this.misspellingLabelIndex = document.getLabelIndex(Misspelling.class);
-    this.spellCorrectionLabeler = document.getLabeler(SpellCorrection.class);
   }
 
   @Override
-  public void process() throws BiomedicusException {
-    LOGGER.info("Correcting any misspelled words in a document.");
+  public void process(Document document) throws BiomedicusException {
+    LOGGER.debug("Correcting any misspelled words in a document.");
+
+    TextView systemView = StandardViews.getSystemView(document);
+
+    LabelIndex<Sentence> sentence2LabelIndex = systemView.getLabelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
+    LabelIndex<Misspelling> misspellingLabelIndex = systemView.getLabelIndex(Misspelling.class);
+    Labeler<SpellCorrection> spellCorrectionLabeler = systemView.getLabeler(SpellCorrection.class);
+
     for (Label<Sentence> sentence : sentence2LabelIndex) {
       String first = "<NONE>";
       String prev = "<NONE>";

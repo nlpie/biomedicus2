@@ -16,54 +16,58 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.utilities.Patterns;
-import edu.umn.biomedicus.framework.*;
+import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.types.text.TextSegment;
+import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.*;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.framework.store.LabelIndex;
+import edu.umn.biomedicus.framework.store.Labeler;
+import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.framework.store.TextLocation;
+import edu.umn.biomedicus.framework.store.TextView;
+import java.util.Collections;
+import javax.inject.Inject;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 
-import javax.inject.Inject;
-import java.util.Collections;
-
 public class ONLPSentenceDetector implements DocumentProcessor {
-    private final Labeler<Sentence> sentenceLabeler;
-    private final SentenceDetectorME sentenceDetector;
-    private final LabelIndex<TextSegment> textSegmentLabelIndex;
-    private final String text;
 
-    @Inject
-    ONLPSentenceDetector(TextView textView,
-                         ONLPSentenceModel ONLPSentenceModel) {
-        text = textView.getText();
-        sentenceLabeler = textView.getLabeler(Sentence.class);
-        sentenceDetector = ONLPSentenceModel.createSentenceDetector();
-        textSegmentLabelIndex = textView.getLabelIndex(TextSegment.class);
+  private final SentenceDetectorME sentenceDetector;
+
+  @Inject
+  ONLPSentenceDetector(ONLPSentenceModel ONLPSentenceModel) {
+    sentenceDetector = ONLPSentenceModel.createSentenceDetector();
+  }
+
+  @Override
+  public void process(Document document) throws BiomedicusException {
+    TextView systemView = StandardViews.getSystemView(document);
+    String text = systemView.getText();
+    Labeler<Sentence> sentenceLabeler = systemView.getLabeler(Sentence.class);
+    LabelIndex<TextSegment> textSegmentLabelIndex = systemView.getLabelIndex(TextSegment.class);
+
+    Iterable<Label<TextSegment>> segments;
+    if (textSegmentLabelIndex.isEmpty()) {
+      segments = Collections.singleton(new Label<>(
+          new Span(0, text.length()), new TextSegment()));
+    } else {
+      segments = textSegmentLabelIndex;
     }
 
-    @Override
-    public void process() throws BiomedicusException {
-        Iterable<Label<TextSegment>> segments;
-        if (textSegmentLabelIndex.isEmpty()) {
-            segments = Collections.singleton(new Label<>(
-                    new Span(0, text.length()), new TextSegment()));
-        } else {
-            segments = textSegmentLabelIndex;
+    for (TextLocation segment : segments) {
+      if (segment.length() > 0) {
+        String segmentText = segment.getCovered(text).toString();
+        for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
+          Span spanInSegment = new Span(onlpSpan.getStart(), onlpSpan.getEnd());
+          Span sentenceSpan = segment.derelativize(spanInSegment);
+          if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.getCovered(text)).find()) {
+            sentenceLabeler.value(new Sentence()).label(sentenceSpan);
+          }
         }
-
-        for (TextLocation segment : segments) {
-            String segmentText = segment.getCovered(text).toString();
-            for (opennlp.tools.util.Span onlpSpan : sentenceDetector
-                    .sentPosDetect(segmentText)) {
-                Span spanInSegment = new Span(onlpSpan.getStart(),
-                        onlpSpan.getEnd());
-                Span sentenceSpan = segment.derelativize(spanInSegment);
-                if (Patterns.NON_WHITESPACE
-                        .matcher(sentenceSpan.getCovered(text)).find()) {
-                    sentenceLabeler.value(new Sentence()).label(sentenceSpan);
-                }
-            }
-        }
+      }
     }
+  }
 }

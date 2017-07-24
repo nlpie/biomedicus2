@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,190 +16,94 @@
 
 package edu.umn.biomedicus.framework;
 
-import com.google.inject.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
+import java.util.Map;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
+ * Runs {@link DocumentProcessor} classes on documents, handling the instantiation and calling of
+ * the document processor.
  *
+ * @author Ben Knoll
+ * @since 1.5.0
  */
-public final class DocumentProcessorRunner {
-    private static final Logger LOGGER
-            = LoggerFactory.getLogger(DocumentProcessorRunner.class);
+public final class DocumentProcessorRunner extends ScopedWork {
 
-    private final List<Class<? extends PostProcessor>> postProcessors
-            = new ArrayList<>();
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorRunner.class);
 
-    private final Injector injector;
-    private final SettingsTransformer settingsTransformer;
-    private final Map<String, Object> globalSettings;
-    @Nullable private Injector settingsInjector;
-    @Nullable private Class<? extends DocumentProcessor> documentProcessorClass;
-    @Nullable private BiomedicusScopes.Context processorContext;
+  @Nullable
+  private Class<? extends DocumentProcessor> documentProcessorClass;
 
-    @Inject
-    DocumentProcessorRunner(
-            Injector injector,
-            SettingsTransformer settingsTransformer,
-            @Named("globalSettings") Map<String, Object> globalSettings
-    ) {
-        this.injector = injector;
-        this.settingsTransformer = settingsTransformer;
-        this.globalSettings = globalSettings;
+  @Inject
+  DocumentProcessorRunner(
+      Injector injector,
+      SettingsTransformer settingsTransformer,
+      @Named("globalSettings") Map<String, Object> globalSettings
+  ) {
+    super(injector, globalSettings, settingsTransformer);
+  }
+
+  /**
+   * Uses the supplied guice injector to create a new document processor runner.
+   *
+   * @param injector injector to use to create the document processor runner.
+   * @return new instance of a document processor runner.
+   */
+  public static DocumentProcessorRunner create(Injector injector) {
+    return injector.getInstance(DocumentProcessorRunner.class);
+  }
+
+  /**
+   * Sets the document processor class to instantiate and run.
+   *
+   * @param documentProcessorClass class object for the type of document processor to run.
+   */
+  public void setDocumentProcessorClass(Class<? extends DocumentProcessor> documentProcessorClass) {
+    this.documentProcessorClass = documentProcessorClass;
+  }
+
+  /**
+   * Sets the document processor class to instantiate and run by name.
+   *
+   * @param documentProcessorClassName the name of the document processor class.
+   * @throws ClassNotFoundException if the class with the specified name was not found.
+   */
+  public void setDocumentProcessorClassName(String documentProcessorClassName)
+      throws ClassNotFoundException {
+    this.documentProcessorClass = Class.forName(documentProcessorClassName)
+        .asSubclass(DocumentProcessor.class);
+  }
+
+  /**
+   * Instantiates a document processor and then runs it on the document.
+   *
+   * @param document the document to pass to the document processor
+   * @throws BiomedicusException if the class there was any exception thrown while instantiating or
+   * running the document processor.
+   */
+  public void processDocument(Document document) throws BiomedicusException {
+    checkNotNull(processorContext, "Processor context is null, initialize not ran");
+
+    checkNotNull(settingsInjector, "Settings injector is null, initialize not ran");
+
+    checkNotNull(documentProcessorClass, "Processor class has not been set");
+
+    try {
+      processorContext.call(() -> {
+        settingsInjector.getInstance(documentProcessorClass).process(document);
+        return null;
+      });
+    } catch (Exception e) {
+      LOGGER.error("Error during processing");
+      throw new BiomedicusException(e);
     }
-
-    public static DocumentProcessorRunner create(Injector injector) {
-        return injector.getInstance(DocumentProcessorRunner.class);
-    }
-
-    public void setDocumentProcessorClass(
-            Class<? extends DocumentProcessor> documentProcessorClass
-    ) {
-        this.documentProcessorClass = documentProcessorClass;
-    }
-
-    public void setDocumentProcessorClassName(String documentProcessorClassName)
-            throws ClassNotFoundException {
-        this.documentProcessorClass = Class.forName(documentProcessorClassName)
-                .asSubclass(DocumentProcessor.class);
-    }
-
-    public void addPostProcessorClass(
-            Class<? extends PostProcessor> processorListenerClass
-    ) {
-        postProcessors.add(processorListenerClass);
-    }
-
-    public void addPostProcessorClassName(String postProcessorClassName)
-            throws ClassNotFoundException {
-        addPostProcessorClass(Class.forName(postProcessorClassName)
-                .asSubclass(PostProcessor.class));
-    }
-
-    public void initialize(@Nullable Map<String, Object> processorSettings,
-                           @Nullable Map<Key<?>, Object> processorScopedObjects)
-            throws BiomedicusException {
-        checkNotNull(documentProcessorClass,
-                "Document processor class needs to be set");
-
-        settingsTransformer.setAnnotationFunction(ProcessorSettingImpl::new);
-
-        if (processorSettings != null) {
-            settingsTransformer.addAll(processorSettings);
-        }
-        settingsTransformer.addAll(globalSettings);
-
-        Map<Key<?>, Object> settingsSeededObjects = settingsTransformer
-                .getSettings();
-        settingsInjector = injector.createChildInjector(
-                new ProcessorSettingsModule(settingsSeededObjects.keySet()));
-
-        Map<Key<?>, Object> processorScopeMap = new HashMap<>();
-        processorScopeMap.putAll(settingsSeededObjects);
-        if (processorScopedObjects != null) {
-            processorScopeMap.putAll(processorScopedObjects);
-        }
-
-        processorContext = BiomedicusScopes
-                .createProcessorContext(processorScopeMap);
-    }
-
-    public void require(String className) throws BiomedicusException {
-        try {
-            require(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            throw new BiomedicusException(e);
-        }
-    }
-
-    public void require(Class<?> aClass) throws BiomedicusException {
-        checkNotNull(processorContext,
-                "Processor context is null, initialize not ran");
-
-        checkNotNull(settingsInjector,
-                "Settings injector is null, initialize not ran");
-
-        try {
-            processorContext.call(() -> {
-                Provider<?> provider = settingsInjector.getProvider(aClass);
-                if (provider instanceof EagerLoadable) {
-                    ((EagerLoadable) provider).eagerLoad();
-                    return null;
-                }
-                Object o = provider.get();
-                if (o instanceof EagerLoadable) {
-                    ((EagerLoadable) o).eagerLoad();
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            throw new BiomedicusException(e);
-        }
-    }
-
-    public void processDocument(
-            Document document,
-            @Nullable Map<Key<?>, Object> documentScopedObjects
-    ) throws BiomedicusException {
-        checkNotNull(processorContext,
-                "Processor context is null, initialize not ran");
-
-        checkNotNull(settingsInjector,
-                "Settings injector is null, initialize not ran");
-
-        try {
-            processorContext.call(() -> {
-                Map<Key<?>, Object> seededObjects = new HashMap<>();
-                seededObjects.put(Key.get(Document.class), document);
-                Binding<String> nameBind = settingsInjector
-                        .getBinding(Key.get(String.class,
-                                new ProcessorSettingImpl("viewName")));
-                if (documentScopedObjects != null) {
-                    seededObjects.putAll(documentScopedObjects);
-                }
-                BiomedicusScopes.runInDocumentScope(() -> {
-                    settingsInjector.getInstance(documentProcessorClass)
-                            .process();
-                    return null;
-                }, seededObjects);
-                return null;
-            });
-        } catch (Exception e) {
-            LOGGER.error("Error during processing");
-            throw new BiomedicusException(e);
-        }
-    }
-
-    public void processingFinished() throws BiomedicusException {
-        checkNotNull(processorContext,
-                "Processor context is null, initialize not ran");
-
-        checkNotNull(settingsInjector,
-                "Settings injector is null, initialize not ran");
-
-        try {
-            processorContext.call(() -> {
-                for (Class<? extends PostProcessor> post : postProcessors) {
-                    settingsInjector.getInstance(post).afterProcessing();
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            LOGGER.error("Error during post processing.");
-            throw new BiomedicusException(e);
-        }
-    }
-
-
+  }
 }

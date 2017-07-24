@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,32 +33,33 @@ import org.slf4j.LoggerFactory;
  * @since 1.3.0
  */
 public class ParagraphAnnotator extends CasAnnotator_ImplBase {
-    /**
-     * Class logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ParagraphAnnotator.class);
 
-    @Override
-    public void process(CAS aCAS) throws AnalysisEngineProcessException {
-        LOGGER.debug("Annotating rtf paragraphs.");
-        CAS systemView = aCAS.getView(Views.SYSTEM_VIEW);
+  /**
+   * Class logger.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParagraphAnnotator.class);
 
-        Type newParagraphType = systemView.getTypeSystem()
-                .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
+  @Override
+  public void process(CAS aCAS) throws AnalysisEngineProcessException {
+    LOGGER.debug("Annotating rtf paragraphs.");
+    CAS systemView = aCAS.getView(Views.SYSTEM_VIEW);
 
-        Type paragraphType = systemView.getTypeSystem()
-                .getType("edu.umn.biomedicus.type.ParagraphAnnotation");
+    Type newParagraphType = systemView.getTypeSystem()
+        .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
 
-        AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
-                .getAnnotationIndex(newParagraphType);
-        int start = 0;
+    Type paragraphType = systemView.getTypeSystem()
+        .getType("edu.umn.biomedicus.type.ParagraphAnnotation");
 
-        for (AnnotationFS newParagraph : newParagraphIndex) {
-            int end = newParagraph.getEnd();
-            systemView.addFsToIndexes(
-                    systemView.createAnnotation(paragraphType, start, end));
+    AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
+        .getAnnotationIndex(newParagraphType);
+    int start = 0;
 
-            start = end;
-        }
+    for (AnnotationFS newParagraph : newParagraphIndex) {
+      int end = newParagraph.getEnd();
+      systemView.addFsToIndexes(
+          systemView.createAnnotation(paragraphType, start, end));
+
+      start = end;
     }
+  }
 }

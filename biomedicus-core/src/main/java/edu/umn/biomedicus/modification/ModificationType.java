@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.modification;
 
 /**
- * 
+ *
  */
 public enum ModificationType {
   PROBABLE,

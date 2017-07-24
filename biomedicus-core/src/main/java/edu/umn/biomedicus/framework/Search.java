@@ -18,40 +18,40 @@ package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.Span;
-
 import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Results from {@link Searcher}.
- *
- *
  */
 public interface Search {
-    /**
-     * Returns the named label if it matched against anything.
-     * @param name
-     * @return
-     */
-    Optional<Label<?>> getLabel(String name);
 
-    Optional<Span> getSpan(String name);
+  /**
+   * Returns the named label if it matched against anything.
+   */
+  Optional<Label<?>> getLabel(String name);
 
-    boolean found();
+  Optional<Span> getSpan(String name);
 
-    boolean search();
+  boolean found();
 
-    boolean search(int begin, int end);
+  boolean search();
 
-    boolean search(Span span);
+  boolean search(int begin, int end);
 
-    boolean match();
+  boolean search(Span span);
 
-    boolean match(int begin, int end);
+  boolean match();
 
-    boolean match(Span span);
+  boolean match(int begin, int end);
 
-    Optional<Span> getSpan();
+  boolean match(Span span);
 
-    Collection<String> getGroups();
+  Optional<Span> getSpan();
+
+  Collection<String> getGroups();
+
+  int getBegin();
+
+  int getEnd();
 }

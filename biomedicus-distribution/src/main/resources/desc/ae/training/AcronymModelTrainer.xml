@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2016 Regents of the University of Minnesota.
+  ~ Copyright (c) 2017 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,100 +16,103 @@
   -->
 
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
-    <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-    <primitive>true</primitive>
-    <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorRunnerAnnotator</annotatorImplementationName>
-    <analysisEngineMetaData>
-        <name>Acronym Model Trainer</name>
-        <description>Training for the acronym model.</description>
-        <version>${project.version}</version>
-        <vendor>${organization.name}</vendor>
-        <configurationParameters>
-            <configurationParameter>
-                <name>acronym.vector.trainer.uniqueIdMap.path</name>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>acronym.vector.trainer.longforms.path</name>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>acronym.vector.trainer.outputDir.path</name>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>viewName</name>
-                <description>The name of the UIMA view to use.</description>
-                <type>String</type>
-            </configurationParameter>
-            <configurationParameter>
-                <name>eagerLoad</name>
-                <description>
-                    The name of any classes that need to be eagerly loaded by the Guice injector. Classes which are
-                    instances of LoadableDataModel will have the loadData method called.
-                </description>
-                <type>String</type>
-                <multiValued>true</multiValued>
-                <mandatory>false</mandatory>
-            </configurationParameter>
-            <configurationParameter>
-                <name>postProcessors</name>
-                <description>
-                    The class names of any post processors that should be run after all documents have been processed.
-                </description>
-                <type>String</type>
-                <multiValued>true</multiValued>
-                <mandatory>false</mandatory>
-            </configurationParameter>
-        </configurationParameters>
-        <configurationParameterSettings>
-            <nameValuePair>
-                <name>viewName</name>
-                <value>
-                    <string>SystemView</string>
-                </value>
-            </nameValuePair>
-        </configurationParameterSettings>
-        <typeSystemDescription>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystem"/>
-            </imports>
-        </typeSystemDescription>
-        <typePriorities>
-            <imports>
-                <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
-            </imports>
-        </typePriorities>
-        <operationalProperties>
-            <modifiesCas>true</modifiesCas>
-            <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
-            <outputsNewCASes>false</outputsNewCASes>
-        </operationalProperties>
-    </analysisEngineMetaData>
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+  </annotatorImplementationName>
+  <analysisEngineMetaData>
+    <name>Acronym Model Trainer</name>
+    <description>Training for the acronym model.</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>acronym.vector.trainer.uniqueIdMap.path</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>acronym.vector.trainer.longforms.path</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>acronym.vector.trainer.outputDir.path</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>viewName</name>
+        <description>The name of the UIMA view to use.</description>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>eagerLoad</name>
+        <description>
+          The name of any classes that need to be eagerly loaded by the Guice injector. Classes
+          which are
+          instances of LoadableDataModel will have the loadData method called.
+        </description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>postProcessors</name>
+        <description>
+          The class names of any post processors that should be run after all documents have been
+          processed.
+        </description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>viewName</name>
+        <value>
+          <string>SystemView</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
 
-    <externalResourceDependencies>
-        <externalResourceDependency>
-            <key>guiceInjector</key>
-            <description>The guice injector resource.</description>
-        </externalResourceDependency>
-    </externalResourceDependencies>
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
 
-    <resourceManagerConfiguration>
-        <externalResources>
-            <externalResource>
-                <name>guiceInjector</name>
-                <description>The guice resource.</description>
-                <customResourceSpecifier>
-                    <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
-                </customResourceSpecifier>
-            </externalResource>
-        </externalResources>
-        <externalResourceBindings>
-            <externalResourceBinding>
-                <key>guiceInjector</key>
-                <resourceName>guiceInjector</resourceName>
-            </externalResourceBinding>
-        </externalResourceBindings>
-    </resourceManagerConfiguration>
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
 </analysisEngineDescription>
 

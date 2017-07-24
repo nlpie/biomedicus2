@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,16 @@ package edu.umn.biomedicus.stopwords;
 import edu.umn.biomedicus.common.types.text.Token;
 
 /**
- * Represents stop words in text, words that should be ignored before processing because they are too common or for some
- * other reason. It has methods for marking which tokens are stop words either on an individual case by token or by
- * looking at all tokens in a document.
+ * Represents stop words in text, words that should be ignored before processing because they are
+ * too common or for some other reason. It has methods for marking which tokens are stop words
+ * either on an individual case by token or by looking at all tokens in a document.
  */
 public interface Stopwords {
-    /**
-     * Checks and marks if a token is a stopword
-     *
-     * @param token the token to mark whether is a stopword
-     */
-    boolean isStopWord(Token token);
+
+  /**
+   * Checks and marks if a token is a stopword
+   *
+   * @param token the token to mark whether is a stopword
+   */
+  boolean isStopWord(Token token);
 }
