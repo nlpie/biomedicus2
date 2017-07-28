@@ -40,11 +40,19 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Detects and labels instances of numbers in text, either English numerals or in decimal numeral
+ * system.
+ *
+ * @author Ben Knoll
+ * @since 1.8.0
+ */
 public class NumberRecognizer implements DocumentProcessor {
 
   private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
   private final Sequence sequence;
+  
   private Labeler<Number> labeler;
 
   @Inject

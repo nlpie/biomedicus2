@@ -25,6 +25,8 @@ import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
 import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
+import edu.umn.biomedicus.common.types.semantics.Number;
+import edu.umn.biomedicus.common.types.semantics.ImmutableNumber;
 import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
@@ -123,6 +125,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(Cell.class, CellLabelAdapter::new);
     map.put(NestedRow.class, NestedRowLabelAdapter::new);
     map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
+    map.put(Number.class, NumberLabelAdapter::new);
     return map;
   }
 
@@ -741,6 +744,29 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected NestedCell createLabelValue(FeatureStructure featureStructure) {
       return new NestedCell();
+    }
+  }
+
+  public static class NumberLabelAdapter extends AbstractLabelAdapter<Number> {
+
+    private final Feature valueFeature;
+
+    NumberLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_8.Number"));
+      valueFeature = cas.getTypeSystem().getFeatureByFullName("value");
+    }
+
+    @Override
+    protected Number createLabelValue(FeatureStructure featureStructure) {
+      String value = featureStructure.getStringValue(valueFeature);
+      return ImmutableNumber.builder().value(value).build();
+    }
+
+    @Override
+    protected void fillAnnotation(Label<Number> label, AnnotationFS annotationFS) {
+      Number number = label.value();
+
+      annotationFS.setStringValue(valueFeature, number.value());
     }
   }
 }

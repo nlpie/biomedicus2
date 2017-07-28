@@ -45,6 +45,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+
 /**
  * Trains an AcronymVectorModel based on text.
  * Does not require the biomedicus tokenizer or other elements of the pipeline.
@@ -85,7 +87,7 @@ public class AcronymVectorOfflineTrainer {
    * AcronymExpansionsBuilder)
    */
   public AcronymVectorOfflineTrainer(String expansionsFile, int nWords,
-      String alternateLongformsFile) throws BiomedicusException, IOException {
+      @Nullable String alternateLongformsFile) throws BiomedicusException, IOException {
     this.nWords = nWords;
     // Get all possible acronym expansions and make vectors for each one
     aem = new AcronymExpansionsModel.Loader(Paths.get(expansionsFile)).loadModel();

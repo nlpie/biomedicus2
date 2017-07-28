@@ -16,9 +16,30 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
+import java.math.BigInteger;
 import org.immutables.value.Value;
 
+/**
+ * Represents a number in text, either appearing in english form or in numeral form.
+ *
+ * @since 1.8.0
+ */
 @Value.Immutable
 public interface Number {
+
+  /**
+   * The value of the number normalized to numeral forum in the {@link BigInteger} string format.
+   *
+   * @return {@link BigInteger#toString()} formatted number
+   */
   String value();
+
+  /**
+   * Turns the value into a {@link BigInteger} object.
+   *
+   * @return BigInteger object with the value of this number.
+   */
+  default BigInteger valueAsBigInteger() {
+    return new BigInteger(value());
+  }
 }

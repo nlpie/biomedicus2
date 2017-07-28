@@ -318,6 +318,18 @@
     </typeDescription>
 
     <typeDescription>
+      <name>edu.umn.biomedicus.uima.type1_8.Number</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>value</name>
+          <description>The string value of the number, in java BigInteger format.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+
+    <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.ParseToken</name>
       <description>
         A token in the form standard to PTB-style annotated corpora. For these tokens possessives
