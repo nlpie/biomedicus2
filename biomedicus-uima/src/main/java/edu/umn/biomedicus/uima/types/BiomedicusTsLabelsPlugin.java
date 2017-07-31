@@ -753,7 +753,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     NumberLabelAdapter(CAS cas) {
       super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_8.Number"));
-      valueFeature = cas.getTypeSystem().getFeatureByFullName("value");
+      valueFeature = cas.getTypeSystem().getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:value");
     }
 
     @Override

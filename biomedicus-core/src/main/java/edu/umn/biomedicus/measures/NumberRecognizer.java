@@ -16,12 +16,16 @@
 
 package edu.umn.biomedicus.measures;
 
+import com.google.common.base.Splitter;
+import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.semantics.ImmutableNumber;
 import edu.umn.biomedicus.common.types.semantics.Number;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
@@ -29,12 +33,16 @@ import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -52,7 +60,7 @@ public class NumberRecognizer implements DocumentProcessor {
   private static final NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
   private final Sequence sequence;
-  
+
   private Labeler<Number> labeler;
 
   @Inject
@@ -64,7 +72,6 @@ public class NumberRecognizer implements DocumentProcessor {
   public void process(@Nonnull Document document) throws BiomedicusException {
     TextView systemView = StandardViews.getSystemView(document);
 
-
     LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
     LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
     labeler = systemView.getLabeler(Number.class);
@@ -74,7 +81,8 @@ public class NumberRecognizer implements DocumentProcessor {
         try {
           java.lang.Number number = numberFormat.parse(tokenLabel.getValue().text());
           sequence.reset();
-          labeler.value(ImmutableNumber.builder().value(number.toString()).build()).label(tokenLabel);
+          labeler.value(ImmutableNumber.builder().value(number.toString()).build())
+              .label(tokenLabel);
         } catch (ParseException e) {
           if (sequence.tryToken(tokenLabel)) {
             labelSeq();
@@ -86,14 +94,14 @@ public class NumberRecognizer implements DocumentProcessor {
       if (sequence.finish()) {
         labelSeq();
       }
-
-      sequence.reset();
     }
   }
 
   private void labelSeq() throws BiomedicusException {
+    assert sequence.value != null : "This method should only get called when value is nonnull";
     labeler.value(ImmutableNumber.builder().value(sequence.value.toString()).build())
         .label(Span.create(sequence.begin, sequence.end));
+    sequence.reset();
   }
 
   public enum NumberType {
@@ -104,12 +112,77 @@ public class NumberRecognizer implements DocumentProcessor {
   }
 
   @Singleton
-  public static class NumberModel {
+  @ProvidedBy(NumberModelLoader.class)
+  static class NumberModel {
 
-    private Map<String, NumberDefinition> numbers;
+    private final Map<String, NumberDefinition> numbers;
 
-    public Optional<NumberDefinition> getNumberDefinition(String word) {
+    private NumberModel(Map<String, NumberDefinition> numbers) {
+      this.numbers = numbers;
+    }
+
+    Optional<NumberDefinition> getNumberDefinition(String word) {
       return Optional.ofNullable(numbers.get(word));
+    }
+  }
+
+  @Singleton
+  static class NumberModelLoader extends DataLoader<NumberModel> {
+
+    private final Path path;
+
+    @Inject
+    NumberModelLoader(@Setting("measures.numbers.nrnumPath") Path path) {
+      this.path = path;
+    }
+
+    @Nonnull
+    @Override
+    protected NumberModel loadModel() throws BiomedicusException {
+      Splitter splitter = Splitter.on("|");
+      try {
+        Map<String, NumberDefinition> map = new HashMap<>();
+
+        Iterator<String> lines = Files.lines(path).iterator();
+        while (lines.hasNext()) {
+          String line = lines.next();
+
+          Iterator<String> it = splitter.split(line).iterator();
+
+          it.next(); // discard
+          String word = it.next();
+          NumberType numberType = typeFromString(it.next());
+
+          int value;
+          if (numberType == NumberType.MAGNITUDE) {
+            it.next();
+            it.next();
+            value = Integer.valueOf(it.next());
+          } else {
+            value = Integer.valueOf(it.next());
+          }
+
+          NumberDefinition numberDefinition = new NumberDefinition(value, numberType);
+          map.put(word, numberDefinition);
+        }
+        return new NumberModel(map);
+      } catch (IOException e) {
+        throw new BiomedicusException(e);
+      }
+    }
+
+    private NumberType typeFromString(String st) {
+      switch (st) {
+        case "unit":
+          return NumberType.UNIT;
+        case "teen":
+          return NumberType.TEEN;
+        case "decade":
+          return NumberType.DECADE;
+        case "magnitude":
+          return NumberType.MAGNITUDE;
+      }
+      throw new IllegalStateException("Unrecognized number type: " + st);
     }
   }
 
@@ -117,16 +190,10 @@ public class NumberRecognizer implements DocumentProcessor {
 
     final int value;
 
-    final boolean plural;
-
-    final boolean singular;
-
     final NumberType numberType;
 
-    public NumberDefinition(int value, boolean plural, boolean singular, NumberType numberType) {
+    public NumberDefinition(int value, NumberType numberType) {
       this.value = value;
-      this.plural = plural;
-      this.singular = singular;
       this.numberType = numberType;
     }
   }
@@ -272,6 +339,8 @@ public class NumberRecognizer implements DocumentProcessor {
       valueBuilder = -1;
       begin = -1;
       end = -1;
+
+      basic.reset();
     }
 
     boolean tryToken(Label<ParseToken> parseTokenLabel) {
@@ -356,6 +425,28 @@ public class NumberRecognizer implements DocumentProcessor {
     }
 
     boolean finish() {
+      switch (state) {
+        case NONE:
+          if (basic.finish()) {
+            state = SequenceState.HAS_BASIC;
+            if (value == null) {
+              begin = basic.begin;
+            }
+            end = basic.end;
+            valueBuilder = basic.value;
+          }
+          break;
+        case HAS_BASIC:
+        case RANK_01:
+          if (basic.state != BasicState.NONE) {
+            if (basic.finish()) {
+              valueBuilder += basic.value;
+              end = basic.end;
+              state = SequenceState.PAST_FIRST_PART;
+            }
+          }
+        default:
+      }
       if (value == null) {
         if (state == SequenceState.NONE) {
           return false;

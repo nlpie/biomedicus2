@@ -61,31 +61,20 @@
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
-      <!-- TODO: Add any name/value pairs for configuration parameters -->
       <nameValuePair>
         <name>documentProcessor</name>
         <value>
-          <string></string>
+          <string>edu.umn.biomedicus.measures.NumberRecognizer</string>
         </value>
       </nameValuePair>
-      <!-- TODO: Eager loaded model classes or post processors go here
       <nameValuePair>
           <name>eagerLoad</name>
           <value>
               <array>
-                  <string></string>
+                  <string>edu.umn.biomedicus.measures.NumberRecognizer$NumberModel</string>
               </array>
           </value>
       </nameValuePair>
-      <nameValuePair>
-          <name>postProcessors</name>
-          <value>
-              <array>
-                  <string></string>
-              </array>
-          </value>
-      </nameValuePair>
-      -->
     </configurationParameterSettings>
     <typeSystemDescription>
       <imports>

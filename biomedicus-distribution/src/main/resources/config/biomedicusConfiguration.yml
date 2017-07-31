@@ -10,6 +10,9 @@ settings:
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
+  measures:
+    numbers:
+      nrnumPath: measures/NRNUM
   tnt:
     trigram.path: tnt/trigram.yml
     word:

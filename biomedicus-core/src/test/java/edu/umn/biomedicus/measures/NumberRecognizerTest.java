@@ -37,22 +37,23 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class NumberRecognizerTest {
-  static NumberDefinition fiveDef = new NumberDefinition(5, true, false,
-      NumberType.UNIT);
+  static NumberDefinition fiveDef = new NumberDefinition(5, NumberType.UNIT);
 
-  static NumberDefinition fortyDef = new NumberDefinition(40, true, false,
+  static NumberDefinition fortyDef = new NumberDefinition(40,
       NumberType.DECADE);
 
-  static NumberDefinition fourDef = new NumberDefinition(4, true, false, NumberType.UNIT);
+  static NumberDefinition fourDef = new NumberDefinition(4,  NumberType.UNIT);
 
-  static NumberDefinition tenDef = new NumberDefinition(10, true, false, NumberType.TEEN);
+  static NumberDefinition tenDef = new NumberDefinition(10, NumberType.TEEN);
 
-  static NumberDefinition fifteenDef = new NumberDefinition(15, true, false,
+  static NumberDefinition fifteenDef = new NumberDefinition(15,
       NumberType.TEEN);
 
-  static NumberDefinition billionDef = new NumberDefinition(3, true, false, NumberType.MAGNITUDE);
+  static NumberDefinition hundredDef = new NumberDefinition(100, NumberType.MAGNITUDE);
 
-  static NumberDefinition millionDef = new NumberDefinition(2, true, false, NumberType.MAGNITUDE);
+  static NumberDefinition billionDef = new NumberDefinition(3, NumberType.MAGNITUDE);
+
+  static NumberDefinition millionDef = new NumberDefinition(2, NumberType.MAGNITUDE);
 
   public static class BasicTests {
 
@@ -246,6 +247,39 @@ public class NumberRecognizerTest {
           .add(BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(6))));
       assertEquals(seq.begin, 0);
       assertEquals(seq.end, 25);
+    }
+
+    @Test
+    public void testEndOfSentenceHundred() throws Exception {
+      new Expectations() {{
+        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
+        numberModel.getNumberDefinition("hundred"); result = Optional.of(hundredDef);
+      }};
+
+      assertFalse(seq.tryToken(Label.create(Span.create(0, 4),
+          ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+      assertFalse(seq.tryToken(Label.create(Span.create(5, 12),
+          ImmutableParseToken.builder().text("hundred").hasSpaceAfter(true).build())));
+      assertTrue(seq.finish());
+
+      assertEquals(seq.value, BigInteger.valueOf(500));
+      assertEquals(seq.begin, 0);
+      assertEquals(seq.end, 12);
+    }
+
+    @Test
+    public void testEndOfSentenceDecade() throws Exception {
+      new Expectations() {{
+        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
+      }};
+
+      assertFalse(seq.tryToken(Label.create(Span.create(0, 5),
+          ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+      assertTrue(seq.finish());
+
+      assertEquals(seq.value, BigInteger.valueOf(40));
+      assertEquals(seq.begin, 0);
+      assertEquals(seq.end, 5);
     }
 
     @BeforeMethod
