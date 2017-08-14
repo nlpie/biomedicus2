@@ -65,19 +65,21 @@
       <features>
         <featureDescription>
           <name>kind</name>
-          <description>The kind of section it is.</description>
+          <description>The clinical type of section that this is.</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>
+
     <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.SectionTitle</name>
-      <description>A document section</description>
+      <description>The title sentence of the section.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
+
     <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.SectionContent</name>
-      <description>A document section</description>
+      <description>The content of the section.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
 
@@ -266,6 +268,7 @@
 
     <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.ModificationCue</name>
+      <description>The cue word that caused a modification.</description>
       <supertypeName>uima.tcas.Annotation</supertypeName>
     </typeDescription>
 
@@ -322,11 +325,52 @@
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
-          <name>value</name>
-          <description>The string value of the number, in java BigInteger format.</description>
+          <name>numerator</name>
+          <description>
+            The string numerator value of the number, in java BigInteger format.
+          </description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>denominator</name>
+          <description>
+            The string denominator value of the number, in java BigInteger format.
+          </description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>type</name>
+          <description>
+            The type of number
+          </description>
+          <rangeTypeName>edu.umn.biomedicus.uima.type1_8.NumberType</rangeTypeName>
+        </featureDescription>
       </features>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.uima.type1_8.NumberType</name>
+      <supertypeName>uima.cas.String</supertypeName>
+      <allowedValues>
+        <value>
+          <string>CARDINAL</string>
+          <description>
+            A Cardinal number, e.g. One, two, three, four, one hundred, one billion
+          </description>
+        </value>
+        <value>
+          <string>ORDINAL</string>
+          <description>
+            An ordinal number, e.g. first, second, third, one hundredth, one billionth
+          </description>
+        </value>
+        <value>
+          <string>FRACTION</string>
+        </value>
+        <value>
+          <string>DECIMAL</string>
+        </value>
+      </allowedValues>
     </typeDescription>
 
     <typeDescription>
