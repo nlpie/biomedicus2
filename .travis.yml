@@ -4,7 +4,7 @@ jdk:
 branches:
   only:
   - master
-  - develop
+  - release
 cache:
   directories:
   - $HOME/.m2

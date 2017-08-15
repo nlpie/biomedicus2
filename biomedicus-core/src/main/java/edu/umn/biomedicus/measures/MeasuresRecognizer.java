@@ -14,28 +14,33 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.measures;
+
+import com.google.inject.Inject;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DocumentProcessor;
+import edu.umn.biomedicus.framework.SearchExprFactory;
+import edu.umn.biomedicus.framework.store.Document;
+import javax.annotation.Nonnull;
 
 /**
- * A type of number.
+ * Recognizes measurements in the imperial or metric systems.
  *
+ * @author Ben Knoll
  * @since 1.8.0
  */
-public enum NumberType {
-  /**
-   * An english numeral cardinal number.
-   */
-  CARDINAL,
-  /**
-   * An english numeral ordinal number.
-   */
-  ORDINAL,
-  /**
-   * An english numeral fraction.
-   */
-  FRACTION,
-  /**
-   * A decimal form number.
-   */
-  DECIMAL
+public class MeasuresRecognizer implements DocumentProcessor {
+
+  @Inject
+  MeasuresRecognizer(SearchExprFactory searcherFactory) {
+
+  }
+
+  @Override
+  public void process(@Nonnull Document document) throws BiomedicusException {
+
+  }
+
+
+
 }

@@ -14,6 +14,8 @@ settings:
     numbers:
       nrnumPath: measures/NRNUM
       nrvarPath: measures/NRVAR
+    units:
+      modelPath: measures/concepts.tsv
   tnt:
     trigram.path: tnt/trigram.yml
     word:
