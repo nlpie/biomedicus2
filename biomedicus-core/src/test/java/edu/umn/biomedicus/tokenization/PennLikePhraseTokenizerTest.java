@@ -154,5 +154,23 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(list.get(0).toSpan(), new Span(51, 57)); // P.T.B.
   }
 
+  @Test
+  public void testDoNotSplitCommaNumbers() throws Exception {
+    List<Span> spanList = PennLikePhraseTokenizer.tokenizePhrase("42,000,000")
+        .collect(Collectors.toList());
 
+    assertEquals(spanList.size(), 1);
+    assertEquals(spanList.get(0).getBegin(), 0);
+    assertEquals(spanList.get(0).getEnd(), 10);
+  }
+
+  @Test
+  public void testSplitTrailingComma() throws Exception {
+    List<Span> list = PennLikePhraseTokenizer.tokenizePhrase("first,")
+        .collect(Collectors.toList());
+
+    assertEquals(list.size(), 2);
+    assertEquals(list.get(0).getBegin(), 0);
+    assertEquals(list.get(0).getEnd(), 5);
+  }
 }

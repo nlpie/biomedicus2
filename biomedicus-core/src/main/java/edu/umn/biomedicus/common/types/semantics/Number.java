@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.common.types.semantics;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.immutables.value.Value;
 
@@ -28,18 +29,35 @@ import org.immutables.value.Value;
 public interface Number {
 
   /**
-   * The value of the number normalized to numeral forum in the {@link BigInteger} string format.
+   * The numerator value of the number normalized to numeral forum in the {@link BigDecimal} string
+   * format.
    *
-   * @return {@link BigInteger#toString()} formatted number
+   * @return {@link BigDecimal#toString()} formatted numerator
    */
-  String value();
+  String numerator();
+
+  /**
+   * The denominator value of the number normalized to numeral for in the {@link BigDecimal} string
+   * format.
+   *
+   * @return {@link BigDecimal#toString()} formatted denominator
+   */
+  String denominator();
+
+  /**
+   * The type of number that this is.
+   *
+   * @return whether this number is cardinal, ordinal, fraction, or decimal
+   */
+  NumberType numberType();
 
   /**
    * Turns the value into a {@link BigInteger} object.
    *
    * @return BigInteger object with the value of this number.
    */
-  default BigInteger valueAsBigInteger() {
-    return new BigInteger(value());
+  default BigDecimal value() {
+    return new BigDecimal(numerator()).divide(new BigDecimal(denominator()),
+        BigDecimal.ROUND_HALF_UP);
   }
 }

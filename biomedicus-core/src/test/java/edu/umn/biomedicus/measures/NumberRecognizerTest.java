@@ -18,275 +18,381 @@ package edu.umn.biomedicus.measures;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import edu.umn.biomedicus.common.types.semantics.NumberType;
 import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.measures.NumberRecognizer.Basic;
+import edu.umn.biomedicus.measures.NumberRecognizer.BasicNumberAcceptor;
+import edu.umn.biomedicus.measures.NumberRecognizer.BasicNumberType;
+import edu.umn.biomedicus.measures.NumberRecognizer.FractionAcceptor;
+import edu.umn.biomedicus.measures.NumberRecognizer.NumberAcceptor;
 import edu.umn.biomedicus.measures.NumberRecognizer.NumberDefinition;
 import edu.umn.biomedicus.measures.NumberRecognizer.NumberModel;
-import edu.umn.biomedicus.measures.NumberRecognizer.NumberType;
-import edu.umn.biomedicus.measures.NumberRecognizer.Sequence;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Optional;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Tested;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class NumberRecognizerTest {
-  static NumberDefinition fiveDef = new NumberDefinition(5, NumberType.UNIT);
+  static NumberDefinition fiveDef = new NumberDefinition(5, BasicNumberType.UNIT);
 
   static NumberDefinition fortyDef = new NumberDefinition(40,
-      NumberType.DECADE);
+      BasicNumberType.DECADE);
 
-  static NumberDefinition fourDef = new NumberDefinition(4,  NumberType.UNIT);
+  static NumberDefinition fourDef = new NumberDefinition(4,  BasicNumberType.UNIT);
 
-  static NumberDefinition tenDef = new NumberDefinition(10, NumberType.TEEN);
+  static NumberDefinition tenDef = new NumberDefinition(10, BasicNumberType.TEEN);
 
   static NumberDefinition fifteenDef = new NumberDefinition(15,
-      NumberType.TEEN);
+      BasicNumberType.TEEN);
 
-  static NumberDefinition hundredDef = new NumberDefinition(100, NumberType.MAGNITUDE);
+  static NumberDefinition hundredDef = new NumberDefinition(100, BasicNumberType.MAGNITUDE);
 
-  static NumberDefinition billionDef = new NumberDefinition(3, NumberType.MAGNITUDE);
+  static NumberDefinition billionDef = new NumberDefinition(3, BasicNumberType.MAGNITUDE);
 
-  static NumberDefinition millionDef = new NumberDefinition(2, NumberType.MAGNITUDE);
+  static NumberDefinition millionDef = new NumberDefinition(2, BasicNumberType.MAGNITUDE);
 
-  public static class BasicTests {
+  static NumberDefinition sixths = new NumberDefinition(6, BasicNumberType.UNIT);
 
-    @Tested
-    Basic acceptor;
+  @Injectable
+  NumberModel numberModel;
 
-    @Injectable
-    NumberModel numberModel;
+  FractionAcceptor fractionAcceptor;
 
-    @Test
-    public void testBasicRecognizesUnit() {
-      new Expectations() {{
-        numberModel.getNumberDefinition("four"); result = Optional.of(fourDef);
-      }};
+  NumberAcceptor numberAcceptor;
 
-      assertTrue(acceptor.tryToken(Label.create(Span.create(0, 4),
-          ImmutableParseToken.builder().text("four").hasSpaceAfter(true).build())));
+  BasicNumberAcceptor basicNumberAcceptor;
 
-      assertEquals(acceptor.begin, 0);
-      assertEquals(acceptor.end, 4);
-      assertEquals(acceptor.value, 4);
-    }
+  NumberRecognizer numberRecognizer;
 
-    @Test
-    public void testBasicRecognizesTeen() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("ten"); result = Optional.of(tenDef);
-      }};
-
-      assertTrue(acceptor.tryToken(Label.create(Span.create(0, 3),
-          ImmutableParseToken.builder().text("ten").hasSpaceAfter(true).build())));
-
-      assertEquals(acceptor.begin, 0);
-      assertEquals(acceptor.end, 3);
-      assertEquals(acceptor.value, 10);
-    }
-
-    @Test
-    public void testBasicRecognizesDecade() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
-        numberModel.getNumberDefinition("people"); result = Optional.empty();
-      }};
-
-      assertFalse(acceptor.tryToken(Label.create(Span.create(0, 6),
-          ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
-      assertTrue(acceptor.tryToken(Label.create(Span.create(6, 8), ImmutableParseToken.builder()
-          .text("people").hasSpaceAfter(false).build())));
-
-      assertEquals(acceptor.begin, 0);
-      assertEquals(acceptor.end, 6);
-      assertEquals(acceptor.value, 40);
-    }
-
-    @Test
-    public void testBasicRecongizesDecadeAnd() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-      }};
-
-      assertFalse(acceptor.tryToken(Label.create(Span.create(0, 6),
-          ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
-      assertTrue(acceptor.tryToken(Label.create(Span.create(7, 12), ImmutableParseToken.builder()
-          .text("five").hasSpaceAfter(false).build())));
-
-      assertEquals(acceptor.begin, 0);
-      assertEquals(acceptor.end, 12);
-      assertEquals(acceptor.value, 45);
-    }
-
-    @Test
-    public void testBasicRecognizesDecadeHyphen() {
-      new Expectations() {{
-        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
-        numberModel.getNumberDefinition("-"); result = Optional.empty();
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-      }};
-
-      assertFalse(acceptor.tryToken(Label.create(Span.create(0, 6),
-          ImmutableParseToken.builder().text("forty").hasSpaceAfter(false).build())));
-      assertFalse(acceptor.tryToken(Label.create(Span.create(6, 7),
-          ImmutableParseToken.builder().text("-").hasSpaceAfter(false).build())));
-      assertTrue(acceptor.tryToken(Label.create(Span.create(7, 12),
-          ImmutableParseToken.builder().text("five").hasSpaceAfter(false).build())));
-
-      assertEquals(acceptor.begin, 0);
-      assertEquals(acceptor.end, 12);
-      assertEquals(acceptor.value, 45);
-    }
-
-    @Test
-    public void testBasicRandomWord() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("the"); result = Optional.empty();
-      }};
-
-      assertFalse(acceptor.tryToken(Label.create(Span.create(0, 3),
-          ImmutableParseToken.builder().text("the").hasSpaceAfter(false).build())));
-    }
+  @BeforeMethod
+  public void setUp() {
+    basicNumberAcceptor = new BasicNumberAcceptor(numberModel);
+    numberAcceptor = new NumberAcceptor(numberModel, basicNumberAcceptor);
+    fractionAcceptor = new FractionAcceptor(numberAcceptor);
+    numberRecognizer = new NumberRecognizer(fractionAcceptor);
   }
 
-  public static class SequenceTests {
-    @Injectable
-    NumberModel numberModel;
+  @Test
+  public void testBasicRecognizesUnit() {
+    new Expectations() {{
+      numberModel.getNumberDefinition("four"); result = fourDef;
+    }};
 
-    Basic basic;
+    assertTrue(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("four").hasSpaceAfter(true).build())));
 
-    Sequence seq;
+    assertEquals(basicNumberAcceptor.begin, 0);
+    assertEquals(basicNumberAcceptor.end, 4);
+    assertEquals(basicNumberAcceptor.value, 4);
+  }
 
+  @Test
+  public void testBasicRecognizesTeen() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("ten"); result = tenDef;
+    }};
 
+    assertTrue(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 3),
+        ImmutableParseToken.builder().text("ten").hasSpaceAfter(true).build())));
 
-    @Test
-    public void testMagnitude() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-        numberModel.getNumberDefinition("billion"); result = Optional.of(billionDef);
-      }};
+    assertEquals(basicNumberAcceptor.begin, 0);
+    assertEquals(basicNumberAcceptor.end, 3);
+    assertEquals(basicNumberAcceptor.value, 10);
+  }
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 4),
-          ImmutableParseToken.builder().hasSpaceAfter(true).text("five").build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(5, 12),
-          ImmutableParseToken.builder().hasSpaceAfter(true).text("billion").build())));
-      assertTrue(seq.tryToken(Label.create(Span.create(13, 19),
-          ImmutableParseToken.builder().hasSpaceAfter(true).text("people").build())));
+  @Test
+  public void testBasicRecognizesDecade() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getNumberDefinition("people"); result = null;
+    }};
 
-      assertEquals(seq.value, BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(9)));
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 12);
-    }
+    assertFalse(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 6),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+    assertTrue(basicNumberAcceptor.tryToken(Label.create(Span.create(6, 8), ImmutableParseToken.builder()
+        .text("people").hasSpaceAfter(false).build())));
 
-    @Test
-    public void testBasicOnly() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("four"); result = Optional.of(fourDef);
-      }};
+    assertEquals(basicNumberAcceptor.begin, 0);
+    assertEquals(basicNumberAcceptor.end, 6);
+    assertEquals(basicNumberAcceptor.value, 40);
+  }
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 4),
-          ImmutableParseToken.builder().text("four").hasSpaceAfter(true).build())));
+  @Test
+  public void testBasicRecongizesDecadeAnd() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+    }};
 
-      assertTrue(seq.tryToken(Label.create(Span.create(5, 11),
-          ImmutableParseToken.builder().text("people").hasSpaceAfter(false).build())));
+    assertFalse(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 6),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+    assertTrue(basicNumberAcceptor.tryToken(Label.create(Span.create(7, 12), ImmutableParseToken.builder()
+        .text("five").hasSpaceAfter(false).build())));
 
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 4);
-      assertEquals(seq.value, BigInteger.valueOf(4));
-    }
+    assertEquals(basicNumberAcceptor.begin, 0);
+    assertEquals(basicNumberAcceptor.end, 12);
+    assertEquals(basicNumberAcceptor.value, 45);
+  }
 
-    @Test
-    public void testHundred() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("fifteen"); result = Optional.of(fifteenDef);
-        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-      }};
+  @Test
+  public void testBasicRecognizesDecadeHyphen() {
+    new Expectations() {{
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getNumberDefinition("-"); result = null;
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+    }};
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 7),
-          ImmutableParseToken.builder().text("fifteen").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(8, 15),
-          ImmutableParseToken.builder().text("hundred").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(16, 21),
-          ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(22, 26),
-          ImmutableParseToken.builder().text("five").hasSpaceAfter(false).build())));
-      assertTrue(seq.finish());
+    assertFalse(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 6),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(false).build())));
+    assertFalse(basicNumberAcceptor.tryToken(Label.create(Span.create(6, 7),
+        ImmutableParseToken.builder().text("-").hasSpaceAfter(false).build())));
+    assertTrue(basicNumberAcceptor.tryToken(Label.create(Span.create(7, 12),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(false).build())));
 
-      assertEquals(seq.value, BigInteger.valueOf(1545));
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 26);
-    }
+    assertEquals(basicNumberAcceptor.begin, 0);
+    assertEquals(basicNumberAcceptor.end, 12);
+    assertEquals(basicNumberAcceptor.value, 45);
+  }
 
-    @Test
-    public void testChained() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-        numberModel.getNumberDefinition("billion"); result = Optional.of(billionDef);
-        numberModel.getNumberDefinition("million"); result = Optional.of(millionDef);
-      }};
+  @Test
+  public void testBasicRandomWord() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("the"); result = null;
+      numberModel.getOrdinal("the"); result = null;
+    }};
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 4),
-          ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(5, 12),
-          ImmutableParseToken.builder().text("billion").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(13, 17),
-          ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(18, 25),
-          ImmutableParseToken.builder().text("million").hasSpaceAfter(false).build())));
-      assertTrue(seq.finish());
+    assertFalse(basicNumberAcceptor.tryToken(Label.create(Span.create(0, 3),
+        ImmutableParseToken.builder().text("the").hasSpaceAfter(false).build())));
+  }
 
-      assertEquals(seq.value, BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(9))
-          .add(BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(6))));
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 25);
-    }
+  @Test
+  public void testMagnitude() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+      numberModel.getNumberDefinition("billion"); result = billionDef;
+      numberModel.getOrdinal("people"); result = null;
+      numberModel.getNumberDefinition("people"); result = null;
+    }};
 
-    @Test
-    public void testEndOfSentenceHundred() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("five"); result = Optional.of(fiveDef);
-        numberModel.getNumberDefinition("hundred"); result = Optional.of(hundredDef);
-      }};
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().hasSpaceAfter(true).text("five").build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(5, 12),
+        ImmutableParseToken.builder().hasSpaceAfter(true).text("billion").build())));
+    assertTrue(numberAcceptor.tryToken(Label.create(Span.create(13, 19),
+        ImmutableParseToken.builder().hasSpaceAfter(true).text("people").build())));
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 4),
-          ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
-      assertFalse(seq.tryToken(Label.create(Span.create(5, 12),
-          ImmutableParseToken.builder().text("hundred").hasSpaceAfter(true).build())));
-      assertTrue(seq.finish());
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(9)));
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 12);
+  }
 
-      assertEquals(seq.value, BigInteger.valueOf(500));
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 12);
-    }
+  @Test
+  public void testBasicOnly() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("four"); result = fourDef;
+    }};
 
-    @Test
-    public void testEndOfSentenceDecade() throws Exception {
-      new Expectations() {{
-        numberModel.getNumberDefinition("forty"); result = Optional.of(fortyDef);
-      }};
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("four").hasSpaceAfter(true).build())));
 
-      assertFalse(seq.tryToken(Label.create(Span.create(0, 5),
-          ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
-      assertTrue(seq.finish());
+    assertTrue(numberAcceptor.tryToken(Label.create(Span.create(5, 11),
+        ImmutableParseToken.builder().text("people").hasSpaceAfter(false).build())));
 
-      assertEquals(seq.value, BigInteger.valueOf(40));
-      assertEquals(seq.begin, 0);
-      assertEquals(seq.end, 5);
-    }
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 4);
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(4));
+  }
 
-    @BeforeMethod
-    public void setUp() throws Exception {
-      basic = new Basic(numberModel);
+  @Test
+  public void testHundred() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("fifteen"); result = fifteenDef;
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+    }};
 
-      seq = new Sequence(numberModel, basic);
-    }
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 7),
+        ImmutableParseToken.builder().text("fifteen").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(8, 15),
+        ImmutableParseToken.builder().text("hundred").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(16, 21),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(22, 26),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(false).build())));
+    assertTrue(numberAcceptor.finish());
+
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(1545));
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 26);
+  }
+
+  @Test
+  public void testChained() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+      numberModel.getNumberDefinition("billion"); result = billionDef;
+      numberModel.getNumberDefinition("million"); result = millionDef;
+    }};
+
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(5, 12),
+        ImmutableParseToken.builder().text("billion").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(13, 17),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(18, 25),
+        ImmutableParseToken.builder().text("million").hasSpaceAfter(false).build())));
+    assertTrue(numberAcceptor.finish());
+
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(9))
+        .add(BigInteger.valueOf(5).multiply(BigInteger.valueOf(10).pow(6))));
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 25);
+  }
+
+  @Test
+  public void testEndOfSentenceHundred() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+      numberModel.getNumberDefinition("hundred"); result = hundredDef;
+    }};
+
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(5, 12),
+        ImmutableParseToken.builder().text("hundred").hasSpaceAfter(true).build())));
+    assertTrue(numberAcceptor.finish());
+
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(500));
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 12);
+  }
+
+  @Test
+  public void testEndOfSentenceDecade() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+    }};
+
+    assertFalse(numberAcceptor.tryToken(Label.create(Span.create(0, 5),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+    assertTrue(numberAcceptor.finish());
+
+    assertEquals(numberAcceptor.value, BigInteger.valueOf(40));
+    assertEquals(numberAcceptor.begin, 0);
+    assertEquals(numberAcceptor.end, 5);
+  }
+
+  @Test
+  public void testFraction() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+      numberModel.getDenominator("forty"); result = null;
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getDenominator("sixths"); result = sixths;
+    }};
+
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(5, 10),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+
+    assertTrue(fractionAcceptor.tryToken(Label.create(Span.create(11, 17),
+        ImmutableParseToken.builder().text("sixths").hasSpaceAfter(false).build())));
+
+    assertEquals(fractionAcceptor.numerator, BigInteger.valueOf(5));
+    assertEquals(fractionAcceptor.denominator, BigInteger.valueOf(46));
+    assertEquals(fractionAcceptor.begin, 0);
+    assertEquals(fractionAcceptor.end, 17);
+  }
+
+  @Test
+  public void testFractionTwoWordFraction() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("forty"); result = fortyDef;
+      numberModel.getNumberDefinition("sixths"); result = null;
+      numberModel.getDenominator("sixths"); result = sixths;
+    }};
+
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(0, 5),
+        ImmutableParseToken.builder().text("forty").hasSpaceAfter(true).build())));
+
+    assertTrue(fractionAcceptor.tryToken(Label.create(Span.create(6, 12),
+        ImmutableParseToken.builder().text("sixths").hasSpaceAfter(false).build())));
+
+    assertEquals(fractionAcceptor.numerator, BigInteger.valueOf(40));
+    assertEquals(fractionAcceptor.denominator, BigInteger.valueOf(6));
+    assertEquals(fractionAcceptor.begin, 0);
+    assertEquals(fractionAcceptor.end, 12);
+  }
+
+  @Test
+  public void testAndHalf() throws Exception {
+    new Expectations() {{
+      numberModel.getNumberDefinition("five"); result = fiveDef;
+    }};
+
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(0, 4),
+        ImmutableParseToken.builder().text("five").hasSpaceAfter(true).build())));
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(5, 8),
+        ImmutableParseToken.builder().text("and").hasSpaceAfter(true).build())));
+    assertFalse(fractionAcceptor.tryToken(Label.create(Span.create(9, 10),
+        ImmutableParseToken.builder().text("a").hasSpaceAfter(true).build())));
+    assertTrue(fractionAcceptor.tryToken(Label.create(Span.create(11, 15),
+        ImmutableParseToken.builder().text("half").hasSpaceAfter(true).build())));
+
+    assertEquals(fractionAcceptor.numerator, BigInteger.valueOf(11));
+    assertEquals(fractionAcceptor.denominator, BigInteger.valueOf(2));
+    assertEquals(fractionAcceptor.begin, 0);
+    assertEquals(fractionAcceptor.end, 15);
+    assertEquals(fractionAcceptor.numberType, NumberType.FRACTION);
+  }
+
+  @Test
+  public void testParseDecimalComma() throws Exception {
+    String s = numberRecognizer.parseDecimal("42,000");
+    assertNotNull(s);
+    assertEquals(new BigDecimal(s).compareTo(BigDecimal.valueOf(42_000)), 0);
+  }
+
+  @Test
+  public void testParseDecimalCommaAndDecimal() throws Exception {
+    String s = numberRecognizer.parseDecimal("42,000,000.00");
+    assertNotNull(s);
+    assertEquals(new BigDecimal(s).compareTo(BigDecimal.valueOf(42_000_000.00)), 0);
+  }
+
+  @Test
+  public void testParseDecimal() throws Exception {
+    String s = numberRecognizer.parseDecimal("450.01");
+    assertNotNull(s);
+    assertEquals(new BigDecimal(s).compareTo(BigDecimal.valueOf(450.01)), 0);
+  }
+
+  @Test
+  public void testParseDecimalPercentage() throws Exception {
+    String s = numberRecognizer.parseDecimal("50.05%");
+    assertNotNull(s);
+    assertEquals(new BigDecimal(s).compareTo(BigDecimal.valueOf(0.5005)), 0);
+  }
+
+  @Test
+  public void testParseDecimalNoDecimal() throws Exception {
+    String s = numberRecognizer.parseDecimal("test");
+    assertNull(s);
+  }
+
+  @Test
+  public void testParseDecimalHyphen() throws Exception {
+    String s = numberRecognizer.parseDecimal("-");
+    assertNull(s);
   }
 }

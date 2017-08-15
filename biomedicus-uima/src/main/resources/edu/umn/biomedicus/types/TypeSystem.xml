@@ -355,7 +355,7 @@
         <value>
           <string>CARDINAL</string>
           <description>
-            A Cardinal number, e.g. One, two, three, four, one hundred, one billion
+            A cardinal number, e.g. One, two, three, four, one hundred, one billion
           </description>
         </value>
         <value>
@@ -366,9 +366,15 @@
         </value>
         <value>
           <string>FRACTION</string>
+          <description>
+            An English numeral fraction, e.g. one fifth
+          </description>
         </value>
         <value>
           <string>DECIMAL</string>
+          <description>
+            A decimal numeral, either integer or floating point.
+          </description>
         </value>
       </allowedValues>
     </typeDescription>
