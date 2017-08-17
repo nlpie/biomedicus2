@@ -60,6 +60,8 @@ public class NumberRecognizer implements DocumentProcessor {
 
   private Labeler<Number> labeler;
 
+  private boolean isOrdinal = false;
+
   @Inject
   NumberRecognizer(FractionAcceptor fractionAcceptor) {
     this.fractionAcceptor = fractionAcceptor;
@@ -91,7 +93,7 @@ public class NumberRecognizer implements DocumentProcessor {
         labeler.value(ImmutableNumber.builder()
             .numerator(num)
             .denominator("1")
-            .numberType(NumberType.DECIMAL)
+            .numberType(isOrdinal ? NumberType.ORDINAL : NumberType.DECIMAL)
             .build())
             .label(tokenLabel);
       } else if (fractionAcceptor.tryToken(tokenLabel)) {
@@ -112,6 +114,7 @@ public class NumberRecognizer implements DocumentProcessor {
    */
   @Nullable
   String parseDecimal(String text) {
+    isOrdinal = false;
     char ch = text.charAt(0);
 
     StringBuilder digits;
@@ -143,6 +146,15 @@ public class NumberRecognizer implements DocumentProcessor {
       } else if (i == text.length() - 1 && ch == '%') {
         percentage = true;
       } else {
+        if (i + 1 < text.length()) {
+          if ((ch == 't' && text.charAt(i + 1) == 'h')
+              || (ch == 's' && text.charAt(i + 1) == 't')
+              || (ch == 'n' && text.charAt(i + 1) == 'd')
+              || (ch == 'r' && text.charAt(i + 1) == 'd')) {
+            isOrdinal = true;
+            break;
+          }
+        }
         return null;
       }
     }
