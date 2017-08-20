@@ -1,3 +1,8 @@
+---
+title: BioMedICUS
+description: A biomedical and clinical NLP engine developed by the NLP-IE Group at the University of Minnesota Institute for Health Informatics
+---
+
 [![DOI](https://zenodo.org/badge/51161341.svg)](https://zenodo.org/badge/latestdoi/51161341)
 [![Build Status](https://travis-ci.org/nlpie/biomedicus.svg?branch=master)](https://travis-ci.org/nlpie/biomedicus)
 
