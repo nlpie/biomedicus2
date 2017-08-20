@@ -4,12 +4,15 @@
 Overview
 ========================================================================================================================
 
-The BioMedical Information Collection and Understanding System (BioMedICUS) leverages open source solutions for
-text analysis and provides new analytic tools for processing and analyzing text of biomedical and clinical reports.
-The system is being developed by our biomedical NLP/IE program at the University of Minnesota.
+The BioMedical Information Collection and Understanding System (BioMedICUS) is a system for large-scale text analysis and processing of biomedical and clinical reports. The system is being developed by the Natural Language Processing and Information Extraction program at the University of Minnesota Institute for Health Informatics.
 This is a collaborative project that aims to serve biomedical and clinical researchers, allowing for customization
 with different texts.
 
+Project Goals
+- Scalability and performance. We use BioMedICUS to process millions of notes here at the University of Minnesota. To do this we need BioMedICUS to have high throughput and to support both machine-level and distributed parallelization. 
+- Usability. We try to minimize dependencies and prerequisites that BioMedICUS requires. We release under the permissive Apache 2.0 license and pay close attention to intellectual property issues.
+
+To see what tasks the system supports, look at [[Component Status|Component-Status]]. If you are looking for a jumping-in point, see [[Installation]].
 
 Wiki
 ========================================================================================================================
@@ -19,10 +22,9 @@ use, and development of BioMedICUS.
 
 Contact and Support
 ========================================================================================================================
-
 For issues or enhancement requests, feel free to submit to the Issues tab on GitHub.
 
-BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) and a [Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting developers
+BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) and a [Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting developers 
 with questions, suggestions or feedback. Also, bug reports and feature suggestions can be submitted to the Issues tab on 
 GitHub.
 
