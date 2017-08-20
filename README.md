@@ -12,7 +12,7 @@ Project Goals
 - Scalability and performance. We use BioMedICUS to process millions of notes here at the University of Minnesota. To do this we need BioMedICUS to have high throughput and to support both machine-level and distributed parallelization. 
 - Usability. We try to minimize dependencies and prerequisites that BioMedICUS requires. We release under the permissive Apache 2.0 license and pay close attention to intellectual property issues.
 
-To see what tasks the system supports, look at [[Component Status|Component-Status]]. If you are looking for a jumping-in point, see [[Installation]].
+To see what tasks the system supports, look at [Pipeline components](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components). If you are looking for a jumping-in point, see [Installation](https://github.com/nlpie/biomedicus/wiki/Installation).
 
 Wiki
 ========================================================================================================================
