@@ -1,44 +1,48 @@
 [![DOI](https://zenodo.org/badge/51161341.svg)](https://zenodo.org/badge/latestdoi/51161341)
 [![Build Status](https://travis-ci.org/nlpie/biomedicus.svg?branch=master)](https://travis-ci.org/nlpie/biomedicus)
 
-Overview
-========================================================================================================================
+# Overview
 
 The BioMedical Information Collection and Understanding System (BioMedICUS) is a system for large-scale text analysis and processing of biomedical and clinical reports. The system is being developed by the Natural Language Processing and Information Extraction program at the University of Minnesota Institute for Health Informatics.
 This is a collaborative project that aims to serve biomedical and clinical researchers, allowing for customization
 with different texts.
 
-Project Goals
+## Project Goals
 - Scalability and performance. We use BioMedICUS to process millions of notes here at the University of Minnesota. To do this we need BioMedICUS to have high throughput and to support both machine-level and distributed parallelization. 
 - Usability. We try to minimize dependencies and prerequisites that BioMedICUS requires. We release under the permissive Apache 2.0 license and pay close attention to intellectual property issues.
 
 To see what tasks the system supports, look at [Pipeline components](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components). If you are looking for a jumping-in point, see [Installation](https://github.com/nlpie/biomedicus/wiki/Installation).
 
-Wiki
-========================================================================================================================
+# Features
+## RTF Reader
+BioMedICUS has an [RTF Reader](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#rich-text-format-rtf-reader), which has the ability to read and process notes that are encoding in RTF. In addition, BioMedICUS uses RTF formatting information downstream to improve other components.
+
+## Acronym Detection
+Included in the standard pipeline is an [acronym detector](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#acronym-detector), which has the ability to detect and expand acronyms to their equivalent long forms.
+
+## Concept Detection
+BioMedICUS includes a fast [concept detector](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#concept-detector) which labels instances of UMLS Metathesaurus concepts in text.
+
+# Wiki
 
 [Our wiki on GitHub](https://github.com/nlpie/biomedicus/wiki) contains information about installation, configuration,
 use, and development of BioMedICUS.
 
-Contact and Support
-========================================================================================================================
+# Contact and Support
 For issues or enhancement requests, feel free to submit to the Issues tab on GitHub.
 
 BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) and a [Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting developers 
 with questions, suggestions or feedback. Also, bug reports and feature suggestions can be submitted to the Issues tab on 
 GitHub.
 
-About Us
-========================================================================================================================
-
+# About Us
 BioMedICUS is developed by the
 [University of Minnesota Institute for Health Informatics NLP/IE Group](http://www.bmhi.umn.edu/ihi/research/nlpie/)
 with assistance from the
 [Open Health Natural Language Processing \(OHNLP\) Consortium](http://ohnlp.org/index.php/Main_Page).
 
 
-Other Resources
-========================================================================================================================
+# Other Resources
 
 ### NLP-TAB
 
@@ -53,8 +57,7 @@ Other Resources
  *   [Demos](http://athena.ahc.umn.edu/)
 
 
-Acknowledgements
-========================================================================================================================
+# Acknowledgements
 
 Funding for this work was provided by:
 
