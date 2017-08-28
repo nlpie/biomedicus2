@@ -41,7 +41,7 @@ which labels instances of UMLS Metathesaurus concepts in text.
 
 ## Downloads
 For downloads see the [releases page](https://github.com/nlpie/biomedicus/releases) on GitHub. We 
-also make more comprehensive models that require you to have a UMLS license 
+also make more comprehensive models that require you to have a UMLS license available 
 [here](http://athena.ahc.umn.edu/biomedicus-downloads/).
 
 ## Wiki
