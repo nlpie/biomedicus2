@@ -22,7 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>Number recognizer</name>
     <description>Recognizes numbers in either English numeral form or </description>

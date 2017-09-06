@@ -22,7 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.adapter.AggregatorUimaAdapter
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>TnT Model Trainer</name>
     <description>Trains the TnT part of speech model</description>

@@ -21,7 +21,7 @@
   <!-- Do not change this -->
   <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>Penn-like tokenizer</name>
     <description>Tokenizes according to the format commonly found in PTB training data</description>
