@@ -20,9 +20,9 @@ import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.Search;
 import edu.umn.biomedicus.framework.Searcher;
-import edu.umn.biomedicus.framework.SearcherFactory;
+import edu.umn.biomedicus.framework.SearchExpr;
+import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.Span;
@@ -34,40 +34,40 @@ import javax.inject.Inject;
  */
 public class SearcherPrinter implements DocumentProcessor {
 
-  private final Searcher searcher;
+  private final SearchExpr searchExpr;
 
   @Inject
   public SearcherPrinter(
-      SearcherFactory searcherFactory,
+      SearchExprFactory searchExprFactory,
       @ProcessorSetting("searchPattern") String searchPattern
   ) {
-    searcher = searcherFactory.searcher(searchPattern);
+    searchExpr = searchExprFactory.parse(searchPattern);
   }
 
   @Override
   public void process(Document document) throws BiomedicusException {
     TextView systemView = StandardViews.getSystemView(document);
 
-    Search search = searcher.createSearcher(systemView);
+    Searcher searcher = searchExpr.createSearcher(systemView);
 
     while (true) {
-      boolean found = search.search();
+      boolean found = searcher.search();
       if (!found) {
         break;
       }
       System.out
-          .println("Matching Text: " + search.getSpan().get().getCovered(systemView.getText()));
+          .println("Matching Text: " + searcher.getSpan().get().getCovered(systemView.getText()));
 
-      for (String group : search.getGroups()) {
+      for (String group : searcher.getGroupNames()) {
         System.out.println("\tGroup Name: " + group);
 
-        if (search.getSpan(group).isPresent()) {
-          Span span = search.getSpan(group).get();
+        if (searcher.getSpan(group).isPresent()) {
+          Span span = searcher.getSpan(group).get();
           System.out.println("\t\tCovered Text: " + span.getCovered(systemView.getText()));
         }
 
-        if (search.getLabel(group).isPresent()) {
-          Label<?> label = search.getLabel(group).get();
+        if (searcher.getLabel(group).isPresent()) {
+          Label<?> label = searcher.getLabel(group).get();
           System.out.println("\t\tStored Label: " + label.getValue().toString());
         }
       }

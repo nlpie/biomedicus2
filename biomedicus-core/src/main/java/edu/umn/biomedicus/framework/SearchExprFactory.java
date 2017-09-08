@@ -20,19 +20,22 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
+ * Factory class providing for instantiation of {@link SearchExpr} objects using only their
+ * expression.
  *
+ * @since 1.6.0
  */
 @Singleton
-public class SearcherFactory {
+public class SearchExprFactory {
 
   private final LabelAliases labelAliases;
 
   @Inject
-  public SearcherFactory(LabelAliases labelAliases) {
+  public SearchExprFactory(LabelAliases labelAliases) {
     this.labelAliases = labelAliases;
   }
 
-  public Searcher searcher(String pattern) {
-    return Searcher.parse(labelAliases, pattern);
+  public SearchExpr parse(String expr) {
+    return SearchExpr.parse(labelAliases, expr);
   }
 }
