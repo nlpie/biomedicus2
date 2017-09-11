@@ -946,7 +946,8 @@ public class SearchExpr {
   }
 
   /**
-   * A node which does not consume any
+   * Zero width positive lookahead, confirms the current context starts with a match for the
+   * specified expression but does not consume the text that the expression covers.
    */
   static class PositiveLookahead extends Node {
 
@@ -966,6 +967,10 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Zero width negative lookbehind, confirms the current context starts with a match for the
+   * specified expression but does not consume the text that the expression covers.
+   */
   static class NegativeLookahead extends Node {
 
     Node condition;
@@ -978,9 +983,9 @@ public class SearchExpr {
     State search(DefaultSearcher search, State state) {
       State res = condition.search(search, state.copy());
       if (res.isMiss()) {
-        return res;
+        return next.search(search, state);
       }
-      return next.search(search, state);
+      return res;
     }
   }
 
