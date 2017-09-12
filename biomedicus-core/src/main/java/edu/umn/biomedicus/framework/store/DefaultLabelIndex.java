@@ -24,6 +24,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+/**
+ * The main implementation of label indexes. Makes use of {@link ImmutableSpanMap} as a backing
+ * store.
+ *
+ *
+ * @param <T> the type of object that the labels indicate.
+ */
 public class DefaultLabelIndex<T> extends AbstractLabelIndex<T> {
 
   private final SpansMap<T> tree;

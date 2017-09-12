@@ -464,26 +464,24 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
   static abstract class View<E> implements SpansMap<E> {
 
     final ImmutableSpanMap<E> backingMap;
+    final int left;
     final int minBegin;
+    final int right;
     final int maxBegin;
     final int minEnd;
     final int maxEnd;
-    final int left;
-    final int right;
 
     transient int size = -1;
 
-    View(ImmutableSpanMap<E> backingMap,
-        int minBegin,
-        int maxBegin,
+    View(ImmutableSpanMap<E> backingMap, int minBegin, int maxBegin,
         int minEnd, int maxEnd) {
       this.backingMap = backingMap;
+      this.left = backingMap.ceilingIndex(minBegin, minEnd);
       this.minBegin = minBegin;
+      this.right = backingMap.floorIndex(maxBegin, maxEnd);
       this.maxBegin = maxBegin;
       this.minEnd = minEnd;
       this.maxEnd = maxEnd;
-      this.left = backingMap.ceilingIndex(minBegin, minEnd);
-      this.right = backingMap.floorIndex(maxBegin, maxEnd);
     }
 
     boolean inView(TextLocation textLocation) {
@@ -551,27 +549,38 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
       return size;
     }
 
-    abstract View<E> copy(int minBegin,
-        int maxBegin,
-        int minEnd,
-        int maxEnd);
+    abstract View<E> updateBounds(int minBegin, int maxBegin, int minEnd, int maxEnd);
 
     @Override
-    public SpansMap<E> toTheLeftOf(int index) {
-      if (index < maxBegin) {
-        return copy(minBegin, index, minEnd, maxEnd);
+    public SpansMap<E> toTheLeftOf(int textIndex) {
+      if (textIndex < maxBegin) {
+        if (textIndex < maxEnd) {
+          return updateBounds(minBegin, textIndex, minEnd, textIndex);
+        } else {
+          return updateBounds(minBegin, textIndex, minEnd, maxEnd);
+        }
       } else {
-        return this;
+        if (textIndex < maxEnd) {
+          return updateBounds(minBegin, maxBegin, minEnd, textIndex);
+        }
       }
+      return this;
     }
 
     @Override
-    public SpansMap<E> toTheRightOf(int index) {
-      if (index > minBegin) {
-        return copy(index, maxBegin, minEnd, maxEnd);
+    public SpansMap<E> toTheRightOf(int textIndex) {
+      if (textIndex > minBegin) {
+        if (textIndex > minEnd) {
+          updateBounds(textIndex, maxBegin, textIndex, maxEnd);
+        } else {
+          updateBounds(textIndex, maxBegin, minEnd, maxEnd);
+        }
       } else {
-        return this;
+        if (textIndex > minEnd) {
+          updateBounds(minBegin, maxBegin, textIndex, maxEnd);
+        }
       }
+      return this;
     }
 
     @Override
@@ -580,13 +589,13 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
       int max = textLocation.getEnd();
       if (min > minBegin) {
         if (max < maxBegin) {
-          return copy(min, max, minEnd, maxEnd);
+          return updateBounds(min, max, minEnd, maxEnd);
         } else {
-          return copy(min, maxBegin, minEnd, maxEnd);
+          return updateBounds(min, maxBegin, minEnd, maxEnd);
         }
       } else {
         if (max < maxBegin) {
-          return copy(minBegin, max, minEnd, maxEnd);
+          return updateBounds(minBegin, max, minEnd, maxEnd);
         } else {
           return this;
         }
@@ -600,9 +609,9 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
       View<E> result;
       if (max < maxBegin) {
         if (minEnd > this.minBegin) {
-          result = copy(minBegin, max, minEnd, maxEnd);
+          result = updateBounds(minBegin, max, minEnd, maxEnd);
         } else {
-          result = copy(minBegin, max, this.minEnd, maxEnd);
+          result = updateBounds(minBegin, max, this.minEnd, maxEnd);
         }
       } else {
         result = this;
@@ -943,7 +952,7 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
     }
 
     @Override
-    View<E> copy(int minBegin, int maxBegin, int minEnd, int maxEnd) {
+    View<E> updateBounds(int minBegin, int maxBegin, int minEnd, int maxEnd) {
       return new AscendingView<>(backingMap, minBegin, maxBegin, minEnd, maxEnd);
     }
 
@@ -994,7 +1003,7 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
     }
 
     @Override
-    View<E> copy(int minBegin, int maxBegin, int minEnd, int maxEnd) {
+    View<E> updateBounds(int minBegin, int maxBegin, int minEnd, int maxEnd) {
       return new AscendingReversingView<>(backingMap, minBegin, maxBegin,
           minEnd, maxEnd);
     }
@@ -1060,9 +1069,8 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
     }
 
     @Override
-    View<E> copy(int minBegin, int maxBegin, int minEnd, int maxEnd) {
-      return new DescendingView<>(backingMap, minBegin, maxBegin, minEnd,
-          maxEnd);
+    View<E> updateBounds(int minBegin, int maxBegin, int minEnd, int maxEnd) {
+      return new DescendingView<>(backingMap, minBegin, maxBegin, minEnd, maxEnd);
     }
 
     @Override
@@ -1136,7 +1144,7 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
     }
 
     @Override
-    View<E> copy(int minBegin, int maxBegin, int minEnd, int maxEnd) {
+    View<E> updateBounds(int minBegin, int maxBegin, int minEnd, int maxEnd) {
       return new DescendingReversingView<>(backingMap, minBegin,
           maxBegin, minEnd, maxEnd);
     }
