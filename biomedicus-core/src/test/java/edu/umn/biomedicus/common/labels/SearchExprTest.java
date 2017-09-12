@@ -345,7 +345,8 @@ public class SearchExprTest {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah()))
+          Optional.of(Label.create(Span.of(0, 5), new Blah())),
+          Optional.empty()
       );
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -376,11 +377,9 @@ public class SearchExprTest {
 
     SearchExpr blah = SearchExpr.parse(labelAliases, "Blah(?!Foo)");
     Searcher searcher = blah.createSearcher(document);
-    boolean search = searcher.search();
+    boolean search = searcher.match();
 
-    assertTrue(search);
-    assertEquals(searcher.getBegin(), 0);
-    assertEquals(searcher.getEnd(), 5);
+    assertFalse(search);
   }
 
   @Test
