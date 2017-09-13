@@ -91,7 +91,14 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
 
   @Override
   public SpansMap<E> containing(TextLocation textLocation) {
-    int begin = lower(textLocation.getBegin());
+    int begin = Arrays.binarySearch(begins, textLocation.getBegin());
+
+    if (begin == -1) {
+      return new AscendingView<>(this, 0, -1);
+    }
+    if (begin < 0) {
+      begin = -begin - 2;
+    }
     if (nodes[begin].end >= textLocation.getEnd()) {
       return new AscendingView<>(this, begin, begin);
     } else {
@@ -207,15 +214,16 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
   int lower(int index) {
     int i = Arrays.binarySearch(begins, index);
     if (i < 0) {
-      i = -(i - 1);
-      while (i >= 0) {
-        if (nodes[i].end <= index) {
-          break;
-        }
-        i--;
+      i = -i - 1;
+      if (i == nodes.length) {
+        i = i - 1;
       }
-    } else {
-      i = i - 1;
+    }
+    while (i >= 0) {
+      if (nodes[i].end <= index) {
+        break;
+      }
+      i--;
     }
     return i;
   }
@@ -223,7 +231,7 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
   int higher(int index) {
     int i = Arrays.binarySearch(begins, index);
     if (i < 0) {
-      i = -(i - 1);
+      i = -i - 1;
     }
     return i;
   }
@@ -393,7 +401,11 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
     @Override
     public boolean containsLabel(Object o) {
       int i = backingMap.indexOfLabel(o);
-      return i != -1 && i >= left && i <= right;
+      if (i != -1 && i >= left && i <= right) {
+        Label<E> label = backingMap.labelAtIndex(i);
+        return label.equals(o);
+      }
+      return false;
     }
 
     @Override
@@ -416,7 +428,7 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
       return new AbstractSet<Span>() {
         @Override
         public Iterator<Span> iterator() {
-          return new ViewIterator<>(View.this::spanAtIndex);
+          return new ViewIterator<>(backingMap::spanAtIndex);
         }
 
         @Override
@@ -436,7 +448,7 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
       return new AbstractCollection<E>() {
         @Override
         public Iterator<E> iterator() {
-          return new ViewIterator<>(View.this::valueAtIndex);
+          return new ViewIterator<>(backingMap::valueAtIndex);
         }
 
         @Override
@@ -451,7 +463,7 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
       return new AbstractSet<Label<E>>() {
         @Override
         public Iterator<Label<E>> iterator() {
-          return new ViewIterator<>(View.this::labelAtIndex);
+          return new ViewIterator<>(backingMap::labelAtIndex);
         }
 
         @Override
@@ -651,6 +663,8 @@ public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
     View<E> update(int left, int right) {
       return new AscendingView<>(backingMap, left, right);
     }
+
+
 
     @Override
     public SpansMap<E> ascendingBegin() {
