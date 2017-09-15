@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 public class ImmutableDistinctSpanMapTest {
 
-
   private ImmutableDistinctSpanMap<Integer> immutable;
 
   @BeforeMethod

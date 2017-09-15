@@ -39,6 +39,7 @@ import java.util.function.IntFunction;
 public class ImmutableDistinctSpanMap<E> implements SpansMap<E> {
 
   private final int[] begins;
+
   private final Node[] nodes;
 
   ImmutableDistinctSpanMap(int[] begins, Node[] nodes) {
