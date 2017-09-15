@@ -20,11 +20,13 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.Searcher;
+import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
@@ -35,6 +37,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -49,15 +55,10 @@ import javax.annotation.Nonnull;
  */
 public class NumberContextWriter implements DocumentProcessor {
 
-  private final SearchExpr searcher;
-
   private final Path outputDirectory;
 
   @Inject
-  public NumberContextWriter(SearchExprFactory searcherFactory,
-      @ProcessorSetting("outputDirectory") Path outputDirectory) {
-    searcher = searcherFactory.parse(
-        "[Sentence (?<leftToks> ParseToken{0,6}) number:Number (?<rightToks> ParseToken{0,6})]");
+  public NumberContextWriter(@ProcessorSetting("outputDirectory") Path outputDirectory) {
     this.outputDirectory = outputDirectory;
   }
 
@@ -65,45 +66,55 @@ public class NumberContextWriter implements DocumentProcessor {
   public void process(@Nonnull Document document) throws BiomedicusException {
     TextView systemView = StandardViews.getSystemView(document);
 
+    LabelIndex<Number> numbersIndex = systemView.getLabelIndex(Number.class);
+    LabelIndex<Sentence> sentencesIndex = new DefaultLabelIndex<>(
+        systemView.getLabelIndex(Sentence.class));
     LabelIndex<ParseToken> tokensIndex = systemView.getLabelIndex(ParseToken.class);
 
-    Searcher search = searcher.createSearcher(systemView);
-    while (search.search()) {
-      try (BufferedWriter bufferedWriter = Files
-          .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),
-              StandardOpenOption.CREATE_NEW)) {
+    try (BufferedWriter bufferedWriter = Files
+        .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),
+            StandardOpenOption.CREATE_NEW)) {
 
-        Optional<Span> leftOpt = search.getSpan("leftToks");
-        if (leftOpt.isPresent()) {
-          Span leftSpan = leftOpt.get();
-          LabelIndex<ParseToken> leftTokenIndex = tokensIndex.insideSpan(leftSpan);
-          for (Label<ParseToken> leftToken : leftTokenIndex) {
-            bufferedWriter.write(leftToken.getValue().text() + " ");
+      for (Label<Number> numberLabel : numbersIndex) {
+        LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(numberLabel);
+        Optional<Label<Sentence>> sentenceOption = sentenceContainingIndex.first();
+        if (!sentenceOption.isPresent()) {
+          throw new BiomedicusException("No sentence");
+        }
+        Label<Sentence> sentenceLabel = sentenceOption.get();
+        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentenceLabel);
+
+        Iterator<Label<ParseToken>> it = sentenceTokensIndex.leftwardsFrom(numberLabel)
+            .iterator();
+        List<ParseToken> leftTokens = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+          if (it.hasNext()) {
+            leftTokens.add(it.next().getValue());
           }
+        }
+        int leftSize = leftTokens.size();
+        for (int i = 0; i < leftSize; i++) {
+          bufferedWriter.write(leftTokens.get(leftSize - 1 - i).text() + " ");
         }
         bufferedWriter.newLine();
 
-        Span numberSpan = search.getLabel("number")
-            .orElseThrow(() -> {
-              return new BiomedicusException("Should have a number");
-            })
-            .toSpan();
-        for (ParseToken numberToken : tokensIndex.insideSpan(numberSpan).valuesAsList()) {
+        for (ParseToken numberToken : tokensIndex.insideSpan(numberLabel).values()) {
           bufferedWriter.write(numberToken.text() + " ");
         }
         bufferedWriter.newLine();
 
-        Optional<Span> rightOpt = search.getSpan("rightToks");
-        if (rightOpt.isPresent()) {
-          Span rightSpan = rightOpt.get();
-          for (ParseToken rightToken : tokensIndex.insideSpan(rightSpan).valuesAsList()) {
-            bufferedWriter.write(rightToken.text() + " ");
+        Iterator<Label<ParseToken>> rightIt = sentenceTokensIndex.rightwardsFrom(numberLabel)
+            .iterator();
+
+        for (int i = 0; i < 6; i++) {
+          if (rightIt.hasNext()) {
+            bufferedWriter.write(rightIt.next().getValue().text() + " ");
           }
         }
         bufferedWriter.newLine();
-      } catch (IOException e) {
-        throw new BiomedicusException(e);
       }
+    } catch (IOException e) {
+      throw new BiomedicusException(e);
     }
   }
 }
