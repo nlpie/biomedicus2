@@ -35,7 +35,7 @@ public final class PennLikePhraseTokenizer {
   /**
    * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
    */
-  private static final Pattern MID_BREAKS = Pattern.compile("([\\p{Pd}/\\\\])");
+  private static final Pattern MID_BREAKS = Pattern.compile("([:;\\p{Pd}/\\\\])");
 
   /**
    * Break the unicode Ps (open brackets) and Pi (open quotation).
