@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.measures;
 
+import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.Sentence;
@@ -28,6 +29,8 @@ import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
+import edu.umn.biomedicus.numbers.NumberModel;
+import edu.umn.biomedicus.numbers.Numbers;
 import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -46,8 +49,12 @@ public class NumberRecognizer implements DocumentProcessor {
   private Labeler<Number> labeler;
 
   @Inject
-  NumberRecognizer(CombinedNumberDetector numberDetector) {
-    this.numberDetector = numberDetector;
+  NumberRecognizer(
+      NumberModel numberModel,
+      @ProcessorSetting("measures.numbers.includePercent") boolean includePercent,
+      @ProcessorSetting("measures.numbers.includeFractions") boolean includeFractions
+  ) {
+    numberDetector = Numbers.createNumberDetector(numberModel, includePercent, includeFractions);
   }
 
   void setLabeler(Labeler<Number> labeler) {

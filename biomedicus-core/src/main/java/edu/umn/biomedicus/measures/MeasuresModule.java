@@ -29,9 +29,4 @@ public class MeasuresModule extends AbstractModule {
   protected void configure() {
     bind(NumberModel.class).toProvider(NumberModelLoader.class).in(Scopes.SINGLETON);
   }
-
-  @Provides
-  CombinedNumberDetector provideCombinedNumberDetector(NumberModel numberModel) {
-    return Numbers.createNumberDetector(numberModel);
-  }
 }
