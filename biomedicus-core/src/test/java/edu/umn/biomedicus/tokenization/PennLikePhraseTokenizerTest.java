@@ -173,4 +173,14 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(list.get(0).getBegin(), 0);
     assertEquals(list.get(0).getEnd(), 5);
   }
+
+  @Test
+  public void testSplitPercent() throws Exception {
+    List<Span> spans = PennLikePhraseTokenizer.tokenizePhrase("42%")
+        .collect(Collectors.toList());
+
+    assertEquals(spans.size(), 2);
+    assertEquals(spans.get(0), Span.create(0, 2));
+    assertEquals(spans.get(1), Span.create(2, 3));
+  }
 }
