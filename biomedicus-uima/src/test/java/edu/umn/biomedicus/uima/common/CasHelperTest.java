@@ -44,8 +44,17 @@ public class CasHelperTest {
   @Injectable
   CAS cas;
 
+  @Mocked JCas jCas;
+
+  @Mocked Type type;
+  @Mocked FSIterator<FeatureStructure> fsIterator;
+  @Mocked Spliterators spliterators;
+  @Mocked Spliterator<FeatureStructure> spliterator;
+  @Mocked StreamSupport streamSupport;
+  @Mocked Stream<FeatureStructure> stream;
+
   @Test
-  public void testJCasConstructor(@Mocked JCas jCas) throws Exception {
+  public void testJCasConstructor() throws Exception {
     new Expectations() {{
       jCas.getCas();
       result = cas;
@@ -59,12 +68,7 @@ public class CasHelperTest {
   }
 
   @Test
-  public void testFeatureStructuresOfType(@Mocked Type type,
-      @Mocked FSIterator<FeatureStructure> fsIterator,
-      @Mocked Spliterators spliterators,
-      @Mocked Spliterator<FeatureStructure> spliterator,
-      @Mocked StreamSupport streamSupport,
-      @Mocked Stream<FeatureStructure> stream) throws Exception {
+  public void testFeatureStructuresOfType() throws Exception {
     new Expectations() {{
       cas.getIndexRepository().getAllIndexedFS(type);
       result = fsIterator;
@@ -82,12 +86,7 @@ public class CasHelperTest {
   }
 
   @Test
-  public void testFeatureStructuresOfTypeName(@Mocked Type type,
-      @Mocked FSIterator<FeatureStructure> fsIterator,
-      @Mocked Spliterators spliterators,
-      @Mocked Spliterator<FeatureStructure> spliterator,
-      @Mocked StreamSupport streamSupport,
-      @Mocked Stream<FeatureStructure> stream) throws Exception {
+  public void testFeatureStructuresOfTypeName() throws Exception {
     new Expectations() {{
       cas.getTypeSystem().getType("typeName");
       result = type;
@@ -107,7 +106,7 @@ public class CasHelperTest {
   }
 
   @Test
-  public void testGetType(@Mocked Type type) throws Exception {
+  public void testGetType() throws Exception {
     new Expectations() {{
       cas.getTypeSystem().getType("typeName");
       result = type;

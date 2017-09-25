@@ -53,24 +53,30 @@ public class FsConstructorsTest {
   @Injectable
   BooleanArrayFS newBooleanArray;
 
+  @Injectable
+  BooleanArrayFS booleanArrayFS;
+
+  @Injectable
+  FeatureStructure featureStructure;
+
   @Test
-  public void testCreateArrayFs(@Injectable BooleanArrayFS featureStructure) throws Exception {
+  public void testCreateArrayFs() throws Exception {
     new Expectations() {{
-      featureStructure.getType();
+      booleanArrayFS.getType();
       result = type;
       type.getName();
       result = "uima.cas.BooleanArray";
-      featureStructure.size();
+      booleanArrayFS.size();
       result = 4;
       targetCas.createBooleanArrayFS(4);
       result = newBooleanArray;
     }};
 
-    assertEquals(newBooleanArray, fsConstructors.createNewInstanceOfSameType(featureStructure));
+    assertEquals(newBooleanArray, fsConstructors.createNewInstanceOfSameType(booleanArrayFS));
   }
 
   @Test
-  public void testCreateGenericFs(@Injectable FeatureStructure featureStructure) throws Exception {
+  public void testCreateGenericFs() throws Exception {
     new Expectations() {{
       featureStructure.getType();
       result = type;

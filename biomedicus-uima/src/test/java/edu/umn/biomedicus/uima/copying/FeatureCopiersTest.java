@@ -61,41 +61,35 @@ public class FeatureCopiersTest {
   @Test
   public void testPrimitiveCopier() throws Exception {
     new Expectations() {{
-      onInstance(fromFeature).getRange();
-      result = fromType;
-      onInstance(fromType).getName();
-      result = CAS.TYPE_NAME_BOOLEAN;
-      onInstance(fromFs).getBooleanValue(fromFeature);
-      result = true;
-      onInstance(toFs).getType();
-      result = toType;
-      onInstance(fromFeature).getShortName();
-      result = "featName";
-      onInstance(toType).getFeatureByBaseName("featName");
-      result = toFeature;
+      fromFeature.getRange(); result = fromType;
+      fromType.getName(); result = CAS.TYPE_NAME_BOOLEAN;
+      fromFs.getBooleanValue(fromFeature); result = true;
+      toFs.getType(); result = toType;
+      fromFeature.getShortName(); result = "featName";
+      toType.getFeatureByBaseName("featName"); result = toFeature;
     }};
 
     featureCopiers.copyFeature(fromFeature, fromFs, toFs);
 
     new FullVerificationsInOrder() {{
-      onInstance(toFs).setBooleanValue(toFeature, true);
+      toFs.setBooleanValue(toFeature, true);
     }};
   }
 
   @Test
   public void testReferenceCopier() throws Exception {
     new Expectations() {{
-      onInstance(fromFeature).getRange();
+      fromFeature.getRange();
       result = fromType;
-      onInstance(fromType).getName();
+      fromType.getName();
       result = "SomeOtherTypeName";
-      onInstance(fromFs).getFeatureValue(fromFeature);
+      fromFs.getFeatureValue(fromFeature);
       result = fromReference;
-      callback.apply(onInstance(fromReference));
+      callback.apply(fromReference);
       result = toReference;
       typeSystem.getType(CAS.TYPE_NAME_STRING);
       result = stringType;
-      typeSystem.subsumes(onInstance(stringType), onInstance(fromType));
+      typeSystem.subsumes(stringType, fromType);
       result = false;
     }};
 
@@ -109,22 +103,22 @@ public class FeatureCopiersTest {
   @Test
   public void testEnumeratedStringCopier() throws Exception {
     new Expectations() {{
-      onInstance(fromFeature).getRange();
+      fromFeature.getRange();
       result = fromType;
-      onInstance(fromType).getName();
+      fromType.getName();
       result = "SomeOtherTypeName";
-      onInstance(fromFs).getStringValue(fromFeature);
+      fromFs.getStringValue(fromFeature);
       result = "aString";
       typeSystem.getType(CAS.TYPE_NAME_STRING);
       result = stringType;
-      typeSystem.subsumes(onInstance(stringType), onInstance(fromType));
+      typeSystem.subsumes(stringType, fromType);
       result = true;
     }};
 
     featureCopiers.copyFeature(fromFeature, fromFs, toFs);
 
     new Verifications() {{
-      onInstance(toFs).setStringValue(onInstance(toFeature), "aString");
+      toFs.setStringValue(toFeature, "aString");
       callback.apply(withInstanceOf(FeatureStructure.class));
       times = 0;
     }};

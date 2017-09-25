@@ -59,7 +59,7 @@ public class ViewCopierTest {
   @Test
   public void testMigrate() throws Exception {
     new Expectations() {{
-      onInstance(oldView).getDocumentText();
+      oldView.getDocumentText();
       result = "docText";
       fsIterator.hasNext();
       result = new boolean[]{true, true, true, false};
@@ -67,18 +67,18 @@ public class ViewCopierTest {
       result = featureStructure;
       times = 3;
 
-      onInstance(newView).getCas();
+      newView.getCas();
       result = newCas;
-      onInstance(oldView).getCas();
+      oldView.getCas();
       result = oldCas;
-      new FeatureStructureCopyingQueue(onInstance(oldCas), onInstance(newCas));
+      new FeatureStructureCopyingQueue(oldCas, newCas);
       result = featureStructureCopyingQueue;
     }};
 
     viewCopier.migrate(oldView, newView);
 
     new Verifications() {{
-      onInstance(newView).setDocumentText("docText");
+      newView.setDocumentText("docText");
 
       featureStructureCopyingQueue.enqueue(featureStructure);
       times = 3;
