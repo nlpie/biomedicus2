@@ -30,6 +30,12 @@
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
+        <name>contextSize</name>
+        <description>The size of the context on each side.</description>
+        <type>Integer</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
         <name>outputDirectory</name>
         <description>The output directory to write all files.</description>
         <type>String</type>
@@ -66,6 +72,12 @@
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
+      <nameValuePair>
+        <name>contextSize</name>
+        <value>
+          <integer>10</integer>
+        </value>
+      </nameValuePair>
       <nameValuePair>
         <name>documentProcessor</name>
         <value>

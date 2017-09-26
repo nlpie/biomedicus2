@@ -54,12 +54,15 @@ import javax.annotation.Nonnull;
  * @since 1.8.0
  */
 public class NumberContextWriter implements DocumentProcessor {
-
   private final Path outputDirectory;
 
+  private final int contextSize;
+
   @Inject
-  public NumberContextWriter(@ProcessorSetting("outputDirectory") Path outputDirectory) {
+  public NumberContextWriter(@ProcessorSetting("outputDirectory") Path outputDirectory,
+      @ProcessorSetting("contextSize") Integer contextSize) {
     this.outputDirectory = outputDirectory;
+    this.contextSize = contextSize;
   }
 
   @Override
@@ -87,7 +90,7 @@ public class NumberContextWriter implements DocumentProcessor {
         Iterator<Label<ParseToken>> it = sentenceTokensIndex.leftwardsFrom(numberLabel)
             .iterator();
         List<ParseToken> leftTokens = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < contextSize; i++) {
           if (it.hasNext()) {
             leftTokens.add(it.next().getValue());
           }
@@ -106,7 +109,7 @@ public class NumberContextWriter implements DocumentProcessor {
         Iterator<Label<ParseToken>> rightIt = sentenceTokensIndex.rightwardsFrom(numberLabel)
             .iterator();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < contextSize; i++) {
           if (rightIt.hasNext()) {
             bufferedWriter.write(rightIt.next().getValue().text() + " ");
           }
