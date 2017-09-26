@@ -384,6 +384,8 @@ public class MeasuresAnnotationTool {
           System.out.print("Which tokens are units? ");
           List<Integer> tokenIndexes = collectIds(scanner);
           if (tokenIndexes != null) {
+            measureBuilder.append("\t").append(String.join(" ",
+                (Iterable<String>) () -> tokenIndexes.stream().map(i -> "" + i).iterator()));
             measureBuilder.append("\t").append(grabTokens(tokenIndexes));
             break;
           }
@@ -399,6 +401,8 @@ public class MeasuresAnnotationTool {
           System.out.print("Which tokens are annotations? ");
           List<Integer> tokenIndexes = collectIds(scanner);
           if (tokenIndexes != null) {
+            measureBuilder.append("\t").append(String.join(" ",
+                (Iterable<String>) () -> tokenIndexes.stream().map(i -> "" + i).iterator()));
             measureBuilder.append("\t").append(grabTokens(tokenIndexes));
             break;
           }
@@ -460,7 +464,6 @@ public class MeasuresAnnotationTool {
       }
       return results;
     }
-
 
     private String grabTokens(List<Integer> indexes) {
       StringBuilder stringBuilder = new StringBuilder();
