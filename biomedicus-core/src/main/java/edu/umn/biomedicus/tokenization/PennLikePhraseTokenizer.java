@@ -36,13 +36,17 @@ public final class PennLikePhraseTokenizer {
    * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
    * Unicode ps (open brackets) and Pi (open quotation).
    */
-  private static final Pattern MID_BREAKS = Pattern.compile("([\\p{Ps}\\p{Pi}:;\\p{Pd}/\\\\])");
+  private static final Pattern MID_BREAKS = Pattern.compile(
+      "([\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}:;\\p{Pd}/\\\\])"
+  );
 
   /**
    * Break the unicode Ps (open brackets) and Pi (open quotation).
    * Break the unicode currency symbols Sc.
    */
-  private static final Pattern BEGIN_BREAKS = Pattern.compile("^[\\p{Ps}\\p{Pi}\\p{Sc}#]");
+  private static final Pattern BEGIN_BREAKS = Pattern.compile(
+      "^[\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}\\p{Sc}#]"
+  );
 
   /**
    * Break possessives and contractions ', 's, n't, 'll, 've, 're in both uppercase and lowercase
@@ -51,7 +55,7 @@ public final class PennLikePhraseTokenizer {
    */
   private static final Pattern END_BREAKS = Pattern.compile(
       "((')|('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|" +
-          "(\\p{Pe})|(\\p{Pf})|" +
+          "(\\p{Ps})|(\\p{Pe})|(\\p{Pi})|(\\p{Pf})|" +
           "([\\p{P}&&[^.]])|" +
           "(\\p{Sc}))$"
   );
