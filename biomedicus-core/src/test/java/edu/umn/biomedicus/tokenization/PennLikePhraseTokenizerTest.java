@@ -183,4 +183,15 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(spans.get(0), Span.create(0, 2));
     assertEquals(spans.get(1), Span.create(2, 3));
   }
+
+  @Test
+  public void testParenSplitMid() throws Exception {
+    List<Span> spans = PennLikePhraseTokenizer.tokenizePhrase("abc(asf")
+        .collect(Collectors.toList());
+
+    assertEquals(spans.size(), 3);
+    assertEquals(spans.get(0), Span.create(0, 3));
+    assertEquals(spans.get(1), Span.create(3, 4));
+    assertEquals(spans.get(2), Span.create(4, 7));
+  }
 }
