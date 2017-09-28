@@ -30,8 +30,11 @@ import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
+import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
@@ -81,37 +84,55 @@ public class NumberRecognizer implements DocumentProcessor {
    * @throws BiomedicusException if there is an error labeling the text
    */
   void extract(Iterable<Label<ParseToken>> labels) throws BiomedicusException {
-    for (Label<ParseToken> tokenLabel : labels) {
+    Iterator<Label<ParseToken>> iterator = labels.iterator();
+    Label<ParseToken> tokenLabel = null;
+    while (true) {
+      if (tokenLabel == null) {
+        if (!iterator.hasNext()) {
+          break;
+        }
+        tokenLabel = iterator.next();
+      }
+
       String text = tokenLabel.getValue().text();
       int begin = tokenLabel.getBegin();
       int end = tokenLabel.getEnd();
       if (numberDetector.tryToken(text, begin, end)) {
         labelSeq();
+        if (!numberDetector.getConsumedLastToken()) {
+          continue;
+        }
       }
+      tokenLabel = null;
     }
 
     if (numberDetector.finish()) {
       labelSeq();
     }
+
   }
 
   private void labelSeq() throws BiomedicusException {
-    assert numberDetector.getNumerator() != null
+    BigDecimal numerator = numberDetector.getNumerator();
+    assert numerator != null
         : "This method should only get called when value is nonnull";
-    assert numberDetector.getNumberType() != null
+    NumberType numberType = numberDetector.getNumberType();
+    assert numberType != null
         : "Number type should never be null at this point";
-    if (numberDetector.getDenominator() == null) {
-      labeler.value(ImmutableNumber.builder().numerator(numberDetector.getNumerator().toString())
-          .numberType(numberDetector.getNumberType())
-          .denominator(BigInteger.ONE.toString()).build())
-          .label(Span.create(numberDetector.getBegin(), numberDetector.getEnd()));
+    BigDecimal denominator = numberDetector.getDenominator();
+    if (denominator == null) {
+      ImmutableNumber number = ImmutableNumber.builder()
+          .numerator(numerator.toString())
+          .numberType(numberType)
+          .denominator(BigInteger.ONE.toString()).build();
+      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
     } else {
-      labeler.value(ImmutableNumber.builder().numerator(numberDetector.getNumerator().toString())
-          .denominator(numberDetector.getDenominator().toString())
-          .numberType(numberDetector.getNumberType())
-          .build())
-          .label(Span.create(numberDetector.getBegin(), numberDetector.getEnd()));
+      ImmutableNumber number = ImmutableNumber.builder()
+          .numerator(numerator.toString())
+          .denominator(denominator.toString())
+          .numberType(numberType)
+          .build();
+      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
     }
-    numberDetector.reset();
   }
 }
