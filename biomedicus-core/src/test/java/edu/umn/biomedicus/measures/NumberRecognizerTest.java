@@ -16,9 +16,6 @@
 
 package edu.umn.biomedicus.measures;
 
-import static org.testng.Assert.*;
-
-import com.sun.xml.internal.rngom.ast.builder.GrammarSection.Combine;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
 import edu.umn.biomedicus.common.types.text.ParseToken;
@@ -27,7 +24,6 @@ import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.framework.store.ValueLabeler;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
@@ -45,7 +41,6 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
-import mockit.Verifications;
 import mockit.VerificationsInOrder;
 import org.testng.annotations.Test;
 
