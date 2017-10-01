@@ -31,9 +31,9 @@ public interface TermIndex {
 
   IndexedTerm getIndexedTerm(@Nullable CharSequence term);
 
-  List<String> getTerms(TermVector terms);
+  List<String> getTerms(TermsVector terms);
 
-  TermVector getTermVector(Iterable<? extends CharSequence> terms);
+  TermsVector getTermVector(Iterable<? extends CharSequence> terms);
 
   TermsBag getTermsBag(Iterable<? extends CharSequence> terms);
 

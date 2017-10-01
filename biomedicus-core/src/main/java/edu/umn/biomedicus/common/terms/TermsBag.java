@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.common.terms;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -28,7 +29,7 @@ import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A bag of terms and their counts.
+ * A unordered bag of terms and their counts.
  *
  * @author Ben Knoll
  * @since 1.5.0
@@ -45,15 +46,45 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
    */
   private final int[] counts;
 
+  private transient int total = -1;
+
   private TermsBag(int[] identifiers, int[] counts) {
     this.identifiers = identifiers;
     this.counts = counts;
   }
 
+  /**
+   * Creates a terms bag from a byte array.
+   *
+   * @param bytes the bytes used to initialize the terms and their counts
+   * @see #getBytes()
+   */
+  public TermsBag(byte[] bytes) {
+    int size = bytes.length / 4 / 2;
+    ByteBuffer wrap = ByteBuffer.wrap(bytes);
+    this.identifiers = new int[size];
+    this.counts = new int[size];
+    for (int i = 0; i < size; i++) {
+      identifiers[i] = wrap.getInt();
+      counts[i] = wrap.getInt();
+    }
+  }
+
+  /**
+   * Creates a builder for creating terms bags.
+   *
+   * @return a new builder that which terms can be added to
+   */
   public static Builder builder() {
     return new Builder();
   }
 
+  /**
+   * Converts the bag to a new list of {@link IndexedTerm} objects. If a term occurs n times in the
+   * bag it will get added to the list n times. The terms are sorted with identifiers ascending.
+   *
+   * @return newly allocated list of terms
+   */
   List<IndexedTerm> toTerms() {
     List<IndexedTerm> indexedTerms = new ArrayList<>(identifiers.length);
     for (int i = 0; i < identifiers.length; i++) {
@@ -69,10 +100,22 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
     return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier());
   }
 
+  /**
+   * Tests whether this bag contains a term.
+   *
+   * @param indexedTerm the term to test
+   * @return true if the bag contains the term, false otherwise.
+   */
   public boolean contains(IndexedTerm indexedTerm) {
     return indexOf(indexedTerm) >= 0;
   }
 
+  /**
+   * The number of times a specific term occurs in this bag.
+   *
+   * @param indexedTerm the term to get
+   * @return integer count
+   */
   public int countOf(IndexedTerm indexedTerm) {
     int index = indexOf(indexedTerm);
     if (index < 0) {
@@ -81,8 +124,24 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
     return counts[index];
   }
 
-  public int size() {
+  /**
+   * The number of unique terms that this bag holds.
+   *
+   * @return integer count
+   */
+  public int uniqueTerms() {
     return identifiers.length;
+  }
+
+  public int size() {
+    if (total != -1) {
+      return total;
+    }
+    int total = 0;
+    for (int count : counts) {
+      total += count;
+    }
+    return this.total = total;
   }
 
   @Override
@@ -144,6 +203,15 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
         return new IndexedTerm(identifiers[index++]);
       }
     };
+  }
+
+  public byte[] getBytes() {
+    ByteBuffer buffer = ByteBuffer.allocate(4 * 2 * identifiers.length);
+    for (int i = 0; i < identifiers.length; i++) {
+      buffer.putInt(identifiers[i]);
+      buffer.putInt(counts[i]);
+    }
+    return buffer.array();
   }
 
   public static class Builder {

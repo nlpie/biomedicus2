@@ -70,7 +70,7 @@ public class WordVectorSpace {
   private transient double maxDist;
 
   /**
-   * The actual size of the window; past threshWeight, we won't even consider words
+   * The actual uniqueTerms of the window; past threshWeight, we won't even consider words
    */
   private transient double windowSize;
 

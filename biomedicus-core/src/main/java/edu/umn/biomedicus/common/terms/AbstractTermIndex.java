@@ -60,7 +60,7 @@ public abstract class AbstractTermIndex implements TermIndex {
   }
 
   @Override
-  public List<String> getTerms(TermVector terms) {
+  public List<String> getTerms(TermsVector terms) {
     List<String> strings = new ArrayList<>(terms.length());
     for (IndexedTerm term : terms) {
       strings.add(getTerm(term));
@@ -69,7 +69,7 @@ public abstract class AbstractTermIndex implements TermIndex {
   }
 
   @Override
-  public TermVector getTermVector(Iterable<? extends CharSequence> terms) {
+  public TermsVector getTermVector(Iterable<? extends CharSequence> terms) {
     List<Integer> indexList = new ArrayList<>();
     for (CharSequence term : terms) {
       indexList.add(getIdentifier(term));
@@ -78,7 +78,7 @@ public abstract class AbstractTermIndex implements TermIndex {
     for (int i = 0; i < arr.length; i++) {
       arr[i] = indexList.get(i);
     }
-    return new TermVector(arr);
+    return new TermsVector(arr);
   }
 
   @Override

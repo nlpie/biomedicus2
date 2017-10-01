@@ -67,4 +67,8 @@ public class CUI implements Serializable {
   public String toString() {
     return String.format("C%07d", identifier);
   }
+
+  public int identifier() {
+    return identifier;
+  }
 }

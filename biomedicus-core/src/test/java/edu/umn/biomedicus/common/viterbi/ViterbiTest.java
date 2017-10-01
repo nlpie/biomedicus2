@@ -25,6 +25,7 @@ import java.util.Collection;
 import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.Verifications;
+import mockit.internal.reflection.ConstructorReflection;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -87,7 +88,7 @@ public class ViterbiTest {
 
   @Test(expectedExceptions = UnsupportedOperationException.class)
   public void testConstructorThrows() throws Exception {
-    Deencapsulation.newInstance(Viterbi.class);
+    ConstructorReflection.newInstance(Viterbi.class);
 
     fail();
   }

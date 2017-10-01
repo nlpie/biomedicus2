@@ -19,6 +19,7 @@ package edu.umn.biomedicus.concepts;
 import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryConcept;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -40,6 +41,13 @@ public class SuiCuiTui implements Serializable {
     this.sui = sui;
     this.cui = cui;
     this.tui = tui;
+  }
+
+  public SuiCuiTui(byte[] bytes) {
+    ByteBuffer buffer = ByteBuffer.wrap(bytes);
+    sui = new SUI(buffer.getInt());
+    cui = new CUI(buffer.getInt());
+    tui = new TUI(buffer.getInt());
   }
 
   public static SuiCuiTui fromString(String string) {
@@ -109,4 +117,11 @@ public class SuiCuiTui implements Serializable {
   public String toString() {
     return sui.toString() + cui.toString() + tui.toString();
   }
+
+  byte[] getBytes() {
+    return ByteBuffer.allocate(12).putInt(sui.identifier()).putInt(cui.identifier())
+        .putInt(tui.identifier()).array();
+  }
+
+
 }

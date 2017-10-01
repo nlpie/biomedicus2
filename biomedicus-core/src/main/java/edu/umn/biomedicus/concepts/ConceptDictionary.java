@@ -31,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 import org.mapdb.Serializer;
 import org.mapdb.SortedTableMap;
 import org.mapdb.volume.MappedFileVol;
@@ -84,7 +82,7 @@ class ConceptDictionary implements LifecycleManaged {
 
   @Nullable
   List<SuiCuiTui> forNorms(TermsBag norms) {
-    if (norms.size() == 0) {
+    if (norms.uniqueTerms() == 0) {
       return null;
     }
     return normDictionary.get(norms);

@@ -20,27 +20,41 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Service responsible for calling all of the lifecycle managed objects and
- * telling them to shut down. Lifecycle manageds should be injected with this
- * service and add themselves using the register method.
+ * telling them to shut down. Lifecycle managed objects will be automatically registered by the biomedicus guice module.
  *
  * @since 1.6.0
  */
 @Singleton
 public class LifecycleManager {
+  private final Collection<LifecycleManaged> lifecycleManageds = new ArrayList<>();
 
-  private final Collection<LifecycleManaged> lifecycleManageds
-      = new ArrayList<>();
-
-  public void register(LifecycleManaged lifecycleManaged) {
+  void register(LifecycleManaged lifecycleManaged) {
     lifecycleManageds.add(lifecycleManaged);
   }
 
+  /**
+   *
+   *
+   * @throws BiomedicusException if any of the services shutdown
+   */
   public void triggerShutdown() throws BiomedicusException {
+    List<BiomedicusException> exceptionList = new ArrayList<>();
     for (LifecycleManaged lifecycleManaged : lifecycleManageds) {
-      lifecycleManaged.doShutdown();
+      try {
+        lifecycleManaged.doShutdown();
+      } catch (BiomedicusException e) {
+        exceptionList.add(e);
+      }
+    }
+    if (!exceptionList.isEmpty()) {
+      BiomedicusException e = new BiomedicusException("Multiple exceptions ("
+          + exceptionList.size() + ") while shutting down lifecycle resources");
+      exceptionList.forEach(e::addSuppressed);
+      throw e;
     }
   }
 }

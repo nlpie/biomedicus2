@@ -20,7 +20,6 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
-import org.mapdb.serializer.GroupSerializer;
 import org.mapdb.serializer.GroupSerializerObjectArray;
 
 /**
@@ -30,7 +29,7 @@ public class TermsBagSerializer extends GroupSerializerObjectArray<TermsBag> {
 
   @Override
   public void serialize(@NotNull DataOutput2 out, @NotNull TermsBag value) throws IOException {
-    out.packInt(value.size());
+    out.packInt(value.uniqueTerms());
     for (IndexedTerm indexedTerm : value) {
       out.packInt(indexedTerm.termIdentifier());
     }
