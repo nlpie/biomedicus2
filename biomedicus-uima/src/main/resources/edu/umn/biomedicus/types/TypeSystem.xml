@@ -380,6 +380,11 @@
     </typeDescription>
 
     <typeDescription>
+      <name>edu.umn.biomedicus.uima.type1_8.CandidateUnitOfMeasure</name>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+
+    <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.ParseToken</name>
       <description>
         A token in the form standard to PTB-style annotated corpora. For these tokens possessives
