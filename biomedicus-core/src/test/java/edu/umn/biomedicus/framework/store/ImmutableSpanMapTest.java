@@ -222,4 +222,46 @@ public class ImmutableSpanMapTest {
     assertFalse(toTheLeft.get(Span.create(6, 10)).isPresent());
     assertFalse(toTheLeft.get(Span.create(8, 10)).isPresent());
   }
+
+  @Test
+  public void testDescendingBegin() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 4), new Object());
+    spanMap.put(Span.create(5, 8), new Object());
+    spanMap.put(Span.create(6, 8), new Object());
+    spanMap.put(Span.create(6, 10), new Object());
+    spanMap.put(Span.create(8, 10), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> descendingBegin = immutableSpanMap.descendingBegin();
+
+    assertEquals(descendingBegin.size(), 5);
+    Iterator<Span> iterator = descendingBegin.spansAsList().iterator();
+    assertEquals(iterator.next(), Span.create(8, 10));
+    assertEquals(iterator.next(), Span.create(6, 8));
+    assertEquals(iterator.next(), Span.create(6, 10));
+    assertEquals(iterator.next(), Span.create(5, 8));
+    assertEquals(iterator.next(), Span.create(0, 4));
+  }
+
+  @Test
+  public void testDescendingEnd() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 4), new Object());
+    spanMap.put(Span.create(5, 8), new Object());
+    spanMap.put(Span.create(6, 8), new Object());
+    spanMap.put(Span.create(6, 10), new Object());
+    spanMap.put(Span.create(8, 10), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> ascendingReversing = immutableSpanMap.descendingEnd();
+
+    assertEquals(ascendingReversing.size(), 5);
+    Iterator<Span> iterator = ascendingReversing.spansAsList().iterator();
+    assertEquals(iterator.next(), Span.create(0, 4));
+    assertEquals(iterator.next(), Span.create(5, 8));
+    assertEquals(iterator.next(), Span.create(6, 10));
+    assertEquals(iterator.next(), Span.create(6, 8));
+    assertEquals(iterator.next(), Span.create(8, 10));
+  }
 }

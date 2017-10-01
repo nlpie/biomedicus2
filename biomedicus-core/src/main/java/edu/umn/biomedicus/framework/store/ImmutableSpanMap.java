@@ -315,7 +315,7 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
   @Override
   public SpansMap<E> descendingBegin() {
     return new DescendingReversingView<>(this, 0, Integer.MAX_VALUE, 0,
-        begins.length - 1);
+        Integer.MAX_VALUE);
   }
 
   @Override
@@ -326,7 +326,7 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
   @Override
   public SpansMap<E> descendingEnd() {
     return new AscendingReversingView<>(this, 0, Integer.MAX_VALUE, 0,
-        begins.length - 1);
+        Integer.MAX_VALUE);
   }
 
   @Override
@@ -644,50 +644,48 @@ public class ImmutableSpanMap<E> implements SpansMap<E> {
     }
 
     int nextAscendingReversing(int index) {
-      int tmp = index - 1;
-      if (tmp >= left && backingMap.beginsEqual(tmp, index)) {
-        return tmp;
-      } else {
-        tmp = index + 1;
-        do {
-          if (index == right) {
-            return -1;
-          }
-          index = tmp;
-          tmp = index + 1;
-        } while (backingMap.beginsEqual(index, tmp));
-        while (backingMap.beginsEqual(index, tmp)) {
-          index = tmp;
-          if (index == right) {
-            break;
-          }
-          tmp = index + 1;
+      int tmp;
+      if (index == left || !backingMap.beginsEqual(tmp = nextNodeDescending(index), index)) {
+        tmp = nextNodeAscending(nextBreakAscending(index));
+        if (tmp != -1) {
+          tmp = nextBreakAscending(tmp);
         }
       }
+      return tmp;
+    }
+
+    private int nextBreakAscending(int index) {
+      int tmp = index;
+      do {
+        index = tmp;
+        tmp = nextNodeAscending(index);
+        if (tmp == -1) {
+          break;
+        }
+      } while (backingMap.beginsEqual(tmp, index));
       return index;
     }
 
     int nextDescendingReversing(int index) {
-      int tmp = index + 1;
-      if (tmp <= right && backingMap.beginsEqual(tmp, index)) {
-        return tmp;
-      } else {
-        tmp = index - 1;
-        do {
-          if (index == left) {
-            return -1;
-          }
-          index = tmp;
-          tmp = index - 1;
-        } while (backingMap.beginsEqual(index, tmp));
-        while (backingMap.beginsEqual(index, tmp)) {
-          index = tmp;
-          if (index == left) {
-            break;
-          }
-          tmp = index - 1;
+      int tmp;
+      if (index == right || !backingMap.beginsEqual(tmp = nextNodeAscending(index), index)) {
+        tmp = nextNodeDescending(nextBreakDescending(index));
+        if (tmp != -1) {
+          tmp = nextBreakDescending(tmp);
         }
       }
+      return tmp;
+    }
+
+    private int nextBreakDescending(int index) {
+      int tmp = index;
+      do {
+        index = tmp;
+        tmp = nextNodeDescending(index);
+        if (tmp == -1) {
+          break;
+        }
+      } while (backingMap.beginsEqual(tmp, index));
       return index;
     }
 
