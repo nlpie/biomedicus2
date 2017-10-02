@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.vocabulary;
+package edu.umn.biomedicus.concepts;
 
-import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.framework.DataLoader;
 
-public class VocabularyModule extends AbstractModule {
+@Singleton
+public class ConceptDictionaryLoader extends DataLoader<ConceptDictionary> {
 
   @Override
-  protected void configure() {
-    bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
-    bind(VocabularyStore.class).to(RocksDbVocabStore.class);
-    bind(VocabularyBuilder.class).to(RocksDbVocabularyBuilder.class);
+  protected ConceptDictionary loadModel() throws BiomedicusException {
+    return null;
   }
 }

@@ -20,13 +20,13 @@ import com.google.common.base.Splitter;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermVector;
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.terms.TermsVector;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.AbstractMap;
@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -46,10 +45,9 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.spi.PathOptionHandler;
-import org.mapdb.Serializer;
-import org.mapdb.SortedTableMap;
-import org.mapdb.volume.MappedFileVol;
-import org.mapdb.volume.Volume;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,6 +122,8 @@ public class ConceptDictionaryBuilder {
   }
 
   private void doWork(String[] args) throws IOException {
+    RocksDB.loadLibrary();
+
     CmdLineParser parser = new CmdLineParser(this);
 
     try {
@@ -137,7 +137,6 @@ public class ConceptDictionaryBuilder {
     }
 
     if (Files.exists(dbPath)) {
-
       Files.deleteIfExists(dbPath.resolve("phrases.db"));
       Files.deleteIfExists(dbPath.resolve("lowercase.db"));
       Files.deleteIfExists(dbPath.resolve("norms.db"));
@@ -184,49 +183,114 @@ public class ConceptDictionaryBuilder {
     System.out.println("Loading phrases and SUI -> CUIs from MRCONSO: " + mrconsoPath);
     Set<SUI> bannedSUIs = new HashSet<>();
 
-    // block so phrase dictionary gets freed once it's no longer needed
-    {
-      Map<String, List<SuiCuiTui>> phraseDictionary = new TreeMap<>();
-      Map<String, List<SuiCuiTui>> phrasesLowerCase = new TreeMap<>();
+    Files.createDirectories(dbPath);
+    try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
+      try (RocksDB phrases = RocksDB.open(options, dbPath.resolve("phrases.db").toString());
+          RocksDB lowercase = RocksDB.open(options, dbPath.resolve("lowercase.db").toString())) {
+        int mrConsoTotalLines = 0;
+        int mrConsoCompletedLines = 0;
 
-      int mrConsoTotalLines = 0;
-      int mrConsoCompletedLines = 0;
-
-      try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
-        while (bufferedReader.readLine() != null) mrConsoTotalLines++;
-      }
-
-      try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
-        String line;
-        while((line = bufferedReader.readLine()) != null) {
-          if (++mrConsoCompletedLines % 10_000 == 0) {
-            System.out.println("Read " + mrConsoCompletedLines + " of " + mrConsoTotalLines);
+        try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
+          while (bufferedReader.readLine() != null) {
+            mrConsoTotalLines++;
           }
-          String[] splitLine = SPLITTER.split(line);
-          CUI cui = new CUI(splitLine[0]);
-          if ("ENG".equals(splitLine[1])) {
-            SUI sui = new SUI(splitLine[5]);
-            String obsoleteOrSuppressible = splitLine[16];
-            String tty = splitLine[12];
-            String phrase = splitLine[14];
+        }
 
-            if (phrase.length() < 3) {
+        try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
+          String line;
+          while ((line = bufferedReader.readLine()) != null) {
+            if (++mrConsoCompletedLines % 10_000 == 0) {
+              System.out.println("Read " + mrConsoCompletedLines + " of " + mrConsoTotalLines);
+            }
+            String[] splitLine = SPLITTER.split(line);
+            CUI cui = new CUI(splitLine[0]);
+            if ("ENG".equals(splitLine[1])) {
+              SUI sui = new SUI(splitLine[5]);
+              String obsoleteOrSuppressible = splitLine[16];
+              String tty = splitLine[12];
+              String phrase = splitLine[14];
+
+              if (phrase.length() < 3) {
+                continue;
+              }
+
+              if (!"N".equals(obsoleteOrSuppressible)) {
+                bannedSUIs.add(sui);
+                continue;
+              }
+
+              if (ttyBanlist.contains(tty)) {
+                bannedSUIs.add(sui);
+                continue;
+              }
+
+              List<TUI> tuis = cuiToTUIs.get(cui);
+              if (tuis == null || tuis.size() == 0) {
+                LOGGER.trace("Filtering \"{}\" because it has no interesting types", phrase);
+                continue;
+              }
+              for (TUI tui : tuis) {
+                if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
+                    || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis
+                    .contains(sui)) {
+                  continue;
+                }
+
+                SuiCuiTui value = new SuiCuiTui(sui, cui, tui);
+                byte[] valueBytes = value.getBytes();
+
+                multimapPut(phrases, phrase.getBytes(), valueBytes);
+                multimapPut(lowercase, phrase.toLowerCase().getBytes(), valueBytes);
+              }
+            }
+          }
+        }
+      } catch (RocksDBException e) {
+        e.printStackTrace();
+        return;
+      }
+    }
+
+    Path mrxnsPath = umlsPath.resolve("MRXNS_ENG.RRF");
+    System.out.println("Loading lowercase normalized strings from MRXNS_ENG: " + mrxnsPath);
+
+    int totalLines = 0;
+    int lineCount = 0;
+
+    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
+      while (bufferedReader.readLine() != null) {
+        totalLines++;
+      }
+    }
+
+    try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
+      try (RocksDB normsDb = RocksDB.open(options, dbPath.resolve("norms.db").toString());
+          BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+          if (++lineCount % 10_000 == 0) {
+            System.out.println("Read " + lineCount + " of " + totalLines);
+          }
+          Iterable<String> columns = Splitter.on("|").split(line);
+          Iterator<String> it = columns.iterator();
+          if ("ENG".equals(it.next())) {
+            List<String> norms = Arrays.asList(SPACE_SPLITTER.split(it.next()));
+            CUI cui = new CUI(it.next());
+            it.next();
+            SUI sui = new SUI(it.next());
+
+            if (norms.size() < 2) {
               continue;
             }
 
-            if (!"N".equals(obsoleteOrSuppressible)) {
-              bannedSUIs.add(sui);
+            if (bannedSUIs.contains(sui)) {
               continue;
             }
 
-            if (ttyBanlist.contains(tty)) {
-              bannedSUIs.add(sui);
-              continue;
-            }
-
+            TermsVector termsBag = normIndex.getTermVector(norms);
             List<TUI> tuis = cuiToTUIs.get(cui);
             if (tuis == null || tuis.size() == 0) {
-              LOGGER.trace("Filtering \"{}\" because it has no interesting types", phrase);
+              LOGGER.trace("Filtering \"{}\" because it has no interesting types", termsBag);
               continue;
             }
             for (TUI tui : tuis) {
@@ -235,105 +299,25 @@ public class ConceptDictionaryBuilder {
                 continue;
               }
 
-              SuiCuiTui value = new SuiCuiTui(sui, cui, tui);
-              multimapPut(phraseDictionary, phrase, value);
-              multimapPut(phrasesLowerCase, phrase.toLowerCase(), value);
+              multimapPut(normsDb, termsBag.toBag().getBytes(),
+                  new SuiCuiTui(sui, cui, tui).getBytes());
             }
           }
         }
+      } catch (RocksDBException e) {
+        e.printStackTrace();
       }
-
-      Files.createDirectories(dbPath);
-
-      Volume phrasesVolume = MappedFileVol.FACTORY
-          .makeVolume(dbPath.resolve("phrases.db").toString(), false);
-      SortedTableMap phrases = SortedTableMap.create(phrasesVolume, Serializer.STRING, Serializer.JAVA)
-          .createFrom(phraseDictionary);
-      phrases.close();
-      phrasesVolume.close();
-
-      Volume lowercaseVolume = MappedFileVol.FACTORY
-          .makeVolume(dbPath.resolve("lowercase.db").toString(), false);
-      SortedTableMap lowercase = SortedTableMap.create(lowercaseVolume, Serializer.STRING, Serializer.JAVA)
-          .createFrom(phrasesLowerCase);
-      lowercase.close();
-      lowercaseVolume.close();
-    }
-
-    Path mrxnsPath = umlsPath.resolve("MRXNS_ENG.RRF");
-    System.out.println("Loading lowercase normalized strings from MRXNS_ENG: " + mrxnsPath);
-
-    Map<TermsBag, List<SuiCuiTui>> normMap = new TreeMap<>();
-
-    int totalLines = 0;
-    int lineCount = 0;
-
-
-    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
-      while(bufferedReader.readLine() != null) totalLines++;
-    }
-
-    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
-      String line;
-      while((line = bufferedReader.readLine()) != null) {
-        if (++lineCount % 10_000 == 0) {
-          System.out.println("Read " + lineCount + " of " + totalLines);
-        }
-        Iterable<String> columns = Splitter.on("|").split(line);
-        Iterator<String> it = columns.iterator();
-        if ("ENG".equals(it.next())) {
-          List<String> norms = Arrays.asList(SPACE_SPLITTER.split(it.next()));
-          CUI cui = new CUI(it.next());
-          it.next();
-          SUI sui = new SUI(it.next());
-
-          if (norms.size() < 2) {
-            continue;
-          }
-
-          if (bannedSUIs.contains(sui)) {
-            continue;
-          }
-
-          TermVector termsBag = normIndex.getTermVector(norms);
-          List<TUI> tuis = cuiToTUIs.get(cui);
-          if (tuis == null || tuis.size() == 0) {
-            LOGGER.trace("Filtering \"{}\" because it has no interesting types", termsBag);
-            continue;
-          }
-          for (TUI tui : tuis) {
-            if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
-                || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis.contains(sui)) {
-              continue;
-            }
-
-            multimapPut(normMap, termsBag.toBag(), new SuiCuiTui(sui, cui, tui));
-          }
-        }
-      }
-
-      Volume normsVolume = MappedFileVol.FACTORY
-          .makeVolume(dbPath.resolve("norms.db").toString(), false);
-
-      SortedTableMap normsMap = SortedTableMap.create(normsVolume, Serializer.JAVA, Serializer.JAVA)
-          .createFrom(normMap);
-
-      normsMap.close();
-
-      normsVolume.close();
     }
   }
 
-  private <K, V> void multimapPut(Map<K, List<V>> map, K key, V value) {
-    map.compute(key, (unused, list) -> {
-      if (list == null) {
-        list = new ArrayList<>();
-      } else if (list.contains(value)) {
-        return list;
-      }
-      list.add(value);
-      return list;
-    });
+  private void multimapPut(RocksDB db, byte[] key, byte[] value) throws RocksDBException {
+    byte[] current = db.get(key);
+    if (current != null) {
+      current = ByteBuffer.allocate(current.length + value.length).put(current).put(value).array();
+    } else {
+      current = value;
+    }
+    db.put(key, current);
   }
 
   private static final class SuiCui {

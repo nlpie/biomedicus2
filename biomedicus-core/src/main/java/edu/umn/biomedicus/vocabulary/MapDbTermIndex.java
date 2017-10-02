@@ -114,8 +114,4 @@ class MapDbTermIndex extends AbstractTermIndex implements Closeable, TermIndexBu
   public void close() throws IOException {
     open = false;
   }
-
-  TermIndex inMemory(Boolean inMemory) {
-    return inMemory ? new HashTermIndex(this) : this;
-  }
 }

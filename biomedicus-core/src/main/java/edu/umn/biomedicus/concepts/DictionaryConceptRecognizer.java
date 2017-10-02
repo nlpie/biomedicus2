@@ -61,7 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Uses a {@link ConceptDictionary} to recognize concepts in text. First, it will try to find direct
+ * Uses a {@link InMemoryConceptDictionary} to recognize concepts in text. First, it will try to find direct
  * matches against all in-order sublists of tokens in a sentence. Then it will perform syntactic
  * permutations on any prepositional phrases in those sublists.
  *
@@ -77,7 +77,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
   private static final int SPAN_SIZE = 5;
 
-  private final ConceptDictionary conceptDictionary;
+  private final InMemoryConceptDictionary conceptDictionary;
 
   @Nullable
   private Labeler<DictionaryTerm> termLabeler;
@@ -94,7 +94,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
    * @param conceptDictionary the dictionary to get concepts from.
    */
   @Inject
-  DictionaryConceptRecognizer(ConceptDictionary conceptDictionary) {
+  DictionaryConceptRecognizer(InMemoryConceptDictionary conceptDictionary) {
     this.conceptDictionary = conceptDictionary;
   }
 

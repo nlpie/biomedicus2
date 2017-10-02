@@ -5,7 +5,7 @@ paths:
 # settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
   vocabulary:
-    db.path: vocabulary.db
+    db.path: vocabulary
     inMemory: yes
   spelling:
     arpa.path: spell/UPMC.arpa

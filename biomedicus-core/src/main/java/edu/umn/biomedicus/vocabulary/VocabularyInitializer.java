@@ -85,7 +85,7 @@ public class VocabularyInitializer {
     }
   }
 
-  void addPhrase(String phrase) {
+  void addPhrase(String phrase) throws BiomedicusException {
     Iterator<Span> tokensIterator = PennLikePhraseTokenizer
         .tokenizePhrase(phrase).iterator();
     List<Label<Token>> parseTokens = new ArrayList<>();
@@ -118,7 +118,7 @@ public class VocabularyInitializer {
     }
   }
 
-  void addNormPhrase(String normPhrase) {
+  void addNormPhrase(String normPhrase) throws BiomedicusException {
     Iterator<Span> normsIt = PennLikePhraseTokenizer
         .tokenizePhrase(normPhrase)
         .iterator();
@@ -130,7 +130,7 @@ public class VocabularyInitializer {
     }
   }
 
-  private void doMain(String[] args) {
+  private void doMain(String[] args) throws BiomedicusException {
     CmdLineParser parser = new CmdLineParser(this);
 
     try {
@@ -144,6 +144,14 @@ public class VocabularyInitializer {
     }
 
     Path lragr = specialistPath.resolve("LRAGR");
+
+    long lragrLines;
+    try {
+      lragrLines = Files.lines(lragr).count();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
 
     Iterator<String[]> iterator;
     try {
@@ -164,11 +172,19 @@ public class VocabularyInitializer {
       addNormPhrase(uninflected);
 
       if ((++count) % 10000 == 0) {
-        System.out.println("Read " + count + " lines from LRAGR.");
+        System.out.println("Read " + count + " / " + lragrLines + " lines from LRAGR.");
       }
     }
 
     Path mrConso = umlsPath.resolve("MRCONSO.RRF");
+
+    long mrConsoLines;
+    try {
+      mrConsoLines = Files.lines(mrConso).count();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
 
     Iterator<String[]> mrconsoIt;
     try {
@@ -190,7 +206,7 @@ public class VocabularyInitializer {
 
       if ((++count) % 10000 == 0) {
         System.out
-            .println("Read " + count + " lines from MRCONSO.RRF.");
+            .println("Read " + count + " / " + mrConsoLines + " lines from MRCONSO.RRF.");
       }
     }
 

@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import java.io.Closeable;
 
 /**

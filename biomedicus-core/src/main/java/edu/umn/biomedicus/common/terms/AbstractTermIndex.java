@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.common.terms;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.vocabulary.HashTermIndex;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +58,13 @@ public abstract class AbstractTermIndex implements TermIndex {
 
   @Override
   public List<String> getTerms(TermsBag termsBag) {
-    return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
+    ArrayList<String> terms = new ArrayList<>(termsBag.size());
+
+    for (IndexedTerm indexedTerm : termsBag) {
+      terms.add(this.getTerm(indexedTerm));
+    }
+
+    return terms;
   }
 
   @Override
@@ -91,4 +99,7 @@ public abstract class AbstractTermIndex implements TermIndex {
     return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
   }
 
+  public TermIndex inMemory(Boolean inMemory) {
+    return inMemory ? new HashTermIndex(this) : this;
+  }
 }
