@@ -28,16 +28,16 @@ public final class PennLikePhraseTokenizer {
   /**
    * Any sequence of 1 or more character that are not unicode whitespace.
    */
-  private static final Pattern WORDS = Pattern.compile("([^\\p{Z}\\p{C}]+)");
+  private static final Pattern WORDS = Pattern.compile("[^\\p{Z}\\p{C}]+");
 
-  private static final Pattern TRAILING_PERIOD = Pattern.compile("([.])$");
+  private static final Pattern TRAILING_PERIOD = Pattern.compile("(?<=[.])$");
 
   /**
    * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
    * Unicode ps (open brackets) and Pi (open quotation).
    */
   private static final Pattern MID_BREAKS = Pattern.compile(
-      "([\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}:;\\p{Pd}/\\\\])"
+      "[\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}:;\\p{Pd}/\\\\]"
   );
 
   /**
@@ -54,10 +54,7 @@ public final class PennLikePhraseTokenizer {
    * punctuation (P) except period. Break the unicode currency symbols Sc.
    */
   private static final Pattern END_BREAKS = Pattern.compile(
-      "((')|('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|" +
-          "(\\p{Ps})|(\\p{Pe})|(\\p{Pi})|(\\p{Pf})|" +
-          "([\\p{P}&&[^.]])|" +
-          "(\\p{Sc}))$"
+      "(?<=(('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|['\\p{Ps}\\p{Pe}\\p{Pi}\\p{Pf}\\p{Sc}\\p{P}&&[^.]]))$"
   );
 
   private final CharSequence sentenceText;
@@ -189,7 +186,7 @@ public final class PennLikePhraseTokenizer {
       CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
       Matcher endBreaksMatcher = END_BREAKS.matcher(tokenText);
       if (endBreaksMatcher.find()) {
-        int start = endBreaksMatcher.start();
+        int start = endBreaksMatcher.start(1);
         Span rest = tokenCandidate.derelativize(new Span(0, start));
         Span endSplit = tokenCandidate.derelativize(new Span(start, endBreaksMatcher.end()));
         candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast));

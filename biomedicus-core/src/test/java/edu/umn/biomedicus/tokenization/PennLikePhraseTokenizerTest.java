@@ -25,19 +25,35 @@ import org.testng.annotations.Test;
 
 public class PennLikePhraseTokenizerTest {
 
+  public static final String SENTENCE = "This test's logic will confirm that the tokenizer (P.T.B.-like) is well-behaved.";
   private PennLikePhraseTokenizer pennLikePhraseTokenizer
       = new PennLikePhraseTokenizer(
-      "This test's logic will confirm that the tokenizer (P.T.B.-like) is well-behaved.");
+      SENTENCE);
 
   @Test
   public void testWords() throws Exception {
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
-        .startStreamWithWords()
-        .collect(Collectors.toList());
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence(SENTENCE).collect(Collectors.toList());
 
-    assertEquals(list.size(), 11);
-    assertEquals(list.get(0).toSpan(), new Span(0, 4)); // this
-    assertEquals(list.get(10).isLast(), true);
+    assertEquals(list.size(), 19);
+    assertEquals(list.get(0).getCovered(SENTENCE), "This");
+    assertEquals(list.get(1).getCovered(SENTENCE), "test");
+    assertEquals(list.get(2).getCovered(SENTENCE), "'s");
+    assertEquals(list.get(3).getCovered(SENTENCE), "logic");
+    assertEquals(list.get(4).getCovered(SENTENCE), "will");
+    assertEquals(list.get(5).getCovered(SENTENCE), "confirm");
+    assertEquals(list.get(6).getCovered(SENTENCE), "that");
+    assertEquals(list.get(7).getCovered(SENTENCE), "the");
+    assertEquals(list.get(8).getCovered(SENTENCE), "tokenizer");
+    assertEquals(list.get(9).getCovered(SENTENCE), "(");
+    assertEquals(list.get(10).getCovered(SENTENCE), "P.T.B.");
+    assertEquals(list.get(11).getCovered(SENTENCE), "-");
+    assertEquals(list.get(12).getCovered(SENTENCE), "like");
+    assertEquals(list.get(13).getCovered(SENTENCE), ")");
+    assertEquals(list.get(14).getCovered(SENTENCE), "is");
+    assertEquals(list.get(15).getCovered(SENTENCE), "well");
+    assertEquals(list.get(16).getCovered(SENTENCE), "-");
+    assertEquals(list.get(17).getCovered(SENTENCE), "behaved");
+    assertEquals(list.get(18).getCovered(SENTENCE), ".");
   }
 
   @Test
