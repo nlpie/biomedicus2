@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.common.terms;
 
+import java.nio.ByteBuffer;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,12 +30,21 @@ import java.util.NoSuchElementException;
  * @author Ben Knoll
  * @since 1.6.0
  */
-public class TermVector implements Iterable<IndexedTerm> {
+public class TermsVector implements Iterable<IndexedTerm> {
 
   private final int[] identifiers;
 
-  public TermVector(int[] identifiers) {
+  public TermsVector(int[] identifiers) {
     this.identifiers = identifiers;
+  }
+
+  public TermsVector(byte[] bytes) {
+    int size = bytes.length / 4;
+    ByteBuffer wrap = ByteBuffer.wrap(bytes);
+    identifiers = new int[size];
+    for (int i = 0; i < size; i++) {
+      identifiers[i] = wrap.getInt();
+    }
   }
 
   public static Builder builder() {
@@ -72,12 +82,20 @@ public class TermVector implements Iterable<IndexedTerm> {
     return true;
   }
 
-  public boolean isPrefix(TermVector terms) {
+  public boolean isPrefix(TermsVector terms) {
     return isPrefix(terms.asIndexedTermList());
   }
 
   public List<IndexedTerm> asIndexedTermList() {
     return new ListView(this);
+  }
+
+  public byte[] getBytes() {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(identifiers.length * 4);
+    for (int identifier : identifiers) {
+      byteBuffer.putInt(identifier);
+    }
+    return byteBuffer.array();
   }
 
   @Override
@@ -89,7 +107,7 @@ public class TermVector implements Iterable<IndexedTerm> {
       return false;
     }
 
-    TermVector that = (TermVector) o;
+    TermsVector that = (TermsVector) o;
 
     return Arrays.equals(identifiers, that.identifiers);
 
@@ -122,9 +140,9 @@ public class TermVector implements Iterable<IndexedTerm> {
 
   private static class ListView extends AbstractList<IndexedTerm> {
 
-    private final TermVector backing;
+    private final TermsVector backing;
 
-    private ListView(TermVector backing) {
+    private ListView(TermsVector backing) {
       this.backing = backing;
     }
 
@@ -143,12 +161,16 @@ public class TermVector implements Iterable<IndexedTerm> {
 
     private final ArrayList<Integer> identifiers = new ArrayList<>();
 
-    public void add(IndexedTerm indexedTerm) {
+    public void addTerm(IndexedTerm indexedTerm) {
       identifiers.add(indexedTerm.termIdentifier());
     }
 
-    public TermVector build() {
-      return new TermVector(identifiers.stream().mapToInt(Integer::intValue).toArray());
+    public void addIdentifier(int identifier) {
+      identifiers.add(identifier);
+    }
+
+    public TermsVector build() {
+      return new TermsVector(identifiers.stream().mapToInt(Integer::intValue).toArray());
     }
   }
 }

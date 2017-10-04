@@ -14,28 +14,8 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.tokenization;
 
-/**
- * A type of number.
- *
- * @since 1.8.0
- */
-public enum NumberType {
-  /**
-   * An english numeral cardinal number.
-   */
-  CARDINAL,
-  /**
-   * An english numeral ordinal number.
-   */
-  ORDINAL,
-  /**
-   * An english numeral fraction.
-   */
-  FRACTION,
-  /**
-   * A decimal form number.
-   */
-  DECIMAL
+public class PennLikeTokenizerTest {
+
 }

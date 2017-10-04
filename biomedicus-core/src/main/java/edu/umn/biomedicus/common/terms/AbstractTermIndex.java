@@ -19,7 +19,6 @@ package edu.umn.biomedicus.common.terms;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -56,11 +55,17 @@ public abstract class AbstractTermIndex implements TermIndex {
 
   @Override
   public List<String> getTerms(TermsBag termsBag) {
-    return termsBag.toTerms().stream().map(this::getTerm).collect(Collectors.toList());
+    ArrayList<String> terms = new ArrayList<>(termsBag.size());
+
+    for (IndexedTerm indexedTerm : termsBag) {
+      terms.add(this.getTerm(indexedTerm));
+    }
+
+    return terms;
   }
 
   @Override
-  public List<String> getTerms(TermVector terms) {
+  public List<String> getTerms(TermsVector terms) {
     List<String> strings = new ArrayList<>(terms.length());
     for (IndexedTerm term : terms) {
       strings.add(getTerm(term));
@@ -69,7 +74,7 @@ public abstract class AbstractTermIndex implements TermIndex {
   }
 
   @Override
-  public TermVector getTermVector(Iterable<? extends CharSequence> terms) {
+  public TermsVector getTermVector(Iterable<? extends CharSequence> terms) {
     List<Integer> indexList = new ArrayList<>();
     for (CharSequence term : terms) {
       indexList.add(getIdentifier(term));
@@ -78,7 +83,7 @@ public abstract class AbstractTermIndex implements TermIndex {
     for (int i = 0; i < arr.length; i++) {
       arr[i] = indexList.get(i);
     }
-    return new TermVector(arr);
+    return new TermsVector(arr);
   }
 
   @Override
@@ -91,4 +96,5 @@ public abstract class AbstractTermIndex implements TermIndex {
     return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
   }
 
+  public abstract TermIndex inMemory(Boolean inMemory);
 }

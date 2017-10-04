@@ -21,6 +21,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.measures.MeasuresModule;
 import edu.umn.biomedicus.vocabulary.VocabularyModule;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,6 +60,7 @@ public final class Bootstrapper {
 
   public Bootstrapper() {
     modules.add(new VocabularyModule());
+    modules.add(new MeasuresModule());
   }
 
   /**

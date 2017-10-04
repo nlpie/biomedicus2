@@ -19,24 +19,45 @@ package edu.umn.biomedicus.common.terms;
 import javax.annotation.Nullable;
 
 /**
- *
+ * An identifier for a unique string. Is associated with the specific vocabulary / term index that
+ * it is retrieved from.
  */
 public final class IndexedTerm implements Comparable<IndexedTerm> {
 
   private final int termIdentifier;
 
+  /**
+   * Initializes a new indexed term with the given identifier
+   *
+   * @param termIdentifier the identifier for a string
+   */
   public IndexedTerm(int termIdentifier) {
     this.termIdentifier = termIdentifier;
   }
 
+  /**
+   * Returns the identifier for unknown strings: -1.
+   *
+   * @return the identifier used for unknown strings.
+   */
   public static IndexedTerm unknown() {
     return new IndexedTerm(-1);
   }
 
+  /**
+   * The integer term identifier for this indexed term.
+   *
+   * @return integer index / identifier
+   */
   public int termIdentifier() {
     return termIdentifier;
   }
 
+  /**
+   * Whether or not this term is known in a specific vocabulary.
+   *
+   * @return true if the term, false if it is not known
+   */
   public boolean isUnknown() {
     return termIdentifier == -1;
   }

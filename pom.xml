@@ -74,6 +74,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -82,93 +83,13 @@
           </compilerArgs>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <argLine>-Xmx4g @{jacoco.agent-it.arg}</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.4.201502262128</version>
-        <executions>
-          <execution>
-            <id>agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>agent-integration</id>
-            <goals>
-              <goal>prepare-agent-integration</goal>
-            </goals>
-            <configuration>
-              <propertyName>jacoco.agent-it.arg</propertyName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.4</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.20</version>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>
-                      jacoco-maven-plugin
-                    </artifactId>
-                    <versionRange>
-                      [0.7.4.201502262128,)
-                    </versionRange>
-                    <goals>
-                      <goal>prepare-agent</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
+          <version>2.20.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -190,13 +111,13 @@
     <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
-      <version>1.16</version>
+      <version>1.35</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8.8</version>
+      <version>6.10</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -233,7 +154,8 @@
     <developer>
       <name>Ben Knoll</name>
       <email>benknoll@umn.edu</email>
-      <organization>NLP/IE Group at the University of Minnesota Institute for Health Informatics
+      <organization>
+        NLP/IE Group at the University of Minnesota Institute for Health Informatics
       </organization>
       <organizationUrl>http://www.bmhi.umn.edu/ihi/research/nlpie/index.htm</organizationUrl>
     </developer>
@@ -248,7 +170,7 @@
   </licenses>
   <scm>
     <url>https://github.com/NLPIE/BioMedICUS</url>
-    <connection>scm:git:https://github.com/NLPIE/BioMedICUS.git</connection>
-    <developerConnection>scm:git:https://github.com/NLPIE/BioMedICUS.git</developerConnection>
+    <connection>scm:git:https://github.com/nlpie/biomedicus.git</connection>
+    <developerConnection>scm:git:https://github.com/nlpie/biomedicus.git</developerConnection>
   </scm>
 </project>

@@ -946,7 +946,8 @@ public class SearchExpr {
   }
 
   /**
-   * A node which does not consume any
+   * Zero width positive lookahead, confirms the current context starts with a match for the
+   * specified expression but does not consume the text that the expression covers.
    */
   static class PositiveLookahead extends Node {
 
@@ -966,6 +967,10 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Zero width negative lookbehind, confirms the current context does not start with a match for
+   * the specified expression and does not consume the text that the expression covers.
+   */
   static class NegativeLookahead extends Node {
 
     Node condition;
@@ -978,12 +983,16 @@ public class SearchExpr {
     State search(DefaultSearcher search, State state) {
       State res = condition.search(search, state.copy());
       if (res.isMiss()) {
-        return res;
+        return next.search(search, state);
       }
-      return next.search(search, state);
+      return State.miss();
     }
   }
 
+  /**
+   * Independently verifies the expression within a group, does not back off of matches to make the
+   * overall pattern match.
+   */
   static class Independent extends Node {
 
     final Node node;
@@ -1003,6 +1012,10 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs the "?" functionality, first attempting to match then continue before attempting
+   * to continue without a match.
+   */
   static class GreedyOptional extends Node {
 
     final Node option;
@@ -1025,6 +1038,10 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs the "??" functionality, first attempting to continue without matching then attempting
+   * to match before continuing.
+   */
   static class LazyOptional extends Node {
 
     final Node node;
@@ -1048,6 +1065,10 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs the "?+" functionality, checks if there is a match, continuing without backtracking
+   * if there is, if there is no match it will continue with the rest of the expression.
+   */
   static class PossessiveOptional extends Node {
 
     final Node node;
@@ -1068,6 +1089,13 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Provides the shared structure for recursive loop repetition expressions like "*", "+", "{x, y}"
+   *
+   * <br>This node is entered initially from the loop head into the
+   * {@link #enterLoop(DefaultSearcher, State)} function, then the loop returns to it via the
+   * {@link #search(DefaultSearcher, State)} function.
+   */
   static abstract class RecursiveLoop extends Node {
 
     final Node body;
@@ -1087,6 +1115,10 @@ public class SearchExpr {
       this.max = max;
     }
 
+    /**
+     * The loop head enters the node here allowing for the setup of the local variables, because
+     * the search entry point is needed for the tail of the loop expression to return to the loop.
+     */
     abstract State enterLoop(DefaultSearcher search, State state);
 
     @Nullable
@@ -1096,6 +1128,11 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Used for "*", "+", "{min,max}", matches as many times as possible before checking the remainder
+   * of the expression backing off one match at a time until continuing passes or until continuing
+   * fails with the loop expression matching 0 times.
+   */
   static class GreedyLoop extends RecursiveLoop {
 
     GreedyLoop(Node body,
@@ -1131,7 +1168,7 @@ public class SearchExpr {
     @Override
     State search(DefaultSearcher search, State state) {
       if (state.end == search.locals[beginLocal]) {
-        // our loop is not actually going anywhere but  theoretically it
+        // our loop is not actually going anywhere but theoretically it
         // would match an infinite number of times and then back off
         // to something under the max
         return next.search(search, state);
@@ -1164,6 +1201,9 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs "*?", "+?" and "{min, max}?".
+   */
   static class LazyLoop extends RecursiveLoop {
 
     LazyLoop(Node body, int countLocal, int beginLocal, int min, int max) {
@@ -1223,6 +1263,9 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs "*+", "++", and "{min, max}+".
+   */
   static class PossessiveLoop extends RecursiveLoop {
 
     PossessiveLoop(Node body,
@@ -1297,6 +1340,10 @@ public class SearchExpr {
     }
   }
 
+
+  /**
+   * Responsible for entering the loop using the enterLoop function.
+   */
   static class LoopHead extends Node {
 
     private final RecursiveLoop recursiveLoop;
@@ -1320,6 +1367,9 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * The inner conditions of a pinning group.
+   */
   static class InnerConditions extends Node {
 
     final int localAddr;
@@ -1356,6 +1406,9 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs a type match atomic on a
+   */
   static class EnumMatch extends TypeMatch {
 
     final Enum<?> value;
@@ -1375,6 +1428,9 @@ public class SearchExpr {
     }
   }
 
+  /**
+   * Performs a standard type match atomic.
+   */
   static class TypeMatch extends Node {
 
     final Class<?> labelType;

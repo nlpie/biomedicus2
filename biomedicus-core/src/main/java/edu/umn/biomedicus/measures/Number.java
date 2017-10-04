@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.semantics;
+package edu.umn.biomedicus.measures;
 
+import edu.umn.biomedicus.numbers.NumberType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.immutables.value.Value;

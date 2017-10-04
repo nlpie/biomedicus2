@@ -71,7 +71,7 @@
           <name>eagerLoad</name>
           <value>
               <array>
-                  <string>edu.umn.biomedicus.measures.NumberRecognizer$NumberModel</string>
+                  <string>edu.umn.biomedicus.measures.NumberModelLoader</string>
               </array>
           </value>
       </nameValuePair>
@@ -88,7 +88,6 @@
     </typePriorities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
-      <!-- TODO: change to false if multithreading not supported -->
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>

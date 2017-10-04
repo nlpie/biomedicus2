@@ -31,6 +31,7 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.XX;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
+import edu.umn.biomedicus.common.types.semantics.Concept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;

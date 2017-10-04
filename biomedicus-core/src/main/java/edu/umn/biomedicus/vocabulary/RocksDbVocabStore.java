@@ -16,35 +16,27 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import com.google.inject.Inject;
+import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Vocabulary store implemented using MapDB term indexes.
- *
- * @author Ben Knoll
- * @since 1.6.0
+ * Vocabulary store using RocksDB as the backend.
  */
-class MapDbVocabStore extends VocabularyStore {
+public class RocksDbVocabStore extends VocabularyStore {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MapDbVocabStore.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RocksDbVocabStore.class);
 
   private final Path dbPath;
 
   private final Boolean inMemory;
-
-  @Nullable
-  private DB db;
 
   @Nullable
   private TermIndex words;
@@ -56,51 +48,55 @@ class MapDbVocabStore extends VocabularyStore {
   private TermIndex norms;
 
   @Inject
-  MapDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
+  public RocksDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
       @Setting("vocabulary.inMemory") Boolean inMemory) {
     this.dbPath = dbPath;
     this.inMemory = inMemory;
   }
 
   @Override
-  public void open() {
-    String dbPathString = dbPath.toString();
-    db = DBMaker.fileDB(dbPathString).readOnly().make();
-    LOGGER.info("Loading vocabulary indices from database: {}", dbPathString);
-    LOGGER.info("Vocabulary: loading words index");
-    words = new MapDbTermIndex(db, "words").inMemory(inMemory);
-    LOGGER.info("Vocabulary: loading terms index");
-    terms = new MapDbTermIndex(db, "terms").inMemory(inMemory);
-    LOGGER.info("Vocabulary: loading norms index");
-    norms = new MapDbTermIndex(db, "norms").inMemory(inMemory);
+  void open() {
+    LOGGER.info("Loading vocabularies: {}", dbPath);
+    LOGGER.info("Opening words index. inMemory = {}.", inMemory);
+    words = new RocksDbTermIndex(dbPath.resolve("wordsTerms"),
+        dbPath.resolve("wordsIndices")).inMemory(inMemory);
+    LOGGER.info("Opening terms index. inMemory = {}.", inMemory);
+    terms = new RocksDbTermIndex(dbPath.resolve("termsTerms"),
+        dbPath.resolve("termsIndices")).inMemory(inMemory);
+    LOGGER.info("Opening norms index. inMemory = {}.", inMemory);
+    norms = new RocksDbTermIndex(dbPath.resolve("normsTerms"),
+        dbPath.resolve("normsIndices")).inMemory(inMemory);
+    LOGGER.info("Done loading vocabularies.");
   }
 
   @Override
   TermIndex getWords() {
-    checkState(db != null, "Not open");
-    checkState(words != null, "Not open yet");
+    Preconditions.checkNotNull(words);
     return words;
   }
 
   @Override
   TermIndex getTerms() {
-    checkState(db != null, "Not open");
-    checkState(terms != null, "Not open yet");
+    Preconditions.checkNotNull(terms);
     return terms;
   }
 
   @Override
   TermIndex getNorms() {
-    checkState(db != null, "Not open");
-    checkState(norms != null, "Not open yet");
+    Preconditions.checkNotNull(norms);
     return norms;
   }
 
   @Override
   public void close() throws IOException {
-    if (db != null) {
-      db.close();
+    if (words instanceof Closeable) {
+      ((Closeable) words).close();
     }
-    db = null;
+    if (terms instanceof Closeable) {
+      ((Closeable) terms).close();
+    }
+    if (norms instanceof Closeable) {
+      ((Closeable) norms).close();
+    }
   }
 }

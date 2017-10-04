@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.framework.LifecycleManaged;
+import java.nio.file.Path;
 
 /**
  * Assists in building vocabulary stores by creating the builders for the individual term indices.
@@ -25,6 +26,8 @@ import edu.umn.biomedicus.framework.LifecycleManaged;
  * @since 1.6.0
  */
 abstract class VocabularyBuilder implements LifecycleManaged {
+
+  abstract void setOutputPath(Path outputPath);
 
   abstract TermIndexBuilder createWordsIndexBuilder();
 

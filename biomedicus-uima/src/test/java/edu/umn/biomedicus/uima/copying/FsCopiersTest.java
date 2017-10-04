@@ -63,69 +63,75 @@ public class FsCopiersTest {
   @Injectable
   Feature f1, f2, f3;
 
+  @Injectable BooleanArrayFS boolFrom, boolTo;
+
+  @Injectable FeatureStructure fsFrom, fsTo;
+
+  @Injectable ArrayFS arrayFrom, arrayTo;
+
 
   @Test
-  public void testCopyPrimitiveArray(@Injectable BooleanArrayFS from, @Injectable BooleanArrayFS to)
+  public void testCopyPrimitiveArray()
       throws Exception {
     new Expectations() {{
-      from.getType();
+      boolFrom.getType();
       result = fromType;
       fromType.getName();
       result = "uima.cas.BooleanArray";
 
-      from.toArray();
+      boolFrom.toArray();
       result = boolArr;
-      from.size();
+      boolFrom.size();
       result = 2;
-      to.copyFromArray(boolArr, 0, 0, 2);
+      boolTo.copyFromArray(boolArr, 0, 0, 2);
 
-      to.getCAS();
+      boolTo.getCAS();
       result = toCas;
     }};
 
-    fsCopiers.copy(from, to);
+    fsCopiers.copy(boolFrom, boolTo);
 
     new Verifications() {{
-      toCas.addFsToIndexes(to);
+      toCas.addFsToIndexes(boolTo);
     }};
   }
 
   @Test
-  public void testCopyReferenceArray(@Injectable ArrayFS from, @Injectable ArrayFS to)
+  public void testCopyReferenceArray()
       throws Exception {
     new Expectations() {{
-      from.getType();
+      arrayFrom.getType();
       result = fromType;
       fromType.getName();
       result = "uima.cas.FSArray";
 
-      from.get(0);
+      arrayFrom.get(0);
       result = ref1;
-      from.get(1);
+      arrayFrom.get(1);
       result = ref2;
-      from.size();
+      arrayFrom.size();
       result = 2;
 
       callback.apply(ref1);
       result = toRef1;
-      to.set(0, toRef1);
+      arrayTo.set(0, toRef1);
       callback.apply(ref2);
       result = toRef2;
-      to.set(1, toRef2);
+      arrayTo.set(1, toRef2);
 
-      to.getCAS();
+      arrayTo.getCAS();
       result = toCas;
     }};
 
-    fsCopiers.copy(from, to);
+    fsCopiers.copy(arrayFrom, arrayTo);
 
     new Verifications() {{
-      toCas.addFsToIndexes(to);
+      toCas.addFsToIndexes(arrayTo);
     }};
   }
 
   @Test
-  public void testCopyGenericFs(@Injectable FeatureStructure from, @Injectable FeatureStructure to)
+  public void testCopyGenericFs()
       throws Exception {
     List<Feature> featuresList = new ArrayList<>();
     featuresList.add(f1);
@@ -133,7 +139,7 @@ public class FsCopiersTest {
     featuresList.add(f3);
 
     new Expectations() {{
-      from.getType();
+      arrayFrom.getType();
       result = fromType;
       fromType.getName();
       result = "someType";
@@ -141,17 +147,17 @@ public class FsCopiersTest {
       fromType.getFeatures();
       result = featuresList;
 
-      to.getCAS();
+      arrayTo.getCAS();
       result = toCas;
     }};
 
-    fsCopiers.copy(from, to);
+    fsCopiers.copy(arrayFrom, arrayTo);
 
     new Verifications() {{
-      featureCopiers.copyFeature(f1, from, to);
-      featureCopiers.copyFeature(f2, from, to);
-      featureCopiers.copyFeature(f3, from, to);
-      toCas.addFsToIndexes(to);
+      featureCopiers.copyFeature(f1, arrayFrom, arrayTo);
+      featureCopiers.copyFeature(f2, arrayFrom, arrayTo);
+      featureCopiers.copyFeature(f3, arrayFrom, arrayTo);
+      toCas.addFsToIndexes(arrayTo);
     }};
   }
 }

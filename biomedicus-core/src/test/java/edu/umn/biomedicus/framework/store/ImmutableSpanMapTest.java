@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.framework.store;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 
 import java.util.Iterator;
 import org.testng.annotations.Test;
@@ -119,7 +120,7 @@ public class ImmutableSpanMapTest {
   }
 
   @Test
-  public void testAscending() throws Exception {
+  public void testAscendingSpans() throws Exception {
     OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
     spanMap.put(Span.create(0, 10), new Object());
     spanMap.put(Span.create(7, 9), new Object());
@@ -130,11 +131,137 @@ public class ImmutableSpanMapTest {
     ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
 
     SpansMap<Object> ascending = immutableSpanMap.ascendingBegin();
-
+    assertEquals(ascending.size(), 6);
+    Iterator<Span> iterator = ascending.spans().iterator();
+    assertEquals(Span.create(0, 2), iterator.next());
+    assertEquals(Span.create(0, 10), iterator.next());
+    assertEquals(Span.create(3, 6), iterator.next());
+    assertEquals(Span.create(4, 5), iterator.next());
+    assertEquals(Span.create(7, 9), iterator.next());
+    assertEquals(Span.create(11, 20), iterator.next());
   }
 
   @Test
-  public void testAscendingReversing() throws Exception {
+  public void testAscendingAsList() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 10), new Object());
+    spanMap.put(Span.create(7, 9), new Object());
+    spanMap.put(Span.create(3, 6), new Object());
+    spanMap.put(Span.create(11, 20), new Object());
+    spanMap.put(Span.create(4, 5), new Object());
+    spanMap.put(Span.create(0, 2), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
 
+    SpansMap<Object> ascending = immutableSpanMap.ascendingBegin();
+    Iterator<Label<Object>> iterator = ascending.asList().iterator();
+    assertEquals(ascending.size(), 6);
+    assertEquals(Span.create(0, 2), iterator.next().toSpan());
+    assertEquals(Span.create(0, 10), iterator.next().toSpan());
+    assertEquals(Span.create(3, 6), iterator.next().toSpan());
+    assertEquals(Span.create(4, 5), iterator.next().toSpan());
+    assertEquals(Span.create(7, 9), iterator.next().toSpan());
+    assertEquals(Span.create(11, 20), iterator.next().toSpan());
+  }
+
+  @Test
+  public void testAscendingValuesAsList() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 10), 2);
+    spanMap.put(Span.create(7, 9), 5);
+    spanMap.put(Span.create(3, 6), 3);
+    spanMap.put(Span.create(11, 20), 6);
+    spanMap.put(Span.create(4, 5), 4);
+    spanMap.put(Span.create(0, 2), 1);
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> ascending = immutableSpanMap.ascendingBegin();
+    Iterator<Object> iterator = ascending.valuesAsList().iterator();
+    assertEquals(ascending.size(), 6);
+    assertEquals(1, iterator.next());
+    assertEquals(2, iterator.next());
+    assertEquals(3, iterator.next());
+    assertEquals(4, iterator.next());
+    assertEquals(5, iterator.next());
+    assertEquals(6, iterator.next());
+  }
+
+  @Test
+  public void testAscendingSpansAsList() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 10), new Object());
+    spanMap.put(Span.create(7, 9), new Object());
+    spanMap.put(Span.create(3, 6), new Object());
+    spanMap.put(Span.create(11, 20), new Object());
+    spanMap.put(Span.create(4, 5), new Object());
+    spanMap.put(Span.create(0, 2), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> ascending = immutableSpanMap.ascendingBegin();
+    assertEquals(ascending.size(), 6);
+    Iterator<Span> iterator = ascending.spansAsList().iterator();
+    assertEquals(Span.create(0, 2), iterator.next());
+    assertEquals(Span.create(0, 10), iterator.next());
+    assertEquals(Span.create(3, 6), iterator.next());
+    assertEquals(Span.create(4, 5), iterator.next());
+    assertEquals(Span.create(7, 9), iterator.next());
+    assertEquals(Span.create(11, 20), iterator.next());
+  }
+
+  @Test
+  public void testViewToTheLeftOfOverlapping() {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 4), new Object());
+    spanMap.put(Span.create(5, 8), new Object());
+    spanMap.put(Span.create(6, 10), new Object());
+    spanMap.put(Span.create(8, 10), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> toTheLeft = immutableSpanMap.toTheLeftOf(Span.create(8, 10));
+
+    assertEquals(toTheLeft.size(), 2);
+    assertFalse(toTheLeft.get(Span.create(6, 10)).isPresent());
+    assertFalse(toTheLeft.get(Span.create(8, 10)).isPresent());
+  }
+
+  @Test
+  public void testDescendingBegin() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 4), new Object());
+    spanMap.put(Span.create(5, 8), new Object());
+    spanMap.put(Span.create(6, 8), new Object());
+    spanMap.put(Span.create(6, 10), new Object());
+    spanMap.put(Span.create(8, 10), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> descendingBegin = immutableSpanMap.descendingBegin();
+
+    assertEquals(descendingBegin.size(), 5);
+    Iterator<Span> iterator = descendingBegin.spansAsList().iterator();
+    assertEquals(iterator.next(), Span.create(8, 10));
+    assertEquals(iterator.next(), Span.create(6, 8));
+    assertEquals(iterator.next(), Span.create(6, 10));
+    assertEquals(iterator.next(), Span.create(5, 8));
+    assertEquals(iterator.next(), Span.create(0, 4));
+  }
+
+  @Test
+  public void testDescendingEnd() throws Exception {
+    OrderedSpanMap<Object> spanMap = new OrderedSpanMap<>();
+    spanMap.put(Span.create(0, 4), new Object());
+    spanMap.put(Span.create(5, 8), new Object());
+    spanMap.put(Span.create(6, 8), new Object());
+    spanMap.put(Span.create(6, 10), new Object());
+    spanMap.put(Span.create(8, 10), new Object());
+    ImmutableSpanMap<Object> immutableSpanMap = new ImmutableSpanMap<>(spanMap);
+
+    SpansMap<Object> ascendingReversing = immutableSpanMap.descendingEnd();
+
+    assertEquals(ascendingReversing.size(), 5);
+    Iterator<Span> iterator = ascendingReversing.spansAsList().iterator();
+    assertEquals(iterator.next(), Span.create(0, 4));
+    assertEquals(iterator.next(), Span.create(5, 8));
+    assertEquals(iterator.next(), Span.create(6, 10));
+    assertEquals(iterator.next(), Span.create(6, 8));
+    assertEquals(iterator.next(), Span.create(8, 10));
   }
 }

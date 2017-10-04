@@ -681,7 +681,7 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
           usageTokens);
 
       //Check if the word is noun
-//            if (usageTokens.size() == 1 ){
+//            if (usageTokens.uniqueTerms() == 1 ){
 //                Hashtable<Integer, String> posHash = ( Hashtable<Integer, String>) googleRelationHash.get("POS");
 //                if (posHash.get(usageTokens.get(0)).toString().matches(".*NN.*")) continue;
 //            }
@@ -709,7 +709,7 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
           usageTokens);
 
       //Check if the word is noun
-//            if (usageTokens.size() == 1 ){
+//            if (usageTokens.uniqueTerms() == 1 ){
 //                Hashtable<Integer, String> posHash = ( Hashtable<Integer, String>) googleRelationHash.get("POS");
 //                if (posHash.get(usageTokens.get(0)).toString().matches(".*NN.*")) continue;
 //            }

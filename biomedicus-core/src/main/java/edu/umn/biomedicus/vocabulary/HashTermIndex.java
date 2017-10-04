@@ -103,4 +103,9 @@ public class HashTermIndex extends AbstractTermIndex {
     Integer integer = map.get(term.toString());
     return integer != null ? integer : -1;
   }
+
+  @Override
+  public TermIndex inMemory(Boolean inMemory) {
+    return inMemory ? new HashTermIndex(this) : this;
+  }
 }

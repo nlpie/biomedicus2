@@ -5,8 +5,8 @@ paths:
 # settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
   vocabulary:
-    db.path: vocabulary.db
-    inMemory: yes
+    db.path: vocabulary
+    inMemory: no
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
@@ -14,6 +14,10 @@ settings:
     numbers:
       nrnumPath: measures/NRNUM
       nrvarPath: measures/NRVAR
+      includeFractions: yes
+      includePercent: no
+    units:
+      modelPath: measures/concepts.tsv
   tnt:
     trigram.path: tnt/trigram.yml
     word:
@@ -46,7 +50,7 @@ settings:
     semgroups.path: semnetwork/SemGroups.txt
   concepts:
     db.path: concepts
-    inMemory: yes
+    inMemory: no
     filters:
       sui.path: conceptFilters/filteredSuis.txt
       suicui.path: conceptFilters/filteredSuiCuis.txt

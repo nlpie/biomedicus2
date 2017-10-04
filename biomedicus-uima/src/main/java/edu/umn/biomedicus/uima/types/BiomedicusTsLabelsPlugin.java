@@ -25,15 +25,16 @@ import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
 import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
-import edu.umn.biomedicus.common.types.semantics.ImmutableNumber;
+import edu.umn.biomedicus.measures.CandidateUnitOfMeasure;
+import edu.umn.biomedicus.measures.ImmutableNumber;
 import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.Negated;
-import edu.umn.biomedicus.common.types.semantics.Number;
-import edu.umn.biomedicus.common.types.semantics.NumberType;
+import edu.umn.biomedicus.measures.Number;
+import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
@@ -127,6 +128,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(NestedRow.class, NestedRowLabelAdapter::new);
     map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
     map.put(Number.class, NumberLabelAdapter::new);
+    map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
     return map;
   }
 
@@ -781,6 +783,19 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
       annotationFS.setStringValue(numFeature, number.numerator());
       annotationFS.setStringValue(denomFeature, number.denominator());
       annotationFS.setStringValue(typeFeature, number.numberType().name());
+    }
+  }
+
+  public static class CanididateUnitOfMeasureAdapter extends AbstractLabelAdapter<CandidateUnitOfMeasure> {
+
+    CanididateUnitOfMeasureAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_8.CandidateUnitOfMeasure"));
+    }
+
+    @Override
+    protected CandidateUnitOfMeasure createLabelValue(FeatureStructure featureStructure) {
+      return new CandidateUnitOfMeasure();
     }
   }
 }

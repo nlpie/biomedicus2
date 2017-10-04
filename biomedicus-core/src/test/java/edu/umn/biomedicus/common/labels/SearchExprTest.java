@@ -27,9 +27,12 @@ import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
 import org.testng.annotations.Test;
 
@@ -134,7 +137,7 @@ public class SearchExprTest {
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -155,7 +158,7 @@ public class SearchExprTest {
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -175,7 +178,7 @@ public class SearchExprTest {
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)));
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -324,9 +327,7 @@ public class SearchExprTest {
   public void testPositiveLookaheadFail() throws Exception {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah()))
-      );
+      labelIndex.first(); result = Optional.of(Label.create(Span.of(0, 5), new Blah()));
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -345,7 +346,8 @@ public class SearchExprTest {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah()))
+          Optional.of(Label.create(Span.of(0, 5), new Blah())),
+          Optional.empty()
       );
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -376,19 +378,24 @@ public class SearchExprTest {
 
     SearchExpr blah = SearchExpr.parse(labelAliases, "Blah(?!Foo)");
     Searcher searcher = blah.createSearcher(document);
-    boolean search = searcher.search();
+    boolean search = searcher.match();
 
-    assertTrue(search);
-    assertEquals(searcher.getBegin(), 0);
-    assertEquals(searcher.getEnd(), 5);
+    assertFalse(search);
   }
 
   @Test
-  public void testFallback(@Mocked Iterator<Foo> fooIterator) throws Exception {
+  public void testFallback() throws Exception {
+
     Foo tenFoo = new Foo();
     tenFoo.setBaz(10);
     Foo fourteenFoo = new Foo();
     fourteenFoo.setBaz(14);
+
+    List<Label<Foo>> arr = new ArrayList<>();
+    arr.add(Label.create(Span.of(0, 5), tenFoo));
+    arr.add(Label.create(Span.of(6, 8), tenFoo));
+    arr.add(Label.create(Span.of(9, 13), tenFoo));
+    arr.add(Label.create(Span.of(14, 18), fourteenFoo));
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 30);
@@ -400,15 +407,7 @@ public class SearchExprTest {
           Optional.of(Label.create(Span.of(14, 18), fourteenFoo))
       );
 
-      labelIndex.iterator(); result = fooIterator;
-      fooIterator.hasNext(); returns(true, true, true, true, false);
-
-      fooIterator.next(); returns(
-          Label.create(Span.of(0, 5), tenFoo),
-          Label.create(Span.of(6, 8), tenFoo),
-          Label.create(Span.of(9, 13), tenFoo),
-          Label.create(Span.of(14, 18), fourteenFoo)
-      );
+      labelIndex.iterator(); result = arr.iterator();
 
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
