@@ -6,7 +6,7 @@ paths:
 settings:
   vocabulary:
     db.path: vocabulary
-    inMemory: yes
+    inMemory: no
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
@@ -50,7 +50,7 @@ settings:
     semgroups.path: semnetwork/SemGroups.txt
   concepts:
     db.path: concepts
-    inMemory: yes
+    inMemory: no
     filters:
       sui.path: conceptFilters/filteredSuis.txt
       suicui.path: conceptFilters/filteredSuiCuis.txt

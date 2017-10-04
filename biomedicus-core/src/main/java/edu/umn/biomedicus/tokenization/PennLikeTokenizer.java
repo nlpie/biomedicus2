@@ -37,10 +37,6 @@ import javax.annotation.Nullable;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
 
-  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9]++(?<suffix>[\\p{Alpha}]++)");
-
-  private final UnitRecognizer unitRecognizer;
-
   @Nullable
   private Labeler<ParseToken> parseTokenLabeler = null;
 
@@ -49,11 +45,6 @@ public final class PennLikeTokenizer implements DocumentProcessor {
 
   @Nullable
   private Span prev = null;
-
-  @Inject
-  public PennLikeTokenizer(UnitRecognizer unitRecognizer) {
-    this.unitRecognizer = unitRecognizer;
-  }
 
   @Override
   public void process(Document document) throws BiomedicusException {
@@ -92,29 +83,6 @@ public final class PennLikeTokenizer implements DocumentProcessor {
     assert text != null : "this should never be null when the function is called";
     assert prev != null : "this is checked before the function is called";
     String tokenText = text.subSequence(prev.getBegin(), prev.getEnd()).toString();
-
-    Matcher matcher = NUMBER_WORD.matcher(tokenText);
-    if (matcher.matches()) {
-      String suffix = matcher.group("suffix");
-      if (suffix != null && unitRecognizer.isUnitOfMeasureWord(suffix)) {
-        int numBegin = prev.getBegin();
-        int numEnd = prev.getEnd() - suffix.length();
-        String number = text.subSequence(numBegin, numEnd).toString();
-        parseTokenLabeler.value(ImmutableParseToken.builder()
-            .text(number)
-            .hasSpaceAfter(false)
-            .build())
-            .label(sentence.derelativize(numBegin), sentence.derelativize(numEnd));
-        parseTokenLabeler.value(ImmutableParseToken.builder()
-            .text(suffix)
-            .hasSpaceAfter(hasSpaceAfter)
-            .build())
-            .label(sentence.derelativize(numEnd), sentence.derelativize(prev.getEnd()));
-
-        return;
-      }
-
-    }
 
     parseTokenLabeler.value(ImmutableParseToken.builder()
         .text(tokenText)

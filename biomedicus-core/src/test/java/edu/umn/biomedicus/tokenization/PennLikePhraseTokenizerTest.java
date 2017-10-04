@@ -106,19 +106,6 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSplitBeginParen() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        50, 63, false); // (P.T.B.-like)
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
-        .splitWordByBeginBreaks(tokenCandidate)
-        .collect(Collectors.toList());
-
-    assertEquals(list.size(), 2);
-    assertEquals(list.get(0).toSpan(), new Span(50, 51)); // (
-    assertEquals(list.get(1).toSpan(), new Span(51, 63)); // P.T.B.-like)
-  }
-
-  @Test
   public void testSplitEndParen() throws Exception {
     PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
         51, 63, false); // P.T.B.-like)
@@ -209,5 +196,25 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(spans.get(0), Span.create(0, 3));
     assertEquals(spans.get(1), Span.create(3, 4));
     assertEquals(spans.get(2), Span.create(4, 7));
+  }
+
+  @Test
+  public void testSplitUnitsOffTheEnd() throws Exception {
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("2.5cm")
+        .collect(Collectors.toList());
+
+    assertEquals(list.size(), 2);
+    assertEquals(list.get(0), Span.create(0, 3));
+    assertEquals(list.get(1), Span.create(3, 5));
+  }
+
+  @Test
+  public void testSingleQUote() throws Exception {
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("'xyz")
+        .collect(Collectors.toList());
+
+    assertEquals(list.size(), 2);
+    assertEquals(list.get(0), Span.create(0, 1));
+    assertEquals(list.get(1), Span.create(1, 4));
   }
 }

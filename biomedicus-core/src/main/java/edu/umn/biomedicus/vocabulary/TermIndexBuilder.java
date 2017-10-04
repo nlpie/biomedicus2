@@ -21,4 +21,6 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 public interface TermIndexBuilder {
 
   void addTerm(String term) throws BiomedicusException;
+
+  void doWrite();
 }

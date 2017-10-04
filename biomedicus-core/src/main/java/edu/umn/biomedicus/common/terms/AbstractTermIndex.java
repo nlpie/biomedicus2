@@ -16,12 +16,9 @@
 
 package edu.umn.biomedicus.common.terms;
 
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.vocabulary.HashTermIndex;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -99,7 +96,5 @@ public abstract class AbstractTermIndex implements TermIndex {
     return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
   }
 
-  public TermIndex inMemory(Boolean inMemory) {
-    return inMemory ? new HashTermIndex(this) : this;
-  }
+  public abstract TermIndex inMemory(Boolean inMemory);
 }

@@ -19,14 +19,20 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Vocabulary store using RocksDB as the backend.
+ */
 public class RocksDbVocabStore extends VocabularyStore {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RocksDbVocabStore.class);
 
   private final Path dbPath;
 
@@ -50,12 +56,17 @@ public class RocksDbVocabStore extends VocabularyStore {
 
   @Override
   void open() {
-    words = new RocksDbTermIndex(dbPath.resolve("words-terms.db"),
-        dbPath.resolve("words-indices.db")).inMemory(inMemory);
-    terms = new RocksDbTermIndex(dbPath.resolve("terms-terms.db"),
-        dbPath.resolve("terms-indices.db")).inMemory(inMemory);
-    norms = new RocksDbTermIndex(dbPath.resolve("norms-terms.db"),
-        dbPath.resolve("norms-indices.db")).inMemory(inMemory);
+    LOGGER.info("Loading vocabularies: {}", dbPath);
+    LOGGER.info("Opening words index. inMemory = {}.", inMemory);
+    words = new RocksDbTermIndex(dbPath.resolve("wordsTerms"),
+        dbPath.resolve("wordsIndices")).inMemory(inMemory);
+    LOGGER.info("Opening terms index. inMemory = {}.", inMemory);
+    terms = new RocksDbTermIndex(dbPath.resolve("termsTerms"),
+        dbPath.resolve("termsIndices")).inMemory(inMemory);
+    LOGGER.info("Opening norms index. inMemory = {}.", inMemory);
+    norms = new RocksDbTermIndex(dbPath.resolve("normsTerms"),
+        dbPath.resolve("normsIndices")).inMemory(inMemory);
+    LOGGER.info("Done loading vocabularies.");
   }
 
   @Override

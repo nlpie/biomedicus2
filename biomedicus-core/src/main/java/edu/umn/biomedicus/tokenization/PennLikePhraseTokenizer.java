@@ -18,6 +18,8 @@ package edu.umn.biomedicus.tokenization;
 
 import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextLocation;
+import edu.umn.biomedicus.measures.UnitRecognizer;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,22 +32,14 @@ public final class PennLikePhraseTokenizer {
    */
   private static final Pattern WORDS = Pattern.compile("[^\\p{Z}\\p{C}]+");
 
-  private static final Pattern TRAILING_PERIOD = Pattern.compile("(?<=[.])$");
+  private static final Pattern TRAILING_PERIOD = Pattern.compile("\\.$");
 
   /**
-   * Break words apart whenever the unicode Dash Punctuation group (Pd) appears in them.
-   * Unicode ps (open brackets) and Pi (open quotation).
+   * Break on any symbol punctuation unless it is a . or a comma with a number or symbol on either
+   * side.
    */
   private static final Pattern MID_BREAKS = Pattern.compile(
-      "[\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}:;\\p{Pd}/\\\\]"
-  );
-
-  /**
-   * Break the unicode Ps (open brackets) and Pi (open quotation).
-   * Break the unicode currency symbols Sc.
-   */
-  private static final Pattern BEGIN_BREAKS = Pattern.compile(
-      "^[\\p{Ps}\\p{Pi}\\p{Pe}\\p{Pf}\\p{Sc}#]"
+      "[\\p{S}\\p{P}&&[^.,'’]]|^'|^,|^’|(?<=[^\\p{N}]),(?=[^\\p{N}])|(?<=[^\\p{N}]),(?=[\\p{N}])|(?<=[\\p{N}]),(?=[^\\p{N}])"
   );
 
   /**
@@ -54,13 +48,29 @@ public final class PennLikePhraseTokenizer {
    * punctuation (P) except period. Break the unicode currency symbols Sc.
    */
   private static final Pattern END_BREAKS = Pattern.compile(
-      "(?<=(('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|['\\p{Ps}\\p{Pe}\\p{Pi}\\p{Pf}\\p{Sc}\\p{P}&&[^.]]))$"
+      "(?<=(('[SsDdMm])|(n't)|(N'T)|('ll)|('LL)|('ve)|('VE)|('re)|('RE)|[\\p{S}\\p{P}&&[^.]]))$"
   );
+
+
+
+  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9]++(?<suffix>[\\p{Alpha}]++)$");
+
+  private static final UnitRecognizer RECOGNIZER;
+
+  static {
+    try {
+      RECOGNIZER = UnitRecognizer.createFactory().create();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   private final CharSequence sentenceText;
 
+
   PennLikePhraseTokenizer(CharSequence sentenceText) {
     this.sentenceText = sentenceText;
+
   }
 
   public static Stream<Span> tokenizeSentence(CharSequence sentenceText) {
@@ -69,8 +79,8 @@ public final class PennLikePhraseTokenizer {
     return sentenceTokenizer.startStreamWithWords()
         .flatMap(sentenceTokenizer::splitTrailingPeriod)
         .flatMap(sentenceTokenizer::splitWordByMiddleBreaks)
-        .flatMap(sentenceTokenizer::splitWordByBeginBreaks)
         .flatMap(sentenceTokenizer::splitWordByEndBreaks)
+        .flatMap(sentenceTokenizer::splitUnitsOffTheEnd)
         .map(TokenCandidate::toSpan);
   }
 
@@ -79,8 +89,8 @@ public final class PennLikePhraseTokenizer {
 
     return tokenizer.startStreamWithWords()
         .flatMap(tokenizer::splitWordByMiddleBreaks)
-        .flatMap(tokenizer::splitWordByBeginBreaks)
         .flatMap(tokenizer::splitWordByEndBreaks)
+        .flatMap(tokenizer::splitUnitsOffTheEnd)
         .map(TokenCandidate::toSpan);
   }
 
@@ -136,7 +146,9 @@ public final class PennLikePhraseTokenizer {
       int end = midBreaksMatcher.end();
 
       Span beginSplit = tokenCandidate.derelativize(new Span(0, begin));
-      builder.add(new TokenCandidate(beginSplit, false));
+      if (beginSplit.length() > 0) {
+        builder.add(new TokenCandidate(beginSplit, false));
+      }
 
       Span matchedSplit = tokenCandidate.derelativize(new Span(begin, end));
       builder.add(new TokenCandidate(matchedSplit, false));
@@ -144,39 +156,24 @@ public final class PennLikePhraseTokenizer {
       while (midBreaksMatcher.find()) {
         begin = midBreaksMatcher.start();
         Span beforeSplit = tokenCandidate.derelativize(new Span(end, begin));
-        builder.add(new TokenCandidate(beforeSplit, false));
+        if (beforeSplit.length() > 0) {
+          builder.add(new TokenCandidate(beforeSplit, false));
+        }
 
         end = midBreaksMatcher.end();
         matchedSplit = tokenCandidate.derelativize(new Span(begin, end));
-        builder.add(new TokenCandidate(matchedSplit, false));
+        if (matchedSplit.length() > 0) {
+          builder.add(new TokenCandidate(matchedSplit, false));
+        }
       }
       Span lastSplit = tokenCandidate.derelativize(new Span(end, tokenText.length()));
-      builder.add(new TokenCandidate(lastSplit, tokenCandidate.isLast));
+      if (lastSplit.length() > 0) {
+        builder.add(new TokenCandidate(lastSplit, tokenCandidate.isLast));
+      }
     } else {
       builder.add(tokenCandidate);
     }
     return builder.build();
-  }
-
-  Stream<TokenCandidate> splitWordByBeginBreaks(TokenCandidate tokenCandidate) {
-    Stream.Builder<TokenCandidate> builder = Stream.builder();
-    while (true) {
-      CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
-      Matcher beginBreaksMatcher = BEGIN_BREAKS.matcher(tokenText);
-      if (beginBreaksMatcher.find()) {
-        assert beginBreaksMatcher.start() == 0;
-        Span begin = tokenCandidate
-            .derelativize(new Span(beginBreaksMatcher.start(), beginBreaksMatcher.end()));
-        builder.add(new TokenCandidate(begin, false));
-
-        Span rest = tokenCandidate
-            .derelativize(new Span(beginBreaksMatcher.end(), tokenText.length()));
-        tokenCandidate = new TokenCandidate(rest, tokenCandidate.isLast);
-      } else {
-        builder.add(tokenCandidate);
-        return builder.build();
-      }
-    }
   }
 
   Stream<TokenCandidate> splitWordByEndBreaks(TokenCandidate tokenCandidate) {
@@ -198,6 +195,21 @@ public final class PennLikePhraseTokenizer {
         return candidates.stream();
       }
     }
+  }
+
+  Stream<TokenCandidate> splitUnitsOffTheEnd(TokenCandidate tokenCandidate) {
+    CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
+    Matcher matcher = NUMBER_WORD.matcher(tokenText);
+    if (matcher.matches()) {
+      String suffix = matcher.group("suffix");
+      if (suffix != null && RECOGNIZER.isUnitOfMeasureWord(suffix)) {
+        int numBegin = tokenCandidate.getBegin();
+        int numEnd = tokenCandidate.getEnd() - suffix.length();
+        return Stream.of(new TokenCandidate(numBegin, numEnd, false),
+            new TokenCandidate(numEnd, tokenCandidate.end(), tokenCandidate.isLast()));
+      }
+    }
+    return Stream.of(tokenCandidate);
   }
 
   class TokenCandidate implements TextLocation {

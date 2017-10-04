@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.common.terms.AbstractTermIndex;
+import edu.umn.biomedicus.common.terms.TermIndex;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -74,6 +75,9 @@ public class RocksDbTermIndex extends AbstractTermIndex implements Closeable {
     byte[] bytes = term.toString().getBytes(StandardCharsets.UTF_8);
     try {
       byte[] idBytes = indices.get(bytes);
+      if (idBytes == null) {
+        return -1;
+      }
       return ByteBuffer.wrap(idBytes).getInt();
     } catch (RocksDBException e) {
       // says "if error happens in underlying native library", can't possible hope to handle that.
@@ -91,10 +95,12 @@ public class RocksDbTermIndex extends AbstractTermIndex implements Closeable {
     if (size == -1) {
       int size = 0;
       RocksIterator rocksIterator = terms.newIterator();
+      rocksIterator.seekToFirst();
       while (rocksIterator.isValid()) {
         rocksIterator.next();
         size++;
       }
+      rocksIterator.close();
       return this.size = size;
     }
     return size;
@@ -104,5 +110,10 @@ public class RocksDbTermIndex extends AbstractTermIndex implements Closeable {
   public void close() throws IOException {
     terms.close();
     indices.close();
+  }
+
+  @Override
+  public TermIndex inMemory(Boolean inMemory) {
+    return inMemory ? new HashTermIndex(this) : this;
   }
 }

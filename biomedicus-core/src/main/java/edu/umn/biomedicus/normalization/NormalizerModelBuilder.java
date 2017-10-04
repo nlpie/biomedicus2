@@ -147,7 +147,7 @@ public final class NormalizerModelBuilder {
     } catch (CmdLineException e) {
       System.err.println(e.getLocalizedMessage());
       System.err.println("java edu.umn.biomedicus.normalization.NormalizerModelBuilder "
-          + "-l path-to-lragr");
+          + "-l [path-to-lragr] [path-to-po");
       parser.printUsage(System.err);
       return;
     }
@@ -162,6 +162,7 @@ public final class NormalizerModelBuilder {
       System.out.println("Failed to delete an existing db at location: " + dbPath.toString());
       e.printStackTrace();
     }
+
     DB db = DBMaker.fileDB(dbPath.toFile()).make();
 
     @SuppressWarnings("unchecked")

@@ -31,6 +31,7 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.XX;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
+import edu.umn.biomedicus.common.types.semantics.Concept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -61,7 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Uses a {@link InMemoryConceptDictionary} to recognize concepts in text. First, it will try to find direct
+ * Uses a {@link ConceptDictionary} to recognize concepts in text. First, it will try to find direct
  * matches against all in-order sublists of tokens in a sentence. Then it will perform syntactic
  * permutations on any prepositional phrases in those sublists.
  *
@@ -77,7 +78,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
   private static final int SPAN_SIZE = 5;
 
-  private final InMemoryConceptDictionary conceptDictionary;
+  private final ConceptDictionary conceptDictionary;
 
   @Nullable
   private Labeler<DictionaryTerm> termLabeler;
@@ -94,7 +95,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
    * @param conceptDictionary the dictionary to get concepts from.
    */
   @Inject
-  DictionaryConceptRecognizer(InMemoryConceptDictionary conceptDictionary) {
+  DictionaryConceptRecognizer(ConceptDictionary conceptDictionary) {
     this.conceptDictionary = conceptDictionary;
   }
 

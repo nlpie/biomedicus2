@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.annotations.Setting;
+import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import java.io.Closeable;
 import java.io.IOException;
@@ -24,39 +24,47 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
 public class RocksDbVocabularyBuilder extends VocabularyBuilder {
+  private static final Pattern MORE_THAN_TWO_NUMBERS_IN_A_ROW = Pattern.compile("[\\p{Nd}]{3,}");
 
-  private final Options options;
+  private RocksDbTermIndexBuilder words;
+  private RocksDbTermIndexBuilder terms;
+  private RocksDbTermIndexBuilder norms;
 
-  private final RocksDbTermIndexBuilder words;
-  private final RocksDbTermIndexBuilder terms;
-  private final RocksDbTermIndexBuilder norms;
-
-  @Inject
-  public RocksDbVocabularyBuilder(@Setting("vocabulary.db.path") Path dbPath) {
+  @Override
+  void setOutputPath(Path outputPath) {
     try {
-      Files.createDirectories(dbPath);
+      Files.createDirectories(outputPath);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    options = new Options().setCreateIfMissing(true).prepareForBulkLoad();
-    try {
-      words = new RocksDbTermIndexBuilder(
-          RocksDB.open(options, dbPath.resolve("words-terms.db").toString()),
-          RocksDB.open(options, dbPath.resolve("words-indices.db").toString()));
-      terms = new RocksDbTermIndexBuilder(
-          RocksDB.open(options, dbPath.resolve("terms-terms.db").toString()),
-          RocksDB.open(options, dbPath.resolve("terms-indices.db").toString()));
-      norms = new RocksDbTermIndexBuilder(
-          RocksDB.open(options, dbPath.resolve("norms-terms.db").toString()),
-          RocksDB.open(options, dbPath.resolve("norms-indices.db").toString()));
-    } catch (RocksDBException e) {
-      throw new RuntimeException(e);
+    try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()){
+      try {
+        words = new RocksDbTermIndexBuilder(
+            RocksDB.open(options, outputPath.resolve("wordsTerms").toString()),
+            RocksDB.open(options, outputPath.resolve("wordsIndices").toString()));
+        terms = new RocksDbTermIndexBuilder(
+            RocksDB.open(options, outputPath.resolve("termsTerms").toString()),
+            RocksDB.open(options, outputPath.resolve("termsIndices").toString()));
+        norms = new RocksDbTermIndexBuilder(
+            RocksDB.open(options, outputPath.resolve("normsTerms").toString()),
+            RocksDB.open(options, outputPath.resolve("normsIndices").toString()));
+      } catch (RocksDBException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
@@ -77,33 +85,27 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
 
   @Override
   public void doShutdown() throws BiomedicusException {
-    try {
-      words.close();
-    } catch (IOException e) {
-      throw new BiomedicusException();
-    } finally {
+    BiomedicusException exception = null;
+    for (RocksDbTermIndexBuilder builder : Arrays.asList(words, terms, norms)) {
       try {
-        terms.close();
+        builder.close();
       } catch (IOException e) {
-        throw new BiomedicusException(e);
-      } finally {
-        try {
-          norms.close();
-        } catch (IOException e) {
-          throw new BiomedicusException(e);
-        } finally {
-          options.close();
+        if (exception == null) {
+          exception = new BiomedicusException("Unable to close one or more builders.");
         }
+        exception.addSuppressed(e);
       }
+    }
+
+    if (exception != null) {
+      throw exception;
     }
   }
 
   private static class RocksDbTermIndexBuilder implements TermIndexBuilder, Closeable {
-
+    private final TreeSet<String> termSet = new TreeSet<>();
     private final RocksDB terms;
     private final RocksDB indices;
-
-    private int size = 0;
 
     public RocksDbTermIndexBuilder(RocksDB terms, RocksDB indices) {
       this.terms = terms;
@@ -112,14 +114,28 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
 
     @Override
     public void addTerm(String term) throws BiomedicusException {
-      int id = size++;
-      byte[] idAsBytes = ByteBuffer.allocate(4).putInt(id).array();
-      byte[] termAsBytes = term.getBytes(StandardCharsets.UTF_8);
-      try {
-        terms.put(idAsBytes, termAsBytes);
-        indices.put(termAsBytes, idAsBytes);
-      } catch (RocksDBException e) {
-        throw new BiomedicusException(e);
+      if (MORE_THAN_TWO_NUMBERS_IN_A_ROW.matcher(term).find()) {
+        return;
+      }
+
+      if (!termSet.contains(term) && Patterns.A_LETTER_OR_NUMBER.matcher(term).find()) {
+        termSet.add(term);
+      }
+    }
+
+    @Override
+    public void doWrite() {
+      int i = 0;
+      for (String s : termSet) {
+        byte[] termBytes = s.getBytes(StandardCharsets.UTF_8);
+        byte[] indexBytes = ByteBuffer.allocate(4).putInt(i).array();
+        try {
+          terms.put(indexBytes, termBytes);
+          indices.put(termBytes, indexBytes);
+        } catch (RocksDBException e) {
+          throw new RuntimeException(e);
+        }
+        i = Math.incrementExact(i);
       }
     }
 

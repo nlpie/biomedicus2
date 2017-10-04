@@ -17,6 +17,9 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.common.terms.TermsBag;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * An interface for the dictionary of concepts used by the DictionaryConceptRecognizer.
@@ -24,4 +27,12 @@ import com.google.inject.ProvidedBy;
 @ProvidedBy(ConceptDictionaryLoader.class)
 public interface ConceptDictionary {
 
+  @Nullable
+  List<SuiCuiTui> forPhrase(String phrase);
+
+  @Nullable
+  List<SuiCuiTui> forLowercasePhrase(String phrase);
+
+  @Nullable
+  List<SuiCuiTui> forNorms(TermsBag norms);
 }

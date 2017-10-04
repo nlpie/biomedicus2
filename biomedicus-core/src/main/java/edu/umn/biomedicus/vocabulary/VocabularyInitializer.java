@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -51,13 +52,14 @@ public class VocabularyInitializer {
 
   private static final Pattern PIPE_SPLITTER = Pattern.compile("\\|");
 
-  private final TermIndexBuilder normsIndexBuilder;
-
-  private final TermIndexBuilder termsIndexBuilder;
-
-  private final TermIndexBuilder wordsIndexBuilder;
-
   private final VocabularyBuilder builder;
+
+  private TermIndexBuilder normsIndexBuilder;
+
+  private TermIndexBuilder termsIndexBuilder;
+
+  private TermIndexBuilder wordsIndexBuilder;
+
 
   @Nullable
   @Option(name = "-s", required = true, handler = PathOptionHandler.class,
@@ -72,6 +74,11 @@ public class VocabularyInitializer {
   @Inject
   private VocabularyInitializer(VocabularyBuilder builder) {
     this.builder = builder;
+  }
+
+  @Argument(required = true, handler = PathOptionHandler.class)
+  public void setOutputPath(Path outputPath) {
+    builder.setOutputPath(outputPath);
     normsIndexBuilder = builder.createNormsIndexBuilder();
     termsIndexBuilder = builder.createTermsIndexBuilder();
     wordsIndexBuilder = builder.createWordsIndexBuilder();
@@ -143,6 +150,13 @@ public class VocabularyInitializer {
       return;
     }
 
+
+
+    Path mrConso = umlsPath.resolve("MRCONSO.RRF");
+    if (Files.notExists(mrConso)) {
+      throw new BiomedicusException("Could not find MRCNSO at " + umlsPath.toString());
+    }
+
     Path lragr = specialistPath.resolve("LRAGR");
 
     long lragrLines;
@@ -176,8 +190,6 @@ public class VocabularyInitializer {
       }
     }
 
-    Path mrConso = umlsPath.resolve("MRCONSO.RRF");
-
     long mrConsoLines;
     try {
       mrConsoLines = Files.lines(mrConso).count();
@@ -209,6 +221,14 @@ public class VocabularyInitializer {
             .println("Read " + count + " / " + mrConsoLines + " lines from MRCONSO.RRF.");
       }
     }
+
+    System.out.println("Writing words");
+    wordsIndexBuilder.doWrite();
+    System.out.println("Writing norms");
+    normsIndexBuilder.doWrite();
+    System.out.println("Writing terms");
+    termsIndexBuilder.doWrite();
+    System.out.println("Done writing");
 
     try {
       builder.doShutdown();

@@ -119,9 +119,9 @@ public class SuiCuiTui implements Serializable {
   }
 
   byte[] getBytes() {
-    return ByteBuffer.allocate(12).putInt(sui.identifier()).putInt(cui.identifier())
+    return ByteBuffer.allocate(BYTES_LENGTH).putInt(sui.identifier()).putInt(cui.identifier())
         .putInt(tui.identifier()).array();
   }
 
-
+  public static final int BYTES_LENGTH = 12;
 }
