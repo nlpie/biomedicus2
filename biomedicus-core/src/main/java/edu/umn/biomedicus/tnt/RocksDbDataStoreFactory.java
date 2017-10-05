@@ -294,6 +294,7 @@ class RocksDbDataStoreFactory implements DataStoreFactory, LifecycleManaged {
           Pair<PartOfSpeech, String> posWord = getPosWordFromBytes(rocksIterator.key());
           double prob = ByteBuffer.wrap(rocksIterator.value()).getDouble();
           inMemory.addProbability(posWord.getSecond(), posWord.getFirst(), prob);
+          rocksIterator.next();
         }
       }
       return inMemory;
@@ -394,6 +395,7 @@ class RocksDbDataStoreFactory implements DataStoreFactory, LifecycleManaged {
           Pair<PartOfSpeech, String> posWord = getPosWordFromBytes(rocksIterator.key());
           double prob = ByteBuffer.wrap(rocksIterator.value()).getDouble();
           inMemory.addProbability(posWord.getSecond(), posWord.getFirst(), prob);
+          rocksIterator.next();
         }
       }
       return inMemory;
