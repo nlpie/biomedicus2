@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.files;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.uima.adapter.GuiceInjector;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -100,6 +101,7 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
    */
   @Nullable
   private InputFileAdapter inputFileAdapter;
+  private GuiceInjector guiceInjector;
 
   /**
    * {@inheritDoc}
@@ -141,12 +143,12 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
         PARAM_INPUT_FILE_ADAPTER_CLASS);
 
     try {
-      GuiceInjector guiceInjector = (GuiceInjector) getUimaContext()
+      guiceInjector = (GuiceInjector) getUimaContext()
           .getResourceObject("guiceInjector");
       Class<? extends InputFileAdapter> inputFileAdapterClass = Class
           .forName(inputFileAdapterClassName)
           .asSubclass(InputFileAdapter.class);
-      inputFileAdapter = guiceInjector.getInjector().getInstance(inputFileAdapterClass);
+      inputFileAdapter = guiceInjector.attach().getInstance(inputFileAdapterClass);
     } catch (ResourceAccessException | ClassNotFoundException e) {
       throw new ResourceInitializationException(e);
     }
@@ -200,7 +202,17 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
     Objects.requireNonNull(filesIterator);
     LOGGER.debug("Checking if there are any files remaining");
 
-    return filesIterator.hasNext();
+    boolean hasNext = filesIterator.hasNext();
+    if (!hasNext) {
+      matchingFiles.close();
+
+      try {
+        guiceInjector.detach();
+      } catch (BiomedicusException e) {
+        LOGGER.error("Failed to detach from guice injector", e);
+      }
+    }
+    return hasNext;
   }
 
   /**
@@ -216,12 +228,8 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
     return new Progress[]{new ProgressImpl(completed, totalFiles, Progress.ENTITIES, false)};
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void close() throws IOException {
-    Objects.requireNonNull(matchingFiles);
-    matchingFiles.close();
+    
   }
 }

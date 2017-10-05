@@ -23,6 +23,7 @@ import edu.umn.biomedicus.common.types.text.ParseToken;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.xml.crypto.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,8 @@ public class TntModelTrainer {
    */
   private final boolean restrictToOpenClass;
 
+  private final DataStoreFactory dataStoreFactory;
+
   /**
    * Private constructor, initialized by builder.
    *
@@ -86,13 +89,15 @@ public class TntModelTrainer {
       int maxSuffixLength,
       int maxWordFrequency,
       boolean useMslSuffixModel,
-      boolean restrictToOpenClass) {
+      boolean restrictToOpenClass,
+      DataStoreFactory dataStoreFactory) {
     this.filteredWordPosFrequencies = filteredWordPosFrequencies;
     this.posCapTrigramModelTrainer = posCapTrigramModelTrainer;
     this.maxSuffixLength = maxSuffixLength;
     this.maxWordFrequency = maxWordFrequency;
     this.useMslSuffixModel = useMslSuffixModel;
     this.restrictToOpenClass = restrictToOpenClass;
+    this.dataStoreFactory = dataStoreFactory;
   }
 
   /**
@@ -152,6 +157,7 @@ public class TntModelTrainer {
       knownWordProbabilityModel.setId(priority);
       knownWordProbabilityModel.setFilter(filter);
       knownWordProbabilityModel.setWordCapAdapter(wordCapAdapter);
+      knownWordProbabilityModel.createDataStore(dataStoreFactory);
       knownWordProbabilityModel.train(wordPosFrequencies, tagSet);
 
       knownWordModels.add(knownWordProbabilityModel);
@@ -162,11 +168,11 @@ public class TntModelTrainer {
       SuffixWordProbabilityModel suffixWordProbabilityModel = new SuffixWordProbabilityModel();
       suffixWordProbabilityModel.setMaxSuffixLength(maxSuffixLength);
       suffixWordProbabilityModel.setId(filteredWordPosFrequencies.size() + priority++);
-      suffixWordProbabilityModel.setWordProbabilityModel(suffixWordProbabilityModel);
       suffixWordProbabilityModel.setWordCapAdapter(wordCapAdapter);
+      suffixWordProbabilityModel.createDataStore(dataStoreFactory);
       suffixWordProbabilityModel.setFilter(filter);
       if (useMslSuffixModel) {
-        suffixWordProbabilityModel.trainMsl(suffixFrequencies, tagSet);
+        throw new UnsupportedOperationException();
       } else {
         suffixWordProbabilityModel.trainPI(suffixFrequencies, tagSet);
       }
@@ -178,7 +184,7 @@ public class TntModelTrainer {
 
     LOGGER.debug("Word models: {}", knownWordModels);
 
-    return new TntModel(posCapTrigramModel, knownWordModels, null);
+    return new TntModel(posCapTrigramModel, knownWordModels);
   }
 
   /**
@@ -211,6 +217,8 @@ public class TntModelTrainer {
      * Restrict to the open class of parts of speech.
      */
     private boolean restrictToOpenClass = false;
+
+    private DataStoreFactory dataStoreFactory;
 
     /**
      * Private constructor.
@@ -280,6 +288,11 @@ public class TntModelTrainer {
       return this;
     }
 
+    public Builder dataStoreFactory(DataStoreFactory dataStoreFactory) {
+      this.dataStoreFactory = dataStoreFactory;
+      return this;
+    }
+
     /**
      * Finish building a trainer.
      *
@@ -303,7 +316,8 @@ public class TntModelTrainer {
       PosCapTrigramModelTrainer posCapTrigramModelTrainer = new PosCapTrigramModelTrainer();
 
       return new TntModelTrainer(filteredWordPosFrequencies, posCapTrigramModelTrainer,
-          maxSuffixLength, maxWordFrequency, useMslSuffixModel, restrictToOpenClass);
+          maxSuffixLength, maxWordFrequency, useMslSuffixModel, restrictToOpenClass,
+          dataStoreFactory);
     }
   }
 }
