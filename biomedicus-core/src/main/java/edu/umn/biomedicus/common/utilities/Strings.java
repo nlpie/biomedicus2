@@ -34,8 +34,9 @@ public final class Strings {
   }
 
   /**
-   * Generates all suffixes of a word up to a maximum suffix length. The suffixes of "computer" of
-   * max length 4 would be "uter" "ter" "er" "r" "".
+   * Creates a stream which generates all suffixes of a word up to a maximum suffix length in order
+   * of decreasing size including a final empty string. The suffixes of "computer" of max length 4
+   * would be "uter" "ter" "er" "r" "" in that order.
    *
    * @param string string to break apart into suffixes.
    * @param maxSuffixLength the number of characters from the end that should be broken into
@@ -49,8 +50,9 @@ public final class Strings {
   }
 
   /**
-   * Generates all the suffixes of a word. The suffixes of "computer" would be "computer" "omputer"
-   * "mputer" ... "r" "".
+   * Creates a stream which generates the suffixes of a word in order of decreasing size including a
+   * final empty string. The suffixes of "computer" would be
+   * "computer" "omputer" "mputer" ... "r" "".
    *
    * @param string string to break apart into suffixes.
    * @return a stream of the suffixes of the stream.

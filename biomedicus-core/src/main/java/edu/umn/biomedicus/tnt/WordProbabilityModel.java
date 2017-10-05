@@ -20,7 +20,6 @@ import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.tuples.WordPosCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.util.Set;
-import org.mapdb.DB;
 
 /**
  * Interface for word probability models.
@@ -53,21 +52,20 @@ public interface WordProbabilityModel {
    */
   boolean isKnown(WordCap wordCap);
 
+  void createDataStore(DataStoreFactory dataStoreFactory);
+
   /**
    * Loads the data from a map db database.
    *
-   * @param db map db database to read from
-   * @param inMemory true to store the data in java data structures, false to keep them in the map
-   * db data structures
+   * @param dataStoreFactory factory for creating the known words data store.
    */
-  void loadData(DB db, boolean inMemory);
+  void openDataStore(DataStoreFactory dataStoreFactory);
 
   /**
    * Writes the data to a MapDB database.
    *
-   * @param db map db database to write to.
    */
-  void writeData(DB db);
+  void writeData();
 
   /**
    * Gets the identifier for this word probability model

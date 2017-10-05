@@ -30,8 +30,6 @@ import edu.umn.biomedicus.framework.store.TextView;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
 /**
  * Trains the TnT model using the tagged parts of speech in all documents.
@@ -49,15 +47,20 @@ public class TntModelTrainerAggregator implements Aggregator {
 
   @Inject
   TntModelTrainerAggregator(@ProcessorSetting("tnt.train.viewName") String viewName,
-      @ProcessorSetting("tnt.train.outputDir") Path outputDir) {
+      @ProcessorSetting("tnt.train.outputDir") Path outputDir,
+      DataStoreFactory dataStoreFactory) {
     this.viewName = viewName;
+
+    dataStoreFactory.setDbPath(outputDir.resolve("words/"));
 
     tntModelTrainer = TntModelTrainer.builder()
         .useMslSuffixModel(false)
         .maxSuffixLength(5)
         .maxWordFrequency(20)
         .restrictToOpenClass(false)
-        .useCapitalization(true).build();
+        .useCapitalization(true)
+        .dataStoreFactory(dataStoreFactory)
+        .build();
 
     this.outputDir = outputDir;
   }
@@ -83,15 +86,10 @@ public class TntModelTrainerAggregator implements Aggregator {
   @Override
   public void done() throws BiomedicusException {
     TntModel model = tntModelTrainer.createModel();
-
-    DB db = DBMaker.fileDB(outputDir.resolve("words.db").toFile()).make();
-
     try {
-      model.write(outputDir, db);
+      model.write(outputDir);
     } catch (IOException e) {
       throw new BiomedicusException(e);
     }
-
-    db.close();
   }
 }

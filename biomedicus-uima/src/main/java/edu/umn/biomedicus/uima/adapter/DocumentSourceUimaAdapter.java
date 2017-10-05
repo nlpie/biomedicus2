@@ -34,6 +34,8 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.ProgressImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Runs {@link edu.umn.biomedicus.framework.DocumentSource} classes using the
@@ -43,6 +45,8 @@ import org.apache.uima.util.ProgressImpl;
  * @since 1.7.0
  */
 public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSourceUimaAdapter.class);
 
   private static final List<String> KNOWN_PARAMETERS = Collections.singletonList("eagerLoad");
 
@@ -55,15 +59,16 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
   private int total;
 
   private int completed;
+  private GuiceInjector guiceInjector;
 
   @Override
   public void initialize() throws ResourceInitializationException {
     UimaContext uimaContext = getUimaContext();
     try {
-      GuiceInjector guiceInjector = (GuiceInjector) uimaContext
+      guiceInjector = (GuiceInjector) uimaContext
           .getResourceObject("guiceInjector");
       documentSourceRunner = guiceInjector.createDocumentSourceRunner();
-      labelAdapters = guiceInjector.getInjector().getInstance(LabelAdapters.class);
+      labelAdapters = guiceInjector.attach().getInstance(LabelAdapters.class);
     } catch (ResourceAccessException e) {
       throw new ResourceInitializationException(e);
     }
@@ -123,7 +128,15 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
   public boolean hasNext() throws IOException, CollectionException {
     Preconditions.checkNotNull(documentSourceRunner);
     try {
-      return documentSourceRunner.hasNext();
+      boolean hasNext = documentSourceRunner.hasNext();
+      if (!hasNext) {
+        try {
+          guiceInjector.detach();
+        } catch (BiomedicusException e) {
+          LOGGER.error("Failed to detach from guice injector", e);
+        }
+      }
+      return hasNext;
     } catch (BiomedicusException e) {
       throw new CollectionException(e);
     }

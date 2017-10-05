@@ -29,7 +29,6 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
@@ -55,13 +54,16 @@ public final class DocumentProcessorUimaAdapter extends CasAnnotator_ImplBase {
   @Nullable
   private LabelAdapters labelAdapters;
 
+
+  private GuiceInjector guiceInjector;
+
   @Override
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
     super.initialize(aContext);
     try {
-      GuiceInjector guiceInjector = (GuiceInjector) aContext.getResourceObject("guiceInjector");
+      guiceInjector = (GuiceInjector) aContext.getResourceObject("guiceInjector");
       documentProcessorRunner = guiceInjector.createDocumentProcessorRunner();
-      labelAdapters = guiceInjector.getInjector().getInstance(LabelAdapters.class);
+      labelAdapters = guiceInjector.attach().getInstance(LabelAdapters.class);
     } catch (ResourceAccessException e) {
       throw new ResourceInitializationException(e);
     }
@@ -112,6 +114,15 @@ public final class DocumentProcessorUimaAdapter extends CasAnnotator_ImplBase {
     } catch (BiomedicusException e) {
       LOGGER.error("error while processing document");
       throw new AnalysisEngineProcessException(e);
+    }
+  }
+
+  @Override
+  public void destroy() {
+    try {
+      guiceInjector.detach();
+    } catch (BiomedicusException e) {
+      LOGGER.error("Failed to detach from guice injector", e);
     }
   }
 }

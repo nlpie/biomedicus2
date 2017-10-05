@@ -21,21 +21,17 @@ import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.common.utilities.Strings;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
-import org.mapdb.DB;
-import org.mapdb.HTreeMap;
-import org.mapdb.Serializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p> Statistical model used for determining the probability of words given the part of speech and
- * capitalization. Is based off a suffix method described in <a href="http://www.coli.uni-saarland.de/~thorsten/publications/Brants-ANLP00.pdf>
+ * capitalization. Is based off a suffix method described in
+ * <a href="http://www.coli.uni-saarland.de/~thorsten/publications/Brants-ANLP00.pdf>
  * TnT -- A Statistical Part-of-Speech Tagger</a> by Thorsten Brants. </p> <p> The original idea
  * comes from a paper: "Morphological tagging based entirely on Bayesian inference" by Christer
  * Samuelsson 1993 </p>
@@ -45,17 +41,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SuffixWordProbabilityModel implements WordProbabilityModel {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SuffixWordProbabilityModel.class);
-
   private static final Set<PartOfSpeech> PARTS_OF_SPEECH = PartsOfSpeech.getRealTags();
 
-  private transient Map<String, Integer> suffixes;
-
-  private transient Map<Pair<Integer, PartOfSpeech>, Double> probabilities;
+  private transient SuffixDataStore suffixDataStore;
 
   private int maxSuffixLength;
-
-  private SuffixWordProbabilityModel wordProbabilityModel;
 
   private WordCapAdapter wordCapAdapter;
 
@@ -66,20 +56,11 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
   @Override
   public double logProbabilityOfWord(PartOfSpeech candidate, WordCap wordCap) {
     WordCap adapted = wordCapAdapter.apply(wordCap);
-    Iterator<String> suffixesIt = Strings.generateSuffixes(adapted.getWord(), maxSuffixLength)
-        .iterator();
-    while (suffixesIt.hasNext()) {
-      String suffix = suffixesIt.next();
-      Integer suffixInt = suffixes.get(suffix);
-      if (suffixInt == null) {
-        continue;
-      }
-      Double prob = probabilities.get(Pair.of(suffixInt, candidate));
-      if (prob != null) {
-        return prob;
-      }
-    }
-    return Double.NEGATIVE_INFINITY;
+    return Strings.generateSuffixes(adapted.getWord(), maxSuffixLength)
+        .map((String suffix) -> suffixDataStore.getProbability(suffix, candidate))
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(Double.NEGATIVE_INFINITY);
   }
 
   @Override
@@ -92,33 +73,20 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
     return filter.test(wordCap);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public void loadData(DB db, boolean inMemory) {
-    suffixes = db.hashMap("suffix" + id + "map", Serializer.STRING_DELTA, Serializer.INTEGER)
-        .open();
-    probabilities = (Map<Pair<Integer, PartOfSpeech>, Double>)
-        db.hashMap("suffix" + id + "probs", Serializer.JAVA, Serializer.DOUBLE)
-            .open();
-    if (inMemory) {
-      suffixes = new HashMap<>(suffixes);
-      probabilities = new HashMap<>(probabilities);
-    }
+  public void createDataStore(DataStoreFactory dataStoreFactory) {
+    suffixDataStore = dataStoreFactory.createSuffixDataStore(id);
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  public void writeData(DB db) {
-    LOGGER.info("Writing suffix model: {}", id);
-    HTreeMap<String, Integer> dbMaps = db
-        .hashMap("suffix" + id + "map", Serializer.STRING_DELTA, Serializer.INTEGER)
-        .create();
-    dbMaps.putAll(suffixes);
+  public void openDataStore(DataStoreFactory dataStoreFactory) {
+    suffixDataStore = dataStoreFactory.openSuffixDataStore(id);
+  }
 
-    Map<Pair<Integer, PartOfSpeech>, Double> map = db
-        .hashMap("suffix" + id + "probs", Serializer.JAVA, Serializer.DOUBLE).create();
-    map.putAll(probabilities);
-    LOGGER.info("Finished writing suffix model.");
+  @Override
+  public void writeData() {
+    suffixDataStore.write();
   }
 
   @Override
@@ -131,42 +99,15 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
     this.id = id;
   }
 
+  @Deprecated
   void trainMsl(WordPosFrequencies wordPosFrequencies, Set<PartOfSpeech> tagSet) {
-    int count = 0;
-    probabilities = new HashMap<>();
-    for (String word : wordPosFrequencies.getWords()) {
-      for (PartOfSpeech partOfSpeech : tagSet) {
-        List<String> suffixes = Strings.generateSuffixes(word, word.length())
-            .collect(Collectors.toList());
-        suffixes.remove("");
-
-        int prev = 0;
-        int max = 0;
-        for (String suffix : suffixes) {
-          int freq = wordPosFrequencies.frequencyOfWordAndPartOfSpeech(suffix, partOfSpeech);
-          int disjointFreq = freq - prev;
-          if (disjointFreq > max) {
-            max = disjointFreq;
-          }
-          prev = freq;
-        }
-
-        int posFreq = wordPosFrequencies.frequencyOfPartOfSpeech(partOfSpeech);
-        if (posFreq != 0) {
-          int index = count++;
-          this.suffixes.put(word, index);
-          double freq = Math.log10((double) max / (double) posFreq);
-          probabilities.put(new Pair<>(index, partOfSpeech), freq);
-        }
-      }
-    }
+    throw new UnsupportedOperationException("MSL model is unsupported.");
   }
 
   void trainPI(WordPosFrequencies wordPosFrequencies, Set<PartOfSpeech> tagSet) {
     Map<Integer, WordPosFrequencies> byWordLength = wordPosFrequencies.byWordLength();
 
     // computes weights by using unbiased sample variance for the suffix length samples.
-
     double[] weights = byWordLength.keySet()
         .stream()
         .sorted()
@@ -188,14 +129,20 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
         })
         .toArray();
 
-    probabilities = new HashMap<>();
-    suffixes = new HashMap<>();
-    Map<Integer, String> wordForIndex = new HashMap<>();
-    int count = 0;
+    TreeMap<Pair<PartOfSpeech, String>, Double> probabilities = new TreeMap<>(
+        (o1, o2) -> {
+          int compare = o1.getFirst().compareTo(o2.getFirst());
+          if (compare != 0) {
+            return compare;
+          }
+          return o1.getSecond().compareTo(o2.getSecond());
+        });
+
+
     for (String word : wordPosFrequencies.getWords()) {
-      Integer index = null;
       for (PartOfSpeech partOfSpeech : tagSet) {
-        List<String> collect = Strings.generateSuffixes(word).collect(Collectors.toList());
+        List<String> collect = Strings.generateSuffixes(word, maxSuffixLength)
+            .collect(Collectors.toList());
 
         double probability = wordPosFrequencies.probabilityOfPartOfSpeech(partOfSpeech);
         for (int i = collect.size() - 2; i >= 0; i--) {
@@ -205,25 +152,18 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
 
           double weight = weights[suffix.length() - 1];
           probability = (maxLikelihood + weight * probability) / (1.0 + weight);
-        }
 
-        if (probability != 0) {
-          if (index == null) {
-            index = count++;
-            suffixes.put(word, index);
-            wordForIndex.put(index, word);
+          if (probability != 0) {
+            probabilities.put(Pair.of(partOfSpeech, suffix), probability);
           }
-
-          probabilities.put(Pair.of(index, partOfSpeech), probability);
         }
       }
     }
 
     probabilities.replaceAll((key, probability) -> {
-      Integer index = key.getFirst();
-
-      PartOfSpeech partOfSpeech = key.getSecond();
-      double suffixProbability = wordPosFrequencies.probabilityOfWord(wordForIndex.get(index));
+      String word = key.second();
+      PartOfSpeech partOfSpeech = key.getFirst();
+      double suffixProbability = wordPosFrequencies.probabilityOfWord(word);
       double posProbability = wordPosFrequencies.probabilityOfPartOfSpeech(partOfSpeech);
       if (posProbability != 0 && probability != null) {
         probability = Math.log10(probability * suffixProbability / posProbability);
@@ -232,7 +172,11 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
       }
       return probability;
     });
+
+    suffixDataStore.addAllProbabilities(probabilities);
   }
+
+  // The following property getter + setters are for serialization
 
   public int getMaxSuffixLength() {
     return maxSuffixLength;
@@ -240,14 +184,6 @@ public class SuffixWordProbabilityModel implements WordProbabilityModel {
 
   public void setMaxSuffixLength(int maxSuffixLength) {
     this.maxSuffixLength = maxSuffixLength;
-  }
-
-  public SuffixWordProbabilityModel getWordProbabilityModel() {
-    return wordProbabilityModel;
-  }
-
-  public void setWordProbabilityModel(SuffixWordProbabilityModel wordProbabilityModel) {
-    this.wordProbabilityModel = wordProbabilityModel;
   }
 
   public WordCapAdapter getWordCapAdapter() {

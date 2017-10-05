@@ -21,8 +21,8 @@ settings:
   tnt:
     trigram.path: tnt/trigram.yml
     word:
-      inMemory: yes
-      dbPath: tnt/words.db
+      inMemory: no
+      dbPath: tnt/words
       metadataPath: tnt/wordMetadata.yml
     beam.threshold: 2.0
   stopwords:
@@ -63,7 +63,7 @@ settings:
       model.path: opennlp/sentence.bin
       trainerOutputDirectory: opennlp/sentence-out.bin
   syntaxnet:
-    installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
+    installationDir.path: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface
   specialist.path: SPECIALIST/LEX
   modification:
