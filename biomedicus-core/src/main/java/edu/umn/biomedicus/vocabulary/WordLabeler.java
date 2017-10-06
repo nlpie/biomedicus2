@@ -18,7 +18,7 @@ package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
 import edu.umn.biomedicus.common.types.text.ParseToken;
@@ -61,9 +61,9 @@ public final class WordLabeler implements DocumentProcessor {
 
     for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
       ParseToken token = parseTokenLabel.value();
-      IndexedTerm indexedTerm = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
+      TermIdentifier termIdentifier = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
       WordIndex wordIndex = ImmutableWordIndex.builder()
-          .term(indexedTerm)
+          .term(termIdentifier)
           .build();
       wordIndexLabeler.value(wordIndex).label(parseTokenLabel);
     }

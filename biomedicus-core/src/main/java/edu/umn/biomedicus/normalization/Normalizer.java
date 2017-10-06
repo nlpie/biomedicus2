@@ -18,7 +18,7 @@ package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
@@ -78,13 +78,13 @@ final public class Normalizer implements DocumentProcessor {
               "Part of speech label not found for word index"))
           .value();
 
-      IndexedTerm wordTerm = wordIndexLabel.getValue().term();
+      TermIdentifier wordTerm = wordIndexLabel.getValue().term();
       TermString normAndTerm = null;
       if (!wordTerm.isUnknown()) {
         normAndTerm = normalizerStore.get(new TermPos(wordTerm, partOfSpeech));
       }
       String norm;
-      IndexedTerm normTerm;
+      TermIdentifier normTerm;
       if (normAndTerm == null) {
         norm = parseTokenLabelIndex.withTextLocation(wordIndexLabel)
             .orElseThrow(BiomedicusException.supplier("parse token not found for word index"))
@@ -100,7 +100,7 @@ final public class Normalizer implements DocumentProcessor {
       normFormLabeler.value(
           ImmutableNormForm.builder()
               .normalForm(norm)
-              .normTermIdentifier(normTerm.termIdentifier())
+              .normTermIdentifier(normTerm.value())
               .build()
       ).label(wordIndexLabel);
     }

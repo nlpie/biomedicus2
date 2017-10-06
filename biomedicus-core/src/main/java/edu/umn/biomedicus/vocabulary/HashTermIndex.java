@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.vocabulary;
 
 import edu.umn.biomedicus.common.terms.AbstractTermIndex;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,9 +73,9 @@ public class HashTermIndex extends AbstractTermIndex {
     terms = new String[size];
 
     int i = 0;
-    Iterator<IndexedTerm> iterator = termIndex.iterator();
+    Iterator<TermIdentifier> iterator = termIndex.iterator();
     while (iterator.hasNext()) {
-      IndexedTerm next = iterator.next();
+      TermIdentifier next = iterator.next();
       String string = termIndex.getTerm(next);
       terms[i] = string;
       map.put(string, i++);

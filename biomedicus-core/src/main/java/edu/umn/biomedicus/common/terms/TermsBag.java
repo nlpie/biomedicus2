@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTerm>, Serializable {
+public final class TermsBag implements Comparable<TermsBag>, Iterable<TermIdentifier>, Serializable {
 
   /**
    * The term identifiers, sorted increasing.
@@ -80,44 +80,44 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
   }
 
   /**
-   * Converts the bag to a new list of {@link IndexedTerm} objects. If a term occurs n times in the
+   * Converts the bag to a new list of {@link TermIdentifier} objects. If a term occurs n times in the
    * bag it will get added to the list n times. The terms are sorted with identifiers ascending.
    *
    * @return newly allocated list of terms
    */
-  List<IndexedTerm> toTerms() {
-    List<IndexedTerm> indexedTerms = new ArrayList<>(identifiers.length);
+  List<TermIdentifier> toTerms() {
+    List<TermIdentifier> termIdentifiers = new ArrayList<>(identifiers.length);
     for (int i = 0; i < identifiers.length; i++) {
-      IndexedTerm indexedTerm = new IndexedTerm(identifiers[i]);
+      TermIdentifier termIdentifier = new TermIdentifier(identifiers[i]);
       for (int j = 0; j < counts[i]; j++) {
-        indexedTerms.add(indexedTerm);
+        termIdentifiers.add(termIdentifier);
       }
     }
-    return indexedTerms;
+    return termIdentifiers;
   }
 
-  private int indexOf(IndexedTerm indexedTerm) {
-    return Arrays.binarySearch(identifiers, indexedTerm.termIdentifier());
+  private int indexOf(TermIdentifier termIdentifier) {
+    return Arrays.binarySearch(identifiers, termIdentifier.value());
   }
 
   /**
    * Tests whether this bag contains a term.
    *
-   * @param indexedTerm the term to test
+   * @param termIdentifier the term to test
    * @return true if the bag contains the term, false otherwise.
    */
-  public boolean contains(IndexedTerm indexedTerm) {
-    return indexOf(indexedTerm) >= 0;
+  public boolean contains(TermIdentifier termIdentifier) {
+    return indexOf(termIdentifier) >= 0;
   }
 
   /**
    * The number of times a specific term occurs in this bag.
    *
-   * @param indexedTerm the term to get
+   * @param termIdentifier the term to get
    * @return integer count
    */
-  public int countOf(IndexedTerm indexedTerm) {
-    int index = indexOf(indexedTerm);
+  public int countOf(TermIdentifier termIdentifier) {
+    int index = indexOf(termIdentifier);
     if (index < 0) {
       return 0;
     }
@@ -185,8 +185,8 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
 
   @NotNull
   @Override
-  public Iterator<IndexedTerm> iterator() {
-    return new Iterator<IndexedTerm>() {
+  public Iterator<TermIdentifier> iterator() {
+    return new Iterator<TermIdentifier>() {
       int index = 0;
 
       @Override
@@ -195,12 +195,12 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
       }
 
       @Override
-      public IndexedTerm next() {
+      public TermIdentifier next() {
         if (index == identifiers.length) {
           throw new NoSuchElementException();
         }
 
-        return new IndexedTerm(identifiers[index++]);
+        return new TermIdentifier(identifiers[index++]);
       }
     };
   }
@@ -218,12 +218,12 @@ public final class TermsBag implements Comparable<TermsBag>, Iterable<IndexedTer
 
     private final TreeMap<Integer, Integer> identifierToCount = new TreeMap<>();
 
-    public Builder addTerm(IndexedTerm indexedTerm) {
-      if (indexedTerm.isUnknown()) {
+    public Builder addTerm(TermIdentifier termIdentifier) {
+      if (termIdentifier.isUnknown()) {
         return this;
       }
 
-      return addIdentifier(indexedTerm.termIdentifier());
+      return addIdentifier(termIdentifier.value());
     }
 
     Builder addIdentifier(int identifier) {

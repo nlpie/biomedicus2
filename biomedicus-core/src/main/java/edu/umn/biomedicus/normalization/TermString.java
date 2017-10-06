@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.normalization;
 
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import java.io.Serializable;
 
 /**
@@ -26,13 +26,13 @@ final class TermString implements Serializable {
   private final int term;
   private final String string;
 
-  TermString(IndexedTerm term, String string) {
-    this.term = term.termIdentifier();
+  TermString(TermIdentifier term, String string) {
+    this.term = term.value();
     this.string = string;
   }
 
-  IndexedTerm getTerm() {
-    return new IndexedTerm(term);
+  TermIdentifier getTerm() {
+    return new TermIdentifier(term);
   }
 
   String getString() {

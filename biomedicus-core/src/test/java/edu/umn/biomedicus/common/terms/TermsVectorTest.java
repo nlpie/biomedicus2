@@ -26,10 +26,10 @@ public class TermsVectorTest {
   @Test
   public void testBytes() throws Exception {
     Builder builder = new Builder();
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(6));
-    builder.addTerm(new IndexedTerm(10));
+    builder.addTerm(new TermIdentifier(5));
+    builder.addTerm(new TermIdentifier(5));
+    builder.addTerm(new TermIdentifier(6));
+    builder.addTerm(new TermIdentifier(10));
 
     TermsVector vect = builder.build();
     byte[] bytes = vect.getBytes();
@@ -37,9 +37,9 @@ public class TermsVectorTest {
     TermsVector newVector = new TermsVector(bytes);
 
     assertEquals(newVector.length(), 4);
-    assertEquals(newVector.get(0), new IndexedTerm(5));
-    assertEquals(newVector.get(1), new IndexedTerm(5));
-    assertEquals(newVector.get(2), new IndexedTerm(6));
-    assertEquals(newVector.get(3), new IndexedTerm(10));
+    assertEquals(newVector.get(0), new TermIdentifier(5));
+    assertEquals(newVector.get(1), new TermIdentifier(5));
+    assertEquals(newVector.get(2), new TermIdentifier(6));
+    assertEquals(newVector.get(3), new TermIdentifier(10));
   }
 }

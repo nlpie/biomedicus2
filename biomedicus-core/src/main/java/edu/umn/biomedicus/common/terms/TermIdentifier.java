@@ -22,17 +22,17 @@ import javax.annotation.Nullable;
  * An identifier for a unique string. Is associated with the specific vocabulary / term index that
  * it is retrieved from.
  */
-public final class IndexedTerm implements Comparable<IndexedTerm> {
+public final class TermIdentifier implements Comparable<TermIdentifier> {
 
-  private final int termIdentifier;
+  private final int value;
 
   /**
    * Initializes a new indexed term with the given identifier
    *
-   * @param termIdentifier the identifier for a string
+   * @param value the identifier for a string
    */
-  public IndexedTerm(int termIdentifier) {
-    this.termIdentifier = termIdentifier;
+  public TermIdentifier(int value) {
+    this.value = value;
   }
 
   /**
@@ -40,8 +40,8 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    *
    * @return the identifier used for unknown strings.
    */
-  public static IndexedTerm unknown() {
-    return new IndexedTerm(-1);
+  public static TermIdentifier unknown() {
+    return new TermIdentifier(-1);
   }
 
   /**
@@ -49,8 +49,8 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    *
    * @return integer index / identifier
    */
-  public int termIdentifier() {
-    return termIdentifier;
+  public int value() {
+    return value;
   }
 
   /**
@@ -59,7 +59,7 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    * @return true if the term, false if it is not known
    */
   public boolean isUnknown() {
-    return termIdentifier == -1;
+    return value == -1;
   }
 
   @Override
@@ -71,18 +71,18 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
       return false;
     }
 
-    IndexedTerm that = (IndexedTerm) o;
+    TermIdentifier that = (TermIdentifier) o;
 
-    return termIdentifier == that.termIdentifier;
+    return value == that.value;
   }
 
   @Override
   public int hashCode() {
-    return termIdentifier;
+    return value;
   }
 
   @Override
-  public int compareTo(IndexedTerm o) {
-    return Integer.compare(termIdentifier, o.termIdentifier);
+  public int compareTo(TermIdentifier o) {
+    return Integer.compare(value, o.value);
   }
 }

@@ -24,7 +24,7 @@ import edu.umn.biomedicus.common.collect.StandardEditDistance;
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.grams.Trigram;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
@@ -63,7 +63,7 @@ public final class SpellingModel {
     LOGGER.info("Building BK tree for spelling model using {} words.", wordsIndex.size());
     MetricTree.Builder<String> builder = MetricTree.builder();
     builder.withMetric(StandardEditDistance.levenstein());
-    Iterator<IndexedTerm> iterator = wordsIndex.iterator();
+    Iterator<TermIdentifier> iterator = wordsIndex.iterator();
     while (iterator.hasNext()) {
       String term = wordsIndex.getTerm(iterator.next());
       if (term != null) {

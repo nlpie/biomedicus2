@@ -31,24 +31,24 @@ public abstract class AbstractTermIndex implements TermIndex {
 
   @Override
   @Nullable
-  public String getTerm(IndexedTerm indexedTerm) {
-    if (indexedTerm.isUnknown()) {
+  public String getTerm(TermIdentifier termIdentifier) {
+    if (termIdentifier.isUnknown()) {
       return null;
     }
-    return getTerm(indexedTerm.termIdentifier());
+    return getTerm(termIdentifier.value());
   }
 
   @Override
-  public IndexedTerm getIndexedTerm(@Nullable CharSequence term) {
-    return new IndexedTerm(getIdentifier(term));
+  public TermIdentifier getIndexedTerm(@Nullable CharSequence term) {
+    return new TermIdentifier(getIdentifier(term));
   }
 
   @Override
   public TermsBag getTermsBag(Iterable<? extends CharSequence> terms) {
     TermsBag.Builder builder = TermsBag.builder();
     for (CharSequence term : terms) {
-      IndexedTerm indexedTerm = getIndexedTerm(term);
-      builder.addTerm(indexedTerm);
+      TermIdentifier termIdentifier = getIndexedTerm(term);
+      builder.addTerm(termIdentifier);
     }
     return builder.build();
   }
@@ -57,8 +57,8 @@ public abstract class AbstractTermIndex implements TermIndex {
   public List<String> getTerms(TermsBag termsBag) {
     ArrayList<String> terms = new ArrayList<>(termsBag.size());
 
-    for (IndexedTerm indexedTerm : termsBag) {
-      terms.add(this.getTerm(indexedTerm));
+    for (TermIdentifier termIdentifier : termsBag) {
+      terms.add(this.getTerm(termIdentifier));
     }
 
     return terms;
@@ -67,7 +67,7 @@ public abstract class AbstractTermIndex implements TermIndex {
   @Override
   public List<String> getTerms(TermsVector terms) {
     List<String> strings = new ArrayList<>(terms.length());
-    for (IndexedTerm term : terms) {
+    for (TermIdentifier term : terms) {
       strings.add(getTerm(term));
     }
     return strings;
@@ -87,13 +87,13 @@ public abstract class AbstractTermIndex implements TermIndex {
   }
 
   @Override
-  public Iterator<IndexedTerm> iterator() {
+  public Iterator<TermIdentifier> iterator() {
     return stream().iterator();
   }
 
   @Override
-  public Stream<IndexedTerm> stream() {
-    return IntStream.range(0, size()).mapToObj(IndexedTerm::new);
+  public Stream<TermIdentifier> stream() {
+    return IntStream.range(0, size()).mapToObj(TermIdentifier::new);
   }
 
   public abstract TermIndex inMemory(Boolean inMemory);

@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
  * @author Ben Knoll
  * @since 1.6.0
  */
-public class TermsVector implements Iterable<IndexedTerm> {
+public class TermsVector implements Iterable<TermIdentifier> {
 
   private final int[] identifiers;
 
@@ -55,8 +55,8 @@ public class TermsVector implements Iterable<IndexedTerm> {
     return identifiers.length;
   }
 
-  public IndexedTerm get(int index) {
-    return new IndexedTerm(identifiers[index]);
+  public TermIdentifier get(int index) {
+    return new TermIdentifier(identifiers[index]);
   }
 
   public TermsBag toBag() {
@@ -68,14 +68,14 @@ public class TermsVector implements Iterable<IndexedTerm> {
     return builder.build();
   }
 
-  public boolean isPrefix(List<IndexedTerm> termList) {
-    Iterator<IndexedTerm> it = termList.iterator();
+  public boolean isPrefix(List<TermIdentifier> termList) {
+    Iterator<TermIdentifier> it = termList.iterator();
     for (int identifier : identifiers) {
       if (!it.hasNext()) {
         return false;
       }
-      IndexedTerm next = it.next();
-      if (next.termIdentifier() != identifier) {
+      TermIdentifier next = it.next();
+      if (next.value() != identifier) {
         return false;
       }
     }
@@ -86,7 +86,7 @@ public class TermsVector implements Iterable<IndexedTerm> {
     return isPrefix(terms.asIndexedTermList());
   }
 
-  public List<IndexedTerm> asIndexedTermList() {
+  public List<TermIdentifier> asIndexedTermList() {
     return new ListView(this);
   }
 
@@ -119,8 +119,8 @@ public class TermsVector implements Iterable<IndexedTerm> {
   }
 
   @Override
-  public Iterator<IndexedTerm> iterator() {
-    return new Iterator<IndexedTerm>() {
+  public Iterator<TermIdentifier> iterator() {
+    return new Iterator<TermIdentifier>() {
       private int index = 0;
 
       @Override
@@ -129,7 +129,7 @@ public class TermsVector implements Iterable<IndexedTerm> {
       }
 
       @Override
-      public IndexedTerm next() {
+      public TermIdentifier next() {
         if (index >= identifiers.length) {
           throw new NoSuchElementException();
         }
@@ -138,7 +138,7 @@ public class TermsVector implements Iterable<IndexedTerm> {
     };
   }
 
-  private static class ListView extends AbstractList<IndexedTerm> {
+  private static class ListView extends AbstractList<TermIdentifier> {
 
     private final TermsVector backing;
 
@@ -147,8 +147,8 @@ public class TermsVector implements Iterable<IndexedTerm> {
     }
 
     @Override
-    public IndexedTerm get(int index) {
-      return new IndexedTerm(backing.identifiers[index]);
+    public TermIdentifier get(int index) {
+      return new TermIdentifier(backing.identifiers[index]);
     }
 
     @Override
@@ -161,8 +161,8 @@ public class TermsVector implements Iterable<IndexedTerm> {
 
     private final ArrayList<Integer> identifiers = new ArrayList<>();
 
-    public void addTerm(IndexedTerm indexedTerm) {
-      identifiers.add(indexedTerm.termIdentifier());
+    public void addTerm(TermIdentifier termIdentifier) {
+      identifiers.add(termIdentifier.value());
     }
 
     public void addIdentifier(int identifier) {

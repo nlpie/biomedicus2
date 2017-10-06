@@ -30,8 +30,8 @@ public class TermsBagSerializer extends GroupSerializerObjectArray<TermsBag> {
   @Override
   public void serialize(@NotNull DataOutput2 out, @NotNull TermsBag value) throws IOException {
     out.packInt(value.uniqueTerms());
-    for (IndexedTerm indexedTerm : value) {
-      out.packInt(indexedTerm.termIdentifier());
+    for (TermIdentifier termIdentifier : value) {
+      out.packInt(termIdentifier.value());
     }
   }
 

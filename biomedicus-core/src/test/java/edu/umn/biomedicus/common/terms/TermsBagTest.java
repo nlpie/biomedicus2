@@ -26,10 +26,10 @@ public class TermsBagTest {
   @Test
   public void testGetBytes() throws Exception {
     Builder builder = new Builder();
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(6));
-    builder.addTerm(new IndexedTerm(10));
+    builder.addTerm(new TermIdentifier(5));
+    builder.addTerm(new TermIdentifier(5));
+    builder.addTerm(new TermIdentifier(6));
+    builder.addTerm(new TermIdentifier(10));
 
     TermsBag bag = builder.build();
     byte[] bytes = bag.getBytes();
@@ -38,8 +38,8 @@ public class TermsBagTest {
 
     assertEquals(bag2.uniqueTerms(), 3);
     assertEquals(bag2.size(), 4);
-    assertEquals(bag2.countOf(new IndexedTerm(5)), 2);
-    assertEquals(bag2.countOf(new IndexedTerm(6)), 1);
-    assertEquals(bag2.countOf(new IndexedTerm(10)), 1);
+    assertEquals(bag2.countOf(new TermIdentifier(5)), 2);
+    assertEquals(bag2.countOf(new TermIdentifier(6)), 1);
+    assertEquals(bag2.countOf(new TermIdentifier(10)), 1);
   }
 }

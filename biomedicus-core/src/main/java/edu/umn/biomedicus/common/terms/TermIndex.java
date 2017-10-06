@@ -39,11 +39,11 @@ public interface TermIndex {
   /**
    * Gets the term (string) from the identifier.
    *
-   * @param indexedTerm an indexed term identifier
+   * @param termIdentifier an indexed term identifier
    * @return the string that it represents
    */
   @Nullable
-  String getTerm(IndexedTerm indexedTerm);
+  String getTerm(TermIdentifier termIdentifier);
 
   /**
    * Gets the indexed term identifier from the full string.
@@ -51,7 +51,7 @@ public interface TermIndex {
    * @param term the full character sequence of the term
    * @return the identifier for that unique string
    */
-  IndexedTerm getIndexedTerm(@Nullable CharSequence term);
+  TermIdentifier getIndexedTerm(@Nullable CharSequence term);
 
   /**
    * Converts a {@link TermsVector} to a list of the strings represented by the IndexedTerms
@@ -92,14 +92,14 @@ public interface TermIndex {
    *
    * @return iterator of all term identifiers
    */
-  Iterator<IndexedTerm> iterator();
+  Iterator<TermIdentifier> iterator();
 
   /**
    * A stream of all the term identifiers in this index
    *
    * @return new stream
    */
-  Stream<IndexedTerm> stream();
+  Stream<TermIdentifier> stream();
 
   /**
    * Counts the number of terms in this index. Implementations are not necessarily fast.

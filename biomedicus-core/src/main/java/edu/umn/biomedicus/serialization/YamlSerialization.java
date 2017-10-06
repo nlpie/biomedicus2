@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.serialization;
 
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.terms.TermIdentifier;
 import edu.umn.biomedicus.common.terms.TermIndex;
 import edu.umn.biomedicus.common.terms.TermsBag;
 import edu.umn.biomedicus.common.tuples.PosCap;
@@ -146,8 +146,8 @@ public final class YamlSerialization {
           return representScalar(new Tag("!sui"), value);
         });
         if (termIndex != null) {
-          representers.put(IndexedTerm.class, o -> {
-            IndexedTerm it = (IndexedTerm) o;
+          representers.put(TermIdentifier.class, o -> {
+            TermIdentifier it = (TermIdentifier) o;
             String value = termIndex.getTerm(it);
             return representScalar(new Tag("!t"), value);
           });
