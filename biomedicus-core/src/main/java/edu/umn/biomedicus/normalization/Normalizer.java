@@ -18,8 +18,8 @@ package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
 import edu.umn.biomedicus.common.types.text.NormForm;
@@ -47,7 +47,7 @@ final public class Normalizer implements DocumentProcessor {
 
   private final NormalizerModel normalizerStore;
 
-  private final TermIndex normsIndex;
+  private final BidirectionalDictionary normsIndex;
 
   /**
    * Creates a new normalizer for normalizing a document.
@@ -78,20 +78,20 @@ final public class Normalizer implements DocumentProcessor {
               "Part of speech label not found for word index"))
           .value();
 
-      IndexedTerm wordTerm = wordIndexLabel.getValue().term();
+      StringIdentifier wordTerm = wordIndexLabel.getValue().term();
       TermString normAndTerm = null;
       if (!wordTerm.isUnknown()) {
         normAndTerm = normalizerStore.get(new TermPos(wordTerm, partOfSpeech));
       }
       String norm;
-      IndexedTerm normTerm;
+      StringIdentifier normTerm;
       if (normAndTerm == null) {
         norm = parseTokenLabelIndex.withTextLocation(wordIndexLabel)
             .orElseThrow(BiomedicusException.supplier("parse token not found for word index"))
             .value()
             .text()
             .toLowerCase();
-        normTerm = normsIndex.getIndexedTerm(norm);
+        normTerm = normsIndex.getTermIdentifier(norm);
       } else {
         norm = normAndTerm.getString();
         normTerm = normAndTerm.getTerm();
@@ -100,7 +100,7 @@ final public class Normalizer implements DocumentProcessor {
       normFormLabeler.value(
           ImmutableNormForm.builder()
               .normalForm(norm)
-              .normTermIdentifier(normTerm.termIdentifier())
+              .normTermIdentifier(normTerm.value())
               .build()
       ).label(wordIndexLabel);
     }

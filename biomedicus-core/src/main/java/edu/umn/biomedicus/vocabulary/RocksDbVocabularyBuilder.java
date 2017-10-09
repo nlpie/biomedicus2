@@ -41,7 +41,9 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
   private static final Pattern MORE_THAN_TWO_NUMBERS_IN_A_ROW = Pattern.compile("[\\p{Nd}]{3,}");
 
   private RocksDbTermIndexBuilder words;
+
   private RocksDbTermIndexBuilder terms;
+
   private RocksDbTermIndexBuilder norms;
 
   @Override

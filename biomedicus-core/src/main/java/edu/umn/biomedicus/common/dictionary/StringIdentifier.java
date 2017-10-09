@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.dictionary;
 
+import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 
 /**
  * An identifier for a unique string. Is associated with the specific vocabulary / term index that
  * it is retrieved from.
  */
-public final class IndexedTerm implements Comparable<IndexedTerm> {
+public final class StringIdentifier implements Comparable<StringIdentifier> {
 
-  private final int termIdentifier;
+  private final int value;
 
   /**
    * Initializes a new indexed term with the given identifier
    *
-   * @param termIdentifier the identifier for a string
+   * @param value the identifier for a string
    */
-  public IndexedTerm(int termIdentifier) {
-    this.termIdentifier = termIdentifier;
+  public StringIdentifier(int value) {
+    this.value = value;
   }
 
   /**
@@ -40,8 +41,19 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    *
    * @return the identifier used for unknown strings.
    */
-  public static IndexedTerm unknown() {
-    return new IndexedTerm(-1);
+  public static StringIdentifier unknown() {
+    return new StringIdentifier(-1);
+  }
+
+  /**
+   * Creates a new term identifier for known strings.
+   *
+   * @param value the value of the term identifier
+   * @return
+   */
+  public static StringIdentifier withValue(int value) {
+    Preconditions.checkArgument(value != -1, "-1 is reserved for unknown terms.");
+    return new StringIdentifier(value);
   }
 
   /**
@@ -49,8 +61,8 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    *
    * @return integer index / identifier
    */
-  public int termIdentifier() {
-    return termIdentifier;
+  public int value() {
+    return value;
   }
 
   /**
@@ -59,7 +71,7 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
    * @return true if the term, false if it is not known
    */
   public boolean isUnknown() {
-    return termIdentifier == -1;
+    return value == -1;
   }
 
   @Override
@@ -71,18 +83,18 @@ public final class IndexedTerm implements Comparable<IndexedTerm> {
       return false;
     }
 
-    IndexedTerm that = (IndexedTerm) o;
+    StringIdentifier that = (StringIdentifier) o;
 
-    return termIdentifier == that.termIdentifier;
+    return value == that.value;
   }
 
   @Override
   public int hashCode() {
-    return termIdentifier;
+    return value;
   }
 
   @Override
-  public int compareTo(IndexedTerm o) {
-    return Integer.compare(termIdentifier, o.termIdentifier);
+  public int compareTo(StringIdentifier o) {
+    return Integer.compare(value, o.value);
   }
 }

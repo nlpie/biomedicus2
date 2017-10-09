@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.text;
+package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import org.immutables.value.Value;
+import java.io.Closeable;
 
-@Value.Immutable
-public interface WordIndex {
+public interface MappingIterator extends Closeable {
+  boolean isValid();
 
-  StringIdentifier term();
+  int identifier();
+
+  String string();
+
+  void next();
 }

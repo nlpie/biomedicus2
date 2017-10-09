@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.types.text;
+/**
+ *
+ */
+@ReturnTypesAreNonnullByDefault
+@FieldsAreNonnullByDefault
+@ParametersAreNonnullByDefault
+package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import org.immutables.value.Value;
-
-@Value.Immutable
-public interface WordIndex {
-
-  StringIdentifier term();
-}
+import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
+import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
@@ -28,10 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -111,9 +109,9 @@ public final class NormalizerModelBuilder {
     LRAGR_TO_PENN_FALLBACK = Collections.unmodifiableMap(builder);
   }
 
-  private final TermIndex normsIndex;
+  private final BidirectionalDictionary normsIndex;
 
-  private final TermIndex wordsIndex;
+  private final BidirectionalDictionary wordsIndex;
 
   @Nullable
   @Option(name = "-l", required = true, handler = PathOptionHandler.class,
@@ -190,20 +188,20 @@ public final class NormalizerModelBuilder {
 
           if (!inflectionalVariant.endsWith(baseForm)) {
             PartOfSpeech pennPos = LRAGR_TO_PENN.get(lragrPos);
-            IndexedTerm indexedTerm = wordsIndex.getIndexedTerm(inflectionalVariant);
-            if (indexedTerm.isUnknown()) {
+            StringIdentifier termIdentifier = wordsIndex.getTermIdentifier(inflectionalVariant);
+            if (termIdentifier.isUnknown()) {
               return;
             }
 
             if (pennPos != null) {
-              builder.add(indexedTerm, pennPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+              builder.add(termIdentifier, pennPos,
+                  normsIndex.getTermIdentifier(baseForm), baseForm);
             }
 
             PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
             if (fallbackPos != null) {
-              builder.add(indexedTerm, fallbackPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+              builder.add(termIdentifier, fallbackPos,
+                  normsIndex.getTermIdentifier(baseForm), baseForm);
             }
           }
         });

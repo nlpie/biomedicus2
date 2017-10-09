@@ -18,7 +18,12 @@ package edu.umn.biomedicus.vocabulary;
 
 import com.google.common.base.Preconditions;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Strings;
+import edu.umn.biomedicus.common.dictionary.RocksDbIdentifiers;
+import edu.umn.biomedicus.common.dictionary.RocksDbStrings;
+import edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,13 +44,13 @@ public class RocksDbVocabStore extends VocabularyStore {
   private final Boolean inMemory;
 
   @Nullable
-  private TermIndex words;
+  private BidirectionalDictionary words;
 
   @Nullable
-  private TermIndex terms;
+  private BidirectionalDictionary terms;
 
   @Nullable
-  private TermIndex norms;
+  private BidirectionalDictionary norms;
 
   @Inject
   public RocksDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
@@ -55,48 +60,56 @@ public class RocksDbVocabStore extends VocabularyStore {
   }
 
   @Override
-  void open() {
+  void open() throws IOException {
     LOGGER.info("Loading vocabularies: {}", dbPath);
+    
     LOGGER.info("Opening words index. inMemory = {}.", inMemory);
-    words = new RocksDbTermIndex(dbPath.resolve("wordsTerms"),
-        dbPath.resolve("wordsIndices")).inMemory(inMemory);
+    Strings wordsTerms = new RocksDbStrings(dbPath.resolve("wordsTerms"));
+    Identifiers wordsIndices = new RocksDbIdentifiers(dbPath.resolve("wordsIndices"));
+    words = new StandardBidirectionalDictionary(wordsIndices, wordsTerms).inMemory(inMemory);
+
     LOGGER.info("Opening terms index. inMemory = {}.", inMemory);
-    terms = new RocksDbTermIndex(dbPath.resolve("termsTerms"),
-        dbPath.resolve("termsIndices")).inMemory(inMemory);
+    Strings termsTerms = new RocksDbStrings(dbPath.resolve("termsTerms"));
+    Identifiers termsIndices = new RocksDbIdentifiers(dbPath.resolve("termsIndices"));
+    terms = new StandardBidirectionalDictionary(termsIndices, termsTerms).inMemory(inMemory);
+    
     LOGGER.info("Opening norms index. inMemory = {}.", inMemory);
-    norms = new RocksDbTermIndex(dbPath.resolve("normsTerms"),
-        dbPath.resolve("normsIndices")).inMemory(inMemory);
-    LOGGER.info("Done loading vocabularies.");
+    Strings normsTerms = new RocksDbStrings(dbPath.resolve("normsTerms"));
+    Identifiers normsIndices = new RocksDbIdentifiers(dbPath.resolve("normsIndices"));
+    norms = new StandardBidirectionalDictionary(normsIndices, normsTerms).inMemory(inMemory);
   }
 
   @Override
-  TermIndex getWords() {
+  BidirectionalDictionary getWords() {
     Preconditions.checkNotNull(words);
     return words;
   }
 
   @Override
-  TermIndex getTerms() {
+  BidirectionalDictionary getTerms() {
     Preconditions.checkNotNull(terms);
     return terms;
   }
 
   @Override
-  TermIndex getNorms() {
+  BidirectionalDictionary getNorms() {
     Preconditions.checkNotNull(norms);
     return norms;
   }
 
   @Override
   public void close() throws IOException {
-    if (words instanceof Closeable) {
-      ((Closeable) words).close();
+    if (words != null) {
+      words.close();
+      words = null;
     }
-    if (terms instanceof Closeable) {
-      ((Closeable) terms).close();
+    if (terms != null) {
+      terms.close();
+      terms = null;
     }
-    if (norms instanceof Closeable) {
-      ((Closeable) norms).close();
+    if (norms != null) {
+      norms.close();
+      norms = null;
     }
   }
 }

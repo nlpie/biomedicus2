@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.LifecycleManaged;
 import java.nio.ByteBuffer;
@@ -70,7 +70,7 @@ class RocksDbConceptDictionary implements ConceptDictionary, LifecycleManaged {
 
   @Nullable
   @Override
-  public List<SuiCuiTui> forNorms(TermsBag norms) {
+  public List<SuiCuiTui> forNorms(StringsBag norms) {
     if (norms.uniqueTerms() == 0) {
       return null;
     }

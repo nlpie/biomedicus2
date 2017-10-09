@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.dictionary;
 
 import static org.testng.Assert.*;
 
-import edu.umn.biomedicus.common.terms.TermsBag.Builder;
+import edu.umn.biomedicus.common.dictionary.StringsBag.Builder;
 import org.testng.annotations.Test;
 
-public class TermsBagTest {
+public class StringsBagTest {
 
   @Test
   public void testGetBytes() throws Exception {
     Builder builder = new Builder();
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(5));
-    builder.addTerm(new IndexedTerm(6));
-    builder.addTerm(new IndexedTerm(10));
+    builder.addTerm(new StringIdentifier(5));
+    builder.addTerm(new StringIdentifier(5));
+    builder.addTerm(new StringIdentifier(6));
+    builder.addTerm(new StringIdentifier(10));
 
-    TermsBag bag = builder.build();
+    StringsBag bag = builder.build();
     byte[] bytes = bag.getBytes();
 
-    TermsBag bag2 = new TermsBag(bytes);
+    StringsBag bag2 = new StringsBag(bytes);
 
     assertEquals(bag2.uniqueTerms(), 3);
     assertEquals(bag2.size(), 4);
-    assertEquals(bag2.countOf(new IndexedTerm(5)), 2);
-    assertEquals(bag2.countOf(new IndexedTerm(6)), 1);
-    assertEquals(bag2.countOf(new IndexedTerm(10)), 1);
+    assertEquals(bag2.countOf(new StringIdentifier(5)), 2);
+    assertEquals(bag2.countOf(new StringIdentifier(6)), 1);
+    assertEquals(bag2.countOf(new StringIdentifier(10)), 1);
   }
 }

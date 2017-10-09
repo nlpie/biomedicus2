@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-/**
- *
- */
-@ReturnTypesAreNonnullByDefault
-@FieldsAreNonnullByDefault
-@ParametersAreNonnullByDefault
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.annotations.FieldsAreNonnullByDefault;
-import edu.umn.biomedicus.annotations.ReturnTypesAreNonnullByDefault;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
+
+public abstract class AbstractBidirectionalDictionary implements BidirectionalDictionary {
+
+
+
+
+
+
+  public abstract BidirectionalDictionary inMemory(Boolean inMemory);
+}

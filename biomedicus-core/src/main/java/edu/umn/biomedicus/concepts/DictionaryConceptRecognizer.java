@@ -29,9 +29,8 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.WDT;
 import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.XX;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
-import edu.umn.biomedicus.common.types.semantics.Concept;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
@@ -154,7 +153,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
     Span phraseAsSpan = new Span(tokenSet.get(0).getBegin(),
         tokenSet.get(tokenSet.size() - 1).getEnd());
-    TermsBag.Builder builder = TermsBag.builder();
+    StringsBag.Builder builder = StringsBag.builder();
     for (Label<NormForm> normIndexLabel : normIndexes.insideSpan(phraseAsSpan)) {
 
       Optional<Label<PartOfSpeech>> partOfSpeechLabel = partOfSpeechLabelIndex
@@ -166,9 +165,9 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
       builder.addTerm(normIndexLabel.value().normIndexedTerm());
     }
-    TermsBag normVector = builder.build();
+    StringsBag normBag = builder.build();
 
-    List<SuiCuiTui> normsCUI = conceptDictionary.forNorms(normVector);
+    List<SuiCuiTui> normsCUI = conceptDictionary.forNorms(normBag);
     if (normsCUI != null) {
       makeTerm(phraseAsSpan, normsCUI, .3);
     }
@@ -229,33 +228,30 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         int to = Math.min(from + SPAN_SIZE, sentenceTermTokens.size());
         List<Label<TermToken>> window = sentenceTermTokens.subList(from, to);
 
-        Label<TermToken> firstTokenLabel = window.get(0);
-        boolean firstTrivial = TRIVIAL_POS
-            .containsAll(partOfSpeechLabelIndex.insideSpan(firstTokenLabel).values());
+        Label<TermToken> first = window.get(0);
 
         for (int subsetSize = 1; subsetSize <= window.size(); subsetSize++) {
           List<Label<TermToken>> windowSubset = window.subList(0, subsetSize);
-          int last = subsetSize - 1;
-          Label<TermToken> lastTokenLabel = windowSubset.get(last);
-          Span asSpan = new Span(firstTokenLabel.getBegin(), lastTokenLabel.getEnd());
+          Label<TermToken> last = windowSubset.get(subsetSize - 1);
+          Span entire = Span.of(first.getBegin(), last.getEnd());
 
-          boolean phraseFound = checkPhrase(asSpan,
-              documentText.substring(asSpan.getBegin(), asSpan.getEnd()),
-              subsetSize == 1, 0);
+          if (TRIVIAL_POS.containsAll(partOfSpeechLabelIndex.insideSpan(entire).values())) {
+            continue;
+          }
 
-          if (!phraseFound) {
-            int editedBegin = editedStringSpans.get(from).getBegin();
-            int editedEnd = editedStringSpans.get(from + last).getEnd();
-            String editedSubstring = editedString.substring(editedBegin, editedEnd);
-            phraseFound = checkPhrase(asSpan, editedSubstring, subsetSize == 1, .1);
+          if (checkPhrase(entire, entire.getCovered(documentText).toString(),
+              subsetSize == 1, 0)) {
+            continue;
           }
-          if (!phraseFound) {
-            boolean lastTrivial = TRIVIAL_POS
-                .containsAll(partOfSpeechLabelIndex.insideSpan(lastTokenLabel).values());
-            if (!firstTrivial && !lastTrivial) {
-              checkTokenSet(windowSubset);
-            }
+
+          int editedBegin = editedStringSpans.get(from).getBegin();
+          int editedEnd = editedStringSpans.get(from + subsetSize - 1).getEnd();
+          String editedSubstring = editedString.substring(editedBegin, editedEnd);
+          if (checkPhrase(entire, editedSubstring, subsetSize == 1, .1)) {
+            continue;
           }
+
+          checkTokenSet(windowSubset);
         }
       }
     }

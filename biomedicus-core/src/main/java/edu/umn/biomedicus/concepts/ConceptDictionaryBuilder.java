@@ -19,9 +19,8 @@ package edu.umn.biomedicus.concepts;
 import com.google.common.base.Splitter;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermsBag;
-import edu.umn.biomedicus.common.terms.TermsVector;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
@@ -33,7 +32,6 @@ import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -188,7 +186,7 @@ public class ConceptDictionaryBuilder {
               return firstList;
             }));
 
-    TermIndex normIndex = vocabulary.getWordsIndex();
+    BidirectionalDictionary normIndex = vocabulary.getWordsIndex();
 
     Path mrconsoPath = umlsPath.resolve("MRCONSO.RRF");
     System.out.println("Loading phrases and SUI -> CUIs from MRCONSO: " + mrconsoPath);
@@ -296,7 +294,7 @@ public class ConceptDictionaryBuilder {
       }
     }
 
-    NavigableMap<TermsBag, List<SuiCuiTui>> map = new TreeMap<>();
+    NavigableMap<StringsBag, List<SuiCuiTui>> map = new TreeMap<>();
 
     try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
       String line;
@@ -320,7 +318,7 @@ public class ConceptDictionaryBuilder {
             continue;
           }
 
-          TermsBag termsBag = normIndex.getTermsBag(norms);
+          StringsBag termsBag = normIndex.getTermsBag(norms);
           List<TUI> tuis = cuiToTUIs.get(cui);
           if (tuis == null || tuis.size() == 0) {
             LOGGER.trace("Filtering \"{}\" because it has no interesting types", termsBag);
@@ -341,7 +339,7 @@ public class ConceptDictionaryBuilder {
     int wrote = 0;
     try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad();
         RocksDB normsDb = RocksDB.open(options, dbPath.resolve("norms").toString())) {
-      for (Entry<TermsBag, List<SuiCuiTui>> entry : map.entrySet()) {
+      for (Entry<StringsBag, List<SuiCuiTui>> entry : map.entrySet()) {
         List<SuiCuiTui> suiCuiTuis = entry.getValue();
         byte[] suiCuiTuiBytes = getBytes(suiCuiTuis);
         normsDb.put(entry.getKey().getBytes(), suiCuiTuiBytes);
