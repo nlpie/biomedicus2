@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.serialization;
 
-import edu.umn.biomedicus.common.terms.TermIdentifier;
-import edu.umn.biomedicus.common.terms.TermIndex;
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
@@ -49,15 +49,15 @@ public final class YamlSerialization {
     return createYaml(null);
   }
 
-  public static Yaml createYaml(TermIndex termIndex) {
-    Yaml yaml = new Yaml(constructor(termIndex), representer(termIndex));
+  public static Yaml createYaml(BidirectionalDictionary bidirectionalDictionary) {
+    Yaml yaml = new Yaml(constructor(bidirectionalDictionary), representer(bidirectionalDictionary));
     yaml.addImplicitResolver(new Tag("!cui"), CUI.CUI_PATTERN, "C");
     yaml.addImplicitResolver(new Tag("!tui"), TUI.TUI_PATTERN, "T");
     yaml.addImplicitResolver(new Tag("!sui"), SUI.SUI_PATTERN, "S");
     return yaml;
   }
 
-  private static Constructor constructor(TermIndex termIndex) {
+  private static Constructor constructor(BidirectionalDictionary bidirectionalDictionary) {
     return new Constructor() {
       {
         yamlConstructors.put(new Tag("!pc"), new AbstractConstruct() {
@@ -97,19 +97,19 @@ public final class YamlSerialization {
             return new SUI(val);
           }
         });
-        if (termIndex != null) {
+        if (bidirectionalDictionary != null) {
           yamlConstructors.put(new Tag("!t"), new AbstractConstruct() {
             @Override
             public Object construct(Node node) {
               String val = (String) constructScalar((ScalarNode) node);
-              return termIndex.getIndexedTerm(val);
+              return bidirectionalDictionary.getTermIdentifier(val);
             }
           });
           yamlConstructors.put(new Tag("!tv"), new AbstractConstruct() {
             @Override
             public Object construct(Node node) {
               String[] val = (String[]) constructArray((SequenceNode) node);
-              return termIndex.getTermsBag(Arrays.asList(val));
+              return bidirectionalDictionary.getTermsBag(Arrays.asList(val));
             }
           });
         }
@@ -117,7 +117,7 @@ public final class YamlSerialization {
     };
   }
 
-  private static Representer representer(TermIndex termIndex) {
+  private static Representer representer(BidirectionalDictionary bidirectionalDictionary) {
     return new Representer() {
       {
         representers.put(PosCap.class, o -> {
@@ -145,15 +145,15 @@ public final class YamlSerialization {
           String value = sui.toString();
           return representScalar(new Tag("!sui"), value);
         });
-        if (termIndex != null) {
-          representers.put(TermIdentifier.class, o -> {
-            TermIdentifier it = (TermIdentifier) o;
-            String value = termIndex.getTerm(it);
+        if (bidirectionalDictionary != null) {
+          representers.put(StringIdentifier.class, o -> {
+            StringIdentifier it = (StringIdentifier) o;
+            String value = bidirectionalDictionary.getTerm(it);
             return representScalar(new Tag("!t"), value);
           });
-          representers.put(TermsBag.class, o -> {
-            TermsBag tv = (TermsBag) o;
-            Collection<String> expanded = termIndex.getTerms(tv);
+          representers.put(StringsBag.class, o -> {
+            StringsBag tv = (StringsBag) o;
+            Collection<String> expanded = bidirectionalDictionary.getTerms(tv);
             return representSequence(new Tag("!tv"), expanded, null);
           });
         }

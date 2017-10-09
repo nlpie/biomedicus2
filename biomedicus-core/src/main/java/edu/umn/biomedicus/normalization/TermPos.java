@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.normalization;
 
-import edu.umn.biomedicus.common.terms.TermIdentifier;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
@@ -34,14 +34,14 @@ final class TermPos implements Serializable, Comparable<TermPos> {
 
   private final PartOfSpeech partOfSpeech;
 
-  TermPos(TermIdentifier termIdentifier,
+  TermPos(StringIdentifier termIdentifier,
       PartOfSpeech partOfSpeech) {
     this.indexedTerm = termIdentifier.value();
     this.partOfSpeech = partOfSpeech;
   }
 
-  TermIdentifier getIndexedTerm() {
-    return new TermIdentifier(indexedTerm);
+  StringIdentifier getIndexedTerm() {
+    return new StringIdentifier(indexedTerm);
   }
 
   PartOfSpeech getPartOfSpeech() {

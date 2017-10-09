@@ -18,8 +18,8 @@ package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.terms.TermIdentifier;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
 import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.common.types.text.WordIndex;
@@ -44,7 +44,7 @@ public final class WordLabeler implements DocumentProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
 
-  private final TermIndex wordIndex;
+  private final BidirectionalDictionary wordIndex;
 
   @Inject
   public WordLabeler(Vocabulary vocabulary) {
@@ -61,7 +61,7 @@ public final class WordLabeler implements DocumentProcessor {
 
     for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
       ParseToken token = parseTokenLabel.value();
-      TermIdentifier termIdentifier = wordIndex.getIndexedTerm(token.text().toLowerCase(Locale.ENGLISH));
+      StringIdentifier termIdentifier = wordIndex.getTermIdentifier(token.text().toLowerCase(Locale.ENGLISH));
       WordIndex wordIndex = ImmutableWordIndex.builder()
           .term(termIdentifier)
           .build();

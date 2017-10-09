@@ -16,7 +16,8 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.common.terms.TermIndex;
+
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 
 /**
  * Retrieves the system-wide term indexes used by BioMedICUS.
@@ -28,15 +29,15 @@ public interface Vocabulary {
   /**
    * The words that would appear in parse tokens.
    */
-  TermIndex getWordsIndex();
+  BidirectionalDictionary getWordsIndex();
 
   /**
    * The words that would occur in term tokens.
    */
-  TermIndex getTermsIndex();
+  BidirectionalDictionary getTermsIndex();
 
   /**
    * The words that would occur as normalized forms of term tokens.
    */
-  TermIndex getNormsIndex();
+  BidirectionalDictionary getNormsIndex();
 }

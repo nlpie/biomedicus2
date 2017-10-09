@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.concepts;
 
 import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -34,5 +34,5 @@ public interface ConceptDictionary {
   List<SuiCuiTui> forLowercasePhrase(String phrase);
 
   @Nullable
-  List<SuiCuiTui> forNorms(TermsBag norms);
+  List<SuiCuiTui> forNorms(StringsBag norms);
 }

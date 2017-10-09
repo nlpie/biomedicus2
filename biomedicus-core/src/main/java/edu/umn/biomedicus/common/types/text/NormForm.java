@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-import edu.umn.biomedicus.common.terms.TermIdentifier;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -26,7 +26,7 @@ public interface NormForm {
 
   int normTermIdentifier();
 
-  default TermIdentifier normIndexedTerm() {
-    return new TermIdentifier(normTermIdentifier());
+  default StringIdentifier normIndexedTerm() {
+    return new StringIdentifier(normTermIdentifier());
   }
 }

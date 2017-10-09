@@ -19,7 +19,7 @@ package edu.umn.biomedicus.vocabulary;
 import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.framework.LifecycleManaged;
@@ -38,31 +38,31 @@ class DefaultVocabulary implements LifecycleManaged, Vocabulary {
 
   private final VocabularyStore store;
 
-  private final TermIndex wordsIndex;
+  private final BidirectionalDictionary wordsIndex;
 
-  private final TermIndex termIndex;
+  private final BidirectionalDictionary bidirectionalDictionary;
 
-  private final TermIndex normsIndex;
+  private final BidirectionalDictionary normsIndex;
 
   DefaultVocabulary(VocabularyStore store) {
     this.store = store;
     this.wordsIndex = store.getWords();
-    this.termIndex = store.getTerms();
+    this.bidirectionalDictionary = store.getTerms();
     this.normsIndex = store.getNorms();
   }
 
   @Override
-  public TermIndex getWordsIndex() {
+  public BidirectionalDictionary getWordsIndex() {
     return wordsIndex;
   }
 
   @Override
-  public TermIndex getTermsIndex() {
-    return termIndex;
+  public BidirectionalDictionary getTermsIndex() {
+    return bidirectionalDictionary;
   }
 
   @Override
-  public TermIndex getNormsIndex() {
+  public BidirectionalDictionary getNormsIndex() {
     return normsIndex;
   }
 
@@ -87,7 +87,11 @@ class DefaultVocabulary implements LifecycleManaged, Vocabulary {
 
     @Override
     protected Vocabulary loadModel() throws BiomedicusException {
-      store.open();
+      try {
+        store.open();
+      } catch (IOException e) {
+        throw new BiomedicusException(e);
+      }
       return new DefaultVocabulary(store);
     }
   }

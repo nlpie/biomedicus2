@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.terms.TermIdentifier;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
@@ -109,9 +109,9 @@ public final class NormalizerModelBuilder {
     LRAGR_TO_PENN_FALLBACK = Collections.unmodifiableMap(builder);
   }
 
-  private final TermIndex normsIndex;
+  private final BidirectionalDictionary normsIndex;
 
-  private final TermIndex wordsIndex;
+  private final BidirectionalDictionary wordsIndex;
 
   @Nullable
   @Option(name = "-l", required = true, handler = PathOptionHandler.class,
@@ -188,20 +188,20 @@ public final class NormalizerModelBuilder {
 
           if (!inflectionalVariant.endsWith(baseForm)) {
             PartOfSpeech pennPos = LRAGR_TO_PENN.get(lragrPos);
-            TermIdentifier termIdentifier = wordsIndex.getIndexedTerm(inflectionalVariant);
+            StringIdentifier termIdentifier = wordsIndex.getTermIdentifier(inflectionalVariant);
             if (termIdentifier.isUnknown()) {
               return;
             }
 
             if (pennPos != null) {
               builder.add(termIdentifier, pennPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+                  normsIndex.getTermIdentifier(baseForm), baseForm);
             }
 
             PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
             if (fallbackPos != null) {
               builder.add(termIdentifier, fallbackPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+                  normsIndex.getTermIdentifier(baseForm), baseForm);
             }
           }
         });

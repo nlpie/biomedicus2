@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.dictionary;
 
 import static org.testng.Assert.*;
 
-import edu.umn.biomedicus.common.terms.TermsVector.Builder;
+import edu.umn.biomedicus.common.dictionary.StringsVector.Builder;
 import org.testng.annotations.Test;
 
-public class TermsVectorTest {
+public class StringsVectorTest {
 
   @Test
   public void testBytes() throws Exception {
     Builder builder = new Builder();
-    builder.addTerm(new TermIdentifier(5));
-    builder.addTerm(new TermIdentifier(5));
-    builder.addTerm(new TermIdentifier(6));
-    builder.addTerm(new TermIdentifier(10));
+    builder.addTerm(new StringIdentifier(5));
+    builder.addTerm(new StringIdentifier(5));
+    builder.addTerm(new StringIdentifier(6));
+    builder.addTerm(new StringIdentifier(10));
 
-    TermsVector vect = builder.build();
+    StringsVector vect = builder.build();
     byte[] bytes = vect.getBytes();
 
-    TermsVector newVector = new TermsVector(bytes);
+    StringsVector newVector = new StringsVector(bytes);
 
-    assertEquals(newVector.length(), 4);
-    assertEquals(newVector.get(0), new TermIdentifier(5));
-    assertEquals(newVector.get(1), new TermIdentifier(5));
-    assertEquals(newVector.get(2), new TermIdentifier(6));
-    assertEquals(newVector.get(3), new TermIdentifier(10));
+    assertEquals(newVector.size(), 4);
+    assertEquals(newVector.get(0), new StringIdentifier(5));
+    assertEquals(newVector.get(1), new StringIdentifier(5));
+    assertEquals(newVector.get(2), new StringIdentifier(6));
+    assertEquals(newVector.get(3), new StringIdentifier(10));
   }
 }

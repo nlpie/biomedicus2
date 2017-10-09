@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.terms.TermIdentifier;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTermModifier;
@@ -463,7 +463,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected WordIndex createLabelValue(FeatureStructure featureStructure) {
       return ImmutableWordIndex.builder()
-          .term(new TermIdentifier(
+          .term(new StringIdentifier(
               featureStructure.getIntValue(indexFeature)))
           .build();
     }
@@ -529,7 +529,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Override
     protected NormIndex createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableNormIndex.builder().term(new TermIdentifier(
+      return ImmutableNormIndex.builder().term(new StringIdentifier(
           featureStructure.getIntValue(indexFeature))).build();
     }
 

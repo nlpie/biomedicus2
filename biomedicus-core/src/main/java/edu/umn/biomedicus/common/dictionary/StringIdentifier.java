@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package edu.umn.biomedicus.common.terms;
+package edu.umn.biomedicus.common.dictionary;
 
+import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 
 /**
  * An identifier for a unique string. Is associated with the specific vocabulary / term index that
  * it is retrieved from.
  */
-public final class TermIdentifier implements Comparable<TermIdentifier> {
+public final class StringIdentifier implements Comparable<StringIdentifier> {
 
   private final int value;
 
@@ -31,7 +32,7 @@ public final class TermIdentifier implements Comparable<TermIdentifier> {
    *
    * @param value the identifier for a string
    */
-  public TermIdentifier(int value) {
+  public StringIdentifier(int value) {
     this.value = value;
   }
 
@@ -40,8 +41,19 @@ public final class TermIdentifier implements Comparable<TermIdentifier> {
    *
    * @return the identifier used for unknown strings.
    */
-  public static TermIdentifier unknown() {
-    return new TermIdentifier(-1);
+  public static StringIdentifier unknown() {
+    return new StringIdentifier(-1);
+  }
+
+  /**
+   * Creates a new term identifier for known strings.
+   *
+   * @param value the value of the term identifier
+   * @return
+   */
+  public static StringIdentifier withValue(int value) {
+    Preconditions.checkArgument(value != -1, "-1 is reserved for unknown terms.");
+    return new StringIdentifier(value);
   }
 
   /**
@@ -71,7 +83,7 @@ public final class TermIdentifier implements Comparable<TermIdentifier> {
       return false;
     }
 
-    TermIdentifier that = (TermIdentifier) o;
+    StringIdentifier that = (StringIdentifier) o;
 
     return value == that.value;
   }
@@ -82,7 +94,7 @@ public final class TermIdentifier implements Comparable<TermIdentifier> {
   }
 
   @Override
-  public int compareTo(TermIdentifier o) {
+  public int compareTo(StringIdentifier o) {
     return Integer.compare(value, o.value);
   }
 }

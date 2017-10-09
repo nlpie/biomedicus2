@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermIdentifier;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
@@ -60,7 +60,7 @@ final class NormalizerModel implements LifecycleManaged {
     this.db = db;
   }
 
-  void add(TermIdentifier variant, PartOfSpeech pos, TermIdentifier normIndex, String baseForm) {
+  void add(StringIdentifier variant, PartOfSpeech pos, StringIdentifier normIndex, String baseForm) {
     normalizationMap.put(new TermPos(variant, pos), new TermString(normIndex, baseForm));
   }
 

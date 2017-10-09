@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.terms.TermsBag;
+import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import java.nio.ByteBuffer;
@@ -74,8 +74,8 @@ public class ConceptDictionaryLoader extends DataLoader<ConceptDictionary> {
         dumpToMap(lowercaseDB, lowercasePhrases, String::new);
 
         LOGGER.info("Loading concepts phrases into memory.");
-        final Map<TermsBag, List<SuiCuiTui>> normDictionary = new HashMap<>();
-        dumpToMap(normsDB, normDictionary, TermsBag::new);
+        final Map<StringsBag, List<SuiCuiTui>> normDictionary = new HashMap<>();
+        dumpToMap(normsDB, normDictionary, StringsBag::new);
 
         LOGGER.info("Done loading concepts into memory.");
 
@@ -94,7 +94,7 @@ public class ConceptDictionaryLoader extends DataLoader<ConceptDictionary> {
 
           @Override
           @Nullable
-          public List<SuiCuiTui> forNorms(TermsBag norms) {
+          public List<SuiCuiTui> forNorms(StringsBag norms) {
             if (norms.uniqueTerms() == 0) {
               return null;
             }
