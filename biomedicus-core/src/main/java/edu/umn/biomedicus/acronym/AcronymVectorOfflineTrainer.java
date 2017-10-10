@@ -97,6 +97,10 @@ public class AcronymVectorOfflineTrainer {
   @Nullable
   private PhraseGraph phraseGraph;
 
+  private long total = 0;
+
+  private long visited = 0;
+
   /**
    * Initialize the trainer: read in possible acronym expansions
    *
@@ -177,8 +181,13 @@ public class AcronymVectorOfflineTrainer {
     String alternateLongformsFile = args.length > 4 ? args[4] : null;
     AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile, nWords,
         alternateLongformsFile);
+    trainer.countDocuments(corpusPath);
     trainer.trainOnCorpus(corpusPath);
     trainer.writeAcronymModel(outDir);
+  }
+
+  private void countDocuments(String corpusPath) throws IOException {
+    total = Files.walk(Paths.get(corpusPath)).count();
   }
 
   /**
@@ -192,6 +201,7 @@ public class AcronymVectorOfflineTrainer {
     if (vectorSpace == null) {
       precountWords(corpusPath);
     }
+    visited = 0;
     Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(true));
   }
 
@@ -206,6 +216,7 @@ public class AcronymVectorOfflineTrainer {
     vectorSpace = new WordVectorSpace();
     wordFrequency = new HashMap<>();
 
+    visited = 0;
     Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(false));
 
     TreeSet<String> sortedWordFreq = new TreeSet<>(new ByValue<>(wordFrequency));
@@ -449,7 +460,12 @@ public class AcronymVectorOfflineTrainer {
         reader.close();
       }
 
-      LOGGER.info(file + " visited");
+      LOGGER.trace(file + " visited");
+
+      visited++;
+      if (visited % 1000 == 0) {
+        LOGGER.info("Visited {} of {}", visited, total);
+      }
 
       return FileVisitResult.CONTINUE;
     }
