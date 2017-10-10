@@ -33,7 +33,7 @@ interface AcronymModel {
 
   boolean hasAcronym(Token token);
 
-  String findBestSense(List<Token> allTokens, int forTokenIndex);
+  String findBestSense(List<? extends Token> allTokens, int forTokenIndex);
 
   /**
    * For deidentification: remove a single word from the model entirely

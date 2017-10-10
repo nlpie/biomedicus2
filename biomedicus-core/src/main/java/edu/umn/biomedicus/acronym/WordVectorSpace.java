@@ -188,7 +188,7 @@ public class WordVectorSpace {
    * @param startCenterToken the index of the first token of the term of interest
    * @param stopCenterToken the token index following the term of interest
    */
-  SparseVector vectorize(List<Token> context, int startCenterToken, int stopCenterToken) {
+  SparseVector vectorize(List<? extends Token> context, int startCenterToken, int stopCenterToken) {
 
     Map<Integer, Double> wordVector = new HashMap<>();
 
@@ -227,7 +227,7 @@ public class WordVectorSpace {
     return new SparseVector(wordVector);
   }
 
-  public SparseVector vectorize(List<Token> context, int centerToken) {
+  public SparseVector vectorize(List<? extends Token> context, int centerToken) {
     return vectorize(context, centerToken, centerToken + 1);
   }
 

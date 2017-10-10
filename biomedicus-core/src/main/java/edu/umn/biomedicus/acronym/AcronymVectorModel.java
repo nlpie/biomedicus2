@@ -123,7 +123,7 @@ class AcronymVectorModel implements AcronymModel {
    * @param forThisIndex an integer specifying the index of the acronym
    */
   @Override
-  public String findBestSense(List<Token> context, int forThisIndex) {
+  public String findBestSense(List<? extends Token> context, int forThisIndex) {
 
     String acronym = Acronyms.standardAcronymForm(context.get(forThisIndex));
 
@@ -235,6 +235,7 @@ class AcronymVectorModel implements AcronymModel {
   @Singleton
   static class Loader extends DataLoader<AcronymVectorModel> {
 
+    @Nullable
     private final Provider<AlignmentModel> alignmentModel;
 
     private final Path vectorSpacePath;
@@ -250,7 +251,7 @@ class AcronymVectorModel implements AcronymModel {
 
     @Inject
     public Loader(
-        Provider<AlignmentModel> alignmentModel,
+        @Nullable Provider<AlignmentModel> alignmentModel,
         @Setting("acronym.useAlignment") Boolean useAlignment,
         @Setting("acronym.vector.model.path") Path vectorSpacePath,
         @Setting("acronym.senseMap.path") Path senseMapPath,
@@ -275,7 +276,7 @@ class AcronymVectorModel implements AcronymModel {
         WordVectorSpace wordVectorSpace = (WordVectorSpace) yaml
             .load(Files.newBufferedReader(vectorSpacePath));
 
-        LOGGER.info("Loading acronym sense map: {}. inMemory: {}", senseMapPath, sensesInMemory);
+        LOGGER.info("Loading acronym sense map: {}. inMemory = {}", senseMapPath, sensesInMemory);
         SenseVectors senseVectors = new RocksDBSenseVectors(senseMapPath, false)
             .inMemory(sensesInMemory);
 

@@ -32,7 +32,8 @@ settings:
     db.path: normalization
     inMemory: no
   acronym:
-    useAlignment: false
+    checkParseTokens: no
+    useAlignment: no
     expansionsModel.path: acronym/expansions.txt
     alignmentModel.path: acronym-alignment/alignment.yml
     model: vector
