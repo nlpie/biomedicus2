@@ -45,7 +45,7 @@ public class RocksDBSenseVectors implements SenseVectors {
     RocksDB.loadLibrary();
 
     if (forWriting) {
-      try (Options options = new Options().prepareForBulkLoad()) {
+      try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
         rocksDB = RocksDB.open(options, path.toString());
       } catch (RocksDBException e) {
         throw new RuntimeException(e);
