@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,6 +238,7 @@ public class WordVectorSpace {
    * @param word a string of the word to be removed
    * @return the integer index of the word removed (null if it was not present)
    */
+  @Nullable
   public Integer removeWord(String word) {
     LOGGER.info("removing word {}", word);
     Integer wordInt = dictionary.remove(word);
