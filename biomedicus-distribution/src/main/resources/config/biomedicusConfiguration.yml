@@ -29,8 +29,8 @@ settings:
     model: fileBased
     fileBased.path: stopwords/PubMedStopwords.txt
   normalization:
-    db.path: normalization.db
-    inMemory: yes
+    db.path: normalization
+    inMemory: no
   acronym:
     useAlignment: false
     expansionsModel.path: acronym/expansions.txt
