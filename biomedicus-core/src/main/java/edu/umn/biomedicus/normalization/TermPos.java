@@ -18,17 +18,18 @@ package edu.umn.biomedicus.normalization;
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import java.io.Serializable;
+import java.nio.ByteBuffer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A storage / hash map key object that is a tuple of a term and a
- * part of speech.
+ * A storage / hash map key object that is a tuple of a term and a part of speech.
  *
  * @author Ben Knoll
  * @since 1.7.0
  */
-final class TermPos implements Serializable, Comparable<TermPos> {
+final class TermPos implements Comparable<TermPos> {
+
+  private static final int BYTES = Integer.BYTES * 2;
 
   private final int indexedTerm;
 
@@ -38,6 +39,12 @@ final class TermPos implements Serializable, Comparable<TermPos> {
       PartOfSpeech partOfSpeech) {
     this.indexedTerm = termIdentifier.value();
     this.partOfSpeech = partOfSpeech;
+  }
+
+  TermPos(byte[] bytes) {
+    ByteBuffer wrap = ByteBuffer.wrap(bytes);
+    indexedTerm = wrap.getInt();
+    partOfSpeech = PartOfSpeech.values()[wrap.getInt()];
   }
 
   StringIdentifier getIndexedTerm() {
@@ -79,5 +86,9 @@ final class TermPos implements Serializable, Comparable<TermPos> {
       return compare;
     }
     return partOfSpeech.compareTo(o.partOfSpeech);
+  }
+
+  byte[] getBytes() {
+    return ByteBuffer.allocate(BYTES).putInt(indexedTerm).putInt(partOfSpeech.ordinal()).array();
   }
 }

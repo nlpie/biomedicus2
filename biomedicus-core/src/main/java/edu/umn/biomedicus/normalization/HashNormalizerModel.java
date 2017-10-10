@@ -16,22 +16,33 @@
 
 package edu.umn.biomedicus.normalization;
 
-import com.google.inject.ProvidedBy;
-import edu.umn.biomedicus.framework.LifecycleManaged;
+import edu.umn.biomedicus.exc.BiomedicusException;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Interface for a normalizer model.
+ * Provides a hash map backed normalizer model.
+ *
+ * @author Ben Knoll
+ * @since 1.8.0
  */
-@ProvidedBy(NormalizerModelLoader.class)
-public interface NormalizerModel extends LifecycleManaged {
+final class HashNormalizerModel implements NormalizerModel {
 
-  /**
-   * Gets the term index identifier and its string form
-   *
-   * @param termPos the term and part of speech
-   * @return the term and string
-   */
+  private final Map<TermPos, TermString> normalizationMap;
+
+  HashNormalizerModel(Map<TermPos, TermString> normalizationMap) {
+    this.normalizationMap = normalizationMap;
+  }
+
+  @Override
   @Nullable
-  TermString get(TermPos termPos);
+  public TermString get(TermPos termPos) {
+    return normalizationMap.get(termPos);
+  }
+
+  @Override
+  public void doShutdown() throws BiomedicusException {
+
+  }
+
 }

@@ -17,18 +17,29 @@
 package edu.umn.biomedicus.normalization;
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A payload tuple containing a term and a string;
  */
-final class TermString implements Serializable {
+final class TermString {
+
   private final int term;
+
   private final String string;
 
   TermString(StringIdentifier term, String string) {
     this.term = term.value();
     this.string = string;
+  }
+
+  TermString(byte[] bytes) {
+    ByteBuffer wrap = ByteBuffer.wrap(bytes);
+    term = wrap.getInt();
+    byte[] stringBytes = new byte[wrap.remaining()];
+    wrap.get(stringBytes);
+    string = new String(stringBytes, StandardCharsets.UTF_8);
   }
 
   StringIdentifier getTerm() {
@@ -61,5 +72,13 @@ final class TermString implements Serializable {
     int result = term;
     result = 31 * result + string.hashCode();
     return result;
+  }
+
+  byte[] getBytes() {
+    byte[] stringBytes = string.getBytes(StandardCharsets.UTF_8);
+    return ByteBuffer.allocate(stringBytes.length + Integer.BYTES)
+        .putInt(term)
+        .put(stringBytes)
+        .array();
   }
 }

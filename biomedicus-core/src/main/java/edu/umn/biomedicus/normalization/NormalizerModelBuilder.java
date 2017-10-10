@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -38,9 +39,9 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.PathOptionHandler;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.Serializer;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,16 +160,12 @@ public final class NormalizerModelBuilder {
     } catch (IOException e) {
       System.out.println("Failed to delete an existing db at location: " + dbPath.toString());
       e.printStackTrace();
+      return;
     }
 
-    DB db = DBMaker.fileDB(dbPath.toFile()).make();
+    Map<TermPos, TermString> builder = new TreeMap<>();
 
-    @SuppressWarnings("unchecked")
-    Map<TermPos, TermString> norms =  (Map<TermPos, TermString>) db
-        .treeMap("norms", Serializer.JAVA, Serializer.JAVA).create();
-    NormalizerModel builder = new NormalizerModel(norms, db);
-
-    Pattern exclusionPattern = Pattern.compile(".*[\\|\\$#,@;:<>\\?\\[\\]\\{\\}\\d\\.].*");
+    Pattern exclusionPattern = Pattern.compile(".*[|$#,@;:<>?\\[\\]{}\\d.].*");
 
     Files.lines(lragrPath)
         .map(line -> line.split("\\|"))
@@ -194,22 +191,32 @@ public final class NormalizerModelBuilder {
             }
 
             if (pennPos != null) {
-              builder.add(termIdentifier, pennPos,
-                  normsIndex.getTermIdentifier(baseForm), baseForm);
+              builder.put(new TermPos(termIdentifier, pennPos),
+                  new TermString(normsIndex.getTermIdentifier(baseForm), baseForm));
             }
 
             PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
             if (fallbackPos != null) {
-              builder.add(termIdentifier, fallbackPos,
-                  normsIndex.getTermIdentifier(baseForm), baseForm);
+              builder.put(new TermPos(termIdentifier, fallbackPos),
+                  new TermString(normsIndex.getTermIdentifier(baseForm), baseForm));
             }
           }
         });
 
-    try {
-      builder.doShutdown();
-    } catch (BiomedicusException e) {
-      e.printStackTrace();
+    RocksDB.loadLibrary();
+
+    try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
+      try (RocksDB rocksDB = RocksDB.open(options, dbPath.toString())) {
+        builder.forEach((tp, ts) -> {
+          try {
+            rocksDB.put(tp.getBytes(), ts.getBytes());
+          } catch (RocksDBException e) {
+            throw new RuntimeException(e);
+          }
+        });
+      } catch (RocksDBException e) {
+        e.printStackTrace();
+      }
     }
   }
 
