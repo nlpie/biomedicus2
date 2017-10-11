@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTermModifier;
@@ -25,12 +25,16 @@ import edu.umn.biomedicus.common.types.semantics.Historical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
 import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
 import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
+import edu.umn.biomedicus.measures.CandidateUnitOfMeasure;
+import edu.umn.biomedicus.measures.ImmutableNumber;
 import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
 import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.Negated;
+import edu.umn.biomedicus.measures.Number;
+import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
 import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
@@ -123,6 +127,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(Cell.class, CellLabelAdapter::new);
     map.put(NestedRow.class, NestedRowLabelAdapter::new);
     map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
+    map.put(Number.class, NumberLabelAdapter::new);
+    map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
     return map;
   }
 
@@ -451,13 +457,13 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     protected void fillAnnotation(Label<WordIndex> label,
         AnnotationFS annotationFS) {
       annotationFS.setIntValue(indexFeature,
-          label.value().term().termIdentifier());
+          label.value().term().value());
     }
 
     @Override
     protected WordIndex createLabelValue(FeatureStructure featureStructure) {
       return ImmutableWordIndex.builder()
-          .term(new IndexedTerm(
+          .term(new StringIdentifier(
               featureStructure.getIntValue(indexFeature)))
           .build();
     }
@@ -491,8 +497,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Override
     protected NormForm createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableNormForm.builder().normalForm(
-          featureStructure.getStringValue(normFormFeature))
+      return ImmutableNormForm.builder()
+          .normalForm(featureStructure.getStringValue(normFormFeature))
           .normTermIdentifier(featureStructure.getIntValue(indexFeature))
           .build();
     }
@@ -518,12 +524,12 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     protected void fillAnnotation(Label<NormIndex> label,
         AnnotationFS annotationFS) {
       annotationFS.setIntValue(indexFeature,
-          label.value().term().termIdentifier());
+          label.value().term().value());
     }
 
     @Override
     protected NormIndex createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableNormIndex.builder().term(new IndexedTerm(
+      return ImmutableNormIndex.builder().term(new StringIdentifier(
           featureStructure.getIntValue(indexFeature))).build();
     }
 
@@ -741,6 +747,55 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected NestedCell createLabelValue(FeatureStructure featureStructure) {
       return new NestedCell();
+    }
+  }
+
+  public static class NumberLabelAdapter extends AbstractLabelAdapter<Number> {
+
+    private final Feature numFeature;
+    private final Feature denomFeature;
+    private final Feature typeFeature;
+
+    NumberLabelAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_8.Number"));
+      numFeature = cas.getTypeSystem()
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:numerator");
+      denomFeature = cas.getTypeSystem()
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:denominator");
+      typeFeature = cas.getTypeSystem()
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:type");
+
+    }
+
+    @Override
+    protected Number createLabelValue(FeatureStructure featureStructure) {
+      String value = featureStructure.getStringValue(numFeature);
+      String denom = featureStructure.getStringValue(denomFeature);
+      NumberType numberType = NumberType.valueOf(featureStructure.getStringValue(typeFeature));
+      return ImmutableNumber.builder().numerator(value).denominator(denom).numberType(numberType)
+          .build();
+    }
+
+    @Override
+    protected void fillAnnotation(Label<Number> label, AnnotationFS annotationFS) {
+      Number number = label.value();
+
+      annotationFS.setStringValue(numFeature, number.numerator());
+      annotationFS.setStringValue(denomFeature, number.denominator());
+      annotationFS.setStringValue(typeFeature, number.numberType().name());
+    }
+  }
+
+  public static class CanididateUnitOfMeasureAdapter extends AbstractLabelAdapter<CandidateUnitOfMeasure> {
+
+    CanididateUnitOfMeasureAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem()
+          .getType("edu.umn.biomedicus.uima.type1_8.CandidateUnitOfMeasure"));
+    }
+
+    @Override
+    protected CandidateUnitOfMeasure createLabelValue(FeatureStructure featureStructure) {
+      return new CandidateUnitOfMeasure();
     }
   }
 }

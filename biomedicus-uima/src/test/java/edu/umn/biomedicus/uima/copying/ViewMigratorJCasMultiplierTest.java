@@ -21,6 +21,8 @@ import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -45,13 +47,25 @@ public class ViewMigratorJCasMultiplierTest {
   UimaContext aContext;
 
   @Mocked
-  Iterator<JCas> viewIterator;
-
-  @Mocked
   ViewCopier viewCopier;
 
   @Mocked
   MockViewMigrator viewMigrator;
+
+  @Injectable JCas aJCas;
+
+  @Injectable JCas newCas;
+
+  @Injectable JCas sourceView;
+  @Injectable JCas targetView;
+  @Injectable JCas otherView;
+  @Injectable JCas otherTargetView;
+  @Injectable JCas otherView2;
+  @Injectable JCas otherTargetView2;
+  @Injectable JCas initialView;
+  @Injectable JCas initialViewCopy;
+
+  @Injectable JCas sourceViewCopy;
 
   @Test
   public void testSetsParameterValues() throws Exception {
@@ -77,19 +91,14 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testHasNext(@Injectable JCas aJCas, @Injectable JCas newCas) throws Exception {
+  public void testHasNext() throws Exception {
 
     new Expectations() {{
-      aContext.getConfigParameterValue("sourceViewName");
-      result = "sourceView";
-      aContext.getConfigParameterValue("targetViewName");
-      result = "targetView";
-      aContext.getConfigParameterValue("deleteOriginalView");
-      result = false;
-      aContext.getConfigParameterValue("viewMigratorClass");
-      result = MockViewMigrator.class.getCanonicalName();
-      aContext.getEmptyCas(JCas.class);
-      result = newCas;
+      aContext.getConfigParameterValue("sourceViewName"); result = "sourceView";
+      aContext.getConfigParameterValue("targetViewName"); result = "targetView";
+      aContext.getConfigParameterValue("deleteOriginalView"); result = false;
+      aContext.getConfigParameterValue("viewMigratorClass"); result = MockViewMigrator.class.getCanonicalName();
+      aContext.getEmptyCas(JCas.class); result = newCas;
     }};
     viewMigratorJCasMultiplier.initialize(aContext);
     viewMigratorJCasMultiplier.process(aJCas);
@@ -102,11 +111,7 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testProcessKeepOriginal(@Injectable JCas aJCas,
-      @Injectable JCas newCas,
-      @Injectable JCas sourceView,
-      @Injectable JCas sourceViewCopy,
-      @Injectable JCas targetView) throws Exception {
+  public void testProcessKeepOriginal() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";
@@ -117,23 +122,13 @@ public class ViewMigratorJCasMultiplierTest {
       aContext.getConfigParameterValue("viewMigratorClass");
       result = MockViewMigrator.class.getCanonicalName();
 
-      aContext.getEmptyCas(JCas.class);
-      result = newCas;
-      aJCas.getViewIterator();
-      result = viewIterator;
-      viewIterator.hasNext();
-      result = new boolean[]{true, false};
-      times = 2;
-      viewIterator.next();
-      result = sourceView;
+      aContext.getEmptyCas(JCas.class); result = newCas;
+      aJCas.getViewIterator(); result = Collections.singletonList(sourceView).iterator();
 
-      sourceView.getViewName();
-      result = "sourceView";
+      sourceView.getViewName(); result = "sourceView";
 
-      onInstance(newCas).createView("sourceView");
-      result = sourceViewCopy;
-      onInstance(newCas).createView("targetView");
-      result = targetView;
+      newCas.createView("sourceView"); result = sourceViewCopy;
+      newCas.createView("targetView"); result = targetView;
 
       new ViewCopier();
       result = viewCopier;
@@ -149,10 +144,39 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testProcessDeleteOriginal(@Injectable JCas aJCas,
-      @Injectable JCas newCas,
-      @Injectable JCas sourceView,
-      @Injectable JCas targetView) throws Exception {
+  public void testProcessDeleteOriginal() throws Exception {
+    new Expectations() {{
+      aContext.getConfigParameterValue("sourceViewName");
+      result = "sourceView";
+      aContext.getConfigParameterValue("targetViewName");
+      result = "targetView";
+      aContext.getConfigParameterValue("deleteOriginalView");
+      result = true;
+      aContext.getConfigParameterValue("viewMigratorClass");
+      result = MockViewMigrator.class.getCanonicalName();
+      aContext.getEmptyCas(JCas.class);
+      result = newCas;
+      aJCas.getViewIterator(); result = Collections.singletonList(sourceView).iterator();
+
+      sourceView.getViewName();
+      result = "sourceView";
+
+      newCas.createView("targetView"); result = targetView;
+    }};
+    viewMigratorJCasMultiplier.initialize(aContext);
+    viewMigratorJCasMultiplier.process(aJCas);
+    assertNotNull(viewMigratorJCasMultiplier.next());
+
+    new Verifications() {{
+      new ViewCopier(); times = 0;
+      newCas.createView("sourceView"); times = 0;
+      viewMigrator.migrate(sourceView, targetView); times = 1;
+      viewCopier.migrate(withAny(aJCas), withAny(aJCas)); times = 0;
+    }};
+  }
+
+  @Test
+  public void testProcessMultiview() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";
@@ -165,84 +189,28 @@ public class ViewMigratorJCasMultiplierTest {
       aContext.getEmptyCas(JCas.class);
       result = newCas;
       aJCas.getViewIterator();
-      result = viewIterator;
-      viewIterator.hasNext();
-      result = new boolean[]{true, false};
-      times = 2;
-      viewIterator.next();
-      result = sourceView;
+      result = Arrays.asList(sourceView, otherView, otherView2, initialView).iterator();
 
       sourceView.getViewName();
       result = "sourceView";
-
-      onInstance(newCas).createView("targetView");
-      result = targetView;
-    }};
-    viewMigratorJCasMultiplier.initialize(aContext);
-    viewMigratorJCasMultiplier.process(aJCas);
-    assertNotNull(viewMigratorJCasMultiplier.next());
-
-    new Verifications() {{
-      new ViewCopier();
-      times = 0;
-      onInstance(newCas).createView("sourceView");
-      times = 0;
-      viewMigrator.migrate(sourceView, targetView);
-      times = 1;
-      viewCopier.migrate(withAny(aJCas), withAny(aJCas));
-      times = 0;
-    }};
-  }
-
-  @Test
-  public void testProcessMultiview(@Injectable JCas aJCas,
-      @Injectable JCas newCas,
-      @Injectable JCas sourceView,
-      @Injectable JCas targetView,
-      @Injectable JCas otherView,
-      @Injectable JCas otherTargetView,
-      @Injectable JCas otherView2,
-      @Injectable JCas otherTargetView2,
-      @Injectable JCas initialView,
-      @Injectable JCas initialViewCopy) throws Exception {
-    new Expectations() {{
-      aContext.getConfigParameterValue("sourceViewName");
-      result = "sourceView";
-      aContext.getConfigParameterValue("targetViewName");
-      result = "targetView";
-      aContext.getConfigParameterValue("deleteOriginalView");
-      result = true;
-      aContext.getConfigParameterValue("viewMigratorClass");
-      result = MockViewMigrator.class.getCanonicalName();
-      aContext.getEmptyCas(JCas.class);
-      result = newCas;
-      onInstance(aJCas).getViewIterator();
-      result = viewIterator;
-      viewIterator.hasNext();
-      result = new boolean[]{true, true, true, true, false};
-      viewIterator.next();
-      returns(sourceView, otherView, otherView2, initialView);
-
-      onInstance(sourceView).getViewName();
-      result = "sourceView";
-      onInstance(otherView).getViewName();
+      otherView.getViewName();
       result = "other1";
-      onInstance(otherView2).getViewName();
+      otherView2.getViewName();
       result = "other2";
-      onInstance(initialView).getViewName();
+      initialView.getViewName();
       result = "_InitialView";
 
       new ViewCopier();
       result = viewCopier;
       times = 3;
 
-      onInstance(newCas).createView("targetView");
+      newCas.createView("targetView");
       result = targetView;
-      onInstance(newCas).createView("other1");
+      newCas.createView("other1");
       result = otherTargetView;
-      onInstance(newCas).createView("other2");
+      newCas.createView("other2");
       result = otherTargetView2;
-      onInstance(newCas).getView("_InitialView");
+      newCas.getView("_InitialView");
       result = initialViewCopy;
     }};
 
@@ -251,7 +219,7 @@ public class ViewMigratorJCasMultiplierTest {
     assertNotNull(viewMigratorJCasMultiplier.next());
 
     new Verifications() {{
-      onInstance(newCas).createView("_InitialView");
+      newCas.createView("_InitialView");
       times = 0;
       viewMigrator.migrate(sourceView, targetView);
       viewCopier.migrate(otherView, otherTargetView);

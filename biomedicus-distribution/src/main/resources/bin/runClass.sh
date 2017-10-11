@@ -12,7 +12,7 @@ if [ "x$BIOMEDICUS_LOG4J_CONF" = "x" ]; then
 fi
 
 JAVA_OPTS="$JAVA_OPTS -Dbiomedicus.paths.home=$BIOMEDICUS_HOME"
-JAVA_OPTS="$JAVA_OPTS -Xmx12g"
+[ -n "${BIOMEDICUS_XMX}" ] && JAVA_OPTS="$JAVA_OPTS -Xmx$BIOMEDICUS_XMX"
 JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=$BIOMEDICUS_LOG4J_CONF"
 JAVA_OPTS="$JAVA_OPTS -Dorg.apache.uima.logger.class=org.apache.uima.util.impl.Log4jLogger_impl"
 

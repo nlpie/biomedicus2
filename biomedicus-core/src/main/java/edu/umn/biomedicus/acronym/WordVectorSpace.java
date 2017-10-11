@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +71,7 @@ public class WordVectorSpace {
   private transient double maxDist;
 
   /**
-   * The actual size of the window; past threshWeight, we won't even consider words
+   * The actual uniqueTerms of the window; past threshWeight, we won't even consider words
    */
   private transient double windowSize;
 
@@ -187,7 +188,7 @@ public class WordVectorSpace {
    * @param startCenterToken the index of the first token of the term of interest
    * @param stopCenterToken the token index following the term of interest
    */
-  SparseVector vectorize(List<Token> context, int startCenterToken, int stopCenterToken) {
+  SparseVector vectorize(List<? extends Token> context, int startCenterToken, int stopCenterToken) {
 
     Map<Integer, Double> wordVector = new HashMap<>();
 
@@ -226,7 +227,7 @@ public class WordVectorSpace {
     return new SparseVector(wordVector);
   }
 
-  public SparseVector vectorize(List<Token> context, int centerToken) {
+  public SparseVector vectorize(List<? extends Token> context, int centerToken) {
     return vectorize(context, centerToken, centerToken + 1);
   }
 
@@ -237,6 +238,7 @@ public class WordVectorSpace {
    * @param word a string of the word to be removed
    * @return the integer index of the word removed (null if it was not present)
    */
+  @Nullable
   public Integer removeWord(String word) {
     LOGGER.info("removing word {}", word);
     Integer wordInt = dictionary.remove(word);

@@ -22,7 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.migration.MigratorEngine
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>Migrate 1.6 to 1.7</name>
     <description>Migrates XMI in the 1.6 type system to the 1.7 type system</description>

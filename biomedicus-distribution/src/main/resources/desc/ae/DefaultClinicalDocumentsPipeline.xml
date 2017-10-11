@@ -28,6 +28,9 @@
     <delegateAnalysisEngine key="parseTokens">
       <import location="annotator/syntax/PennLikeTokenizer.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="numbers">
+      <import location="annotator/lexical/NumberRecognizer.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="words">
       <import location="annotator/lexical/WordLabeler.xml"/>
     </delegateAnalysisEngine>
@@ -59,6 +62,7 @@
         <node>sentence</node>
         <node>section</node>
         <node>parseTokens</node>
+        <node>numbers</node>
         <node>words</node>
         <node>posAnnotator</node>
         <node>normalizer</node>

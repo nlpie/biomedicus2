@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * A single processing artifact and all the data that it contains
+ * A single processing artifact and all the data that it contains. Contains individual text views
+ * containing the text associated with a document and all of the label indexes containing labeled
+ * types.
  *
  * @since 1.6.0
  */

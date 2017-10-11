@@ -23,7 +23,7 @@ public class VocabularyModule extends AbstractModule {
   @Override
   protected void configure() {
     bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
-    bind(VocabularyStore.class).to(MapDbVocabStore.class);
-    bind(VocabularyBuilder.class).to(MapDbVocabularyBuilder.class);
+    bind(VocabularyStore.class).to(RocksDbVocabStore.class);
+    bind(VocabularyBuilder.class).to(RocksDbVocabularyBuilder.class);
   }
 }

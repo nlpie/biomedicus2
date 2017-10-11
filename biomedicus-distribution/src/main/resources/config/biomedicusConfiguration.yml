@@ -5,26 +5,35 @@ paths:
 # settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
   vocabulary:
-    db.path: vocabulary.db
-    inMemory: yes
+    db.path: vocabulary
+    inMemory: no
   spelling:
     arpa.path: spell/UPMC.arpa
     maxEditDistance: 4
+  measures:
+    numbers:
+      nrnumPath: measures/NRNUM
+      nrvarPath: measures/NRVAR
+      includeFractions: yes
+      includePercent: no
+    units:
+      modelPath: measures/concepts.tsv
   tnt:
     trigram.path: tnt/trigram.yml
     word:
-      inMemory: yes
-      dbPath: tnt/words.db
+      inMemory: no
+      dbPath: tnt/words
       metadataPath: tnt/wordMetadata.yml
     beam.threshold: 2.0
   stopwords:
     model: fileBased
     fileBased.path: stopwords/PubMedStopwords.txt
   normalization:
-    db.path: normalization.db
-    inMemory: yes
+    db.path: normalization
+    inMemory: no
   acronym:
-    useAlignment: false
+    checkParseTokens: yes
+    useAlignment: no
     expansionsModel.path: acronym/expansions.txt
     alignmentModel.path: acronym-alignment/alignment.yml
     model: vector
@@ -35,14 +44,16 @@ settings:
         uniqueIdMap.path: REPLACE_ME_PATH_TO
         longforms.path: REPLACE_ME_PATH_TO
         outputDir.path: REPLACE_ME_PATH_TO
-    senseMap.path: acronym/senseMap.ser
+    senseMap:
+      path: acronym/senseVectors
+      inMemory: no
     orthographicModel.path: acronym-orthographic/orthographicModel.yml
   semanticNetwork:
     srdef.path: semnetwork/SRDEF
     semgroups.path: semnetwork/SemGroups.txt
   concepts:
     db.path: concepts
-    inMemory: yes
+    inMemory: no
     filters:
       sui.path: conceptFilters/filteredSuis.txt
       suicui.path: conceptFilters/filteredSuiCuis.txt
@@ -55,7 +66,7 @@ settings:
       model.path: opennlp/sentence.bin
       trainerOutputDirectory: opennlp/sentence-out.bin
   syntaxnet:
-    installationDir.path: /Users/wang2258/Projects/GoogleParser/models/syntaxnet
+    installationDir.path: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface
   specialist.path: SPECIALIST/LEX
   modification:

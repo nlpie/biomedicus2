@@ -52,7 +52,7 @@ public class BiomedicusException extends Exception {
    * @param args arguments
    */
   public BiomedicusException(String message, String... args) {
-    super(String.format(message, args));
+    super(String.format(message, (Object[]) args));
   }
 
   public BiomedicusException(String message, Throwable cause) {

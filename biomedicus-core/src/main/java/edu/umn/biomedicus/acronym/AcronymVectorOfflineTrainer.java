@@ -29,6 +29,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -38,12 +39,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
 
 /**
  * Trains an AcronymVectorModel based on text.
@@ -59,24 +63,43 @@ public class AcronymVectorOfflineTrainer {
   public final static int DEFAULT_N_WORDS = 100000;
 
   private final static Logger LOGGER = LoggerFactory.getLogger(AcronymVectorOfflineTrainer.class);
+
   private final static String TEXTBREAK = "[^\\w\\-/]+";
+
   private final static Pattern initialJunk = Pattern.compile("^\\W+");
+
   private final static Pattern finalJunk = Pattern.compile("\\W+$");
+
   // Stop counting words after so many bytes (should have a good idea of the top nWords by this point)
   private static final long maxBytesToCountWords = 5000000000L;
+
   final AcronymExpansionsModel aem;
+
   private final Map<String, Set<String>> alternateFormOf;
+
   // Only use these most common words
   private final int nWords;
+
+  @Nullable
   WordVectorSpace vectorSpace;
-  // todo: make this settable?
+
   private boolean ignoreDoubleAlternates = false;
+
+  @Nullable
   private Map<String, SparseVector> senseVectors;
+
+  @Nullable
   private Map<String, Integer> wordFrequency;
+
   private long bytesWordCounted = 0;
 
   // Directed graph that contains all phrases and is used
+  @Nullable
   private PhraseGraph phraseGraph;
+
+  private long total = 0;
+
+  private long visited = 0;
 
   /**
    * Initialize the trainer: read in possible acronym expansions
@@ -85,18 +108,19 @@ public class AcronymVectorOfflineTrainer {
    * AcronymExpansionsBuilder)
    */
   public AcronymVectorOfflineTrainer(String expansionsFile, int nWords,
-      String alternateLongformsFile) throws BiomedicusException, IOException {
+      @Nullable String alternateLongformsFile) throws BiomedicusException, IOException {
     this.nWords = nWords;
     // Get all possible acronym expansions and make vectors for each one
     aem = new AcronymExpansionsModel.Loader(Paths.get(expansionsFile)).loadModel();
     Set<String> allExpansions = new HashSet<>();
     for (String acronym : aem.getAcronyms()) {
-      if (aem.getExpansions(acronym).size() > 1) {
-        allExpansions.addAll(aem.getExpansions(acronym));
+      Collection<String> expansions = aem.getExpansions(acronym);
+      if (expansions != null && expansions.size() > 1) {
+        allExpansions.addAll(expansions);
       }
     }
     LOGGER.info(allExpansions.size() + " possible acronym expansions/senses");
-    senseVectors = new HashMap<>();
+    senseVectors = new TreeMap<>();
     for (String expansion : allExpansions) {
       senseVectors.put(expansion, new SparseVector());
     }
@@ -157,8 +181,13 @@ public class AcronymVectorOfflineTrainer {
     String alternateLongformsFile = args.length > 4 ? args[4] : null;
     AcronymVectorOfflineTrainer trainer = new AcronymVectorOfflineTrainer(expansionsFile, nWords,
         alternateLongformsFile);
+    trainer.countDocuments(corpusPath);
     trainer.trainOnCorpus(corpusPath);
     trainer.writeAcronymModel(outDir);
+  }
+
+  private void countDocuments(String corpusPath) throws IOException {
+    total = Files.walk(Paths.get(corpusPath)).count();
   }
 
   /**
@@ -172,6 +201,7 @@ public class AcronymVectorOfflineTrainer {
     if (vectorSpace == null) {
       precountWords(corpusPath);
     }
+    visited = 0;
     Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(true));
   }
 
@@ -186,9 +216,10 @@ public class AcronymVectorOfflineTrainer {
     vectorSpace = new WordVectorSpace();
     wordFrequency = new HashMap<>();
 
+    visited = 0;
     Files.walkFileTree(Paths.get(corpusPath), new FileVectorizer(false));
 
-    TreeSet<String> sortedWordFreq = new TreeSet<>(new ByValue(wordFrequency));
+    TreeSet<String> sortedWordFreq = new TreeSet<>(new ByValue<>(wordFrequency));
     sortedWordFreq.addAll(wordFrequency.keySet());
     Map<String, Integer> dictionary = new HashMap<>();
     Iterator<String> iter = sortedWordFreq.descendingIterator();
@@ -209,6 +240,11 @@ public class AcronymVectorOfflineTrainer {
    * @param outFile file to serialize vectors to
    */
   public void writeAcronymModel(String outFile) throws IOException {
+
+    assert vectorSpace != null;
+
+    assert senseVectors != null;
+
     vectorSpace.buildIdf();
     SparseVector idf = vectorSpace.getIdf();
     LOGGER.info("Creating vectors for senses");
@@ -223,14 +259,12 @@ public class AcronymVectorOfflineTrainer {
     }
     LOGGER.info(senseVectors.size() + " vectors total");
     LOGGER.info("initializing acronym vector model");
-    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, senseVectors, aem, null);
+    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, null, aem, null);
     // can help to do the GC before trying to serialize a big model
-    vectorSpace = null;
-    senseVectors = null;
 
     LOGGER.info("writing acronym vector model");
     Path outPath = Paths.get(outFile);
-    avm.writeToDirectory(outPath);
+    avm.writeToDirectory(outPath, senseVectors);
   }
 
   /**
@@ -253,6 +287,10 @@ public class AcronymVectorOfflineTrainer {
    * @param endPos array offset one after the end of the expansion (always >= startPos + 1)
    */
   private void vectorizeForWord(String expansion, List<Token> words, int startPos, int endPos) {
+    assert vectorSpace != null;
+
+    assert senseVectors != null;
+
     SparseVector vec = vectorSpace.vectorize(words, startPos, endPos);
     senseVectors.get(expansion).add(vec);
   }
@@ -261,7 +299,9 @@ public class AcronymVectorOfflineTrainer {
    * Go through a text file or chunk of text and vectorize for all found senses.
    */
   private void vectorizeChunk(String context) {
-    List<Token> words = Arrays.asList(tokenize(context)).stream().map(DummyToken::new)
+    assert phraseGraph != null;
+
+    List<Token> words = Arrays.stream(tokenize(context)).map(DummyToken::new)
         .collect(Collectors.toList());
     for (int i = 0; i < words.size(); i++) {
       String result = phraseGraph.getLongestPhraseFrom(words, i);
@@ -279,11 +319,13 @@ public class AcronymVectorOfflineTrainer {
    * Go through a chunk of text and count all the words in it
    */
   private void countChunk(String context) {
+    assert wordFrequency != null;
+
     String[] words = tokenize(context);
-    for (int i = 0; i < words.length; i++) {
-      Integer oldVal = wordFrequency.putIfAbsent(words[i], 1);
+    for (String word : words) {
+      Integer oldVal = wordFrequency.putIfAbsent(word, 1);
       if (oldVal != null) {
-        wordFrequency.put(words[i], oldVal + 1);
+        wordFrequency.put(word, oldVal + 1);
       }
     }
   }
@@ -292,6 +334,7 @@ public class AcronymVectorOfflineTrainer {
 
     private final Map<String, Object> graph;
 
+    @SuppressWarnings("unchecked")
     public PhraseGraph(Iterable<String> phrases, Function<String, String[]> tokenizer) {
       graph = new HashMap<>();
       for (String phrase : phrases) {
@@ -315,6 +358,8 @@ public class AcronymVectorOfflineTrainer {
      * @param index the index to start looking in that list
      * @return the longest possible phrase, or null if none found from this index
      */
+    @Nullable
+    @SuppressWarnings("unchecked")
     public String getLongestPhraseFrom(List<Token> words, int index) {
       String longestEligiblePhrase = null;
       Map<String, Object> lookup = graph;
@@ -387,7 +432,7 @@ public class AcronymVectorOfflineTrainer {
         char[] chunk = new char[10000000];
         long totalLength = 0;
         while (reader.read(chunk) > 0) {
-          String line = new String(chunk);
+          StringBuilder lineBuilder = new StringBuilder(new String(chunk));
           while (true) {
             // This could be sped up--reading bytes one at a time is fantastically slow
             int nextByte = reader.read();
@@ -395,8 +440,9 @@ public class AcronymVectorOfflineTrainer {
             if (nextByte < 0 || nextChar == ' ' || nextChar == '\t' || nextChar == '\n') {
               break;
             }
-            line += (char) nextByte;
+            lineBuilder.append((char) nextByte);
           }
+          String line = lineBuilder.toString();
           totalLength += line.length();
           if (vectorizeNotCount) {
             vectorizeChunk(line);
@@ -414,7 +460,12 @@ public class AcronymVectorOfflineTrainer {
         reader.close();
       }
 
-      LOGGER.info(file + " visited");
+      LOGGER.trace(file + " visited");
+
+      visited++;
+      if (visited % 1000 == 0) {
+        LOGGER.info("Visited {} of {}", visited, total);
+      }
 
       return FileVisitResult.CONTINUE;
     }
@@ -425,26 +476,24 @@ public class AcronymVectorOfflineTrainer {
    * Be sure that the values are Comparable (will probably be Integer or Double)
    * Created by gpfinley on 3/1/16.
    */
-  public class ByValue implements Comparator {
+  public class ByValue<K extends Comparable<K>, V extends Comparable<V>> implements Comparator<K> {
 
-    private Map map;
+    private Map<K, V> map;
 
-    public ByValue(Map map) {
+    public ByValue(Map<K, V> map) {
       this.map = map;
     }
 
-    public int compare(Object o1, Object o2) {
-      Comparable o1val = (Comparable) map.get(o1);
-      Comparable o2val = (Comparable) map.get(o2);
-      int cmp = o1val.compareTo(o2val);
-      if (cmp == 0) {
-        if (o1 instanceof Comparable) {
-          return ((Comparable) o1).compareTo(o2);
-        } else {
-          return 0;
-        }
+    @Override
+    public int compare(K o1, K o2) {
+      V v1 = map.get(o1);
+      V v2 = map.get(o2);
+      if (v1 == v2) {
+        return 0;
       }
-      return cmp;
+      int cmp = v1.compareTo(v2);
+      if (cmp != 0) return cmp;
+      return o1.compareTo(o2);
     }
   }
 

@@ -22,7 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.migration.MigratorEngine
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>MTSamples to 1.7.0</name>
     <description>Converts the MTSamples type system to the</description>

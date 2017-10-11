@@ -53,16 +53,17 @@ public class AggregatorUimaAdapter extends CasAnnotator_ImplBase {
   @Nullable
   private LabelAdapters labelAdapters;
 
+  @Nullable
+  private GuiceInjector guiceInjector;
+
   @Override
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
     super.initialize(aContext);
     try {
-
-      GuiceInjector guiceInjector = (GuiceInjector) aContext
-          .getResourceObject("guiceInjector");
+      guiceInjector = (GuiceInjector) aContext.getResourceObject("guiceInjector");
 
       aggregatorRunner = guiceInjector.createAggregatorRunner();
-      labelAdapters = guiceInjector.getInjector().getInstance(LabelAdapters.class);
+      labelAdapters = guiceInjector.attach().getInstance(LabelAdapters.class);
     } catch (ResourceAccessException e) {
       throw new ResourceInitializationException(e);
     }
@@ -122,6 +123,15 @@ public class AggregatorUimaAdapter extends CasAnnotator_ImplBase {
       aggregatorRunner.doneProcessing();
     } catch (BiomedicusException e) {
       throw new AnalysisEngineProcessException(e);
+    }
+  }
+
+  @Override
+  public void destroy() {
+    try {
+      guiceInjector.detach();
+    } catch (BiomedicusException e) {
+      LOGGER.error("Failed to detach from guice injector", e);
     }
   }
 }

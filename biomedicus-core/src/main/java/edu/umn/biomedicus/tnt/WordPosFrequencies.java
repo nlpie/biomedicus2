@@ -18,7 +18,6 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.utilities.Strings;
-import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -35,11 +34,12 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.1.0
  */
-class WordPosFrequencies implements Serializable {
+class WordPosFrequencies {
 
-  private static final long serialVersionUID = 5039280481312327401L;
   private final Map<String, Map<PartOfSpeech, Integer>> posFrequenciesForWord;
+
   private final Map<PartOfSpeech, Integer> overallPosFrequencies;
+
   private int totalWords;
 
   WordPosFrequencies(Map<String, Map<PartOfSpeech, Integer>> posFrequenciesForWord,

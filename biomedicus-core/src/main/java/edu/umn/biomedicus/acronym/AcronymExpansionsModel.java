@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ public class AcronymExpansionsModel {
     this.expansions = expansions;
   }
 
+  @Nullable
   Collection<String> getExpansions(String acronym) {
     return expansions.get(acronym);
   }

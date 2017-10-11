@@ -39,11 +39,12 @@ public class CasIndexListenerTest {
   @Injectable
   CAS originalDocumentView;
 
+  @Mocked Type type;
+  @Mocked Feature feature;
+  @Mocked AnnotationFS annotationFS;
+
   @Test
-  public void testWroteToDestination(@Mocked Type type,
-      @Mocked Feature feature,
-      @Mocked AnnotationFS annotationFS)
-      throws Exception {
+  public void testWroteToDestination() throws Exception {
     new Expectations() {{
       originalDocumentView.createAnnotation(type, 200, 201);
       result = annotationFS;

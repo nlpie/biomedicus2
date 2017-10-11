@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.common.types.text;
 
-import edu.umn.biomedicus.common.terms.IndexedTerm;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface WordIndex {
 
-  IndexedTerm term();
+  StringIdentifier term();
 }

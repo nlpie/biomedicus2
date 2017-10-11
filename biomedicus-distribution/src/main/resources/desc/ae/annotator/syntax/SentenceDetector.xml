@@ -22,8 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using the
-DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using the DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>Sentence Detector</name>
     <description>Detects sentences in text.</description>

@@ -22,7 +22,7 @@
   <annotatorImplementationName>
     edu.umn.biomedicus.uima.adapter.AggregatorUimaAdapter
   </annotatorImplementationName>
-  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapterator -->
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
     <name>Sentence Model Trainer</name>
     <description>Trains ONLP sentence detector</description>

@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * Provides the term indexes for the vocabulary.
@@ -29,26 +30,26 @@ abstract class VocabularyStore implements Closeable {
   /**
    * Opens the vocabulary store
    */
-  abstract void open();
+  abstract void open() throws IOException;
 
   /**
    * Gets the term index of words.
    *
    * @return the word index
    */
-  abstract TermIndex getWords();
+  abstract BidirectionalDictionary getWords();
 
   /**
    * Gets the term index of terms (one or more words with a single semantic meaning).
    *
    * @return the terms
    */
-  abstract TermIndex getTerms();
+  abstract BidirectionalDictionary getTerms();
 
   /**
    * Gets the term index of norms (normalized forms of words)
    *
    * @return term index of norms
    */
-  abstract TermIndex getNorms();
+  abstract BidirectionalDictionary getNorms();
 }

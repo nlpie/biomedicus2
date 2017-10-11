@@ -46,11 +46,11 @@ public class VectorModelDeidentifier {
     AcronymExpansionsModel aem = new AcronymExpansionsModel.Loader(Paths.get(expansionsModelPath))
         .loadModel();
     AcronymVectorModel avm = new AcronymVectorModel.Loader(null, false, Paths.get(vectorSpacePath),
-        Paths.get(senseMapPath), aem).loadModel();
+        Paths.get(senseMapPath), false, aem).loadModel();
 
     Set<String> keepWords = new HashSet<>(Files.readAllLines(Paths.get(keepWordsFile)));
     avm.removeWordsExcept(keepWords);
 
-    avm.writeToDirectory(Paths.get(outDir));
+    avm.writeToDirectory(Paths.get(outDir), null);
   }
 }

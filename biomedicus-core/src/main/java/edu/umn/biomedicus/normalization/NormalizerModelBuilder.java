@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.terms.IndexedTerm;
-import edu.umn.biomedicus.common.terms.TermIndex;
+import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
@@ -28,10 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -40,9 +39,9 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.PathOptionHandler;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.Serializer;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,9 +110,9 @@ public final class NormalizerModelBuilder {
     LRAGR_TO_PENN_FALLBACK = Collections.unmodifiableMap(builder);
   }
 
-  private final TermIndex normsIndex;
+  private final BidirectionalDictionary normsIndex;
 
-  private final TermIndex wordsIndex;
+  private final BidirectionalDictionary wordsIndex;
 
   @Nullable
   @Option(name = "-l", required = true, handler = PathOptionHandler.class,
@@ -147,7 +146,7 @@ public final class NormalizerModelBuilder {
     } catch (CmdLineException e) {
       System.err.println(e.getLocalizedMessage());
       System.err.println("java edu.umn.biomedicus.normalization.NormalizerModelBuilder "
-          + "-l path-to-lragr");
+          + "-l [path-to-lragr] [path-to-po");
       parser.printUsage(System.err);
       return;
     }
@@ -161,15 +160,12 @@ public final class NormalizerModelBuilder {
     } catch (IOException e) {
       System.out.println("Failed to delete an existing db at location: " + dbPath.toString());
       e.printStackTrace();
+      return;
     }
-    DB db = DBMaker.fileDB(dbPath.toFile()).make();
 
-    @SuppressWarnings("unchecked")
-    Map<TermPos, TermString> norms =  (Map<TermPos, TermString>) db
-        .treeMap("norms", Serializer.JAVA, Serializer.JAVA).create();
-    NormalizerModel builder = new NormalizerModel(norms, db);
+    Map<TermPos, TermString> builder = new TreeMap<>();
 
-    Pattern exclusionPattern = Pattern.compile(".*[\\|\\$#,@;:<>\\?\\[\\]\\{\\}\\d\\.].*");
+    Pattern exclusionPattern = Pattern.compile(".*[|$#,@;:<>?\\[\\]{}\\d.].*");
 
     Files.lines(lragrPath)
         .map(line -> line.split("\\|"))
@@ -189,28 +185,38 @@ public final class NormalizerModelBuilder {
 
           if (!inflectionalVariant.endsWith(baseForm)) {
             PartOfSpeech pennPos = LRAGR_TO_PENN.get(lragrPos);
-            IndexedTerm indexedTerm = wordsIndex.getIndexedTerm(inflectionalVariant);
-            if (indexedTerm.isUnknown()) {
+            StringIdentifier termIdentifier = wordsIndex.getTermIdentifier(inflectionalVariant);
+            if (termIdentifier.isUnknown()) {
               return;
             }
 
             if (pennPos != null) {
-              builder.add(indexedTerm, pennPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+              builder.put(new TermPos(termIdentifier, pennPos),
+                  new TermString(normsIndex.getTermIdentifier(baseForm), baseForm));
             }
 
             PartOfSpeech fallbackPos = LRAGR_TO_PENN_FALLBACK.get(lragrPos);
             if (fallbackPos != null) {
-              builder.add(indexedTerm, fallbackPos,
-                  normsIndex.getIndexedTerm(baseForm), baseForm);
+              builder.put(new TermPos(termIdentifier, fallbackPos),
+                  new TermString(normsIndex.getTermIdentifier(baseForm), baseForm));
             }
           }
         });
 
-    try {
-      builder.doShutdown();
-    } catch (BiomedicusException e) {
-      e.printStackTrace();
+    RocksDB.loadLibrary();
+
+    try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
+      try (RocksDB rocksDB = RocksDB.open(options, dbPath.toString())) {
+        builder.forEach((tp, ts) -> {
+          try {
+            rocksDB.put(tp.getBytes(), ts.getBytes());
+          } catch (RocksDBException e) {
+            throw new RuntimeException(e);
+          }
+        });
+      } catch (RocksDBException e) {
+        e.printStackTrace();
+      }
     }
   }
 
