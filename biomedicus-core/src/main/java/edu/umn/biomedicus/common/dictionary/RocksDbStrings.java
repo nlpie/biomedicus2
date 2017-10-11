@@ -115,12 +115,12 @@ public final class RocksDbStrings extends AbstractStrings {
     if (inMemory) {
       TreeMap<Integer, String> treeMap = new TreeMap<>();
 
-      MappingIterator mappingIterator = mappingIterator();
-      while (mappingIterator.isValid()) {
-        treeMap.put(mappingIterator.identifier(), mappingIterator.string());
-        mappingIterator.next();
+      try (MappingIterator mappingIterator = mappingIterator()) {
+        while (mappingIterator.isValid()) {
+          treeMap.put(mappingIterator.identifier(), mappingIterator.string());
+          mappingIterator.next();
+        }
       }
-      mappingIterator.close();
 
       String[] strings = new String[treeMap.size()];
       for (Entry<Integer, String> entry : treeMap.entrySet()) {
