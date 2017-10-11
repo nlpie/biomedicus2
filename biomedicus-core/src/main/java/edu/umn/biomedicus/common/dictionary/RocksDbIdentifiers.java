@@ -135,18 +135,19 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
   public Identifiers inMemory(boolean inMemory) throws IOException {
     if (inMemory) {
       HashIdentifiers hashIdentifiers = new HashIdentifiers();
-      RocksIterator rocksIterator = indices.newIterator();
-      rocksIterator.seekToFirst();
-      while (rocksIterator.isValid()) {
-        byte[] key = rocksIterator.key();
-        String stringKey = new String(key, StandardCharsets.UTF_8);
+      try (RocksIterator rocksIterator = indices.newIterator()) {
+        rocksIterator.seekToFirst();
+        while (rocksIterator.isValid()) {
+          byte[] key = rocksIterator.key();
+          String stringKey = new String(key, StandardCharsets.UTF_8);
 
-        byte[] value = rocksIterator.value();
-        int intValue = ByteBuffer.wrap(value).getInt();
+          byte[] value = rocksIterator.value();
+          int intValue = ByteBuffer.wrap(value).getInt();
 
-        hashIdentifiers.addMapping(stringKey, intValue);
+          hashIdentifiers.addMapping(stringKey, intValue);
 
-        rocksIterator.next();
+          rocksIterator.next();
+        }
       }
       close();
       return hashIdentifiers;

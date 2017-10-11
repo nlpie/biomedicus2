@@ -73,7 +73,7 @@ public class ConceptDictionaryLoader extends DataLoader<ConceptDictionary> {
         final Map<String, List<SuiCuiTui>> lowercasePhrases = new HashMap<>();
         dumpToMap(lowercaseDB, lowercasePhrases, String::new);
 
-        LOGGER.info("Loading concepts phrases into memory.");
+        LOGGER.info("Loading concepts norms into memory.");
         final Map<StringsBag, List<SuiCuiTui>> normDictionary = new HashMap<>();
         dumpToMap(normsDB, normDictionary, StringsBag::new);
 

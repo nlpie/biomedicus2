@@ -19,15 +19,12 @@ package edu.umn.biomedicus.measures;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.measures.UnitRecognizer.Factory;
-import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
-import edu.umn.biomedicus.numbers.Numbers;
 import java.io.IOException;
 
 public class MeasuresModule extends AbstractModule {
