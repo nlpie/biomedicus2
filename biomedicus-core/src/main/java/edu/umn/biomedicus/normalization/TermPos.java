@@ -19,7 +19,7 @@ package edu.umn.biomedicus.normalization;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.nio.ByteBuffer;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * A storage / hash map key object that is a tuple of a term and a part of speech.
@@ -80,7 +80,7 @@ final class TermPos implements Comparable<TermPos> {
   }
 
   @Override
-  public int compareTo(@NotNull TermPos o) {
+  public int compareTo(@Nonnull TermPos o) {
     int compare = Integer.compare(indexedTerm, o.indexedTerm);
     if (compare != 0) {
       return compare;

@@ -32,7 +32,7 @@ settings:
     db.path: normalization
     inMemory: no
   acronym:
-    checkParseTokens: no
+    checkParseTokens: yes
     useAlignment: no
     expansionsModel.path: acronym/expansions.txt
     alignmentModel.path: acronym-alignment/alignment.yml
@@ -44,7 +44,9 @@ settings:
         uniqueIdMap.path: REPLACE_ME_PATH_TO
         longforms.path: REPLACE_ME_PATH_TO
         outputDir.path: REPLACE_ME_PATH_TO
-    senseMap.path: acronym/senseMap.ser
+    senseMap:
+      path: acronym/senseVectors
+      inMemory: no
     orthographicModel.path: acronym-orthographic/orthographicModel.yml
   semanticNetwork:
     srdef.path: semnetwork/SRDEF
