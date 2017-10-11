@@ -251,6 +251,7 @@ public class RocksDBSenseVectors implements SenseVectors {
         while (rocksIterator.isValid()) {
           map.put(new String(rocksIterator.key(), StandardCharsets.UTF_8),
               new SparseVector(rocksIterator.value()));
+          rocksIterator.next();
         }
       }
       rocksDB.close();
