@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;

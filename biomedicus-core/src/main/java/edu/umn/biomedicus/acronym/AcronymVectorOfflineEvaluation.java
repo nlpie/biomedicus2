@@ -45,7 +45,7 @@ public class AcronymVectorOfflineEvaluation {
     AcronymExpansionsModel aem = new AcronymExpansionsModel.Loader(expansionsModelPath).loadModel();
 
     AcronymVectorModel avm = new AcronymVectorModel.Loader(null, false, vectorSpacePath,
-        senseMapPath, aem).loadModel();
+        senseMapPath, true, aem).loadModel();
 
     int correct = 0;
     int total = 0;

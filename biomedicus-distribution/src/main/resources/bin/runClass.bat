@@ -27,4 +27,4 @@ if not exist %JAVA% (
   exit /b 1
 )
 
-%JAVA% "-Dbiomedicus.paths.home=%BIOMEDICUS_HOME%" -Xmx12g "-Dlog4j.configurationFile=%BIOMEDICUS_LOG4J_CONF%" -cp "%BIOMEDICUS_CLASSPATH%" %*
+%JAVA% "-Dbiomedicus.paths.home=%BIOMEDICUS_HOME%" -Xmx2g "-Dlog4j.configurationFile=%BIOMEDICUS_LOG4J_CONF%" -cp "%BIOMEDICUS_CLASSPATH%" %*

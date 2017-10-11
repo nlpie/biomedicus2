@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Class used to search the structure of labels on a document to find specific expressions.
@@ -505,7 +505,7 @@ public class SearchExpr {
       return new Chain(head, tail);
     }
 
-    @NotNull
+    @Nonnull
     private GroupTail createGroupTail() {
       GroupTail tail = new GroupTail(groupIndex);
       groupIndex = groupIndex + 2;

@@ -16,9 +16,13 @@
 
 package edu.umn.biomedicus.acronym;
 
+import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /**
  * A simple implementation of sparse vectors
@@ -27,6 +31,8 @@ import java.util.function.Function;
  * @since 1.5.0
  */
 public class SparseVector {
+
+  private static final int ENTRY_BYTES = Integer.BYTES + Double.BYTES;
 
   /**
    * Hash of values in this vector
@@ -43,6 +49,16 @@ public class SparseVector {
 
   public SparseVector(Map<Integer, Double> vector) {
     this.vector = vector;
+  }
+
+  public SparseVector(byte[] bytes) {
+    int size = bytes.length / ENTRY_BYTES;
+    vector = new HashMap<>(size);
+
+    ByteBuffer wrap = ByteBuffer.wrap(bytes);
+    for (int i = 0; i < size; i++) {
+      vector.put(wrap.getInt(), wrap.getDouble());
+    }
   }
 
   public Map<Integer, Double> getVector() {
@@ -82,15 +98,13 @@ public class SparseVector {
    * @param v the vector to add (argument vector will not be changed)
    */
   public void add(SparseVector v) {
-    v.getVector().entrySet().stream().forEach(e -> {
-      vector.compute(e.getKey(), (key, val) -> {
-        if (val == null) {
-          return e.getValue();
-        } else {
-          return val + e.getValue();
-        }
-      });
-    });
+    v.getVector().forEach((key1, value) -> vector.compute(key1, (key, val) -> {
+      if (val == null) {
+        return value;
+      } else {
+        return val + value;
+      }
+    }));
   }
 
   /**
@@ -99,10 +113,8 @@ public class SparseVector {
    * @param v the vector to multiply against this one (argument vector will not be changed)
    */
   public void multiply(SparseVector v) {
-    v.getVector().entrySet().stream()
-        .forEach(e -> {
-          vector.computeIfPresent(e.getKey(), (key, value) -> value * e.getValue());
-        });
+    v.getVector()
+        .forEach((key1, value1) -> vector.computeIfPresent(key1, (key, value) -> value * value1));
   }
 
   /**
@@ -111,9 +123,7 @@ public class SparseVector {
    * @param operation a function that takes and outputs Double (Math::sqrt, e.g.)
    */
   public void applyOperation(Function<Double, Double> operation) {
-    for (Map.Entry<Integer, Double> e : vector.entrySet()) {
-      e.setValue(operation.apply(e.getValue()));
-    }
+    vector.replaceAll((key, value) -> operation.apply(value));
   }
 
   /**
@@ -146,9 +156,33 @@ public class SparseVector {
     return toReturn;
   }
 
+  public void remove(@Nullable Integer index) {
+    if (index != null) {
+      vector.remove(index);
+    }
+  }
+
+  public void removeAll(@Nullable Collection<Integer> indexes) {
+    if (indexes != null) {
+      for (Integer index : indexes) {
+        if (index != null) {
+          vector.remove(index);
+        }
+      }
+    }
+  }
+
   @Override
   public String toString() {
     return vector.toString();
+  }
+
+  public byte[] toBytes() {
+    ByteBuffer buffer = ByteBuffer.allocate(vector.size() * ENTRY_BYTES);
+    for (Entry<Integer, Double> entry : vector.entrySet()) {
+      buffer.putInt(entry.getKey()).putDouble(entry.getValue());
+    }
+    return buffer.array();
   }
 
 }
