@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.framework;
 
+import edu.umn.biomedicus.framework.SearchExpr.TypeMatch.PropertyMatch;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Span;
@@ -703,9 +704,46 @@ public class SearchExpr {
       String propertyName = pnsb.toString();
       ch = read();
       if (ch == '"') {
-        typeMatch.addPropertyMatch(propertyName, parsePropertyStringValue());
+        ArrayList<PropertyMatch> propertyMatches = null;
+        String value = parsePropertyStringValue();
+        while (peek() == '|') {
+          read();
+          if (propertyMatches == null) {
+            propertyMatches = new ArrayList<>();
+            propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
+          }
+          if (read() != '"') {
+            throw error("Expected there to be an opening quotation for string property value "
+                + "alternation");
+          }
+          value = parsePropertyStringValue();
+          propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
+        }
+        if (propertyMatches != null) {
+          typeMatch.addAlternationsPropertyMatch(typeMatch.new AlternationsPropertyMatch(
+              propertyName, propertyMatches.toArray(new PropertyMatch[propertyMatches.size()])));
+        } else {
+          typeMatch.addPropertyMatch(propertyName, value);
+        }
       } else if (Character.isDigit(ch)) {
-        typeMatch.addNumberPropertyMatch(propertyName, parseNumber(ch));
+        ArrayList<PropertyMatch> propertyMatches = null;
+        Object number = parseNumber(ch);
+        while (peek() == '|') {
+          read();
+          if (propertyMatches == null) {
+            propertyMatches = new ArrayList<>();
+            propertyMatches.add(typeMatch.new NumberPropertyMatch(propertyName, number));
+          }
+          number = parseNumber(read());
+          propertyMatches.add(typeMatch.new NumberPropertyMatch(propertyName, number));
+        }
+        if (propertyMatches != null) {
+          typeMatch.addAlternationsPropertyMatch(typeMatch.new AlternationsPropertyMatch(
+              propertyName, propertyMatches.toArray(new PropertyMatch[propertyMatches.size()])
+          ));
+        } else {
+          typeMatch.addNumberPropertyMatch(propertyName, number);
+        }
       } else if (Character.isAlphabetic(ch)) {
         Object value;
         if (ch == 't' || ch == 'T' || ch == 'y' || ch == 'Y') {
@@ -1515,11 +1553,12 @@ public class SearchExpr {
       requiredProperties.add(new ValuedPropertyMatch(name, value));
     }
 
-    void addPropertyValueBackReference(String name,
-        String group,
-        Method backrefMethod) {
-      requiredProperties.add(new PropertyValueBackReference(name, group,
-          backrefMethod));
+    void addAlternationsPropertyMatch(AlternationsPropertyMatch alternationsPropertyMatch) {
+      requiredProperties.add(alternationsPropertyMatch);
+    }
+
+    void addPropertyValueBackReference(String name, String group, Method backrefMethod) {
+      requiredProperties.add(new PropertyValueBackReference(name, group, backrefMethod));
     }
 
     void addNumberPropertyMatch(String name, Object value) {
@@ -1547,6 +1586,26 @@ public class SearchExpr {
       abstract boolean doesMatch(DefaultSearcher search, Label<?> label);
     }
 
+    class AlternationsPropertyMatch extends PropertyMatch {
+
+      final PropertyMatch[] propertyMatches;
+
+      AlternationsPropertyMatch(String name, PropertyMatch[] propertyMatches) {
+        super(name);
+        this.propertyMatches = propertyMatches;
+      }
+
+      @Override
+      boolean doesMatch(DefaultSearcher search, Label<?> label) {
+        for (PropertyMatch propertyMatch : propertyMatches) {
+          if (propertyMatch.doesMatch(search, label)) {
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+
     class NumberPropertyMatch extends PropertyMatch {
 
       final Object value;
@@ -1560,6 +1619,7 @@ public class SearchExpr {
       boolean doesMatch(DefaultSearcher search, Label<?> label) {
         try {
           Object invoke = readMethod.invoke(label.getValue());
+          if (invoke == null || !(invoke instanceof Number)) return false;
           double first = ((Number) invoke).doubleValue();
           double second = ((Number) value).doubleValue();
           return Math.abs(first - second) < 1e-10;
