@@ -311,6 +311,106 @@ public class SearchExprTest {
   }
 
   @Test
+  public void testCaseInsensitiveMatch() throws Exception {
+    Foo foo = new Foo();
+    foo.setValue("BAZ");
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getValue=i\"baz\">");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    Optional<Span> opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(0, 5));
+  }
+
+  @Test
+  public void testCaseInsensitiveNoMatch() throws Exception {
+    Foo foo = new Foo();
+    foo.setValue("baz");
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getValue=i\"bar\">");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    assertFalse(searcher.found());
+  }
+
+  @Test
+  public void testCaseInsensitiveAlternationsFirst() throws Exception {
+    Foo foo = new Foo();
+    foo.setValue("aaa");
+
+    Foo foo2 = new Foo();
+    foo2.setValue("BAZ");
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
+          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getValue=i\"baz\"|r\"a*\">");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    Optional<Span> opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(0, 5));
+
+    searcher.search();
+    opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(6, 10));
+  }
+
+  @Test
+  public void testCaseInsensitiveAlternationsOther() throws Exception {
+    Foo foo = new Foo();
+    foo.setValue("bar");
+
+    Foo foo2 = new Foo();
+    foo2.setValue("baz");
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
+          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getValue=\"baz\"|i\"bar\">");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    Optional<Span> opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(0, 5));
+
+    searcher.search();
+    opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(6, 10));
+  }
+
+  @Test
   public void testNumberPropertyNoMatch() throws Exception {
     Foo foo = new Foo();
     foo.setBaz(3);

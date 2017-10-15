@@ -703,13 +703,17 @@ public class SearchExpr {
       }
       String propertyName = pnsb.toString();
       ch = read();
-      if (ch == '"' || ch == 'r') {
+      if (ch == '"' || ch == 'r' || ch == 'i') {
         ArrayList<PropertyMatch> propertyMatches = null;
         String value = null;
         Pattern pattern = null;
+        String caseInsensitiveValue = null;
         if (ch == 'r') {
           read();
           pattern = Pattern.compile(parsePropertyStringValue());
+        } else if (ch == 'i') {
+          read();
+          caseInsensitiveValue = parsePropertyStringValue();
         } else {
           value = parsePropertyStringValue();
         }
@@ -719,6 +723,9 @@ public class SearchExpr {
             propertyMatches = new ArrayList<>();
             if (value != null) {
               propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
+            } else if (caseInsensitiveValue != null) {
+              propertyMatches.add(typeMatch.new CaseInsensitivePropertyMatch(propertyName,
+                  caseInsensitiveValue));
             } else {
               propertyMatches.add(typeMatch.new RegexPropertyMatch(propertyName, pattern));
             }
@@ -728,6 +735,11 @@ public class SearchExpr {
             read();
             pattern = Pattern.compile(parsePropertyStringValue());
             propertyMatches.add(typeMatch.new RegexPropertyMatch(propertyName, pattern));
+          } else if (ch == 'i') {
+            read();
+            caseInsensitiveValue = parsePropertyStringValue();
+            propertyMatches.add(typeMatch.new CaseInsensitivePropertyMatch(propertyName,
+                caseInsensitiveValue));
           } else {
             value = parsePropertyStringValue();
             propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
@@ -739,6 +751,8 @@ public class SearchExpr {
         } else {
           if (value != null) {
             typeMatch.addPropertyMatch(propertyName, value);
+          } else if (caseInsensitiveValue != null) {
+            typeMatch.addCaseInsensitiveMatch(propertyName, caseInsensitiveValue);
           } else {
             typeMatch.addRegexMatch(propertyName, pattern);
           }
@@ -1069,8 +1083,8 @@ public class SearchExpr {
   }
 
   /**
-   * Performs the "?" functionality, first attempting to match then continue before attempting
-   * to continue without a match.
+   * Performs the "?" functionality, first attempting to match then continue before attempting to
+   * continue without a match.
    */
   static class GreedyOptional extends Node {
 
@@ -1122,8 +1136,8 @@ public class SearchExpr {
   }
 
   /**
-   * Performs the "?+" functionality, checks if there is a match, continuing without backtracking
-   * if there is, if there is no match it will continue with the rest of the expression.
+   * Performs the "?+" functionality, checks if there is a match, continuing without backtracking if
+   * there is, if there is no match it will continue with the rest of the expression.
    */
   static class PossessiveOptional extends Node {
 
@@ -1146,11 +1160,12 @@ public class SearchExpr {
   }
 
   /**
-   * Provides the shared structure for recursive loop repetition expressions like "*", "+", "{x, y}"
+   * Provides the shared structure for recursive loop repetition expressions like "*", "+", "{x,
+   * y}"
    *
-   * <br>This node is entered initially from the loop head into the
-   * {@link #enterLoop(DefaultSearcher, State)} function, then the loop returns to it via the
-   * {@link #search(DefaultSearcher, State)} function.
+   * <br>This node is entered initially from the loop head into the {@link
+   * #enterLoop(DefaultSearcher, State)} function, then the loop returns to it via the {@link
+   * #search(DefaultSearcher, State)} function.
    */
   static abstract class RecursiveLoop extends Node {
 
@@ -1172,8 +1187,8 @@ public class SearchExpr {
     }
 
     /**
-     * The loop head enters the node here allowing for the setup of the local variables, because
-     * the search entry point is needed for the tail of the loop expression to return to the loop.
+     * The loop head enters the node here allowing for the setup of the local variables, because the
+     * search entry point is needed for the tail of the loop expression to return to the loop.
      */
     abstract State enterLoop(DefaultSearcher search, State state);
 
@@ -1575,6 +1590,10 @@ public class SearchExpr {
       requiredProperties.add(new RegexPropertyMatch(name, pattern));
     }
 
+    void addCaseInsensitiveMatch(String name, String value) {
+      requiredProperties.add(new CaseInsensitivePropertyMatch(name, value));
+    }
+
     void addAlternationsPropertyMatch(AlternationsPropertyMatch alternationsPropertyMatch) {
       requiredProperties.add(alternationsPropertyMatch);
     }
@@ -1629,6 +1648,32 @@ public class SearchExpr {
       }
     }
 
+    class CaseInsensitivePropertyMatch extends PropertyMatch {
+
+      final String value;
+
+      CaseInsensitivePropertyMatch(String name, String value) {
+        super(name);
+        this.value = value;
+      }
+
+      @Override
+      boolean doesMatch(DefaultSearcher search, Label<?> label) {
+        try {
+          Object result = readMethod.invoke(label.getValue());
+          if (result == null || !(result instanceof CharSequence)) {
+            return false;
+          }
+          if (!(result instanceof String)) {
+            result = result.toString();
+          }
+          return value.equalsIgnoreCase((String) result);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+          throw new IllegalStateException(e);
+        }
+      }
+    }
+
     class AlternationsPropertyMatch extends PropertyMatch {
 
       final PropertyMatch[] propertyMatches;
@@ -1662,7 +1707,9 @@ public class SearchExpr {
       boolean doesMatch(DefaultSearcher search, Label<?> label) {
         try {
           Object invoke = readMethod.invoke(label.getValue());
-          if (invoke == null || !(invoke instanceof Number)) return false;
+          if (invoke == null || !(invoke instanceof Number)) {
+            return false;
+          }
           double first = ((Number) invoke).doubleValue();
           double second = ((Number) value).doubleValue();
           return Math.abs(first - second) < 1e-10;
