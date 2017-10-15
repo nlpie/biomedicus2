@@ -290,27 +290,6 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyMatch() throws Exception {
-    Foo foo = new Foo();
-    foo.setBaz(5);
-
-    new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
-      labelAliases.getLabelable("Foo"); result = Foo.class;
-    }};
-
-    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getBaz=5>");
-
-    Searcher searcher = blah.createSearcher(document);
-    searcher.search();
-
-    Optional<Span> opt = searcher.getSpan();
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), new Span(0, 5));
-  }
-
-  @Test
   public void testCaseInsensitiveMatch() throws Exception {
     Foo foo = new Foo();
     foo.setValue("BAZ");
@@ -408,6 +387,50 @@ public class SearchExprTest {
     opt = searcher.getSpan();
     assertTrue(opt.isPresent());
     assertEquals(opt.get(), new Span(6, 10));
+  }
+
+
+
+  @Test
+  public void testNumberPropertyMatch() throws Exception {
+    Foo foo = new Foo();
+    foo.setBaz(5);
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getBaz=5>");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    Optional<Span> opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(0, 5));
+  }
+
+  @Test
+  public void testNumberPropertyNegative() throws Exception {
+    Foo foo = new Foo();
+    foo.setBaz(-5);
+
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 10);
+      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getBaz=-5>");
+
+    Searcher searcher = blah.createSearcher(document);
+    searcher.search();
+
+    Optional<Span> opt = searcher.getSpan();
+    assertTrue(opt.isPresent());
+    assertEquals(opt.get(), new Span(0, 5));
   }
 
   @Test
