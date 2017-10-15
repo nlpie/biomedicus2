@@ -18,6 +18,8 @@ package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
+import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
+import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
 import edu.umn.biomedicus.common.types.semantics.Acronym;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
 import edu.umn.biomedicus.common.types.semantics.DictionaryTermModifier;
@@ -129,6 +131,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
     map.put(Number.class, NumberLabelAdapter::new);
     map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
+    map.put(IllegalXmlCharacter.class, IllegalXmlCharacterAdapter::new);
     return map;
   }
 
@@ -796,6 +799,27 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected CandidateUnitOfMeasure createLabelValue(FeatureStructure featureStructure) {
       return new CandidateUnitOfMeasure();
+    }
+  }
+
+  public static class IllegalXmlCharacterAdapter extends AbstractLabelAdapter<IllegalXmlCharacter> {
+
+    private final Feature valueFeature;
+
+    protected IllegalXmlCharacterAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.type.IllegalXmlCharacter"));
+      valueFeature = type.getFeatureByBaseName("value");
+    }
+
+    @Override
+    protected IllegalXmlCharacter createLabelValue(FeatureStructure featureStructure) {
+      return ImmutableIllegalXmlCharacter.builder()
+          .value(featureStructure.getIntValue(valueFeature)).build();
+    }
+
+    @Override
+    protected void fillAnnotation(Label<IllegalXmlCharacter> label, AnnotationFS annotationFS) {
+      annotationFS.setIntValue(valueFeature, label.getValue().value());
     }
   }
 }

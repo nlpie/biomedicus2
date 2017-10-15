@@ -21,12 +21,15 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import com.google.inject.Injector;
 import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
 import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
+import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.uima.adapter.GuiceInjector;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import java.io.IOException;
 import java.io.Reader;
@@ -79,10 +82,10 @@ public class RtfTextFileAdapter implements InputFileAdapter {
       ProcessingResourceMetaData processingResourceMetaData) {
     LOGGER.info("Initializing xml validating file adapter.");
     try {
-      labelAdapters = ((Injector) uimaContext
-          .getResourceObject("guiceInjector"))
-          .getInstance(LabelAdapters.class);
-    } catch (ResourceAccessException e) {
+      GuiceInjector guiceInjector = (GuiceInjector) uimaContext.getResourceObject("guiceInjector");
+      labelAdapters = guiceInjector.attach().getInstance(LabelAdapters.class);
+      guiceInjector.detach();
+    } catch (ResourceAccessException | BiomedicusException e) {
       throw new IllegalStateException("");
     }
   }

@@ -415,6 +415,56 @@
     </controlKeyword>
 
     <controlKeyword>
+      <keyword>up</keyword>
+      <propertyKeywordAction>
+        <alwaysUseDefault>true</alwaysUseDefault>
+        <defaultValue>1</defaultValue>
+        <propertyGroup>CharacterFormatting</propertyGroup>
+        <propertyName>SuperSub</propertyName>
+      </propertyKeywordAction>
+    </controlKeyword>
+
+    <controlKeyword>
+      <keyword>super</keyword>
+      <propertyKeywordAction>
+        <alwaysUseDefault>true</alwaysUseDefault>
+        <defaultValue>1</defaultValue>
+        <propertyGroup>CharacterFormatting</propertyGroup>
+        <propertyName>SuperSub</propertyName>
+      </propertyKeywordAction>
+    </controlKeyword>
+
+    <controlKeyword>
+      <keyword>dn</keyword>
+      <propertyKeywordAction>
+        <alwaysUseDefault>true</alwaysUseDefault>
+        <defaultValue>2</defaultValue>
+        <propertyGroup>CharacterFormatting</propertyGroup>
+        <propertyName>SuperSub</propertyName>
+      </propertyKeywordAction>
+    </controlKeyword>
+
+    <controlKeyword>
+      <keyword>sub</keyword>
+      <propertyKeywordAction>
+        <alwaysUseDefault>true</alwaysUseDefault>
+        <defaultValue>2</defaultValue>
+        <propertyGroup>CharacterFormatting</propertyGroup>
+        <propertyName>SuperSub</propertyName>
+      </propertyKeywordAction>
+    </controlKeyword>
+
+    <controlKeyword>
+      <keyword>nosupersub</keyword>
+      <propertyKeywordAction>
+        <alwaysUseDefault>true</alwaysUseDefault>
+        <defaultValue>0</defaultValue>
+        <propertyGroup>CharacterFormatting</propertyGroup>
+        <propertyName>SuperSub</propertyName>
+      </propertyKeywordAction>
+    </controlKeyword>
+
+    <controlKeyword>
       <keyword>fi</keyword>
       <propertyKeywordAction>
         <alwaysUseDefault>false</alwaysUseDefault>

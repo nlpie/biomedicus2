@@ -32,6 +32,9 @@
         <property>
           <name>Hidden</name>
         </property>
+        <property>
+          <name>SuperSub</name>
+        </property>
       </properties>
     </propertyGroupDescription>
 

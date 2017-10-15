@@ -69,8 +69,12 @@ class CasOutputDestination implements OutputDestination {
    * The name of the output destination.
    */
   private final String name;
+
   private final Type illegalCharType;
+
   private final Feature valueFeat;
+
+  private boolean inSuperSub = false;
 
   /**
    * Default constructor, initializes all fields.
@@ -118,6 +122,23 @@ class CasOutputDestination implements OutputDestination {
         annotation.setIntValue(valueFeat, (int) ch);
         completedAnnotations.add(annotation);
       } else {
+        int superSub = state.getPropertyValue("CharacterFormatting", "SuperSub");
+        if (superSub > 0) {
+          if (!inSuperSub) {
+            inSuperSub = true;
+            if (Character.isDigit(sofaBuilder.charAt(sofaBuilder.length() - 1))
+                && Character.isDigit(ch)) {
+              sofaBuilder.append('^');
+            }
+            sofaBuilder.append('(');
+          }
+        } else {
+          if (inSuperSub) {
+            sofaBuilder.append(')');
+            inSuperSub = false;
+          }
+        }
+
         sofaBuilder.append(ch);
       }
       return sofaBuilder.length() - 1;
