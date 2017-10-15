@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -625,8 +626,7 @@ public class SearchExpr {
     String readAlphanumeric(int ch) {
       StringBuilder groupName = new StringBuilder();
       groupName.append((char) ch);
-      while (Character.isAlphabetic(ch = peek())
-          || Character.isDigit(ch)) {
+      while (Character.isAlphabetic(ch = peek()) || Character.isDigit(ch)) {
         groupName.append((char) ch);
         read();
       }
@@ -703,29 +703,47 @@ public class SearchExpr {
       }
       String propertyName = pnsb.toString();
       ch = read();
-      if (ch == '"') {
+      if (ch == '"' || ch == 'r') {
         ArrayList<PropertyMatch> propertyMatches = null;
-        String value = parsePropertyStringValue();
+        String value = null;
+        Pattern pattern = null;
+        if (ch == 'r') {
+          read();
+          pattern = Pattern.compile(parsePropertyStringValue());
+        } else {
+          value = parsePropertyStringValue();
+        }
         while (peek() == '|') {
           read();
           if (propertyMatches == null) {
             propertyMatches = new ArrayList<>();
+            if (value != null) {
+              propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
+            } else {
+              propertyMatches.add(typeMatch.new RegexPropertyMatch(propertyName, pattern));
+            }
+          }
+          ch = read();
+          if (ch == 'r') {
+            read();
+            pattern = Pattern.compile(parsePropertyStringValue());
+            propertyMatches.add(typeMatch.new RegexPropertyMatch(propertyName, pattern));
+          } else {
+            value = parsePropertyStringValue();
             propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
           }
-          if (read() != '"') {
-            throw error("Expected there to be an opening quotation for string property value "
-                + "alternation");
-          }
-          value = parsePropertyStringValue();
-          propertyMatches.add(typeMatch.new ValuedPropertyMatch(propertyName, value));
         }
         if (propertyMatches != null) {
           typeMatch.addAlternationsPropertyMatch(typeMatch.new AlternationsPropertyMatch(
               propertyName, propertyMatches.toArray(new PropertyMatch[propertyMatches.size()])));
         } else {
-          typeMatch.addPropertyMatch(propertyName, value);
+          if (value != null) {
+            typeMatch.addPropertyMatch(propertyName, value);
+          } else {
+            typeMatch.addRegexMatch(propertyName, pattern);
+          }
         }
-      } else if (Character.isDigit(ch)) {
+      } else if (Character.isDigit(ch) || ch == '-') {
         ArrayList<PropertyMatch> propertyMatches = null;
         Object number = parseNumber(ch);
         while (peek() == '|') {
@@ -1553,6 +1571,10 @@ public class SearchExpr {
       requiredProperties.add(new ValuedPropertyMatch(name, value));
     }
 
+    void addRegexMatch(String name, Pattern pattern) {
+      requiredProperties.add(new RegexPropertyMatch(name, pattern));
+    }
+
     void addAlternationsPropertyMatch(AlternationsPropertyMatch alternationsPropertyMatch) {
       requiredProperties.add(alternationsPropertyMatch);
     }
@@ -1584,6 +1606,27 @@ public class SearchExpr {
       }
 
       abstract boolean doesMatch(DefaultSearcher search, Label<?> label);
+    }
+
+    class RegexPropertyMatch extends PropertyMatch {
+
+      final Pattern pattern;
+
+      RegexPropertyMatch(String name, Pattern pattern) {
+        super(name);
+        this.pattern = pattern;
+      }
+
+      @Override
+      boolean doesMatch(DefaultSearcher search, Label<?> label) {
+        try {
+          Object value = readMethod.invoke(label.getValue());
+          return value != null && value instanceof CharSequence
+              && pattern.matcher((CharSequence) value).matches();
+        } catch (IllegalAccessException | InvocationTargetException e) {
+          throw new IllegalStateException();
+        }
+      }
     }
 
     class AlternationsPropertyMatch extends PropertyMatch {
