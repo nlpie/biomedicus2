@@ -468,7 +468,7 @@ public class SearchExpr {
         switch (ch) {
           case '=':
           case '!':
-            tail = createGroupTail();
+            tail = createGroupTail(null);
             head = alts(tail);
             if (ch == '=') {
               head = tail = new PositiveLookahead(head);
@@ -477,28 +477,25 @@ public class SearchExpr {
             }
             break;
           case '>':
-            tail = createGroupTail();
+            tail = createGroupTail(null);
             head = alts(tail);
             head = tail = new Independent(head);
             break;
           case '<':
             String name = readGroupName();
-            if (groupNames.containsKey(name)) {
-              throw error("Duplicate capturing group name: \"" + name + "\"");
-            }
-            GroupTail groupTail = createGroupTail();
+            GroupTail groupTail = createGroupTail(groupNames.get(name));
             tail = groupTail;
-            groupNames.put(name, groupTail.groupIndex);
+            groupNames.putIfAbsent(name, groupTail.groupIndex);
             head = alts(tail);
             break;
           default:
             unread();
-            tail = createGroupTail();
+            tail = createGroupTail(null);
             head = alts(tail);
             break;
         }
       } else {
-        tail = createGroupTail();
+        tail = createGroupTail(null);
         head = alts(tail);
       }
       peekPastWhiteSpace();
@@ -508,10 +505,15 @@ public class SearchExpr {
     }
 
     @Nonnull
-    private GroupTail createGroupTail() {
-      GroupTail tail = new GroupTail(groupIndex);
-      groupIndex = groupIndex + 2;
-      return tail;
+    private GroupTail createGroupTail(@Nullable Integer existingIndex) {
+      int group;
+      if (existingIndex == null) {
+        group = groupIndex;
+        groupIndex = groupIndex + 2;
+      } else {
+        group = existingIndex;
+      }
+      return new GroupTail(group);
     }
 
     private String readGroupName() {
@@ -594,10 +596,15 @@ public class SearchExpr {
       }
       int group = -1;
       if (variable != null) {
-        group = groupIndex;
-        groupTypes.put(group, aClass);
-        groupNames.put(variable, groupIndex);
-        groupIndex = groupIndex + 2;
+        Integer existing = groupNames.get(variable);
+        if (existing != null) {
+          group = existing;
+        } else {
+          group = groupIndex;
+          groupTypes.put(group, aClass);
+          groupNames.put(variable, groupIndex);
+          groupIndex = groupIndex + 2;
+        }
       }
       ch = peek();
       if (ch == '=') {
