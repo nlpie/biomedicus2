@@ -301,6 +301,24 @@
       <description>Specifies a probable term.</description>
       <supertypeName>edu.umn.biomedicus.uima.type1_6.Modification</supertypeName>
     </typeDescription>
+    
+    <typeDescription>
+      <name>edu.umn.biomedicus.uima.type1_9.NumberRange</name>
+      <description>A range between two numbers.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>lowerValue</name>
+          <description>The BigDecimal string representation of the lower value.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>upperValue</name>
+          <description>The BigDecimal string representation of the upper value.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
 
     <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_6.TermToken</name>

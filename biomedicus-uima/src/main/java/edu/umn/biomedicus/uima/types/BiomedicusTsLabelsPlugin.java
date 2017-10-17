@@ -36,6 +36,7 @@ import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
 import edu.umn.biomedicus.common.types.semantics.Misspelling;
 import edu.umn.biomedicus.common.types.semantics.Negated;
 import edu.umn.biomedicus.measures.Number;
+import edu.umn.biomedicus.measures.NumberRange;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
@@ -76,6 +77,7 @@ import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,6 +134,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(Number.class, NumberLabelAdapter::new);
     map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
     map.put(IllegalXmlCharacter.class, IllegalXmlCharacterAdapter::new);
+    map.put(NumberRange.class, NumberRangeAdapter::new);
     return map;
   }
 
@@ -820,6 +823,32 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected void fillAnnotation(Label<IllegalXmlCharacter> label, AnnotationFS annotationFS) {
       annotationFS.setIntValue(valueFeature, label.getValue().value());
+    }
+  }
+
+  public static class NumberRangeAdapter extends AbstractLabelAdapter<NumberRange> {
+
+    private final Feature lowerValueFeature;
+    private final Feature upperValueFeature;
+
+    protected NumberRangeAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_9.NumberRange"));
+      lowerValueFeature = type.getFeatureByBaseName("lowerValue");
+      upperValueFeature = type.getFeatureByBaseName("upperValue");
+    }
+
+    @Override
+    protected NumberRange createLabelValue(FeatureStructure featureStructure) {
+      return new NumberRange(new BigDecimal(featureStructure.getStringValue(lowerValueFeature)),
+          new BigDecimal(featureStructure.getStringValue(upperValueFeature)));
+    }
+
+    @Override
+    protected void fillAnnotation(Label<NumberRange> label, AnnotationFS annotationFS) {
+      NumberRange value = label.getValue();
+
+      annotationFS.setStringValue(lowerValueFeature, value.getLower().toString());
+      annotationFS.setStringValue(upperValueFeature, value.getUpper().toString());
     }
   }
 }
