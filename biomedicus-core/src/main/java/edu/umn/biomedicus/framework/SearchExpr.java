@@ -43,6 +43,8 @@ import javax.annotation.Nullable;
  */
 public class SearchExpr {
 
+  private static final Pattern NON_WHITESPACE = Pattern.compile("[\\p{all}&&[^\\p{Blank}]]");
+
   static final Node ACCEPT = new Node() {
     @Nullable
     @Override
@@ -192,7 +194,7 @@ public class SearchExpr {
         join.swapNext(new SaveBegin(end.local));
         join.next.swapNext(root);
         Branch branch = new Branch();
-        TypeMatch typeMatch = new TypeMatch(aClass, true, true, -1);
+        TypeMatch typeMatch = new TypeMatch(aClass, true, false, true, -1);
         typeMatch.swapNext(join);
         branch.add(join);
         branch.add(typeMatch);
@@ -607,16 +609,23 @@ public class SearchExpr {
         }
       }
       ch = peek();
+      boolean noTextBefore = false;
+      if (ch == '!') {
+        read();
+        ch = peek();
+        noTextBefore = true;
+      }
+
       if (ch == '=') {
         next();
         ch = read();
         String enumValue = readAlphanumeric(ch);
 
         Enum<?> t = Enum.valueOf((Class<Enum>) aClass, enumValue);
-        return new EnumMatch(aClass, seek, false, group,
+        return new EnumMatch(aClass, seek, noTextBefore,false, group,
             t);
       } else {
-        TypeMatch node = new TypeMatch(aClass, seek, false, group);
+        TypeMatch node = new TypeMatch(aClass, seek, noTextBefore, false, group);
         if (ch == '<') {
           next();
           do {
@@ -1493,10 +1502,11 @@ public class SearchExpr {
 
     EnumMatch(Class labelType,
         boolean seek,
+        boolean noSpaceBefore,
         boolean anonymous,
         int group,
         Enum<?> value) {
-      super(labelType, seek, anonymous, group);
+      super(labelType, seek, noSpaceBefore, anonymous, group);
       this.value = value;
     }
 
@@ -1514,12 +1524,14 @@ public class SearchExpr {
     final Class<?> labelType;
     final List<PropertyMatch> requiredProperties = new ArrayList<>();
     final boolean seek;
+    final boolean noTextBefore;
     final boolean anonymous;
     final int group;
 
-    TypeMatch(Class labelType, boolean seek, boolean anonymous, int group) {
+    TypeMatch(Class labelType, boolean seek, boolean noTextBefore, boolean anonymous, int group) {
       this.labelType = labelType;
       this.seek = seek;
+      this.noTextBefore = noTextBefore;
       this.anonymous = anonymous;
       this.group = group;
     }
@@ -1545,6 +1557,11 @@ public class SearchExpr {
         State advance = state.advance(label.getBegin(), label.getEnd());
         State result = next.search(search, advance);
         if (result.isHit()) {
+          if (noTextBefore && NON_WHITESPACE.matcher(search.document.getText()
+              .substring(state.end, label.getBegin())).find()) {
+            return State.miss();
+          }
+
           if (anonymous) {
             return result;
           }
@@ -1565,6 +1582,11 @@ public class SearchExpr {
         State advance = state.advance(label.getBegin(), label.getEnd());
         State result = next.search(search, advance);
         if (result.isHit()) {
+          if (noTextBefore && NON_WHITESPACE.matcher(search.document.getText()
+              .substring(state.end, label.getBegin())).find()) {
+            return State.miss();
+          }
+
           if (anonymous) {
             return result;
           }
@@ -1970,5 +1992,4 @@ public class SearchExpr {
       return result.end;
     }
   }
-
 }

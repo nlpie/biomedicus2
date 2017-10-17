@@ -97,6 +97,44 @@ public class SearchExprTest {
   }
 
   @Test
+  public void testNoTextBeforeMatch() throws Exception {
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getText(); result = "this is text.";
+      document.getLabelIndex(Blah.class); result = labelIndex;
+      labelIndex.first(); returns(
+          Optional.of(Label.create(0, 4, new Blah())),
+          Optional.of(Label.create(5, 7, new Blah()))
+      );
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah Blah!");
+
+    Searcher searcher = blah.createSearcher(document);
+    assertTrue(searcher.search());
+  }
+
+  @Test
+  public void testNoTextBeforeNoMatch() throws Exception {
+    new Expectations() {{
+      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getText(); result = "this is text.";
+      document.getLabelIndex(Blah.class); result = labelIndex;
+      labelIndex.first(); returns(
+          Optional.of(Label.create(0, 4, new Blah())),
+          Optional.of(Label.create(8, 12, new Blah()))
+      );
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah Blah!");
+
+    Searcher searcher = blah.createSearcher(document);
+    assertFalse(searcher.search());
+  }
+
+  @Test
   public void testMatchPin() throws Exception {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
