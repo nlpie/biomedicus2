@@ -31,8 +31,8 @@ class NumberRangesLabeler @Inject internal constructor(
         searchExprFactory: SearchExprFactory
 ): DocumentProcessor {
     val expr = searchExprFactory.parse(
-            "[Sentence (?<range> [lower:Number] ParseToken<text=\"-\"|i\"to\"> [upper:Number]) | " +
-                    "(?<range> ParseToken<text=i\"between\"> [lower:Number] ParseToken<text=\"and\"> [upper:Number])]"
+            "[Sentence (?<range> [lower:Number] ParseToken<text=\"-\"|i\"to\"> [upper:Number!]) | " +
+                    "(?<range> ParseToken<text=i\"between\"> [lower:Number] ParseToken<text=\"and\"> [upper:Number!])]"
     )
 
     override fun process(document: Document) {
@@ -53,8 +53,12 @@ class NumberRangesLabeler @Inject internal constructor(
                 BiomedicusException("No upper")
             } as Label<Number>
 
-            labeler.value(NumberRange(lower.value.value(), upper.value.value()))
-                    .label(searcher.getSpan("range").get())
+
+            val lowerValue = lower.value.value()
+            val upperValue = upper.value.value()
+            if (upperValue > lowerValue) {
+                labeler.value(NumberRange(lowerValue, upperValue)).label(searcher.getSpan("range").get())
+            }
         }
     }
 }
