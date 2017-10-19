@@ -24,7 +24,7 @@ import edu.umn.biomedicus.framework.store.Document;
  *
  * @since 1.7.0
  */
-public interface DocumentSource {
+public interface DocumentSource extends AutoCloseable {
 
   /**
    * Whether the document source has another document.

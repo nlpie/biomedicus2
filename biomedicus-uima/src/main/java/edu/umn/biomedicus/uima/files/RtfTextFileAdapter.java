@@ -55,31 +55,33 @@ public class RtfTextFileAdapter implements InputFileAdapter {
   /**
    * Class logger.
    */
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(RtfTextFileAdapter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RtfTextFileAdapter.class);
 
   /**
    * Date formatter for adding date to metadata.
    */
-  private final DateFormat dateFormatter = DateFormat
-      .getDateInstance(DateFormat.LONG);
+  private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG);
+
   @Nullable
   protected Document document;
+
   /**
    * View to load data into.
    */
   @Nullable
   private String viewName;
+
   private LabelAdapters labelAdapters;
 
   private static boolean isValid(int ch) {
-    return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A
-        || ch == 0x0D;
+    return (ch >= 0x20 && ch <= 0x7F) || ch == 0x09 || ch == 0x0A || ch == 0x0D;
   }
 
   @Override
-  public void initialize(UimaContext uimaContext,
-      ProcessingResourceMetaData processingResourceMetaData) {
+  public void initialize(
+      UimaContext uimaContext,
+      ProcessingResourceMetaData processingResourceMetaData
+  ) {
     LOGGER.info("Initializing xml validating file adapter.");
     try {
       GuiceInjector guiceInjector = (GuiceInjector) uimaContext.getResourceObject("guiceInjector");
@@ -91,8 +93,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
   }
 
   @Override
-  public void adaptFile(CAS cas, Path path)
-      throws CollectionException, IOException {
+  public void adaptFile(CAS cas, Path path) throws CollectionException, IOException {
     if (cas == null) {
       LOGGER.error("Null CAS");
       throw new IllegalArgumentException("CAS was null");
@@ -107,8 +108,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
 
     document = UimaAdapters.createDocument(cas, labelAdapters, documentId);
 
-    List<Label<IllegalXmlCharacter>> illegalXmlCharacters
-        = new ArrayList<>();
+    List<Label<IllegalXmlCharacter>> illegalXmlCharacters = new ArrayList<>();
     StringBuilder stringBuilder = new StringBuilder();
     try (Reader stringReader = Files.newBufferedReader(path, US_ASCII)) {
       int ch;
@@ -117,18 +117,18 @@ public class RtfTextFileAdapter implements InputFileAdapter {
           stringBuilder.append((char) ch);
         } else {
           int len = stringBuilder.length();
-          LOGGER.warn(
-              "Illegal rtf character with code point: {} at {} in {}",
+          LOGGER.warn("Illegal rtf character with code point: {} at {} in {}",
               ch, len, path.toString());
-          IllegalXmlCharacter xmlCharacter
-              = ImmutableIllegalXmlCharacter.builder()
+          IllegalXmlCharacter xmlCharacter = ImmutableIllegalXmlCharacter.builder()
               .value(ch)
               .build();
-          Label<IllegalXmlCharacter> label
-              = new Label<>(len, len, xmlCharacter);
+          Label<IllegalXmlCharacter> label = new Label<>(len, len, xmlCharacter);
           illegalXmlCharacters.add(label);
         }
       }
+    } catch (IOException e) {
+      LOGGER.error("Failure processing document " + fileName);
+      throw e;
     }
 
     String documentText = stringBuilder.toString();

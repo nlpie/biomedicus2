@@ -130,6 +130,7 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
     try {
       boolean hasNext = documentSourceRunner.hasNext();
       if (!hasNext) {
+        documentSourceRunner.close();
         try {
           guiceInjector.detach();
         } catch (BiomedicusException e) {
@@ -137,7 +138,7 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
         }
       }
       return hasNext;
-    } catch (BiomedicusException e) {
+    } catch (Exception e) {
       throw new CollectionException(e);
     }
   }

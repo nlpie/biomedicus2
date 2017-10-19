@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public final class DocumentSourceRunner extends ScopedWork {
+public final class DocumentSourceRunner extends ScopedWork implements AutoCloseable {
 
   @Nullable
   private Class<? extends DocumentSource> documentSourceClass;
@@ -113,6 +113,13 @@ public final class DocumentSourceRunner extends ScopedWork {
       return processorContext.call(() -> documentSource.estimateTotal());
     } catch (Exception e) {
       throw new BiomedicusException(e);
+    }
+  }
+
+  @Override
+  public void close() throws Exception {
+    if (documentSource != null) {
+      documentSource.close();
     }
   }
 }

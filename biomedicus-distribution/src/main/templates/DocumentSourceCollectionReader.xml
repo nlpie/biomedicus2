@@ -45,7 +45,7 @@
       <nameValuePair>
         <name>documentSource</name>
         <value>
-          <string>edu.umn.biomedicus.io.TextFilesDocumentSource</string>
+          <string><!-- TODO: Document source class goes here --></string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

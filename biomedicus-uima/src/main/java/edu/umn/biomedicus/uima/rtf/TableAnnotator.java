@@ -26,7 +26,6 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.tcas.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.info("Annotating rtf tables.");
+    LOGGER.debug("Annotating rtf tables.");
     TypeSystem typeSystem = aCAS.getTypeSystem();
     Type paragraphInTableType = typeSystem
         .getType("edu.umn.biomedicus.rtfuima.type.ParagraphInTable");
@@ -75,9 +74,9 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
     Type rowType = typeSystem
         .getType("edu.umn.biomedicus.type.RowAnnotation");
 
-    AnnotationIndex<Annotation> rowEndAnnotationIndex = systemView
+    AnnotationIndex<AnnotationFS> rowEndAnnotationIndex = systemView
         .getAnnotationIndex(rowEndType);
-    for (Annotation rowEnd : rowEndAnnotationIndex) {
+    for (AnnotationFS rowEnd : rowEndAnnotationIndex) {
       int rowEndIndex = rowEnd.getBegin();
       int insert = Arrays.binarySearch(indexes, rowEndIndex);
       if (insert < 0) {

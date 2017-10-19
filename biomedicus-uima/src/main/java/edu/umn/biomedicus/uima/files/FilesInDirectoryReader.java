@@ -143,8 +143,7 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
         PARAM_INPUT_FILE_ADAPTER_CLASS);
 
     try {
-      guiceInjector = (GuiceInjector) getUimaContext()
-          .getResourceObject("guiceInjector");
+      guiceInjector = (GuiceInjector) getUimaContext().getResourceObject("guiceInjector");
       Class<? extends InputFileAdapter> inputFileAdapterClass = Class
           .forName(inputFileAdapterClassName)
           .asSubclass(InputFileAdapter.class);
@@ -176,7 +175,7 @@ public class FilesInDirectoryReader extends CollectionReader_ImplBase {
 
     Path next = filesIterator.next();
 
-    LOGGER.info("Reading file: {}", next.getFileName());
+    LOGGER.debug("Reading file: {}", next.getFileName());
     inputFileAdapter.adaptFile(aCAS, next);
     completed++;
     LOGGER.debug("Completed reading {} files", completed);

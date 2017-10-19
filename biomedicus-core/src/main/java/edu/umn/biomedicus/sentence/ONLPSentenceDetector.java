@@ -30,10 +30,15 @@ import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.framework.store.TextView;
 import java.util.Collections;
+import java.util.regex.Matcher;
 import javax.inject.Inject;
 import opennlp.tools.sentdetect.SentenceDetectorME;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ONLPSentenceDetector implements DocumentProcessor {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ONLPSentenceDetector.class);
 
   private final SentenceDetectorME sentenceDetector;
 
@@ -51,21 +56,42 @@ public class ONLPSentenceDetector implements DocumentProcessor {
 
     Iterable<Label<TextSegment>> segments;
     if (textSegmentLabelIndex.isEmpty()) {
-      segments = Collections.singleton(new Label<>(
-          new Span(0, text.length()), new TextSegment()));
+      segments = Collections.singleton(new Label<>(new Span(0, text.length()), new TextSegment()));
     } else {
       segments = textSegmentLabelIndex;
     }
 
     for (TextLocation segment : segments) {
-      if (segment.length() > 0) {
-        String segmentText = segment.getCovered(text).toString();
-        for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
-          Span spanInSegment = new Span(onlpSpan.getStart(), onlpSpan.getEnd());
-          Span sentenceSpan = segment.derelativize(spanInSegment);
-          if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.getCovered(text)).find()) {
-            sentenceLabeler.value(new Sentence()).label(sentenceSpan);
-          }
+      if (segment.length() == 0) {
+        continue;
+      }
+      String segmentText = segment.getCovered(text).toString();
+      if (!Patterns.NON_WHITESPACE.matcher(segmentText).find()) {
+        continue;
+      }
+
+      Matcher initialWhitespace = Patterns.INITIAL_WHITESPACE.matcher(segmentText);
+      if (initialWhitespace.find()) {
+        segmentText = segmentText.substring(initialWhitespace.end());
+        segment = new Span(segment.getBegin() + initialWhitespace.end(), segment.getEnd());
+      }
+
+      Matcher finalWhitespace = Patterns.FINAL_WHITESPACE.matcher(segmentText);
+      if (finalWhitespace.find()) {
+        segmentText = segmentText.substring(0, finalWhitespace.start());
+        segment = new Span(segment.getBegin(), segment.getBegin() + finalWhitespace.start());
+      }
+
+      if (segment.length() == 0) {
+        continue;
+      }
+
+      LOGGER.trace("Detecting sentences: {}", segmentText);
+      for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
+        Span spanInSegment = new Span(onlpSpan.getStart(), onlpSpan.getEnd());
+        Span sentenceSpan = segment.derelativize(spanInSegment);
+        if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.getCovered(text)).find()) {
+          sentenceLabeler.value(new Sentence()).label(sentenceSpan);
         }
       }
     }

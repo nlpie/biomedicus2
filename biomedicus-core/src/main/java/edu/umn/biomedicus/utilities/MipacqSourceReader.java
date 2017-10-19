@@ -75,4 +75,9 @@ public class MipacqSourceReader implements DocumentSource {
   public long estimateTotal() {
     return total;
   }
+
+  @Override
+  public void close() throws Exception {
+
+  }
 }

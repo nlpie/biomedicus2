@@ -58,6 +58,10 @@ public final class Patterns {
    */
   public static final Pattern NEWLINE = Pattern.compile("\n");
 
+  public static final Pattern INITIAL_WHITESPACE = Pattern.compile("^\\s+");
+
+  public static final Pattern FINAL_WHITESPACE = Pattern.compile("\\s+$");
+
   /**
    * Private constructor to prevent instantiation of utility class.
    */

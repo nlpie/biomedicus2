@@ -87,6 +87,7 @@ public final class CASDocument implements Document {
     valueFeature = metadataType.getFeatureByBaseName("value");
 
     metadata = cas.createView("metadata");
+    metadata.setDocumentText("");
     Type idType = typeSystem
         .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
     Feature idFeat = idType.getFeatureByBaseName("documentId");

@@ -96,16 +96,12 @@ public class XmiWriter extends CasAnnotator_ImplBase {
         .next()
         .getStringValue(documentId) + ".xmi";
     Path path = outputDir.resolve(fileName);
-
-    if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("Writing XMI CAS to location: {}", path.toString());
-    }
+    LOGGER.debug("Writing XMI CAS to location: {}", path.toString());
 
     try (OutputStream out = new FileOutputStream(path.toFile())) {
       XmiCasSerializer.serialize(cas, out);
     } catch (IOException | SAXException e) {
       throw new AnalysisEngineProcessException(e);
     }
-
   }
 }

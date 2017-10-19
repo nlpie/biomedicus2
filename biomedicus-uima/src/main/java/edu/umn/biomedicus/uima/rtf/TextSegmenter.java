@@ -40,10 +40,9 @@ public class TextSegmenter extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.info("Segmenting rtf text.");
+    LOGGER.debug("Segmenting rtf text.");
     CAS systemView = aCAS.getView("SystemView");
-    TextSegmentsBuilder textSegmentsBuilder
-        = new TextSegmentsBuilder(systemView);
+    TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
 
     TypeSystem typeSystem = systemView.getTypeSystem();
 
