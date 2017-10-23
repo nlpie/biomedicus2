@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
+  ~ Unauthorized Copying of this file, via any medium is strictly prohibited
+  ~ Proprietary and Confidential
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>biomedicus</artifactId>
+    <groupId>edu.umn.biomedicus</groupId>
+    <version>1.9.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>biomedicus-gate</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.umn.biomedicus</groupId>
+      <artifactId>biomedicus-distribution</artifactId>
+      <version>1.9.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>uk.ac.gate</groupId>
+      <artifactId>gate-core</artifactId>
+      <version>8.4.1</version>
+    </dependency>
+  </dependencies>
+
+</project>

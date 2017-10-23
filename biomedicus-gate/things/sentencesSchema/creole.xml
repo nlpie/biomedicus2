@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<CREOLE-DIRECTORY>
+	<CREOLE>
+		<RESOURCE>
+			<NAME>Annotation Schema</NAME>
+			<CLASS>gate.creole.AnnotationSchema</CLASS>
+			<COMMENT>An annotation type and its features</COMMENT>
+			<PARAMETER NAME="xmlFileUrl" COMMENT="The url to the definition file"
+				SUFFIXES="xml;xsd">java.net.URL</PARAMETER>
+			<HIDDEN-AUTOINSTANCE><PARAM NAME="xmlFileUrl" VALUE="./Sentence.xml" /></HIDDEN-AUTOINSTANCE>
+		</RESOURCE>
+	</CREOLE>
+</CREOLE-DIRECTORY>
