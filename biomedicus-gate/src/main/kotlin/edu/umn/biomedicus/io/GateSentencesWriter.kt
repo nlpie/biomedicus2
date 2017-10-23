@@ -22,12 +22,6 @@ import javax.inject.Inject
 class GateSentencesWriter @Inject internal constructor(
         @ProcessorSetting("outputDirectory") private val outputDirectory: Path
 ): DocumentProcessor {
-
-    init {
-        Gate.init()
-    }
-
-
     override fun process(document: Document) {
         val documentId = document.documentId
         val systemView = StandardViews.getSystemView(document)
@@ -66,5 +60,11 @@ class GateSentencesWriter @Inject internal constructor(
         Files.createDirectories(xmlPath.parent)
 
         xmlPath.toFile().writeText(gateDocument.toXml(), StandardCharsets.UTF_8)
+    }
+
+    companion object {
+        init {
+            Gate.init()
+        }
     }
 }
