@@ -20,8 +20,13 @@
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
-      <artifactId>biomedicus-distribution</artifactId>
-      <version>1.9.0-SNAPSHOT</version>
+      <artifactId>biomedicus-core</artifactId>
+      <version>${biomedicus.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.umn.biomedicus</groupId>
+      <artifactId>biomedicus-uima</artifactId>
+      <version>${biomedicus.version}</version>
     </dependency>
 
     <dependency>
