@@ -53,6 +53,9 @@ interface Label {
     fun contains(other: Label): Boolean =
             startIndex <= other.startIndex && endIndex >= other.endIndex
 
+    /**
+     * Checks if this label is contained in the span designated by [startIndex] and [endIndex].
+     */
     fun isContainedBy(startIndex: Int, endIndex: Int): Boolean =
             this.startIndex >= startIndex && this.endIndex <= endIndex
 
@@ -87,23 +90,44 @@ interface Label {
         return endIndex.compareTo(label.endIndex)
     }
 
+    /**
+     * Compares the [startIndex] of two labels using natural ordering
+     */
     fun compareStart(label: Label): Int {
         return startIndex.compareTo(label.startIndex)
     }
 
+    /**
+     * Transforms this label into a [Span] of just this label's [startIndex] and [endIndex].
+     */
     fun toSpan(): Span = Span(startIndex, endIndex)
 
+    /**
+     * Takes the argument [label], which has the same 0-basis as this label, and makes relative to
+     * this label, i.e. having a 0-basis of this label's [startIndex]
+     */
     fun relativize(label: Label): Span =
             Span(label.startIndex - startIndex, label.endIndex - startIndex)
 
+    /**
+     * Takes the argument [label], which is relative to this label, and changes it to have the same
+     * 0-basis as this label.
+     */
     fun derelativize(label: Label): Span =
             Span(label.startIndex + startIndex, label.endIndex + startIndex)
 }
 
+/**
+ * Used to implement [Label] in Java since default method implementations on Kotlin interfaces are
+ * not pulled through
+ */
 abstract class AbstractLabel(
         override val startIndex: Int,
         override val endIndex: Int
 ) : Label {
+    /**
+     * Constructor which copies the bounds of another label
+     */
     constructor(label: Label) : this(label.startIndex, label.endIndex)
 }
 
@@ -129,6 +153,9 @@ data class Span(
     }
 
     companion object Factory {
+        /**
+         * Creates a new span with the given [startIndex] and [endIndex]
+         */
         @JvmStatic
         fun create(startIndex: Int, endIndex: Int): Span = Span(startIndex, endIndex)
     }
@@ -143,6 +170,9 @@ data class ReferenceLabel<out T>(
         override val endIndex: Int,
         val value: T
 ) : Label {
+    /**
+     * Constructor which copies the bounds of [label]
+     */
     constructor(label: Label, value: T) : this(label.startIndex, label.endIndex, value)
 }
 
@@ -155,6 +185,9 @@ data class PairLabel<out T, out U>(
         val first: T,
         val second: U
 ) : Label {
+    /**
+     * Constructor which copies the bounds of [label].
+     */
     constructor(
             label: Label,
             first: T,
@@ -288,8 +321,16 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun atLocation(startIndex: Int, endIndex: Int): Collection<T> =
             atLocation(Span(startIndex, endIndex))
 
+    /**
+     * Returns the first element of this index that has the same bounds as [label] or null if there
+     * is no such object
+     */
     fun firstAtLocation(label: Label): T? = atLocation(label).firstOrNull()
 
+    /**
+     * Returns the first element of this index that has the same bounds specified by [startIndex]
+     * and [endIndex] or null if there is no such object
+     */
     fun firstAtLocation(startIndex: Int, endIndex: Int): T? =
             atLocation(startIndex, endIndex).firstOrNull()
 
@@ -312,10 +353,23 @@ interface LabelIndex<out T : Label> : Collection<T> {
     ): Boolean = containsSpan(Span(startIndex, endIndex))
 }
 
+/**
+ * Used to implement [LabelIndex] in Java since default method implementations are not pulled from
+ * interfaces in Java.
+ */
 abstract class AbstractLabelIndex<out T : Label> : LabelIndex<T>
 
+/**
+ * Used to add labels to the document label indices.
+ */
 interface Labeler<in T : Label> {
+    /**
+     * Adds [label] to the document
+     */
     fun add(label: T)
 
+    /**
+     * Adds all the labels in the [Iterable] [elements] to the document.
+     */
     fun labelAll(elements: Iterable<T>) = elements.forEach { this.add(it) }
 }
