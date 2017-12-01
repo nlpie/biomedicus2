@@ -18,18 +18,13 @@ package edu.umn.biomedicus.uima.files;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-import com.google.inject.Injector;
-import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
-import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.io.IllegalXmlCharacter;
 import edu.umn.biomedicus.uima.adapter.GuiceInjector;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
 import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import java.io.IOException;
 import java.io.Reader;
@@ -108,7 +103,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
 
     document = UimaAdapters.createDocument(cas, labelAdapters, documentId);
 
-    List<Label<IllegalXmlCharacter>> illegalXmlCharacters = new ArrayList<>();
+    List<IllegalXmlCharacter> illegalXmlCharacters = new ArrayList<>();
     StringBuilder stringBuilder = new StringBuilder();
     try (Reader stringReader = Files.newBufferedReader(path, US_ASCII)) {
       int ch;
@@ -119,11 +114,9 @@ public class RtfTextFileAdapter implements InputFileAdapter {
           int len = stringBuilder.length();
           LOGGER.warn("Illegal rtf character with code point: {} at {} in {}",
               ch, len, path.toString());
-          IllegalXmlCharacter xmlCharacter = ImmutableIllegalXmlCharacter.builder()
-              .value(ch)
-              .build();
-          Label<IllegalXmlCharacter> label = new Label<>(len, len, xmlCharacter);
-          illegalXmlCharacters.add(label);
+
+          IllegalXmlCharacter xmlCharacter = new IllegalXmlCharacter(len, len, ch);
+          illegalXmlCharacters.add(xmlCharacter);
         }
       }
     } catch (IOException e) {
@@ -136,11 +129,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
         .withName(Views.ORIGINAL_DOCUMENT_VIEW)
         .withText(documentText)
         .build();
-    Labeler<IllegalXmlCharacter> illCharLabeler = odTextView
-        .getLabeler(IllegalXmlCharacter.class);
-    for (Label<IllegalXmlCharacter> illChar : illegalXmlCharacters) {
-      illCharLabeler.label(illChar);
-    }
+    odTextView.getLabeler(IllegalXmlCharacter.class).labelAll(illegalXmlCharacters);
   }
 
   @Override

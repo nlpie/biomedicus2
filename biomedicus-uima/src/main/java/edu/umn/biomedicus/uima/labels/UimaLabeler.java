@@ -17,14 +17,11 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
-import edu.umn.biomedicus.framework.store.ValueLabeler;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.Labeler;
+import org.jetbrains.annotations.NotNull;
 
-public final class UimaLabeler<T> implements Labeler<T> {
+public final class UimaLabeler<T extends Label> implements Labeler<T> {
 
   private final LabelAdapter<T> labelAdapter;
 
@@ -34,26 +31,12 @@ public final class UimaLabeler<T> implements Labeler<T> {
   }
 
   @Override
-  public ValueLabeler value(T value) {
-    return new ValueLabeler() {
-      @Override
-      public void label(int begin, int end) throws BiomedicusException {
-        label(Span.create(begin, end));
-      }
-
-      @Override
-      public void label(TextLocation textLocation)
-          throws BiomedicusException {
-        labelAdapter
-            .labelToAnnotation(new Label<>(textLocation.toSpan(),
-                value));
-      }
-    };
-  }
-
-  @Override
-  public void label(Label<T> label) {
+  public void add(@NotNull T label) {
     labelAdapter.labelToAnnotation(label);
   }
 
+  @Override
+  public void labelAll(@NotNull Iterable<? extends T> elements) {
+    elements.forEach(this::add);
+  }
 }

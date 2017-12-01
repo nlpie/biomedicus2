@@ -20,19 +20,15 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import edu.umn.biomedicus.framework.LabelAliases;
-import edu.umn.biomedicus.framework.Searcher;
-import edu.umn.biomedicus.framework.SearchExpr;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.AbstractLabel;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Span;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 import org.testng.annotations.Test;
 
@@ -56,18 +52,18 @@ public class SearchExprTest {
 
   Span span2 = new Span(7, 10);
 
-  Label<Blah> label = new Label<>(span, new Blah());
+  Blah label = new Blah(span);
 
-  Label<Blah> label1 = new Label<>(span1, new Blah());
+  Blah label1 = new Blah(span1);
 
-  Label<Blah> label2 = new Label<>(span2, new Blah());
+  Blah label2 = new Blah(span2);
 
   @Test
-  public void testMatchType() throws Exception {
+  public void testMatchType() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       document.getLabelIndex(Blah.class); result = labelIndex;
-      labelIndex.first(); result = Optional.of(label);
+      labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -80,11 +76,11 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoMatchType() throws Exception {
+  public void testNoMatchType() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       document.getLabelIndex(Blah.class); result = labelIndex;
-      labelIndex.first(); result = Optional.empty();
+      labelIndex.first(); result = null;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -97,14 +93,14 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoTextBeforeMatch() throws Exception {
+  public void testNoTextBeforeMatch() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 13);
       document.getText(); result = "this is text.";
       document.getLabelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
-          Optional.of(Label.create(0, 4, new Blah())),
-          Optional.of(Label.create(5, 7, new Blah()))
+          new Blah(0, 4),
+          new Blah(5, 7)
       );
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -116,14 +112,14 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoTextBeforeNoMatch() throws Exception {
+  public void testNoTextBeforeNoMatch() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 13);
       document.getText(); result = "this is text.";
       document.getLabelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
-          Optional.of(Label.create(0, 4, new Blah())),
-          Optional.of(Label.create(8, 12, new Blah()))
+          new Blah(0, 4),
+          new Blah(8, 12)
       );
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -135,11 +131,11 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testMatchPin() throws Exception {
+  public void testMatchPin() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       document.getLabelIndex(Blah.class); result = labelIndex;
-      labelIndex.first(); returns(Optional.of(label), Optional.of(label1), Optional.of(label2));
+      labelIndex.first(); returns(label, label1, label2);
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -152,11 +148,11 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoMatchPin() throws Exception {
+  public void testNoMatchPin() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
       document.getLabelIndex(Blah.class); result = labelIndex;
-      labelIndex.first(); returns(Optional.of(label), Optional.empty());
+      labelIndex.first(); returns(label, null);
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -169,13 +165,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testStringPropertyMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -190,13 +186,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyNoMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testStringPropertyNoMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -209,17 +205,16 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyAlternation() throws Exception {
-    Foo foo = new Foo();
+  public void testStringPropertyAlternation() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
-    Foo foo2 = new Foo();
+    Foo foo2 = new Foo(6, 10);
     foo2.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
-                                  Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -239,13 +234,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyAlternationMiss() throws Exception {
-    Foo foo = new Foo();
+  public void testStringPropertyAlternationMiss() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -258,13 +253,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexPropertyMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testRegexPropertyMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -279,13 +274,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexPropertyMiss() throws Exception {
-    Foo foo = new Foo();
+  public void testRegexPropertyMiss() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -298,17 +293,16 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexAlternations() throws Exception {
-    Foo foo = new Foo();
+  public void testRegexAlternations() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
-    Foo foo2 = new Foo();
+    Foo foo2 = new Foo(6, 10);
     foo2.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
-          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -328,13 +322,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testCaseInsensitiveMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("BAZ");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -349,13 +343,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveNoMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testCaseInsensitiveNoMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -368,17 +362,16 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveAlternationsFirst() throws Exception {
-    Foo foo = new Foo();
+  public void testCaseInsensitiveAlternationsFirst() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
-    Foo foo2 = new Foo();
+    Foo foo2 = new Foo(6, 10);
     foo2.setValue("BAZ");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
-          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -398,17 +391,16 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveAlternationsOther() throws Exception {
-    Foo foo = new Foo();
+  public void testCaseInsensitiveAlternationsOther() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
-    Foo foo2 = new Foo();
+    Foo foo2 = new Foo(6, 10);
     foo2.setValue("baz");
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
-          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -430,13 +422,13 @@ public class SearchExprTest {
 
 
   @Test
-  public void testNumberPropertyMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testNumberPropertyMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setBaz(5);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -451,13 +443,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyNegative() throws Exception {
-    Foo foo = new Foo();
+  public void testNumberPropertyNegative() {
+    Foo foo = new Foo(0, 5);
     foo.setBaz(-5);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -472,13 +464,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyNoMatch() throws Exception {
-    Foo foo = new Foo();
+  public void testNumberPropertyNoMatch() {
+    Foo foo = new Foo(0, 5);
     foo.setBaz(3);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -491,17 +483,16 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyAlternation() throws Exception {
-    Foo foo = new Foo();
+  public void testNumberPropertyAlternation() {
+    Foo foo = new Foo(0, 5);
     foo.setBaz(3);
 
-    Foo foo2 = new Foo();
+    Foo foo2 = new Foo(6, 10);
     foo2.setBaz(4);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(new Label<>(new Span(0, 5), foo)),
-          Optional.of(new Label<>(new Span(6, 10), foo2)));
+      labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -521,13 +512,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyAlternationMiss() throws Exception {
-    Foo foo = new Foo();
+  public void testNumberPropertyAlternationMiss() {
+    Foo foo = new Foo(0, 5);
     foo.setBaz(5);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -540,12 +531,12 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPropertyMatchNull() throws Exception {
-    Foo foo = new Foo();
+  public void testPropertyMatchNull() {
+    Foo foo = new Foo(0, 5);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -558,14 +549,14 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testMultiProperties() throws Exception {
-    Foo foo = new Foo();
+  public void testMultiProperties() {
+    Foo foo = new Foo(0, 5);
     foo.setValue("baz");
     foo.setBaz(42);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(new Label<>(new Span(0, 5), foo));
+      labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
@@ -580,12 +571,12 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAlternations() throws Exception {
-    Optional<Label<Blah>> label = Optional.of(new Label<>(new Span(0, 5), new Blah()));
+  public void testAlternations() {
+    Blah label = new Blah(0, 5);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.empty(), label);
+      labelIndex.first(); returns(null, label);
       labelAliases.getLabelable("Foo"); result = Foo.class;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -601,7 +592,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testEmpty() throws Exception {
+  public void testEmpty() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
     }};
@@ -618,10 +609,10 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testLabelVariable() throws Exception {
+  public void testLabelVariable() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(label);
+      labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -630,18 +621,18 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Label<?>> opt = searcher.getLabel("instance");
+    Optional<Label> opt = searcher.getLabel("instance");
     assertTrue(opt.isPresent());
     assertEquals(opt.get(), label);
   }
 
   @Test
-  public void testRepeatLabelVariable() throws Exception {
-    Label<Foo> fooLabel = Label.create(0, 3, new Foo());
+  public void testRepeatLabelVariable() {
+    Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(label), Optional.empty(), Optional.of(fooLabel));
+      labelIndex.first(); returns(label, null, fooLabel);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -651,7 +642,7 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Label<?>> opt = searcher.getLabel("instance");
+    Optional<Label> opt = searcher.getLabel("instance");
     assertTrue(opt.isPresent());
     assertEquals(opt.get(), label);
 
@@ -664,12 +655,12 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRepeatingGroupName() throws Exception {
-    Label<Foo> fooLabel = Label.create(0, 3, new Foo());
+  public void testRepeatingGroupName() {
+    Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(Optional.of(label), Optional.empty(), Optional.of(fooLabel));
+      labelIndex.first(); returns(label, null, fooLabel);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -681,21 +672,21 @@ public class SearchExprTest {
 
     Optional<Span> instance = searcher.getSpan("instance");
     assertTrue(instance.isPresent());
-    assertTrue(instance.get().spanEquals(label));
+    assertTrue(instance.get().locationEquals(label));
 
     searcher = blah.createSearcher(document);
     searcher.search();
 
     instance = searcher.getSpan("instance");
     assertTrue(instance.isPresent());
-    assertTrue(instance.get().spanEquals(fooLabel));
+    assertTrue(instance.get().locationEquals(fooLabel));
   }
 
   @Test
-  public void testLabelGroup() throws Exception {
+  public void testLabelGroup() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(label);
+      labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -710,30 +701,10 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAnEnum() throws Exception {
-    Label<AnEnum> label = new Label<>(new Span(0, 5), AnEnum.VALUE);
-
+  public void testOptionMissing() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(label);
-      labelAliases.getLabelable("AnEnum"); result = AnEnum.class;
-    }};
-
-    SearchExpr blah = SearchExpr.parse(labelAliases, "(instance:AnEnum=VALUE)");
-
-    Searcher searcher = blah.createSearcher(document);
-    searcher.search();
-
-    Optional<Span> opt = searcher.getSpan("instance");
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), label.toSpan());
-  }
-
-  @Test
-  public void testOptionMissing() throws Exception {
-    new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.empty();
+      labelIndex.first(); result = null;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
@@ -749,10 +720,7 @@ public class SearchExprTest {
   public void testPositiveLookaheadPass() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 8), new Foo()))
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Foo(6, 8));
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -767,10 +735,10 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPositiveLookaheadFail() throws Exception {
+  public void testPositiveLookaheadFail() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); result = Optional.of(Label.create(Span.of(0, 5), new Blah()));
+      labelIndex.first(); result = new Blah(0, 5);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -785,13 +753,10 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNegativeLookaheadPass() throws Exception {
+  public void testNegativeLookaheadPass() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), null);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -806,14 +771,11 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNegativeLookaheadFail() throws Exception {
+  public void testNegativeLookaheadFail() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 8), new Foo()))
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Foo(6, 8));
 
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -827,28 +789,29 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testFallback() throws Exception {
+  public void testFallback() {
+    Foo foo1 = new Foo(0, 5);
+    foo1.setBaz(10);
 
-    Foo tenFoo = new Foo();
-    tenFoo.setBaz(10);
-    Foo fourteenFoo = new Foo();
+    Foo foo2 = new Foo(6, 8);
+    foo2.setBaz(10);
+
+    Foo foo3 = new Foo(9, 13);
+    foo3.setBaz(10);
+
+    Foo fourteenFoo = new Foo(14, 18);
     fourteenFoo.setBaz(14);
 
-    List<Label<Foo>> arr = new ArrayList<>();
-    arr.add(Label.create(Span.of(0, 5), tenFoo));
-    arr.add(Label.create(Span.of(6, 8), tenFoo));
-    arr.add(Label.create(Span.of(9, 13), tenFoo));
-    arr.add(Label.create(Span.of(14, 18), fourteenFoo));
+    List<Foo> arr = new ArrayList<>();
+    arr.add(foo1);
+    arr.add(foo2);
+    arr.add(foo3);
+    arr.add(fourteenFoo);
 
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 30);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), tenFoo)),
-          Optional.of(Label.create(Span.of(6, 8), tenFoo)),
-          Optional.of(Label.create(Span.of(9, 13), tenFoo)),
-          Optional.of(Label.create(Span.of(14, 18), fourteenFoo))
-      );
+      labelIndex.first(); returns(foo1, foo2, foo3, fourteenFoo);
 
       labelIndex.iterator(); result = arr.iterator();
 
@@ -865,13 +828,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyOptional() throws Exception {
+  public void testAtomicLazyOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(Optional.of(Label.create(Span.of(0, 5), new Blah())), Optional.empty());
+      labelIndex.first(); returns(new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "opt:Blah?? Blah*");
@@ -887,16 +850,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveOptional() throws Exception {
+  public void testAtomicPossessiveOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah?+ Blah");
@@ -908,16 +868,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyOptional() throws Exception {
+  public void testAtomicGreedyOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah? opt:Blah*");
@@ -933,17 +890,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveKleene() throws Exception {
+  public void testAtomicPossessiveKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah*+ Blah");
@@ -955,16 +908,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyKleene() throws Exception {
+  public void testAtomicLazyKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty());
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "opt:Blah*? Blah*");
@@ -980,16 +930,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyKleene() throws Exception {
+  public void testAtomicGreedyKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty());
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah* opt:Blah*");
@@ -1005,17 +952,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveOnePlusFail() throws Exception {
+  public void testAtomicPossessiveOnePlusFail() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah++ Blah");
@@ -1027,17 +970,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveOnePlusMatch() throws Exception {
+  public void testAtomicPossessiveOnePlusMatch() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah++");
@@ -1051,17 +990,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyOnePlus() throws Exception {
+  public void testAtomicLazyOnePlus() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah+?");
@@ -1075,17 +1010,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurly() throws Exception {
+  public void testAtomicPossessiveCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,3}+");
@@ -1099,17 +1030,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyNoMaxPass() throws Exception {
+  public void testAtomicPossessiveCurlyNoMaxPass() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{2,}+");
@@ -1123,16 +1050,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyNoMaxFail() throws Exception {
+  public void testAtomicPossessiveCurlyNoMaxFail() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{2,}+");
@@ -1144,16 +1068,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExactBelow() throws Exception {
+  public void testAtomicPossessiveCurlyExactBelow() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{2}+");
@@ -1165,17 +1086,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExact() throws Exception {
+  public void testAtomicPossessiveCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{2}+");
@@ -1189,18 +1106,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExactAbove() throws Exception {
+  public void testAtomicPossessiveCurlyExactAbove() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{2}+");
@@ -1212,18 +1124,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurly() throws Exception {
+  public void testAtomicLazyCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,3}?");
@@ -1237,18 +1144,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurlyNoMax() throws Exception {
+  public void testAtomicLazyCurlyNoMax() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,}?");
@@ -1262,18 +1164,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurlyExact() throws Exception {
+  public void testAtomicLazyCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1}?");
@@ -1287,18 +1184,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurly() throws Exception {
+  public void testAtomicGreedyCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,3}");
@@ -1312,18 +1204,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurlyNoMax() throws Exception {
+  public void testAtomicGreedyCurlyNoMax() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,}");
@@ -1337,18 +1224,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurlyExact() throws Exception {
+  public void testAtomicGreedyCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1}");
@@ -1362,18 +1244,13 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testReluctanceAndMatch() throws Exception {
+  public void testReluctanceAndMatch() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
       document.getDocumentSpan(); result = new Span(0, 13);
 
-      labelIndex.first(); returns(
-          Optional.of(Label.create(Span.of(0, 5), new Blah())),
-          Optional.of(Label.create(Span.of(6, 10), new Blah())),
-          Optional.of(Label.create(Span.of(11, 13), new Blah())),
-          Optional.empty()
-      );
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah{1,}?");
@@ -1386,18 +1263,29 @@ public class SearchExprTest {
     assertEquals(searcher.getEnd(), 13);
   }
 
-  enum AnEnum {
-    VALUE;
+  static class Blah extends AbstractLabel {
+
+    public Blah(int startIndex, int endIndex) {
+      super(startIndex, endIndex);
+    }
+
+    public Blah(Label label) {
+      super(label);
+    }
   }
 
-  static class Blah {
-
-  }
-
-  public static class Foo {
+  public static class Foo extends AbstractLabel {
 
     private String value;
     private int baz;
+
+    public Foo(int startIndex, int endIndex) {
+      super(startIndex, endIndex);
+    }
+
+    public Foo(Label label) {
+      super(label);
+    }
 
     public String getValue() {
       return value;

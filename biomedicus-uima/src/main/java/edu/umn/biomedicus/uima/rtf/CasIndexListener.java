@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.rtf.reader.IndexListener;
+import edu.umn.nlpengine.Label;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
@@ -57,11 +57,10 @@ class CasIndexListener implements IndexListener {
   @Override
   public void wroteToDestination(String destinationName,
       int destinationIndex,
-      TextLocation originalDocumentTextLocation) {
+      Label originalDocumentTextLocation) {
     AnnotationFS viewIndex = originalDocumentView
-        .createAnnotation(viewIndexType,
-            originalDocumentTextLocation.getBegin(),
-            originalDocumentTextLocation.getEnd());
+        .createAnnotation(viewIndexType, originalDocumentTextLocation.getStartIndex(),
+            originalDocumentTextLocation.getEndIndex());
     viewIndex.setStringValue(destinationNameFeature, destinationName);
     viewIndex.setIntValue(destinationIndexFeature, destinationIndex);
     originalDocumentView.addFsToIndexes(viewIndex);

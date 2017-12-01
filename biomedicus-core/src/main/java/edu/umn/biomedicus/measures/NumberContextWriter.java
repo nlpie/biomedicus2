@@ -19,26 +19,19 @@ package edu.umn.biomedicus.measures;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.SearchExpr;
-import edu.umn.biomedicus.framework.SearchExprFactory;
-import edu.umn.biomedicus.framework.Searcher;
-import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -70,48 +63,45 @@ public class NumberContextWriter implements DocumentProcessor {
     TextView systemView = StandardViews.getSystemView(document);
 
     LabelIndex<Number> numbersIndex = systemView.getLabelIndex(Number.class);
-    LabelIndex<Sentence> sentencesIndex = new DefaultLabelIndex<>(
-        systemView.getLabelIndex(Sentence.class));
+    LabelIndex<Sentence> sentencesIndex = systemView.getLabelIndex(Sentence.class);
     LabelIndex<ParseToken> tokensIndex = systemView.getLabelIndex(ParseToken.class);
 
     try (BufferedWriter bufferedWriter = Files
         .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),
             StandardOpenOption.CREATE_NEW)) {
 
-      for (Label<Number> numberLabel : numbersIndex) {
-        LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(numberLabel);
-        Optional<Label<Sentence>> sentenceOption = sentenceContainingIndex.first();
-        if (!sentenceOption.isPresent()) {
+      for (Number number : numbersIndex) {
+        LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(number);
+        Sentence sentence = sentenceContainingIndex.first();
+        if (sentence == null) {
           throw new BiomedicusException("No sentence");
         }
-        Label<Sentence> sentenceLabel = sentenceOption.get();
-        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentenceLabel);
+        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentence);
 
-        Iterator<Label<ParseToken>> it = sentenceTokensIndex.leftwardsFrom(numberLabel)
-            .iterator();
+        Iterator<ParseToken> it = sentenceTokensIndex.backwardFrom(number).iterator();
         List<ParseToken> leftTokens = new ArrayList<>();
         for (int i = 0; i < contextSize; i++) {
           if (it.hasNext()) {
-            leftTokens.add(it.next().getValue());
+            leftTokens.add(it.next());
           }
         }
         int leftSize = leftTokens.size();
         for (int i = 0; i < leftSize; i++) {
-          bufferedWriter.write(leftTokens.get(leftSize - 1 - i).text() + " ");
+          bufferedWriter.write(leftTokens.get(leftSize - 1 - i).getText() + " ");
         }
         bufferedWriter.newLine();
 
-        for (ParseToken numberToken : tokensIndex.insideSpan(numberLabel).values()) {
-          bufferedWriter.write(numberToken.text() + " ");
+        for (ParseToken numberToken : tokensIndex.insideSpan(number)) {
+          bufferedWriter.write(numberToken.getText() + " ");
         }
         bufferedWriter.newLine();
 
-        Iterator<Label<ParseToken>> rightIt = sentenceTokensIndex.rightwardsFrom(numberLabel)
+        Iterator<ParseToken> rightIt = sentenceTokensIndex.forwardFrom(number)
             .iterator();
 
         for (int i = 0; i < contextSize; i++) {
           if (rightIt.hasNext()) {
-            bufferedWriter.write(rightIt.next().getValue().text() + " ");
+            bufferedWriter.write(rightIt.next().getText() + " ");
           }
         }
         bufferedWriter.newLine();

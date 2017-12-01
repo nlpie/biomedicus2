@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 /**
  * Document source that reads text files from a directory and dumps the content into a view
@@ -44,6 +45,8 @@ public class TextFilesDocumentSource implements DocumentSource {
 
   private final String viewName;
 
+  private final String extension;
+
   @Inject
   TextFilesDocumentSource(
       @ProcessorSetting("inputDirectory") Path directoryPath,
@@ -52,6 +55,7 @@ public class TextFilesDocumentSource implements DocumentSource {
       @ProcessorSetting("viewName") String viewName
   ) throws IOException {
     charset = Charset.forName(charsetName);
+    this.extension = extension;
     total = Files.walk(directoryPath).filter(f -> f.toString().endsWith(extension)).count();
     iterator = Files.walk(directoryPath)
         .filter(f -> f.toString().endsWith(extension)).iterator();
@@ -68,7 +72,8 @@ public class TextFilesDocumentSource implements DocumentSource {
     try {
       Path next = iterator.next();
       String s = new String(Files.readAllBytes(next), charset);
-      String documentId = next.getFileName().toString();
+      String documentId = next.getFileName().toString()
+          .replaceFirst("\\.?" + Pattern.quote(extension) + "$", "");
       Document document = factory.create(documentId);
       document.newTextView().withName(viewName).withText(s).build();
       return document;

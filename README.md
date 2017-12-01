@@ -51,9 +51,8 @@ installation, configuration, use, and development of BioMedICUS.
 ## Contact and Support
 For issues or enhancement requests, feel free to submit to the Issues tab on GitHub.
 
-BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) and a 
-[Google Group](https://groups.google.com/a/umn.edu/forum/#!forum/biomedicus) for contacting 
-developers with questions, suggestions or feedback.
+BioMedICUS has a [gitter chat](https://gitter.im/biomedicus/biomedicus) for contacting developers 
+with questions, suggestions or feedback.
 
 ## About Us
 BioMedICUS is developed by the
@@ -63,7 +62,6 @@ with assistance from the
 
 
 ## Other Resources
-
 ### NLP-TAB
  *   [Demo](http://athena.ahc.umn.edu/nlptab)
  *   [Java Source Code](https://github.org/nlpie/nlptab)
@@ -80,3 +78,9 @@ Funding for this work was provided by:
  *	1 R01 LM011364-01 NIH-NLM
  *	1 R01 GM102282-01A1 NIH-NIGMS
  *	U54 RR026066-01A2 NIH-NCRR
+
+The following people have made code contributions not represented in the commit history:
+ *  Robert Bill
+ *  Arun Kumar
+ *  Serguei Pakhmomov
+ *  Yan Wang

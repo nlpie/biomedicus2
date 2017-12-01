@@ -8,12 +8,11 @@ package edu.umn.biomedicus.io
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.biomedicus.common.StandardViews
-import edu.umn.biomedicus.common.types.text.Sentence
 import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.store.Document
+import edu.umn.biomedicus.sentences.Sentence
 import gate.Factory
 import gate.Gate
-import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -45,8 +44,8 @@ class GateSentencesWriter @Inject internal constructor(
 
         for (sentenceLabel in systemView.getLabelIndex(Sentence::class.java)) {
             annotationSet.add(
-                    sentenceLabel.begin.toLong(),
-                    sentenceLabel.end.toLong(),
+                    sentenceLabel.startIndex.toLong(),
+                    sentenceLabel.endIndex.toLong(),
                     "Sentence",
                     Factory.newFeatureMap()
             )

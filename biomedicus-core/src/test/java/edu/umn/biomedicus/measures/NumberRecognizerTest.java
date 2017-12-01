@@ -17,19 +17,16 @@
 package edu.umn.biomedicus.measures;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.framework.store.ValueLabeler;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,18 +75,13 @@ public class NumberRecognizerTest {
   @Mocked
   Labeler<Number> numberLabeler;
 
-  @Mocked
-  ValueLabeler valueLabeler;
-
   @Test
   public void testUnconsumedNumber() throws Exception {
-    Label<Sentence> sentenceLabel = Label.create(0, 4, new Sentence());
+    Sentence sentenceLabel = new Sentence(0, 4);
 
-    List<Label<ParseToken>> parseTokenLabels = Arrays.asList(
-        Label.create(0, 2,
-            ImmutableParseToken.builder().text("25").hasSpaceAfter(true).build()),
-        Label.create(3, 4,
-            ImmutableParseToken.builder().text("3").hasSpaceAfter(true).build())
+    List<ParseToken> parseTokenLabels = Arrays.asList(
+        new ParseToken(0, 2, "25", true),
+        new ParseToken(3, 4, "3", true)
     );
 
     new MockUp<Numbers>() {
@@ -122,20 +114,16 @@ public class NumberRecognizerTest {
 
       combinedNumberDetector.getConsumedLastToken(); result = false;
 
-      numberLabeler.value((Number) any); result = valueLabeler;
+
     }};
 
     numberRecognizer.process(document);
 
     new VerificationsInOrder() {{
-      numberLabeler.value(ImmutableNumber.builder().numerator(new BigDecimal(25).toString())
-          .denominator(BigDecimal.ONE.toString()).numberType(NumberType.DECIMAL)
-          .build());
-      valueLabeler.label(0, 2);
-      numberLabeler.value(ImmutableNumber.builder().numerator(new BigDecimal(3).toString())
-          .denominator(BigDecimal.ONE.toString()).numberType(NumberType.DECIMAL)
-          .build());
-      valueLabeler.label(3, 4);
+      numberLabeler.add(new Number(0, 2, new BigDecimal(25).toString(),
+          BigDecimal.ONE.toString(), NumberType.DECIMAL));
+      numberLabeler.add(new Number(3, 4, new BigDecimal(3).toString(),
+          BigDecimal.ONE.toString(), NumberType.DECIMAL));
     }};
   }
 }

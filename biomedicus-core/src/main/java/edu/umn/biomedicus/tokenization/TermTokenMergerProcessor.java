@@ -17,17 +17,13 @@
 package edu.umn.biomedicus.tokenization;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.TermToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.LabelsUtilities;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 
 public final class TermTokenMergerProcessor implements DocumentProcessor {
 
@@ -39,12 +35,12 @@ public final class TermTokenMergerProcessor implements DocumentProcessor {
     LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
     Labeler<TermToken> termTokenLabeler = systemView.getLabeler(TermToken.class);
 
-    for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
-      LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentenceLabel);
-      TermTokenMerger tokenMerger = new TermTokenMerger(LabelsUtilities.cast(labelIndex));
+    for (Sentence sentence : sentenceLabelIndex) {
+      LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentence);
+      TermTokenMerger tokenMerger = new TermTokenMerger(labelIndex);
       while (tokenMerger.hasNext()) {
-        Label<TermToken> termTokenLabel = tokenMerger.next();
-        termTokenLabeler.label(termTokenLabel);
+        TermToken termToken = tokenMerger.next();
+        termTokenLabeler.add(termToken);
       }
     }
   }

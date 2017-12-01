@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
+import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;

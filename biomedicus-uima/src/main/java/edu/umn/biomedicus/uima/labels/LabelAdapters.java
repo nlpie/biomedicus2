@@ -19,6 +19,7 @@ package edu.umn.biomedicus.uima.labels;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.framework.LabelAliases;
+import edu.umn.nlpengine.Label;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class LabelAdapters {
     labelAliases.addAlias(tClass.getSimpleName(), tClass);
   }
 
-  public <T> LabelAdapterFactory<T> getLabelAdapterFactory(Class<T> tClass) {
+  public <T extends Label> LabelAdapterFactory<T> getLabelAdapterFactory(Class<T> tClass) {
     @SuppressWarnings("unchecked")
     LabelAdapterFactory<T> labelAdapterFactory = (LabelAdapterFactory<T>) factoryMap.get(tClass);
     if (labelAdapterFactory == null) {

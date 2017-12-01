@@ -22,25 +22,18 @@ import static edu.umn.biomedicus.modification.ModificationType.PROBABLE;
 
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.tuples.Pair;
-import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.types.semantics.Historical;
-import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
-import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
-import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
-import edu.umn.biomedicus.common.types.semantics.Negated;
-import edu.umn.biomedicus.common.types.semantics.Probable;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.TermToken;
+import edu.umn.biomedicus.concepts.DictionaryTerm;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.TermToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.util.List;
 
 /**
@@ -137,44 +130,35 @@ public class ModificationDetector implements DocumentProcessor {
     TextView textView = document.getTextView(StandardViews.SYSTEM)
         .orElseThrow(() -> new BiomedicusException("No system view"));
 
-    LabelIndex<TermToken> tokenLabelIndex = new DefaultLabelIndex<>(
-        textView.getLabelIndex(TermToken.class));
+    LabelIndex<TermToken> tokenLabelIndex = textView.getLabelIndex(TermToken.class);
     LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = textView
         .getLabelIndex(DictionaryTerm.class);
-    LabelIndex<Sentence> sentenceLabelIndex = new DefaultLabelIndex<>(
-        textView.getLabelIndex(Sentence.class));
-    LabelIndex<PartOfSpeech> partOfSpeechLabelIndex = new DefaultLabelIndex<>(
-        textView.getLabelIndex(PartOfSpeech.class));
+    LabelIndex<Sentence> sentenceLabelIndex = textView.getLabelIndex(Sentence.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = textView.getLabelIndex(PosTag.class);
 
     Labeler<Probable> probableLabeler = textView.getLabeler(Probable.class);
     Labeler<Historical> historicalLabeler = textView.getLabeler(Historical.class);
     Labeler<Negated> negatedLabeler = textView.getLabeler(Negated.class);
 
-    for (Label<DictionaryTerm> termLabel : dictionaryTermLabelIndex) {
-      Label<Sentence> sentenceLabel = sentenceLabelIndex.containing(termLabel).first()
-          .orElseThrow(IllegalStateException::new);
+    for (DictionaryTerm termLabel : dictionaryTermLabelIndex) {
+      Sentence sentenceLabel = sentenceLabelIndex.containing(termLabel).first();
 
       LabelIndex<TermToken> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel);
 
-      List<Label<TermToken>> contextList = sentenceTokenLabels.leftwardsFrom(termLabel).asList();
+      List<TermToken> contextList = sentenceTokenLabels.backwardFrom(termLabel).asList();
 
       Pair<ModificationType, List<Span>> result = CUES.searchLeft(contextList,
           partOfSpeechLabelIndex);
       if (result != null) {
         switch (result.first()) {
           case HISTORICAL:
-            historicalLabeler
-                .value(ImmutableHistorical.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            historicalLabeler.add(new Historical(termLabel, result.second()));
             break;
           case NEGATED:
-            negatedLabeler.value(ImmutableNegated.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            negatedLabeler.add(new Negated(termLabel, result.second()));
             break;
           case PROBABLE:
-            probableLabeler
-                .value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            probableLabeler.add(new Probable(termLabel, result.second()));
             break;
           default:
             throw new IllegalStateException();
@@ -182,24 +166,19 @@ public class ModificationDetector implements DocumentProcessor {
         continue;
       }
 
-      contextList = sentenceTokenLabels.rightwardsFrom(termLabel).asList();
+      contextList = sentenceTokenLabels.forwardFrom(termLabel).asList();
 
       result = CUES.searchRight(contextList, partOfSpeechLabelIndex);
       if (result != null) {
         switch (result.first()) {
           case HISTORICAL:
-            historicalLabeler
-                .value(ImmutableHistorical.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            historicalLabeler.add(new Historical(termLabel, result.second()));
             break;
           case NEGATED:
-            negatedLabeler.value(ImmutableNegated.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            negatedLabeler.add(new Negated(termLabel, result.second()));
             break;
           case PROBABLE:
-            probableLabeler
-                .value(ImmutableProbable.builder().addAllCueTerms(result.second()).build())
-                .label(termLabel);
+            probableLabeler.add(new Probable(termLabel, result.second()));
             break;
           default:
             throw new IllegalStateException();

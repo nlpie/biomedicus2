@@ -22,12 +22,11 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Aggregator;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -132,8 +131,8 @@ public class ONLPSentenceTrainer implements Aggregator {
 
     String text = textView.getText();
 
-    for (Label<Sentence> sentenceLabel : textView.getLabelIndex(Sentence.class)) {
-      CharSequence sample = sentenceLabel.getCovered(text);
+    for (Sentence sentence : textView.getLabelIndex(Sentence.class)) {
+      CharSequence sample = sentence.coveredString(text);
       samplesQueue.add(sample.toString());
     }
   }

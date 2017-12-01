@@ -18,7 +18,7 @@ package edu.umn.biomedicus.tokenization;
 
 import static org.testng.Assert.assertEquals;
 
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Span;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.Test;
@@ -31,29 +31,30 @@ public class PennLikePhraseTokenizerTest {
       SENTENCE);
 
   @Test
-  public void testWords() throws Exception {
-    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence(SENTENCE).collect(Collectors.toList());
+  public void testWords() {
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence(SENTENCE)
+        .collect(Collectors.toList());
 
     assertEquals(list.size(), 19);
-    assertEquals(list.get(0).getCovered(SENTENCE), "This");
-    assertEquals(list.get(1).getCovered(SENTENCE), "test");
-    assertEquals(list.get(2).getCovered(SENTENCE), "'s");
-    assertEquals(list.get(3).getCovered(SENTENCE), "logic");
-    assertEquals(list.get(4).getCovered(SENTENCE), "will");
-    assertEquals(list.get(5).getCovered(SENTENCE), "confirm");
-    assertEquals(list.get(6).getCovered(SENTENCE), "that");
-    assertEquals(list.get(7).getCovered(SENTENCE), "the");
-    assertEquals(list.get(8).getCovered(SENTENCE), "tokenizer");
-    assertEquals(list.get(9).getCovered(SENTENCE), "(");
-    assertEquals(list.get(10).getCovered(SENTENCE), "P.T.B.");
-    assertEquals(list.get(11).getCovered(SENTENCE), "-");
-    assertEquals(list.get(12).getCovered(SENTENCE), "like");
-    assertEquals(list.get(13).getCovered(SENTENCE), ")");
-    assertEquals(list.get(14).getCovered(SENTENCE), "is");
-    assertEquals(list.get(15).getCovered(SENTENCE), "well");
-    assertEquals(list.get(16).getCovered(SENTENCE), "-");
-    assertEquals(list.get(17).getCovered(SENTENCE), "behaved");
-    assertEquals(list.get(18).getCovered(SENTENCE), ".");
+    assertEquals(list.get(0).coveredString(SENTENCE), "This");
+    assertEquals(list.get(1).coveredString(SENTENCE), "test");
+    assertEquals(list.get(2).coveredString(SENTENCE), "'s");
+    assertEquals(list.get(3).coveredString(SENTENCE), "logic");
+    assertEquals(list.get(4).coveredString(SENTENCE), "will");
+    assertEquals(list.get(5).coveredString(SENTENCE), "confirm");
+    assertEquals(list.get(6).coveredString(SENTENCE), "that");
+    assertEquals(list.get(7).coveredString(SENTENCE), "the");
+    assertEquals(list.get(8).coveredString(SENTENCE), "tokenizer");
+    assertEquals(list.get(9).coveredString(SENTENCE), "(");
+    assertEquals(list.get(10).coveredString(SENTENCE), "P.T.B.");
+    assertEquals(list.get(11).coveredString(SENTENCE), "-");
+    assertEquals(list.get(12).coveredString(SENTENCE), "like");
+    assertEquals(list.get(13).coveredString(SENTENCE), ")");
+    assertEquals(list.get(14).coveredString(SENTENCE), "is");
+    assertEquals(list.get(15).coveredString(SENTENCE), "well");
+    assertEquals(list.get(16).coveredString(SENTENCE), "-");
+    assertEquals(list.get(17).coveredString(SENTENCE), "behaved");
+    assertEquals(list.get(18).coveredString(SENTENCE), ".");
   }
 
   @Test
@@ -61,43 +62,39 @@ public class PennLikePhraseTokenizerTest {
     PennLikePhraseTokenizer pennLikePhraseTokenizer
         = new PennLikePhraseTokenizer("This sentence has some zero-width spaces.\u200b\u200b");
 
-    List<PennLikePhraseTokenizer.TokenCandidate> tokenCandidates = pennLikePhraseTokenizer
+    List<TokenCandidate> tokenCandidates = pennLikePhraseTokenizer
         .startStreamWithWords()
         .collect(Collectors.toList());
 
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = tokenCandidates
+    TokenCandidate tokenCandidate = tokenCandidates
         .get(tokenCandidates.size() - 1);
-    assertEquals(tokenCandidate.getEnd(), 41);
+    assertEquals(tokenCandidate.getEndIndex(), 41);
   }
 
   @Test
-  public void testWordsEmptySentence() throws Exception {
+  public void testWordsEmptySentence() {
     PennLikePhraseTokenizer pennLikePhraseTokenizer = new PennLikePhraseTokenizer("");
 
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
-        .startStreamWithWords()
+    List<TokenCandidate> list = pennLikePhraseTokenizer.startStreamWithWords()
         .collect(Collectors.toList());
 
     assertEquals(list.size(), 0);
   }
 
   @Test
-  public void testWordsWhitespaceSentence() throws Exception {
+  public void testWordsWhitespaceSentence() {
     PennLikePhraseTokenizer pennLikePhraseTokenizer = new PennLikePhraseTokenizer("\n \t   ");
 
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
-        .startStreamWithWords()
+    List<TokenCandidate> list = pennLikePhraseTokenizer.startStreamWithWords()
         .collect(Collectors.toList());
 
     assertEquals(list.size(), 0);
   }
 
   @Test
-  public void testSplitEndPossessive() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        5, 11, false); // test's
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
-        .splitWordByEndBreaks(tokenCandidate)
+  public void testSplitEndPossessive() {
+    TokenCandidate tokenCandidate = new TokenCandidate(5, 11, false); // test's
+    List<TokenCandidate> list = pennLikePhraseTokenizer.splitWordByEndBreaks(tokenCandidate)
         .collect(Collectors.toList());
 
     assertEquals(list.size(), 2);
@@ -106,10 +103,9 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSplitEndParen() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        51, 63, false); // P.T.B.-like)
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
+  public void testSplitEndParen() {
+    TokenCandidate tokenCandidate = new TokenCandidate(51, 63, false); // P.T.B.-like)
+    List<TokenCandidate> list = pennLikePhraseTokenizer
         .splitWordByEndBreaks(tokenCandidate)
         .collect(Collectors.toList());
 
@@ -119,10 +115,9 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSplitMidBreaks() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        51, 62, false); // P.T.B.-like
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
+  public void testSplitMidBreaks() {
+    TokenCandidate tokenCandidate = new TokenCandidate(51, 62, false); // P.T.B.-like
+    List<TokenCandidate> list = pennLikePhraseTokenizer
         .splitWordByMiddleBreaks(tokenCandidate)
         .collect(Collectors.toList());
 
@@ -133,10 +128,9 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSplitTrailingPeriod() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        67, 80, true); // well-behaved.
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
+  public void testSplitTrailingPeriod() {
+    TokenCandidate tokenCandidate = new TokenCandidate(67, 80, true); // well-behaved.
+    List<TokenCandidate> list = pennLikePhraseTokenizer
         .splitTrailingPeriod(tokenCandidate)
         .collect(Collectors.toList());
 
@@ -146,10 +140,9 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testDoNotSplitInternalPeriods() throws Exception {
-    PennLikePhraseTokenizer.TokenCandidate tokenCandidate = pennLikePhraseTokenizer.new TokenCandidate(
-        51, 57, false); // P.T.B.
-    List<PennLikePhraseTokenizer.TokenCandidate> list = pennLikePhraseTokenizer
+  public void testDoNotSplitInternalPeriods() {
+    TokenCandidate tokenCandidate = new TokenCandidate(51, 57, false); // P.T.B.
+    List<TokenCandidate> list = pennLikePhraseTokenizer
         .splitTrailingPeriod(tokenCandidate)
         .collect(Collectors.toList());
 
@@ -158,27 +151,27 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testDoNotSplitCommaNumbers() throws Exception {
+  public void testDoNotSplitCommaNumbers() {
     List<Span> spanList = PennLikePhraseTokenizer.tokenizePhrase("42,000,000")
         .collect(Collectors.toList());
 
     assertEquals(spanList.size(), 1);
-    assertEquals(spanList.get(0).getBegin(), 0);
-    assertEquals(spanList.get(0).getEnd(), 10);
+    assertEquals(spanList.get(0).getStartIndex(), 0);
+    assertEquals(spanList.get(0).getEndIndex(), 10);
   }
 
   @Test
-  public void testSplitTrailingComma() throws Exception {
+  public void testSplitTrailingComma() {
     List<Span> list = PennLikePhraseTokenizer.tokenizePhrase("first,")
         .collect(Collectors.toList());
 
     assertEquals(list.size(), 2);
-    assertEquals(list.get(0).getBegin(), 0);
-    assertEquals(list.get(0).getEnd(), 5);
+    assertEquals(list.get(0).getStartIndex(), 0);
+    assertEquals(list.get(0).getEndIndex(), 5);
   }
 
   @Test
-  public void testSplitPercent() throws Exception {
+  public void testSplitPercent() {
     List<Span> spans = PennLikePhraseTokenizer.tokenizePhrase("42%")
         .collect(Collectors.toList());
 
@@ -188,7 +181,7 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testParenSplitMid() throws Exception {
+  public void testParenSplitMid() {
     List<Span> spans = PennLikePhraseTokenizer.tokenizePhrase("abc(asf")
         .collect(Collectors.toList());
 
@@ -199,7 +192,7 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSplitUnitsOffTheEnd() throws Exception {
+  public void testSplitUnitsOffTheEnd() {
     List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("2.5cm")
         .collect(Collectors.toList());
 
@@ -209,7 +202,7 @@ public class PennLikePhraseTokenizerTest {
   }
 
   @Test
-  public void testSingleQUote() throws Exception {
+  public void testSingleQUote() {
     List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("'xyz")
         .collect(Collectors.toList());
 

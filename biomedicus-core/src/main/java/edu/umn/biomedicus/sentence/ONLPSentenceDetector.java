@@ -17,18 +17,17 @@
 package edu.umn.biomedicus.sentence;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.TextSegment;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.sentences.TextSegment;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import javax.inject.Inject;
@@ -54,18 +53,18 @@ public class ONLPSentenceDetector implements DocumentProcessor {
     Labeler<Sentence> sentenceLabeler = systemView.getLabeler(Sentence.class);
     LabelIndex<TextSegment> textSegmentLabelIndex = systemView.getLabelIndex(TextSegment.class);
 
-    Iterable<Label<TextSegment>> segments;
+    Iterable<TextSegment> segments;
     if (textSegmentLabelIndex.isEmpty()) {
-      segments = Collections.singleton(new Label<>(new Span(0, text.length()), new TextSegment()));
+      segments = Collections.singleton(new TextSegment(0, text.length()));
     } else {
       segments = textSegmentLabelIndex;
     }
 
-    for (TextLocation segment : segments) {
+    for (Label segment : segments) {
       if (segment.length() == 0) {
         continue;
       }
-      String segmentText = segment.getCovered(text).toString();
+      String segmentText = segment.coveredString(text);
       if (!Patterns.NON_WHITESPACE.matcher(segmentText).find()) {
         continue;
       }
@@ -73,13 +72,13 @@ public class ONLPSentenceDetector implements DocumentProcessor {
       Matcher initialWhitespace = Patterns.INITIAL_WHITESPACE.matcher(segmentText);
       if (initialWhitespace.find()) {
         segmentText = segmentText.substring(initialWhitespace.end());
-        segment = new Span(segment.getBegin() + initialWhitespace.end(), segment.getEnd());
+        segment = new Span(segment.getStartIndex() + initialWhitespace.end(), segment.getEndIndex());
       }
 
       Matcher finalWhitespace = Patterns.FINAL_WHITESPACE.matcher(segmentText);
       if (finalWhitespace.find()) {
         segmentText = segmentText.substring(0, finalWhitespace.start());
-        segment = new Span(segment.getBegin(), segment.getBegin() + finalWhitespace.start());
+        segment = new Span(segment.getStartIndex(), segment.getStartIndex() + finalWhitespace.start());
       }
 
       if (segment.length() == 0) {
@@ -90,8 +89,8 @@ public class ONLPSentenceDetector implements DocumentProcessor {
       for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
         Span spanInSegment = new Span(onlpSpan.getStart(), onlpSpan.getEnd());
         Span sentenceSpan = segment.derelativize(spanInSegment);
-        if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.getCovered(text)).find()) {
-          sentenceLabeler.value(new Sentence()).label(sentenceSpan);
+        if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.coveredString(text)).find()) {
+          sentenceLabeler.add(new Sentence(sentenceSpan));
         }
       }
     }

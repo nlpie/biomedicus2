@@ -16,6 +16,10 @@
 
 package edu.umn.biomedicus.framework.store;
 
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.io.Reader;
 
 /**
@@ -46,7 +50,7 @@ public interface TextView {
    * @param <T> the type of the labelable class
    * @return label index for the labelable type
    */
-  <T> LabelIndex<T> getLabelIndex(Class<T> labelClass);
+  <T extends Label> LabelIndex<T> getLabelIndex(Class<T> labelClass);
 
   /**
    * Returns a labeler for the specific label class.
@@ -55,7 +59,7 @@ public interface TextView {
    * @param <T> the type of the labelable class
    * @return labeler for the labelable type
    */
-  <T> Labeler<T> getLabeler(Class<T> labelClass);
+  <T extends Label> Labeler<T> getLabeler(Class<T> labelClass);
 
   /**
    * Returns the {@link Span} of the entire document.

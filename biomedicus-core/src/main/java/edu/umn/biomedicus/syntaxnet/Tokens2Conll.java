@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.syntaxnet;
 
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.Collection;
 import java.util.StringJoiner;
 
@@ -32,7 +32,7 @@ public class Tokens2Conll {
     StringBuilder conllBuilder = new StringBuilder();
     int i = 1;
     for (ParseToken token : tokenLabels) {
-      String text = token.text();
+      String text = token.getText();
       StringJoiner tokenBuilder = new StringJoiner("\t", "", "\n");
       tokenBuilder.add(Integer.toString((i++))); // sentence position
       tokenBuilder.add(text); // text
@@ -44,7 +44,7 @@ public class Tokens2Conll {
       tokenBuilder.add("_"); // DEPREL
       tokenBuilder.add("_"); // DEPS
       tokenBuilder
-          .add(token.hasSpaceAfter() ? "_" : "SpaceAfter=No"); // MISC
+          .add(token.getHasSpaceAfter() ? "_" : "SpaceAfter=No"); // MISC
       conllBuilder.append(tokenBuilder.toString());
     }
 

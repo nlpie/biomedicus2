@@ -21,18 +21,35 @@ import edu.umn.biomedicus.exc.BiomedicusException
 import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.framework.store.Document
-import edu.umn.biomedicus.framework.store.Label
+import edu.umn.biomedicus.numbers.NumberType
+import edu.umn.nlpengine.Label
 import java.math.BigDecimal
 import javax.inject.Inject
 
-data class NumberRange(val lower: BigDecimal, val upper: BigDecimal)
+data class Number(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val numerator: String,
+        val denominator: String,
+        val numberType: NumberType
+): Label {
+    fun value(): BigDecimal {
+        return BigDecimal(numerator).divide(BigDecimal(denominator), BigDecimal.ROUND_HALF_UP)
+    }
+}
+
+data class NumberRange(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val lower: BigDecimal,
+        val upper: BigDecimal
+): Label
 
 class NumberRangesLabeler @Inject internal constructor(
         searchExprFactory: SearchExprFactory
 ): DocumentProcessor {
     val expr = searchExprFactory.parse(
-            "[Sentence (?<range> [lower:Number] ParseToken<text=\"-\"|i\"to\"> [upper:Number!]) | " +
-                    "(?<range> ParseToken<text=i\"between\"> [lower:Number] ParseToken<text=\"and\"> [upper:Number!])]"
+            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> [upper:Number!]) | ParseToken<getText=i\"between\"> [?lower:Number] ParseToken<getText=\"and\"> [upper:Number!])"
     )
 
     override fun process(document: Document) {
@@ -46,18 +63,19 @@ class NumberRangesLabeler @Inject internal constructor(
             @Suppress("UNCHECKED_CAST")
             val lower = searcher.getLabel("lower").orElseThrow {
                 BiomedicusException("No lower")
-            } as Label<Number>
+            } as Number
 
             @Suppress("UNCHECKED_CAST")
             val upper = searcher.getLabel("upper").orElseThrow {
                 BiomedicusException("No upper")
-            } as Label<Number>
+            } as Number
 
 
-            val lowerValue = lower.value.value()
-            val upperValue = upper.value.value()
+            val lowerValue = lower.value()
+            val upperValue = upper.value()
             if (upperValue > lowerValue) {
-                labeler.value(NumberRange(lowerValue, upperValue)).label(searcher.getSpan("range").get())
+                val (startIndex, endIndex) = searcher.getSpan("range").get()
+                labeler.add(NumberRange(startIndex, endIndex, lowerValue, upperValue))
             }
         }
     }

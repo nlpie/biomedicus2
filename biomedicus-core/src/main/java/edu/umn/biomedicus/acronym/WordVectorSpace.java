@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.tokenization.Token;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;

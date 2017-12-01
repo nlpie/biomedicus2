@@ -18,7 +18,7 @@ package edu.umn.biomedicus.uima.rtf;
 
 import static edu.umn.biomedicus.common.utilities.Patterns.NON_WHITESPACE;
 
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Span;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.uima.cas.CAS;
@@ -83,7 +83,7 @@ class TextSegmentsBuilder {
     for (int currentSplit : sortedSplits) {
       if (currentSplit != prev) {
         Span span = new Span(0, currentSplit);
-        CharSequence segmentText = span.getCovered(documentText);
+        CharSequence segmentText = span.coveredText(documentText);
         if (NON_WHITESPACE.matcher(segmentText).find()) {
           cas.addFsToIndexes(
               cas.createAnnotation(textSegmentAnnotation, prev,

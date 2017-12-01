@@ -18,20 +18,18 @@ package edu.umn.biomedicus.measures;
 
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -72,8 +70,8 @@ public class NumberRecognizer implements DocumentProcessor {
     LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
     labeler = systemView.getLabeler(Number.class);
 
-    for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
-      extract(parseTokenLabelIndex.insideSpan(sentenceLabel));
+    for (Sentence sentence : sentenceLabelIndex) {
+      extract(parseTokenLabelIndex.insideSpan(sentence));
     }
   }
 
@@ -83,9 +81,9 @@ public class NumberRecognizer implements DocumentProcessor {
    * @param labels labels of parse tokens
    * @throws BiomedicusException if there is an error labeling the text
    */
-  void extract(Iterable<Label<ParseToken>> labels) throws BiomedicusException {
-    Iterator<Label<ParseToken>> iterator = labels.iterator();
-    Label<ParseToken> tokenLabel = null;
+  void extract(Iterable<ParseToken> labels) throws BiomedicusException {
+    Iterator<ParseToken> iterator = labels.iterator();
+    ParseToken tokenLabel = null;
     while (true) {
       if (tokenLabel == null) {
         if (!iterator.hasNext()) {
@@ -94,9 +92,9 @@ public class NumberRecognizer implements DocumentProcessor {
         tokenLabel = iterator.next();
       }
 
-      String text = tokenLabel.getValue().text();
-      int begin = tokenLabel.getBegin();
-      int end = tokenLabel.getEnd();
+      String text = tokenLabel.getText();
+      int begin = tokenLabel.getStartIndex();
+      int end = tokenLabel.getEndIndex();
       if (numberDetector.tryToken(text, begin, end)) {
         labelSeq();
         if (!numberDetector.getConsumedLastToken()) {
@@ -121,18 +119,15 @@ public class NumberRecognizer implements DocumentProcessor {
         : "Number type should never be null at this point";
     BigDecimal denominator = numberDetector.getDenominator();
     if (denominator == null) {
-      ImmutableNumber number = ImmutableNumber.builder()
-          .numerator(numerator.toString())
-          .numberType(numberType)
-          .denominator(BigInteger.ONE.toString()).build();
-      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
+      labeler.add(
+          new Number(numberDetector.getBegin(), numberDetector.getEnd(), numerator.toString(),
+              BigInteger.ONE.toString(), numberType)
+      );
     } else {
-      ImmutableNumber number = ImmutableNumber.builder()
-          .numerator(numerator.toString())
-          .denominator(denominator.toString())
-          .numberType(numberType)
-          .build();
-      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
+      labeler.add(
+          new Number(numberDetector.getBegin(), numberDetector.getEnd(), numerator.toString(),
+              denominator.toString(), numberType)
+      );
     }
   }
 }

@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.tokenization.Token;
+import edu.umn.nlpengine.AbstractLabel;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,8 +33,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Evaluate acronym expansion on the CASI data set without other biomedicus processing.
- * Used for quick-and-dirty checking of a model.
+ * Evaluate acronym expansion on the CASI data set without other biomedicus processing. Used for
+ * quick-and-dirty checking of a model.
  *
  * Created by gpfinley on 10/4/16.
  */
@@ -196,24 +197,23 @@ public class AcronymVectorOfflineEvaluation {
     }
   }
 
-  private class SimpleToken implements Token {
+  private class SimpleToken extends AbstractLabel implements Token {
 
     final String text;
 
     SimpleToken(String text) {
+      super(0, 0);
       this.text = text;
     }
 
     @Override
-    public String text() {
+    public String getText() {
       return text;
     }
 
     @Override
-    public boolean hasSpaceAfter() {
+    public boolean getHasSpaceAfter() {
       return true;
     }
   }
-
-
 }

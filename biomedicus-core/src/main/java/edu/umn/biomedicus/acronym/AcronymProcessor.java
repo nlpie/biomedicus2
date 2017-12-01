@@ -16,22 +16,22 @@
 
 package edu.umn.biomedicus.acronym;
 
+import edu.umn.biomedicus.acronyms.Acronym;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.semantics.Acronym;
-import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.biomedicus.tokenization.TermToken;
+import edu.umn.biomedicus.tokenization.Token;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -105,28 +105,25 @@ class AcronymProcessor implements DocumentProcessor {
     TextView systemView = StandardViews.getSystemView(document);
 
     LabelIndex<TermToken> termTokenLabels = systemView.getLabelIndex(TermToken.class);
-    LabelIndex<PartOfSpeech> partOfSpeechLabels = systemView.getLabelIndex(PartOfSpeech.class);
+    LabelIndex<PosTag> partOfSpeechLabels = systemView.getLabelIndex(PosTag.class);
     LabelIndex<ParseToken> parseTokenLabels = systemView.getLabelIndex(ParseToken.class);
     acronymLabeler = systemView.getLabeler(Acronym.class);
 
-    List<Label<TermToken>> termTokenLabelList = termTokenLabels.asList();
-    termTokens = termTokenLabels.valuesAsList();
+    List<TermToken> termTokenLabelList = termTokenLabels.asList();
+    termTokens = termTokenLabels.asList();
 
     int size = termTokenLabels.size();
     TERM_TOKENS:
     for (int i = 0; i < size; i++) {
-      Label<TermToken> termTokenLabel = termTokenLabelList.get(i);
+      TermToken termToken = termTokenLabelList.get(i);
 
-      List<Label<PartOfSpeech>> partOfSpeechLabelsForToken = partOfSpeechLabels
-          .insideSpan(termTokenLabel).asList();
+      List<PosTag> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termToken).asList();
 
-      if (!partOfSpeechLabelsForToken.stream().map(Label::value)
-          .allMatch(EXCLUDE_POS::contains)) {
-        if (!checkAndLabel(i, termTokenLabel) && checkParseTokens) {
-          for (Label<ParseToken> parseTokenLabel : parseTokenLabels.insideSpan(termTokenLabel)) {
-            if (!EXCLUDE_POS.contains(partOfSpeechLabels.withTextLocation(parseTokenLabel)
-                .orElseThrow(() -> new BiomedicusException("Parse token without POS")).value())) {
-              if (checkAndLabel(i, parseTokenLabel)) {
+      if (!partOfSpeechLabelsForToken.stream().map(PosTag::getPartOfSpeech).allMatch(EXCLUDE_POS::contains)) {
+        if (!checkAndLabel(i, termToken) && checkParseTokens) {
+          for (ParseToken parseToken : parseTokenLabels.insideSpan(termToken)) {
+            if (!EXCLUDE_POS.contains(partOfSpeechLabels.atLocation(parseToken).iterator().next().getPartOfSpeech())) {
+              if (checkAndLabel(i, parseToken)) {
                 continue TERM_TOKENS;
               }
             }
@@ -136,20 +133,15 @@ class AcronymProcessor implements DocumentProcessor {
     }
   }
 
-  private boolean checkAndLabel(int i, Label<? extends Token> tokenLabel)
+  private <T extends Token&Label> boolean checkAndLabel(int i, T token)
       throws BiomedicusException {
     boolean found = false;
-    Token token = tokenLabel.value();
     if (model.hasAcronym(token)
         || (orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token))) {
       String sense = model.findBestSense(termTokens, i);
-      if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(token.text())) {
+      if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(token.getText())) {
         LOGGER.trace("Labeling acronym expansion: {}", sense);
-        acronymLabeler.value(ImmutableAcronym.builder()
-            .text(sense)
-            .hasSpaceAfter(token.hasSpaceAfter())
-            .build())
-            .label(tokenLabel);
+        acronymLabeler.add(new Acronym(token, token.getText(), token.getHasSpaceAfter()));
         found = true;
       }
     }
