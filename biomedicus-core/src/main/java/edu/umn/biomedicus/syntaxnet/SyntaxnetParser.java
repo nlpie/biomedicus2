@@ -19,17 +19,15 @@ package edu.umn.biomedicus.syntaxnet;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.DependencyParse;
-import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.parsing.DependencyParse;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -152,10 +150,9 @@ public final class SyntaxnetParser implements DocumentProcessor {
 
       try (Writer writer = new OutputStreamWriter(
           tagger.getOutputStream())) {
-        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+        for (Sentence sentence : sentenceLabelIndex) {
           Collection<ParseToken> sentenceTokens = tokenLabelIndex
-              .insideSpan(sentenceLabel)
-              .values();
+              .insideSpan(sentence);
           String conllString = new Tokens2Conll(sentenceTokens)
               .conllString();
           writer.write(conllString);
@@ -165,18 +162,14 @@ public final class SyntaxnetParser implements DocumentProcessor {
 
       try (BufferedReader bufferedReader = new BufferedReader(
           new InputStreamReader(parser.getInputStream()))) {
-        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+        for (Sentence sentence : sentenceLabelIndex) {
           StringBuilder sentenceParse = new StringBuilder();
           String line;
           while ((line = bufferedReader.readLine()) != null && !line
               .isEmpty()) {
             sentenceParse.append(line).append("\n");
           }
-          dependencyParseLabeler.value(
-              ImmutableDependencyParse.builder()
-                  .parseTree(sentenceParse.toString())
-                  .build())
-              .label(sentenceLabel);
+          dependencyParseLabeler.add(new DependencyParse(sentence, sentenceParse.toString()));
         }
       }
 

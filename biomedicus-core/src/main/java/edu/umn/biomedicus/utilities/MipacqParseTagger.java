@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.utilities;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
+import edu.umn.nlpengine.Labeler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,7 +73,7 @@ public class MipacqParseTagger implements DocumentProcessor {
           }
         }
         if (start != -1 && start != current) {
-          sentenceLabeler.value(new Sentence()).label(start, current);
+          sentenceLabeler.add(new Sentence(start, current));
         }
       }
     } catch (IOException e) {

@@ -16,8 +16,7 @@
 
 package edu.umn.biomedicus.uima.types;
 
-import edu.umn.biomedicus.common.types.text.Token;
-import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.biomedicus.tokenization.Token;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
@@ -36,19 +35,18 @@ public abstract class AbstractTokenLabelAdapter<T extends Token> extends Abstrac
     hasSpaceAfterFeature = type.getFeatureByBaseName("hasSpaceAfter");
   }
 
-  protected abstract T createToken(String text, boolean hasSpaceAfter);
+  protected abstract T createToken(int begin, int end, String text, boolean hasSpaceAfter);
 
   @Override
-  protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
-    T token = label.value();
-    annotationFS.setStringValue(textFeature, token.text());
-    annotationFS.setBooleanValue(hasSpaceAfterFeature, token.hasSpaceAfter());
+  protected void fillAnnotation(T token, AnnotationFS annotationFS) {
+    annotationFS.setStringValue(textFeature, token.getText());
+    annotationFS.setBooleanValue(hasSpaceAfterFeature, token.getHasSpaceAfter());
   }
 
   @Override
-  protected T createLabelValue(FeatureStructure featureStructure) {
-    String text = featureStructure.getStringValue(textFeature);
-    boolean hasSpaceAfter = featureStructure.getBooleanValue(hasSpaceAfterFeature);
-    return createToken(text, hasSpaceAfter);
+  public T annotationToLabel(AnnotationFS annotationFS) {
+    String text = annotationFS.getStringValue(textFeature);
+    boolean hasSpaceAfter = annotationFS.getBooleanValue(hasSpaceAfterFeature);
+    return createToken(annotationFS.getBegin(), annotationFS.getEnd(), text, hasSpaceAfter);
   }
 }

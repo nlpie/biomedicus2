@@ -17,12 +17,10 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
-import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryTerm;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.concepts.DictionaryConcept;
+import edu.umn.biomedicus.concepts.DictionaryTerm;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.uima.cas.ArrayFS;
 import org.apache.uima.cas.CAS;
@@ -44,17 +42,13 @@ final class DictionaryTermLabelAdapter extends AbstractLabelAdapter<DictionaryTe
   }
 
   @Override
-  protected void fillAnnotation(Label<DictionaryTerm> label,
-      AnnotationFS annotationFS) {
-    List<DictionaryConcept> concepts = label.value().concepts();
+  protected void fillAnnotation(DictionaryTerm label, AnnotationFS annotationFS) {
+    List<DictionaryConcept> concepts = label.getConcepts();
     int size = concepts.size();
     ArrayFS arrayFS = cas.createArrayFS(size);
     for (int i = 0; i < size; i++) {
       DictionaryConcept dictionaryConcept = concepts.get(i);
-      Label<DictionaryConcept> conceptLabel = new Label<>(new Span(label),
-          dictionaryConcept);
-      AnnotationFS conceptAnnotation = dictionaryConceptLabelAdapter
-          .labelToAnnotation(conceptLabel);
+      AnnotationFS conceptAnnotation = dictionaryConceptLabelAdapter.labelToAnnotation(dictionaryConcept);
       arrayFS.set(i, conceptAnnotation);
     }
     cas.addFsToIndexes(arrayFS);
@@ -62,27 +56,22 @@ final class DictionaryTermLabelAdapter extends AbstractLabelAdapter<DictionaryTe
   }
 
   @Override
-  protected DictionaryTerm createLabelValue(FeatureStructure featureStructure) {
-    ImmutableDictionaryTerm.Builder builder
-        = ImmutableDictionaryTerm.builder();
-
-    FeatureStructure conceptsFeatureValue
-        = featureStructure.getFeatureValue(conceptsFeature);
+  public DictionaryTerm annotationToLabel(AnnotationFS annotationFS) {
+    FeatureStructure conceptsFeatureValue = annotationFS.getFeatureValue(conceptsFeature);
     if (!(conceptsFeatureValue instanceof ArrayFS)) {
-      throw new IllegalStateException(
-          "Concepts feature structure is not array.");
+      throw new IllegalStateException("Concepts feature structure is not array.");
     }
 
     ArrayFS conceptsArray = (ArrayFS) conceptsFeatureValue;
 
     int size = conceptsArray.size();
 
-    for (int i = 0; i < size; i++) {
-      FeatureStructure conceptFeatureStructure = conceptsArray.get(i);
-      builder.addConcepts(dictionaryConceptLabelAdapter
-          .createLabelValue(conceptFeatureStructure));
-    }
+    List<DictionaryConcept> concepts = new ArrayList<>(size);
 
-    return builder.build();
+    for (int i = 0; i < size; i++) {
+      AnnotationFS conceptFeatureStructure = (AnnotationFS) conceptsArray.get(i);
+      concepts.add(dictionaryConceptLabelAdapter.annotationToLabel(conceptFeatureStructure));
+    }
+    return new DictionaryTerm(annotationFS.getBegin(), annotationFS.getEnd(), concepts);
   }
 }

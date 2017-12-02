@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.List;
 
 public interface KindCandidateDetector {

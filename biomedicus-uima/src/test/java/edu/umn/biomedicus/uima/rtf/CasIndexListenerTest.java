@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Span;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;

@@ -16,17 +16,17 @@
 
 package edu.umn.biomedicus.uima.labels;
 
-import edu.umn.biomedicus.framework.store.Label;
+import edu.umn.nlpengine.Label;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
-public interface LabelAdapter<T> {
+public interface LabelAdapter<T extends Label> {
 
   boolean isDistinct();
 
   Type getType();
 
-  AnnotationFS labelToAnnotation(Label<T> label);
+  AnnotationFS labelToAnnotation(T label);
 
-  Label<T> annotationToLabel(AnnotationFS annotationFS);
+  T annotationToLabel(AnnotationFS annotationFS);
 }

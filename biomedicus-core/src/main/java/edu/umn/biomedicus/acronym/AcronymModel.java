@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.tokenization.Token;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +31,7 @@ import java.util.Set;
  */
 interface AcronymModel {
 
-  boolean hasAcronym(Token token);
+  <T extends Token> boolean hasAcronym(T token);
 
   String findBestSense(List<? extends Token> allTokens, int forTokenIndex);
 

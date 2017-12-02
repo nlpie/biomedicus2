@@ -18,13 +18,12 @@ package edu.umn.biomedicus.socialhistory;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.sh.SocialHistoryCandidate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,16 +45,12 @@ public class SubstanceUsageDetector implements DocumentProcessor {
 
   @Override
   public void process(Document document) throws BiomedicusException {
-
     TextView systemView = StandardViews.getSystemView(document);
 
-    for (Label<SocialHistoryCandidate> socialHistoryCandidateLabel
-        : systemView.getLabelIndex(SocialHistoryCandidate.class)) {
+    for (SocialHistoryCandidate candidate : systemView.getLabelIndex(SocialHistoryCandidate.class)) {
 
-      SubstanceUsageKind substanceUsageKind = socialHistoryCandidateLabel
-          .value().substanceUsageKind();
-      kindMap.get(substanceUsageKind).processCandidate(systemView, socialHistoryCandidateLabel);
+      SubstanceUsageKind substanceUsageKind = candidate.getSubstanceUsageKind();
+      kindMap.get(substanceUsageKind).processCandidate(systemView, candidate);
     }
-
   }
 }

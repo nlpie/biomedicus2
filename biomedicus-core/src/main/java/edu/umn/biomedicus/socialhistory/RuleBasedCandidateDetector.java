@@ -17,21 +17,19 @@
 package edu.umn.biomedicus.socialhistory;
 
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Section;
-import edu.umn.biomedicus.common.types.text.SectionContent;
-import edu.umn.biomedicus.common.types.text.SectionTitle;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sections.Section;
+import edu.umn.biomedicus.sections.SectionContent;
+import edu.umn.biomedicus.sections.SectionTitle;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.sh.SocialHistoryCandidate;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,24 +45,19 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
   @Override
   public void process(Document document) throws BiomedicusException {
     TextView systemView = StandardViews.getSystemView(document);
-    LabelIndex<Section> sectionLabels = systemView.getLabelIndex(Section.class);
-    LabelIndex<SectionTitle> sectionTitleLabels = systemView.getLabelIndex(SectionTitle.class);
+    LabelIndex<Section> sections = systemView.getLabelIndex(Section.class);
+    LabelIndex<SectionTitle> sectionTitles = systemView.getLabelIndex(SectionTitle.class);
     LabelIndex<ParseToken> parseTokenLabels = systemView.getLabelIndex(ParseToken.class);
-    Labeler<SocialHistoryCandidate> candidateLabeler = systemView
-        .getLabeler(SocialHistoryCandidate.class);
-    LabelIndex<SectionContent> sectionContentLabels = systemView
-        .getLabelIndex(SectionContent.class);
-    LabelIndex<Sentence> sentenceLabels = systemView.getLabelIndex(Sentence.class);
+    LabelIndex<SectionContent> sectionContents = systemView.getLabelIndex(SectionContent.class);
+    LabelIndex<Sentence> sentences = systemView.getLabelIndex(Sentence.class);
 
-    for (Label<Section> sectionLabel : sectionLabels) {
-      Label<SectionTitle> sectionTitleLabel = sectionTitleLabels
-          .insideSpan(sectionLabel)
-          .first()
-          .orElseThrow(() -> new BiomedicusException(
-              "Section did not have a title"));
+    Labeler<SocialHistoryCandidate> candidateLabeler =
+        systemView.getLabeler(SocialHistoryCandidate.class);
 
-      List<ParseToken> titleParseTokens = parseTokenLabels
-          .insideSpan(sectionTitleLabel).valuesAsList();
+    for (Section section : sections) {
+      SectionTitle sectionTitleLabel = sectionTitles.insideSpan(section)
+          .first();
+      List<ParseToken> titleParseTokens = parseTokenLabels.insideSpan(sectionTitleLabel).asList();
 
       List<KindCandidateDetector> headerMatches = new ArrayList<>();
       for (KindCandidateDetector candidateDetector : candidateDetectors) {
@@ -74,41 +67,19 @@ public class RuleBasedCandidateDetector implements DocumentProcessor {
       }
 
       if (!headerMatches.isEmpty()) {
+        SectionContent sectionContent = sectionContents.insideSpan(section).first();
+        LabelIndex<Sentence> sectionSentences = sentences.insideSpan(sectionContent);
 
-        Label<SectionContent> sectionContentLabel = sectionContentLabels
-            .insideSpan(sectionLabel).first()
-            .orElseThrow(() -> new BiomedicusException(
-                "No section content"));
-        LabelIndex<Sentence> sectionSentences = sentenceLabels.insideSpan(sectionContentLabel);
-
-        for (Label<Sentence> sentenceLabel : sectionSentences) {
-
-          List<ParseToken> sentenceParseTokens = parseTokenLabels
-              .insideSpan(sentenceLabel).valuesAsList();
+        for (Sentence sentence : sectionSentences) {
+          List<ParseToken> sentenceParseTokens = parseTokenLabels.insideSpan(sentence).asList();
           for (KindCandidateDetector headerMatch : headerMatches) {
-
-            if (headerMatch
-                .isSocialHistorySentence(titleParseTokens,
-                    sentenceParseTokens)) {
-
-              SubstanceUsageKind socialHistoryKind = headerMatch
-                  .getSocialHistoryKind();
-              SocialHistoryCandidate labelValue
-                  = ImmutableSocialHistoryCandidate
-                  .builder()
-                  .substanceUsageKind(socialHistoryKind)
-                  .build();
-              candidateLabeler.value(labelValue)
-                  .label(sentenceLabel);
-
+            if (headerMatch.isSocialHistorySentence(titleParseTokens, sentenceParseTokens)) {
+              SubstanceUsageKind socialHistoryKind = headerMatch.getSocialHistoryKind();
+              candidateLabeler.add(new SocialHistoryCandidate(sentence, socialHistoryKind));
             }
-
-
           }
         }
       }
-
-
     }
   }
 }

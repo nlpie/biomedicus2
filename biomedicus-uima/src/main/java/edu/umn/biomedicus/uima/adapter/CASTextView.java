@@ -17,14 +17,15 @@
 package edu.umn.biomedicus.uima.adapter;
 
 import com.google.common.base.Preconditions;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.uima.labels.LabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import edu.umn.biomedicus.uima.labels.UimaLabelIndex;
 import edu.umn.biomedicus.uima.labels.UimaLabeler;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +61,27 @@ final class CASTextView implements TextView {
   }
 
   @Override
+  public <T extends Label> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
+    Preconditions.checkNotNull(labelAdapters);
+    LabelAdapter<T> labelAdapter = labelAdapters
+        .getLabelAdapterFactory(labelClass).create(view);
+    return new UimaLabelIndex<>(view, labelAdapter);
+  }
+
+  @Override
+  public <T extends Label> Labeler<T> getLabeler(Class<T> labelClass) {
+    Preconditions.checkNotNull(labelAdapters);
+    LabelAdapter<T> labelAdapter = labelAdapters
+        .getLabelAdapterFactory(labelClass).create(view);
+    return new UimaLabeler<>(labelAdapter);
+  }
+
+  @Override
+  public Span getDocumentSpan() {
+    return new Span(0, getText().length());
+  }
+
+  @Override
   public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
@@ -76,26 +98,5 @@ final class CASTextView implements TextView {
   @Override
   public int hashCode() {
     return view.hashCode();
-  }
-
-  @Override
-  public <T> LabelIndex<T> getLabelIndex(Class<T> labelClass) {
-    Preconditions.checkNotNull(labelAdapters);
-    LabelAdapter<T> labelAdapter = labelAdapters
-        .getLabelAdapterFactory(labelClass).create(view);
-    return new UimaLabelIndex<>(view, labelAdapter);
-  }
-
-  @Override
-  public <T> Labeler<T> getLabeler(Class<T> labelClass) {
-    Preconditions.checkNotNull(labelAdapters);
-    LabelAdapter<T> labelAdapter = labelAdapters
-        .getLabelAdapterFactory(labelClass).create(view);
-    return new UimaLabeler<>(labelAdapter);
-  }
-
-  @Override
-  public Span getDocumentSpan() {
-    return new Span(0, getText().length());
   }
 }

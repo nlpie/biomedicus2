@@ -16,8 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.biomedicus.common.types.semantics.DictionaryConcept;
-import edu.umn.biomedicus.common.types.semantics.ImmutableDictionaryConcept;
+import edu.umn.nlpengine.Label;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
@@ -75,13 +74,8 @@ public class SuiCuiTui implements Serializable {
     return tui;
   }
 
-  public DictionaryConcept toConcept(double confidence) {
-    return ImmutableDictionaryConcept.builder()
-        .identifier(cui.toString())
-        .type(tui.toString())
-        .confidence(confidence)
-        .source("UMLS")
-        .build();
+  public DictionaryConcept toConcept(Label label, double confidence) {
+    return new DictionaryConcept(label, cui.toString(), "UMLS", tui.toString(), confidence);
   }
 
   @Override

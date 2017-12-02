@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +43,10 @@ public class DrugKindCandidateDetector implements KindCandidateDetector {
   }
 
   @Override
-  public boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens,
-      List<ParseToken> sentenceTokens) {
+  public boolean isSocialHistorySentence(
+      List<ParseToken> sectionTitleTokens,
+      List<ParseToken> sentenceTokens
+  ) {
 
     String strRelative = "(mom|mother|dad|father|grandmother|grandfather|son|child|daughter|sister|brother|maternal|paternal|niece|nephew|cousin|grandchild)";
     String strDrug = "(drug|snort|intranasal|marijuana|benzodiazepine|cocaine|LSD|methamphetamine|heroin|opiate|recreational drug|illicit drug|narcotic|hashish|crack |Other drug|unprescribed drug|injected drug|use drug|drug abuse|drug use|intravenous drug|illicit substance|drug user|polysubstance abuse|ETOH drug|on drug|illicit)";

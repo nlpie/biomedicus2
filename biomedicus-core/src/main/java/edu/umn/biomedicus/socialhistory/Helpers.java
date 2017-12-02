@@ -16,11 +16,10 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Span;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -47,8 +46,8 @@ class Helpers {
 
     StringBuilder stringBuilder = new StringBuilder();
     for (ParseToken termToken : termTokenList) {
-      stringBuilder.append(termToken.text());
-      if (termToken.hasSpaceAfter()) {
+      stringBuilder.append(termToken.getText());
+      if (termToken.getHasSpaceAfter()) {
         stringBuilder.append(" ");
       }
     }
@@ -203,28 +202,29 @@ class Helpers {
 
   }
 
-  static void getUsageTokens(LabelIndex<ParseToken> parseTokenLabels,
-      Label<Sentence> sentenceLabel,
+  static void getUsageTokens(
+      LabelIndex<ParseToken> parseTokenLabels,
+      Sentence sentenceLabel,
       Integer start,
       Integer end,
-      List<Integer> usageTokens) {
+      List<Integer> usageTokens
+  ) {
 
     // Get the token id in google denpency parse of each token in the span
-    Span substanceUsageSpan = sentenceLabel
-        .derelativize(new Span(start, end));
+    Span substanceUsageSpan = new Span(sentenceLabel.getStartIndex() + start, sentenceLabel.getStartIndex() + end);
 
-    Span beforeSpan = sentenceLabel.derelativize(new Span(0, start));
+    Span beforeSpan = new Span(sentenceLabel.getStartIndex(), sentenceLabel.getStartIndex() + start);
     List<ParseToken> usageSpanTokens = parseTokenLabels
-        .insideSpan(substanceUsageSpan).valuesAsList();
+        .insideSpan(substanceUsageSpan).asList();
     List<ParseToken> beforeSpanTokens = parseTokenLabels
-        .insideSpan(beforeSpan).valuesAsList();
+        .insideSpan(beforeSpan).asList();
 
     Integer token_id = 1;
 
-    for (ParseToken parseToken : beforeSpanTokens) {
+    for (ParseToken ignored : beforeSpanTokens) {
       token_id++;
     }
-    for (ParseToken parseToken : usageSpanTokens) {
+    for (ParseToken ignored : usageSpanTokens) {
       usageTokens.add(token_id);
       token_id++;
     }
@@ -485,15 +485,14 @@ class Helpers {
   static void getTemporalSyntaxPhrases(String strConstt,
       LabelIndex<ParseToken> parseTokenLabels,
       Hashtable<Integer, Integer> consttPPHash,
-      Label<Sentence> sentenceLabel) {
+      Sentence sentenceLabel) {
 
     List<String> lstTemporal = new ArrayList<>();
 
     strConstt = strConstt.replace("\n", " ");
     strConstt = strConstt.replaceAll("\\s+", " ");
 
-    List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+    List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentenceLabel).asList();
     String strSentence = toTokensString(sentenceTermTokens);
     Hashtable<Integer, Integer> temporalHash
         = new Hashtable<Integer, Integer>();

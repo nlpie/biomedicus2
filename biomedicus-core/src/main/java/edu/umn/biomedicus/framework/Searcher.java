@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.framework;
 
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.Span;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -34,7 +34,7 @@ public interface Searcher {
    * @param name the variable name assigned to the named label.
    * @return an optional containing the label matched against, or else empty if nothing matched.
    */
-  Optional<Label<?>> getLabel(String name);
+  Optional<Label> getLabel(String name);
 
   /**
    * Gets the span of any named group or label.

@@ -18,21 +18,19 @@ package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentBuilder;
 import edu.umn.biomedicus.framework.DocumentSource;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.utilities.PtbReader;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
+import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -87,9 +85,9 @@ public class PtbDocumentSource implements DocumentSource {
       String documentId = next.getFileName().toString();
       Document document = factory.create(documentId);
 
-      List<Label<Sentence>> sentenceLabels = new ArrayList<>();
-      List<Label<ParseToken>> parseTokenLabels = new ArrayList<>();
-      List<Label<PartOfSpeech>> partOfSpeechLabels = new ArrayList<>();
+      List<Sentence> sentenceLabels = new ArrayList<>();
+      List<ParseToken> parseTokenLabels = new ArrayList<>();
+      List<PosTag> partOfSpeechLabels = new ArrayList<>();
 
       PtbReader reader = PtbReader.createFromFile(next, charset);
       Optional<Node> option;
@@ -113,23 +111,22 @@ public class PtbDocumentSource implements DocumentSource {
           int begin = documentBuilder.length();
           int end = begin + word.length();
 
-          Span tokenSpan = Span.create(begin, end);
+          Span tokenSpan = new Span(begin, end);
 
           documentBuilder.append(word).append(' ');
 
-          parseTokenLabels.add(Label.create(tokenSpan, ImmutableParseToken.builder()
-              .hasSpaceAfter(true).text(word).build()));
+          parseTokenLabels.add(new ParseToken(tokenSpan, word, true));
 
           String label = leaf.getLabel();
           PartOfSpeech partOfSpeech = PartsOfSpeech.forTagWithFallback(label)
               .orElseGet(() -> PartOfSpeech.XX);
-          partOfSpeechLabels.add(Label.create(tokenSpan, partOfSpeech));
+          partOfSpeechLabels.add(new PosTag(tokenSpan, partOfSpeech));
 
         }
 
         int sentEnd = documentBuilder.length();
 
-        sentenceLabels.add(Label.create(Span.create(sentBegin, sentEnd), new Sentence()));
+        sentenceLabels.add(new Sentence(sentBegin, sentEnd));
       }
 
       TextView systemView = document.newTextView().withText(documentBuilder.toString())
@@ -138,7 +135,7 @@ public class PtbDocumentSource implements DocumentSource {
 
       systemView.getLabeler(Sentence.class).labelAll(sentenceLabels);
       systemView.getLabeler(ParseToken.class).labelAll(parseTokenLabels);
-      systemView.getLabeler(PartOfSpeech.class).labelAll(partOfSpeechLabels);
+      systemView.getLabeler(PosTag.class).labelAll(partOfSpeechLabels);
 
       return document;
     } catch (IOException e) {

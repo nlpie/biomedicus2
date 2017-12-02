@@ -17,70 +17,50 @@
 package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
+import edu.umn.biomedicus.acronyms.Acronym;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import edu.umn.biomedicus.common.types.encoding.IllegalXmlCharacter;
-import edu.umn.biomedicus.common.types.encoding.ImmutableIllegalXmlCharacter;
-import edu.umn.biomedicus.common.types.semantics.Acronym;
-import edu.umn.biomedicus.common.types.semantics.DictionaryTerm;
-import edu.umn.biomedicus.common.types.semantics.DictionaryTermModifier;
-import edu.umn.biomedicus.common.types.semantics.Historical;
-import edu.umn.biomedicus.common.types.semantics.ImmutableAcronym;
-import edu.umn.biomedicus.common.types.semantics.ImmutableHistorical;
-import edu.umn.biomedicus.common.types.semantics.ImmutableNegated;
-import edu.umn.biomedicus.measures.CandidateUnitOfMeasure;
-import edu.umn.biomedicus.measures.ImmutableNumber;
-import edu.umn.biomedicus.common.types.semantics.ImmutableProbable;
-import edu.umn.biomedicus.common.types.semantics.ImmutableSocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.ImmutableSpellCorrection;
-import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
-import edu.umn.biomedicus.common.types.semantics.Misspelling;
-import edu.umn.biomedicus.common.types.semantics.Negated;
-import edu.umn.biomedicus.measures.Number;
-import edu.umn.biomedicus.numbers.NumberType;
-import edu.umn.biomedicus.common.types.semantics.Probable;
-import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.SpellCorrection;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.structure.Cell;
-import edu.umn.biomedicus.common.types.structure.NestedCell;
-import edu.umn.biomedicus.common.types.structure.NestedRow;
-import edu.umn.biomedicus.common.types.structure.Row;
-import edu.umn.biomedicus.common.types.style.Bold;
-import edu.umn.biomedicus.common.types.style.Underlined;
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.ConstituencyParse;
-import edu.umn.biomedicus.common.types.text.DependencyParse;
-import edu.umn.biomedicus.common.types.text.ImmutableConstituencyParse;
-import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
-import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
-import edu.umn.biomedicus.common.types.text.ImmutableNormIndex;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ImmutableSection;
-import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
-import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
-import edu.umn.biomedicus.common.types.text.NormForm;
-import edu.umn.biomedicus.common.types.text.NormIndex;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Section;
-import edu.umn.biomedicus.common.types.text.SectionContent;
-import edu.umn.biomedicus.common.types.text.SectionTitle;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.TextSegment;
-import edu.umn.biomedicus.common.types.text.WordIndex;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.concepts.DictionaryTerm;
+import edu.umn.biomedicus.formatting.Bold;
+import edu.umn.biomedicus.formatting.Underlined;
+import edu.umn.biomedicus.io.IllegalXmlCharacter;
+import edu.umn.biomedicus.measures.CandidateUnitOfMeasure;
+import edu.umn.biomedicus.measures.Number;
+import edu.umn.biomedicus.measures.NumberRange;
+import edu.umn.biomedicus.modification.DictionaryTermModifier;
+import edu.umn.biomedicus.modification.Historical;
+import edu.umn.biomedicus.modification.Negated;
+import edu.umn.biomedicus.modification.Probable;
+import edu.umn.biomedicus.normalization.NormForm;
+import edu.umn.biomedicus.numbers.NumberType;
+import edu.umn.biomedicus.parsing.ConstituencyParse;
+import edu.umn.biomedicus.parsing.DependencyParse;
+import edu.umn.biomedicus.sections.Section;
+import edu.umn.biomedicus.sections.SectionContent;
+import edu.umn.biomedicus.sections.SectionTitle;
+import edu.umn.biomedicus.sections.SubstanceUsageElementType;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.sentences.TextSegment;
+import edu.umn.biomedicus.sh.SocialHistoryCandidate;
+import edu.umn.biomedicus.sh.SubstanceUsageElement;
+import edu.umn.biomedicus.structure.Cell;
+import edu.umn.biomedicus.structure.NestedCell;
+import edu.umn.biomedicus.structure.NestedRow;
+import edu.umn.biomedicus.structure.Row;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.biomedicus.tokenization.TermToken;
+import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
+import edu.umn.nlpengine.Span;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import org.apache.uima.cas.ArrayFS;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
@@ -113,11 +93,9 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(TermToken.class, TermTokenLabelAdapter::new);
     map.put(Acronym.class, AcronymLabelAdapter::new);
     map.put(ParseToken.class, ParseTokenLabelAdapter::new);
-    map.put(PartOfSpeech.class, PartOfSpeechLabelAdapter::new);
+    map.put(PosTag.class, PosTagAdapter::new);
     map.put(WordIndex.class, WordIndexLabelAdapter::new);
     map.put(NormForm.class, NormFormLabelAdapter::new);
-    map.put(Misspelling.class, MisspellingLabelAdapter::new);
-    map.put(SpellCorrection.class, SpellCorrectionLabelAdapter::new);
     map.put(Bold.class, BoldLabelAdapter::new);
     map.put(Underlined.class, UnderlinedLabelAdapter::new);
     map.put(SocialHistoryCandidate.class,
@@ -132,6 +110,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(Number.class, NumberLabelAdapter::new);
     map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
     map.put(IllegalXmlCharacter.class, IllegalXmlCharacterAdapter::new);
+    map.put(NumberRange.class, NumberRangeAdapter::new);
     return map;
   }
 
@@ -147,16 +126,14 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Section createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableSection.builder()
-          .kind(featureStructure.getStringValue(kindFeature))
-          .build();
+    protected void fillAnnotation(Section label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(kindFeature, label.getKind());
     }
 
     @Override
-    protected void fillAnnotation(Label<Section> label,
-        AnnotationFS annotationFS) {
-      annotationFS.setStringValue(kindFeature, label.value().kind());
+    public Section annotationToLabel(AnnotationFS annotationFS) {
+      return new Section(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getStringValue(kindFeature));
     }
   }
 
@@ -169,8 +146,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected SectionTitle createLabelValue(FeatureStructure featureStructure) {
-      return new SectionTitle();
+    public SectionTitle annotationToLabel(AnnotationFS annotationFS) {
+      return new SectionTitle(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -183,8 +160,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected SectionContent createLabelValue(FeatureStructure featureStructure) {
-      return new SectionContent();
+    public SectionContent annotationToLabel(AnnotationFS annotationFS) {
+      return new SectionContent(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -197,13 +174,13 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Sentence createLabelValue(FeatureStructure featureStructure) {
-      return new Sentence();
+    public boolean isDistinct() {
+      return true;
     }
 
     @Override
-    public boolean isDistinct() {
-      return true;
+    public Sentence annotationToLabel(AnnotationFS annotationFS) {
+      return new Sentence(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -216,13 +193,13 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected TextSegment createLabelValue(FeatureStructure featureStructure) {
-      return new TextSegment();
+    public boolean isDistinct() {
+      return true;
     }
 
     @Override
-    public boolean isDistinct() {
-      return true;
+    public TextSegment annotationToLabel(AnnotationFS annotationFS) {
+      return new TextSegment(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -239,23 +216,19 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
 
     @Override
-    protected void fillAnnotation(Label<DependencyParse> label,
-        AnnotationFS annotationFS) {
-      annotationFS.setStringValue(parseTreeFeature,
-          label.value().parseTree());
-    }
-
-    @Override
-    protected DependencyParse createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableDependencyParse.builder()
-          .parseTree(
-              featureStructure.getStringValue(parseTreeFeature))
-          .build();
+    protected void fillAnnotation(DependencyParse label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(parseTreeFeature, label.getParseTree());
     }
 
     @Override
     public boolean isDistinct() {
       return true;
+    }
+
+    @Override
+    public DependencyParse annotationToLabel(AnnotationFS annotationFS) {
+      return new DependencyParse(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getStringValue(parseTreeFeature));
     }
   }
 
@@ -264,29 +237,24 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     private final Feature cues;
     private final Type cueType;
-    private final Function<List<Span>, T> constructor;
 
-    DictionaryTermModifierLabelAdapter(CAS cas,
-        Type type,
-        Function<List<Span>, T> constructor) {
+    DictionaryTermModifierLabelAdapter(CAS cas, Type type) {
       super(cas, type);
-      this.constructor = constructor;
       cues = type.getFeatureByBaseName("cues");
       cueType = cas.getTypeSystem()
           .getType("edu.umn.biomedicus.uima.type1_6.ModificationCue");
     }
 
     @Override
-    protected void fillAnnotation(Label<T> label,
-        AnnotationFS annotationFS) {
-      T value = label.value();
-      List<Span> cueTerms = value.cueTerms();
+    protected void fillAnnotation(T label, AnnotationFS annotationFS) {
+      List<Span> cueTerms = label.getCueTerms();
       ArrayFS fsArray = cas.createArrayFS(cueTerms.size());
       for (int i = 0; i < cueTerms.size(); i++) {
         Span cueTerm = cueTerms.get(i);
-        AnnotationFS cueAnnotation = cas
-            .createAnnotation(cueType, cueTerm.getBegin(),
-                cueTerm.getEnd());
+
+        AnnotationFS cueAnnotation = cas.createAnnotation(cueType, cueTerm.getStartIndex(),
+            cueTerm.getEndIndex());
+
         cas.addFsToIndexes(cueAnnotation);
         fsArray.set(i, cueAnnotation);
       }
@@ -294,9 +262,11 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
       annotationFS.setFeatureValue(cues, fsArray);
     }
 
+    protected abstract T create(int start, int end, List<Span> cueTerms);
+
     @Override
-    protected T createLabelValue(FeatureStructure featureStructure) {
-      FeatureStructure cuesValue = featureStructure.getFeatureValue(cues);
+    public T annotationToLabel(AnnotationFS annotationFS) {
+      FeatureStructure cuesValue = annotationFS.getFeatureValue(cues);
       if (!(cuesValue instanceof ArrayFS)) {
         throw new IllegalStateException("Cues is not ArrayFS");
       }
@@ -315,7 +285,7 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         cueTerms.add(span);
       }
 
-      return constructor.apply(cueTerms);
+      return create(annotationFS.getBegin(), annotationFS.getEnd(), cueTerms);
     }
   }
 
@@ -323,22 +293,26 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Inject
     public NegatedLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-              .getType("edu.umn.biomedicus.uima.type1_6.Negated"),
-          (cues) -> ImmutableNegated.builder().addAllCueTerms(cues)
-              .build());
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Negated"));
+    }
+
+    @Override
+    protected Negated create(int start, int end, List<Span> cueTerms) {
+      return new Negated(start, end, cueTerms);
     }
   }
 
-  private static class HistoricalLabelAdapter extends
-      DictionaryTermModifierLabelAdapter<Historical> {
+  private static class HistoricalLabelAdapter
+      extends DictionaryTermModifierLabelAdapter<Historical> {
 
     @Inject
     public HistoricalLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-              .getType("edu.umn.biomedicus.uima.type1_6.Historical"),
-          (cues) -> ImmutableHistorical.builder().addAllCueTerms(cues)
-              .build());
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Historical"));
+    }
+
+    @Override
+    protected Historical create(int start, int end, List<Span> cueTerms) {
+      return new Historical(start, end, cueTerms);
     }
   }
 
@@ -346,10 +320,12 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Inject
     public ProbableLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-              .getType("edu.umn.biomedicus.uima.type1_6.Probable"),
-          (cues) -> ImmutableProbable.builder().addAllCueTerms(cues)
-              .build());
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.Probable"));
+    }
+
+    @Override
+    protected Probable create(int start, int end, List<Span> cueTerms) {
+      return new Probable(start, end, cueTerms);
     }
   }
 
@@ -357,21 +333,17 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Inject
     public TermTokenLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.uima.type1_6.TermToken"));
-    }
-
-    @Override
-    protected TermToken createToken(String text, boolean hasSpaceAfter) {
-      return ImmutableTermToken.builder()
-          .text(text)
-          .hasSpaceAfter(hasSpaceAfter)
-          .build();
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.TermToken"));
     }
 
     @Override
     public boolean isDistinct() {
       return true;
+    }
+
+    @Override
+    protected TermToken createToken(int begin, int end, String text, boolean hasSpaceAfter) {
+      return new TermToken(begin, end, text, hasSpaceAfter);
     }
   }
 
@@ -384,11 +356,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Acronym createToken(String text, boolean hasSpaceAfter) {
-      return ImmutableAcronym.builder()
-          .text(text)
-          .hasSpaceAfter(hasSpaceAfter)
-          .build();
+    protected Acronym createToken(int begin, int end, String text, boolean hasSpaceAfter) {
+      return new Acronym(begin, end, text, hasSpaceAfter);
     }
   }
 
@@ -401,42 +370,35 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected ParseToken createToken(String text, boolean hasSpaceAfter) {
-      return ImmutableParseToken.builder()
-          .text(text)
-          .hasSpaceAfter(hasSpaceAfter)
-          .build();
-    }
-
-    @Override
     public boolean isDistinct() {
       return true;
     }
+
+    @Override
+    protected ParseToken createToken(int begin, int end, String text, boolean hasSpaceAfter) {
+      return new ParseToken(begin, end, text, hasSpaceAfter);
+    }
   }
 
-  public static class PartOfSpeechLabelAdapter extends AbstractLabelAdapter<PartOfSpeech> {
+  public static class PosTagAdapter extends AbstractLabelAdapter<PosTag> {
 
     private final Feature partOfSpeechFeature;
 
     @Inject
-    public PartOfSpeechLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem().getType(
-          "edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag"));
+    public PosTagAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_6.PartOfSpeechTag"));
       partOfSpeechFeature = type.getFeatureByBaseName("partOfSpeech");
-
     }
 
     @Override
-    protected void fillAnnotation(Label<PartOfSpeech> label,
-        AnnotationFS annotationFS) {
-      annotationFS.setStringValue(partOfSpeechFeature,
-          label.value().toString());
+    public PosTag annotationToLabel(AnnotationFS annotationFS) {
+      return new PosTag(annotationFS.getBegin(), annotationFS.getEnd(),
+          PartsOfSpeech.forTag(annotationFS.getStringValue(partOfSpeechFeature)));
     }
 
     @Override
-    protected PartOfSpeech createLabelValue(FeatureStructure featureStructure) {
-      return PartsOfSpeech.forTag(featureStructure
-          .getStringValue(partOfSpeechFeature));
+    protected void fillAnnotation(PosTag label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(partOfSpeechFeature, label.getPartOfSpeech().toString());
     }
 
     @Override
@@ -457,23 +419,21 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected void fillAnnotation(Label<WordIndex> label,
-        AnnotationFS annotationFS) {
-      annotationFS.setIntValue(indexFeature,
-          label.value().term().value());
-    }
-
-    @Override
-    protected WordIndex createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableWordIndex.builder()
-          .term(new StringIdentifier(
-              featureStructure.getIntValue(indexFeature)))
-          .build();
+    protected void fillAnnotation(WordIndex label, AnnotationFS annotationFS) {
+      annotationFS.setIntValue(indexFeature, label.getStringIdentifier().value());
     }
 
     @Override
     public boolean isDistinct() {
       return true;
+    }
+
+    @Override
+    public WordIndex annotationToLabel(AnnotationFS annotationFS) {
+      StringIdentifier stringIdentifier = new StringIdentifier(
+          annotationFS.getIntValue(indexFeature)
+      );
+      return new WordIndex(annotationFS.getBegin(), annotationFS.getEnd(), stringIdentifier);
     }
   }
 
@@ -491,87 +451,21 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected void fillAnnotation(Label<NormForm> label,
-        AnnotationFS annotationFS) {
-      NormForm value = label.value();
-      annotationFS.setStringValue(normFormFeature, value.normalForm());
-      annotationFS.setIntValue(indexFeature, value.normTermIdentifier());
-    }
-
-    @Override
-    protected NormForm createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableNormForm.builder()
-          .normalForm(featureStructure.getStringValue(normFormFeature))
-          .normTermIdentifier(featureStructure.getIntValue(indexFeature))
-          .build();
+    protected void fillAnnotation(NormForm label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(normFormFeature, label.getNormalForm());
+      annotationFS.setIntValue(indexFeature, label.getNormIdentifier().value());
     }
 
     @Override
     public boolean isDistinct() {
       return true;
     }
-  }
-
-  public static class NormIndexLabelAdapter extends AbstractLabelAdapter<NormIndex> {
-
-    private final Feature indexFeature;
-
-    @Inject
-    public NormIndexLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.uima.type1_5.NormIndex"));
-      indexFeature = type.getFeatureByBaseName("index");
-    }
 
     @Override
-    protected void fillAnnotation(Label<NormIndex> label,
-        AnnotationFS annotationFS) {
-      annotationFS.setIntValue(indexFeature,
-          label.value().term().value());
-    }
-
-    @Override
-    protected NormIndex createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableNormIndex.builder().term(new StringIdentifier(
-          featureStructure.getIntValue(indexFeature))).build();
-    }
-
-    @Override
-    public boolean isDistinct() {
-      return true;
-    }
-  }
-
-  public static class MisspellingLabelAdapter extends AbstractLabelAdapter<Misspelling> {
-
-    @Inject
-    public MisspellingLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.uima.type1_6.Misspelling"));
-    }
-
-    @Override
-    protected Misspelling createLabelValue(FeatureStructure featureStructure) {
-      return new Misspelling();
-    }
-  }
-
-  public static class SpellCorrectionLabelAdapter extends
-      AbstractTokenLabelAdapter<SpellCorrection> {
-
-    @Inject
-    public SpellCorrectionLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem().getType(
-          "edu.umn.biomedicus.uima.type1_6.SpellCorrection"));
-    }
-
-    @Override
-    protected SpellCorrection createToken(String text,
-        boolean hasSpaceAfter) {
-      return ImmutableSpellCorrection.builder()
-          .text(text)
-          .hasSpaceAfter(hasSpaceAfter)
-          .build();
+    public NormForm annotationToLabel(AnnotationFS annotationFS) {
+      return new NormForm(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getStringValue(normFormFeature),
+          new StringIdentifier(annotationFS.getIntValue(indexFeature)));
     }
   }
 
@@ -579,13 +473,12 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Inject
     BoldLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.rtfuima.type.Bold"));
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.rtfuima.type.Bold"));
     }
 
     @Override
-    protected Bold createLabelValue(FeatureStructure featureStructure) {
-      return new Bold();
+    public Bold annotationToLabel(AnnotationFS annotationFS) {
+      return new Bold(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -593,13 +486,12 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     @Inject
     UnderlinedLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.rtfuima.type.Underline"));
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.rtfuima.type.Underline"));
     }
 
     @Override
-    protected Underlined createLabelValue(FeatureStructure featureStructure) {
-      return new Underlined();
+    public Underlined annotationToLabel(AnnotationFS annotationFS) {
+      return new Underlined(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -611,27 +503,20 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     SocialHistoryCandidateLabelAdapter(CAS cas) {
       super(cas, cas.getTypeSystem().getType(
           "edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate"));
-      substanceUsageKind = type
-          .getFeatureByBaseName("substanceUsageKind");
+      substanceUsageKind = type.getFeatureByBaseName("substanceUsageKind");
     }
 
     @Override
-    protected void fillAnnotation(Label<SocialHistoryCandidate> label,
-        AnnotationFS annotationFS) {
-      SocialHistoryCandidate socialHistoryCandidate = label.value();
-      SubstanceUsageKind substanceUsageKind = socialHistoryCandidate
-          .substanceUsageKind();
-      annotationFS.setStringValue(this.substanceUsageKind,
-          substanceUsageKind.name());
+    protected void fillAnnotation(SocialHistoryCandidate label, AnnotationFS annotationFS) {
+      SubstanceUsageKind substanceUsageKind = label.getSubstanceUsageKind();
+      annotationFS.setStringValue(this.substanceUsageKind, substanceUsageKind.name());
     }
 
     @Override
-    protected SocialHistoryCandidate createLabelValue(FeatureStructure featureStructure) {
-      String strVal = featureStructure.getStringValue(substanceUsageKind);
+    public SocialHistoryCandidate annotationToLabel(AnnotationFS annotationFS) {
+      String strVal = annotationFS.getStringValue(substanceUsageKind);
       SubstanceUsageKind kind = SubstanceUsageKind.valueOf(strVal);
-      return ImmutableSocialHistoryCandidate.builder()
-          .substanceUsageKind(kind)
-          .build();
+      return new SocialHistoryCandidate(annotationFS.getBegin(), annotationFS.getEnd(), kind);
     }
   }
 
@@ -651,27 +536,19 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
 
     @Override
-    protected void fillAnnotation(Label<SubstanceUsageElement> label,
-        AnnotationFS annotationFS) {
-      SubstanceUsageElement value = label.value();
-      annotationFS.setStringValue(kindFeature,
-          value.kind().name());
-      annotationFS.setStringValue(elementTypeFeature,
-          value.type().name());
+    protected void fillAnnotation(SubstanceUsageElement label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(kindFeature, label.getSubstanceUsageKind().name());
+      annotationFS.setStringValue(elementTypeFeature, label.getSubstanceUsageElementType().name());
     }
 
     @Override
-    protected SubstanceUsageElement createLabelValue(FeatureStructure featureStructure) {
-      String typeVal = featureStructure
-          .getStringValue(elementTypeFeature);
+    public SubstanceUsageElement annotationToLabel(AnnotationFS annotationFS) {
+      String typeVal = annotationFS.getStringValue(elementTypeFeature);
       SubstanceUsageElementType type = SubstanceUsageElementType
           .valueOf(typeVal);
-      String kindVal = featureStructure.getStringValue(kindFeature);
+      String kindVal = annotationFS.getStringValue(kindFeature);
       SubstanceUsageKind kind = SubstanceUsageKind.valueOf(kindVal);
-      return ImmutableSubstanceUsageElement.builder()
-          .type(type)
-          .kind(kind)
-          .build();
+      return new SubstanceUsageElement(annotationFS.getBegin(), annotationFS.getEnd(), kind, type);
     }
   }
 
@@ -687,19 +564,14 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected void fillAnnotation(Label<ConstituencyParse> label,
-        AnnotationFS annotationFS) {
-      ConstituencyParse constituencyParse = label.value();
-      annotationFS
-          .setStringValue(parseFeature, constituencyParse.parse());
+    protected void fillAnnotation(ConstituencyParse label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(parseFeature, label.getParseTree());
     }
 
     @Override
-    protected ConstituencyParse createLabelValue(FeatureStructure featureStructure) {
-      String stringValue = featureStructure.getStringValue(parseFeature);
-      return ImmutableConstituencyParse.builder()
-          .parse(stringValue)
-          .build();
+    public ConstituencyParse annotationToLabel(AnnotationFS annotationFS) {
+      return new ConstituencyParse(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getStringValue(parseFeature));
     }
   }
 
@@ -710,8 +582,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Row createLabelValue(FeatureStructure featureStructure) {
-      return new Row();
+    public Row annotationToLabel(AnnotationFS annotationFS) {
+      return new Row(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -722,8 +594,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Cell createLabelValue(FeatureStructure featureStructure) {
-      return new Cell();
+    public Cell annotationToLabel(AnnotationFS annotationFS) {
+      return new Cell(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -735,8 +607,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected NestedRow createLabelValue(FeatureStructure featureStructure) {
-      return new NestedRow();
+    public NestedRow annotationToLabel(AnnotationFS annotationFS) {
+      return new NestedRow(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -748,8 +620,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected NestedCell createLabelValue(FeatureStructure featureStructure) {
-      return new NestedCell();
+    public NestedCell annotationToLabel(AnnotationFS annotationFS) {
+      return new NestedCell(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -771,25 +643,23 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected Number createLabelValue(FeatureStructure featureStructure) {
-      String value = featureStructure.getStringValue(numFeature);
-      String denom = featureStructure.getStringValue(denomFeature);
-      NumberType numberType = NumberType.valueOf(featureStructure.getStringValue(typeFeature));
-      return ImmutableNumber.builder().numerator(value).denominator(denom).numberType(numberType)
-          .build();
+    protected void fillAnnotation(Number label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(numFeature, label.getNumerator());
+      annotationFS.setStringValue(denomFeature, label.getDenominator());
+      annotationFS.setStringValue(typeFeature, label.getNumberType().name());
     }
 
     @Override
-    protected void fillAnnotation(Label<Number> label, AnnotationFS annotationFS) {
-      Number number = label.value();
-
-      annotationFS.setStringValue(numFeature, number.numerator());
-      annotationFS.setStringValue(denomFeature, number.denominator());
-      annotationFS.setStringValue(typeFeature, number.numberType().name());
+    public Number annotationToLabel(AnnotationFS annotationFS) {
+      String value = annotationFS.getStringValue(numFeature);
+      String denom = annotationFS.getStringValue(denomFeature);
+      NumberType numberType = NumberType.valueOf(annotationFS.getStringValue(typeFeature));
+      return new Number(annotationFS.getBegin(), annotationFS.getEnd(), value, denom, numberType);
     }
   }
 
-  public static class CanididateUnitOfMeasureAdapter extends AbstractLabelAdapter<CandidateUnitOfMeasure> {
+  public static class CanididateUnitOfMeasureAdapter
+      extends AbstractLabelAdapter<CandidateUnitOfMeasure> {
 
     CanididateUnitOfMeasureAdapter(CAS cas) {
       super(cas, cas.getTypeSystem()
@@ -797,8 +667,8 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
 
     @Override
-    protected CandidateUnitOfMeasure createLabelValue(FeatureStructure featureStructure) {
-      return new CandidateUnitOfMeasure();
+    public CandidateUnitOfMeasure annotationToLabel(AnnotationFS annotationFS) {
+      return new CandidateUnitOfMeasure(annotationFS.getBegin(), annotationFS.getEnd());
     }
   }
 
@@ -806,20 +676,45 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
     private final Feature valueFeature;
 
-    protected IllegalXmlCharacterAdapter(CAS cas) {
+    IllegalXmlCharacterAdapter(CAS cas) {
       super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.type.IllegalXmlCharacter"));
       valueFeature = type.getFeatureByBaseName("value");
     }
 
     @Override
-    protected IllegalXmlCharacter createLabelValue(FeatureStructure featureStructure) {
-      return ImmutableIllegalXmlCharacter.builder()
-          .value(featureStructure.getIntValue(valueFeature)).build();
+    protected void fillAnnotation(IllegalXmlCharacter label, AnnotationFS annotationFS) {
+      annotationFS.setIntValue(valueFeature, label.getValue());
     }
 
     @Override
-    protected void fillAnnotation(Label<IllegalXmlCharacter> label, AnnotationFS annotationFS) {
-      annotationFS.setIntValue(valueFeature, label.getValue().value());
+    public IllegalXmlCharacter annotationToLabel(AnnotationFS annotationFS) {
+      return new IllegalXmlCharacter(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getIntValue(valueFeature));
+    }
+  }
+
+  public static class NumberRangeAdapter extends AbstractLabelAdapter<NumberRange> {
+
+    private final Feature lowerValueFeature;
+    private final Feature upperValueFeature;
+
+    NumberRangeAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_9.NumberRange"));
+      lowerValueFeature = type.getFeatureByBaseName("lowerValue");
+      upperValueFeature = type.getFeatureByBaseName("upperValue");
+    }
+
+    @Override
+    protected void fillAnnotation(NumberRange label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(lowerValueFeature, label.getLower().toString());
+      annotationFS.setStringValue(upperValueFeature, label.getUpper().toString());
+    }
+
+    @Override
+    public NumberRange annotationToLabel(AnnotationFS annotationFS) {
+      return new NumberRange(annotationFS.getBegin(), annotationFS.getEnd(),
+          new BigDecimal(annotationFS.getStringValue(lowerValueFeature)),
+          new BigDecimal(annotationFS.getStringValue(upperValueFeature)));
     }
   }
 }

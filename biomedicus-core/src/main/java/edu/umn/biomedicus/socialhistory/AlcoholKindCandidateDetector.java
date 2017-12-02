@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind;
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.sections.SubstanceUsageKind;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,10 @@ public class AlcoholKindCandidateDetector implements KindCandidateDetector {
   }
 
   @Override
-  public boolean isSocialHistorySentence(List<ParseToken> sectionTitleTokens,
-      List<ParseToken> sentenceTokens) {
+  public boolean isSocialHistorySentence(
+      List<ParseToken> sectionTitleTokens,
+      List<ParseToken> sentenceTokens
+  ) {
 
     String strRelative = "(mom|mother|dad|father|grandmother|grandfather|son|child|daughter|sister|brother|maternal|paternal|niece|nephew|cousin|grandchild)";
     String strAlcohol = "(alcoho|glass|alcohol|drinks|alcoholic|beer|bottle|cold turkey|drank|drink|beers|drinker|ETOH|Ex-drinker|Gin and Tonic|liquor|malt beverage|non-drinker|pint|rum|sober|spirit|whiskey|wine|ethanol|nondrinker|nonalcoholic)";

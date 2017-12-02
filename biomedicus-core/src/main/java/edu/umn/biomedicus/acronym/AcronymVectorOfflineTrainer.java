@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.tokenization.Token;
+import edu.umn.nlpengine.AbstractLabel;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -364,7 +365,7 @@ public class AcronymVectorOfflineTrainer {
       String longestEligiblePhrase = null;
       Map<String, Object> lookup = graph;
       for (int i = index; i < words.size(); i++) {
-        String thisWord = words.get(i).text();
+        String thisWord = words.get(i).getText();
         if (lookup.containsKey(null)) {
           longestEligiblePhrase = (String) lookup.get(null);
         }
@@ -378,19 +379,22 @@ public class AcronymVectorOfflineTrainer {
     }
   }
 
-  private class DummyToken implements Token {
+  private class DummyToken extends AbstractLabel implements Token {
 
     private String text;
 
     DummyToken(String text) {
+      super(0, 0);
       this.text = text;
     }
 
-    public String text() {
+    @Override
+    public String getText() {
       return text;
     }
 
-    public boolean hasSpaceAfter() {
+    @Override
+    public boolean getHasSpaceAfter() {
       return true;
     }
   }

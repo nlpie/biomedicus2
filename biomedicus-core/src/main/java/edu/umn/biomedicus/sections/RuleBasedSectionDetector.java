@@ -18,21 +18,15 @@ package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.style.Bold;
-import edu.umn.biomedicus.common.types.style.Underlined;
-import edu.umn.biomedicus.common.types.text.ImmutableSection;
-import edu.umn.biomedicus.common.types.text.Section;
-import edu.umn.biomedicus.common.types.text.SectionContent;
-import edu.umn.biomedicus.common.types.text.SectionTitle;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.formatting.Bold;
+import edu.umn.biomedicus.formatting.Underlined;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -81,19 +75,18 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
     String text = systemView.getText();
 
-    Iterator<Label<Sentence>> sentenceLabelIterator = sentenceLabelIndex
+    Iterator<Sentence> sentenceLabelIterator = sentenceLabelIndex
         .iterator();
-    Label<Sentence> header = null;
-    Label<Sentence> firstSentence = null;
-    Label<Sentence> lastSentence = null;
+    Sentence header = null;
+    Sentence firstSentence = null;
+    Sentence lastSentence = null;
 
     while (sentenceLabelIterator.hasNext()) {
-      Label<Sentence> sentenceLabel = sentenceLabelIterator.next();
-      CharSequence sentenceText = sentenceLabel.getCovered(text);
-      if (headers.matcher(sentenceText).matches() || boldLabelIndex
-          .withTextLocation(sentenceLabel).isPresent()
-          || underlinedLabelIndex.withTextLocation(sentenceLabel)
-          .isPresent()) {
+      Sentence sentenceLabel = sentenceLabelIterator.next();
+      CharSequence sentenceText = sentenceLabel.coveredText(text);
+      if (headers.matcher(sentenceText).matches() ||
+          !boldLabelIndex.atLocation(sentenceLabel).isEmpty() ||
+          !underlinedLabelIndex.atLocation(sentenceLabel).isEmpty()) {
         makeSection(header, firstSentence, lastSentence);
         header = sentenceLabel;
         firstSentence = null;
@@ -109,10 +102,10 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
   }
 
   private void makeSection(
-      @Nullable Label<Sentence> header,
-      @Nullable Label<Sentence> firstSentence,
-      @Nullable Label<Sentence> lastSentence
-  ) throws BiomedicusException {
+      @Nullable Sentence header,
+      @Nullable Sentence firstSentence,
+      @Nullable Sentence lastSentence
+  ) {
     if (header == null || firstSentence == null || lastSentence == null) {
       return;
     }
@@ -121,12 +114,10 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
     assert sectionTitleLabeler != null : "impossible non-null section title labeler";
     assert sectionContentLabeler != null : "impossible non-null section content labeler";
 
-    sectionLabeler.value(ImmutableSection.builder().build())
-        .label(Span.create(header.getBegin(), lastSentence.getEnd()));
-
-    sectionTitleLabeler.value(new SectionTitle()).label(header);
-
-    sectionContentLabeler.value(new SectionContent())
-        .label(Span.create(firstSentence.getBegin(), lastSentence.getEnd()));
+    sectionLabeler.add(new Section(header.getStartIndex(), lastSentence.getEndIndex(), null));
+    sectionTitleLabeler.add(new SectionTitle(header));
+    sectionContentLabeler.add(
+        new SectionContent(firstSentence.getStartIndex(), lastSentence.getEndIndex())
+    );
   }
 }

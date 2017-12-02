@@ -21,7 +21,7 @@ import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Span;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -79,7 +79,7 @@ public class VocabularySearchExprFactory {
       stringBuilder.append(expression);
 
       for (Entry<Span, String> entry : replacements.descendingMap().entrySet()) {
-        stringBuilder.replace(entry.getKey().getBegin(), entry.getKey().getEnd(), entry.getValue());
+        stringBuilder.replace(entry.getKey().getStartIndex(), entry.getKey().getEndIndex(), entry.getValue());
       }
 
       expression = stringBuilder.toString();
@@ -96,7 +96,7 @@ public class VocabularySearchExprFactory {
       if (termIdentifier.isUnknown()) {
         throw new IllegalArgumentException("Unknown string: " + word);
       }
-      replacements.put(Span.of(matcher.start(), matcher.end()), "" + termIdentifier.value());
+      replacements.put(new Span(matcher.start(), matcher.end()), "" + termIdentifier.value());
     }
   }
 }

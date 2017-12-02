@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.framework.store.TextLocation;
+import edu.umn.nlpengine.Label;
 
 /**
  * @since 1.3.0
@@ -29,6 +29,9 @@ public interface IndexListener {
    * @param destinationName destination the character was written to.
    * @param destinationIndex the index in the destination.
    */
-  void wroteToDestination(String destinationName, int destinationIndex,
-      TextLocation originalDocumentTextLocation);
+  void wroteToDestination(
+      String destinationName,
+      int destinationIndex,
+      Label originalDocumentTextLocation
+  );
 }

@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.Span;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -194,7 +194,7 @@ public class State {
    * @throws RtfReaderException if there is some kind of error in writing to the output
    * destination.
    */
-  public void writeCharacter(int code, TextLocation originalDocumentTextLocation)
+  public void writeCharacter(int code, Label originalDocumentTextLocation)
       throws RtfReaderException {
     if (skippingDestination) {
       return;
@@ -217,7 +217,7 @@ public class State {
           Byte charByte = (byte) (Integer.parseInt(hexString, 16) & 0xff);
           code = charset.decode(ByteBuffer.wrap(new byte[]{charByte})).get(0);
           directWriteCharacter((char) code,
-              Span.create(hexStart, originalDocumentTextLocation.getEnd()));
+              Span.create(hexStart, originalDocumentTextLocation.getEndIndex()));
           inputType = InputType.NORMAL;
         }
         break;
@@ -233,7 +233,7 @@ public class State {
    * @param originalDocumentTextLocation the span of the character in the original document.
    * @throws RtfReaderException if there is some kind of failure writing to output destination.
    */
-  public void directWriteCharacter(char ch, TextLocation originalDocumentTextLocation)
+  public void directWriteCharacter(char ch, Label originalDocumentTextLocation)
       throws RtfReaderException {
     if (ignoreNextChars > 0) {
       ignoreNextChars--;

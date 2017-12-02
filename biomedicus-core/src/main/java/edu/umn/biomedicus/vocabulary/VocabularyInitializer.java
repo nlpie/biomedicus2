@@ -17,17 +17,13 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelsUtilities;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
+import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.TermTokenMerger;
+import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +91,7 @@ public class VocabularyInitializer {
   void addPhrase(String phrase) throws BiomedicusException {
     Iterator<Span> tokensIterator = PennLikePhraseTokenizer
         .tokenizePhrase(phrase).iterator();
-    List<Label<Token>> parseTokens = new ArrayList<>();
+    List<ParseToken> parseTokens = new ArrayList<>();
     Span prev = null;
     while (tokensIterator.hasNext() || prev != null) {
       Span span = null;
@@ -103,25 +99,20 @@ public class VocabularyInitializer {
         span = tokensIterator.next();
       }
       if (prev != null) {
-        String term = prev.getCovered(phrase).toString();
+        String term = prev.coveredString(phrase);
         wordsIndexBuilder.addTerm(term);
-        boolean hasSpaceAfter = span != null && prev.getEnd() != span
-            .getBegin();
-        ParseToken parseToken = ImmutableParseToken.builder()
-            .text(term)
-            .hasSpaceAfter(hasSpaceAfter)
-            .build();
-        Label<ParseToken> parseTokenLabel = new Label<>(prev,
-            parseToken);
-        parseTokens.add(LabelsUtilities.cast(parseTokenLabel));
+        boolean hasSpaceAfter = span != null && prev.getStartIndex() != span
+            .getEndIndex();
+        ParseToken parseToken = new ParseToken(prev, term, hasSpaceAfter);
+        parseTokens.add(parseToken);
       }
       prev = span;
     }
 
-    TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens);
+    TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens.iterator());
     while (termTokenMerger.hasNext()) {
-      Label<TermToken> termToken = termTokenMerger.next();
-      termsIndexBuilder.addTerm(termToken.value().text());
+      TermToken termToken = termTokenMerger.next();
+      termsIndexBuilder.addTerm(termToken.getText());
     }
   }
 
@@ -132,7 +123,7 @@ public class VocabularyInitializer {
 
     while (normsIt.hasNext()) {
       Span span = normsIt.next();
-      CharSequence norm = span.getCovered(normPhrase);
+      CharSequence norm = span.coveredString(normPhrase);
       normsIndexBuilder.addTerm(norm.toString());
     }
   }

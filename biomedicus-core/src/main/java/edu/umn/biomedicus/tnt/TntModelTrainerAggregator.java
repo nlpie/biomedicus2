@@ -19,17 +19,18 @@ package edu.umn.biomedicus.tnt;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Aggregator;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import javafx.geometry.Pos;
 
 /**
  * Trains the TnT model using the tagged parts of speech in all documents.
@@ -73,11 +74,11 @@ public class TntModelTrainerAggregator implements Aggregator {
 
     LabelIndex<Sentence> sentences = view.getLabelIndex(Sentence.class);
     LabelIndex<ParseToken> tokens = view.getLabelIndex(ParseToken.class);
-    LabelIndex<PartOfSpeech> partsOfSpeech = view.getLabelIndex(PartOfSpeech.class);
+    LabelIndex<PosTag> partsOfSpeech = view.getLabelIndex(PosTag.class);
 
-    for (Label<Sentence> sentence : sentences) {
-      List<ParseToken> sentenceTokens = tokens.insideSpan(sentence).valuesAsList();
-      List<PartOfSpeech> sentencesPos = partsOfSpeech.insideSpan(sentence).valuesAsList();
+    for (Sentence sentence : sentences) {
+      List<ParseToken> sentenceTokens = tokens.insideSpan(sentence).asList();
+      List<PosTag> sentencesPos = partsOfSpeech.insideSpan(sentence).asList();
 
       tntModelTrainer.addSentence(sentenceTokens, sentencesPos);
     }

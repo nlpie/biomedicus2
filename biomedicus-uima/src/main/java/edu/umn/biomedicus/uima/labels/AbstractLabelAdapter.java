@@ -16,14 +16,12 @@
 
 package edu.umn.biomedicus.uima.labels;
 
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Label;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
-public abstract class AbstractLabelAdapter<T> implements LabelAdapter<T> {
+public abstract class AbstractLabelAdapter<T extends Label> implements LabelAdapter<T> {
 
   protected final CAS cas;
   protected final Type type;
@@ -39,25 +37,17 @@ public abstract class AbstractLabelAdapter<T> implements LabelAdapter<T> {
   }
 
   @Override
-  public AnnotationFS labelToAnnotation(Label<T> label) {
-    AnnotationFS annotation = cas.createAnnotation(type, label.getBegin(),
-        label.getEnd());
+  public final AnnotationFS labelToAnnotation(T label) {
+    AnnotationFS annotation = cas.createAnnotation(type, label.getStartIndex(),
+        label.getEndIndex());
     fillAnnotation(label, annotation);
     cas.addFsToIndexes(annotation);
     return annotation;
   }
 
-  protected void fillAnnotation(Label<T> label, AnnotationFS annotationFS) {
+  protected void fillAnnotation(T label, AnnotationFS annotationFS) {
 
   }
-
-  @Override
-  public Label<T> annotationToLabel(AnnotationFS annotationFS) {
-    T labelValue = createLabelValue(annotationFS);
-    return new Label<>(new Span(annotationFS.getBegin(), annotationFS.getEnd()), labelValue);
-  }
-
-  protected abstract T createLabelValue(FeatureStructure featureStructure);
 
   @Override
   public boolean isDistinct() {

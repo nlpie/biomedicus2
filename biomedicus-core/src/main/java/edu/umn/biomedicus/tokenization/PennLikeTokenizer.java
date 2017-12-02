@@ -16,23 +16,16 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.biomedicus.measures.UnitRecognizer;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
@@ -53,8 +46,8 @@ public final class PennLikeTokenizer implements DocumentProcessor {
     LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
     parseTokenLabeler = systemView.getLabeler(ParseToken.class);
 
-    for (Label<Sentence> sentence : sentenceLabelIndex) {
-      text = sentence.getCovered(systemView.getText());
+    for (Sentence sentence : sentenceLabelIndex) {
+      text = sentence.coveredText(systemView.getText());
 
       Iterator<Span> iterator = PennLikePhraseTokenizer.tokenizeSentence(text).iterator();
 
@@ -66,7 +59,7 @@ public final class PennLikeTokenizer implements DocumentProcessor {
           continue;
         }
         if (prev != null) {
-          boolean hasSpaceAfter = prev.getEnd() != current.getBegin();
+          boolean hasSpaceAfter = prev.getEndIndex() != current.getStartIndex();
           labelToken(sentence, hasSpaceAfter);
         }
         prev = current;
@@ -77,17 +70,13 @@ public final class PennLikeTokenizer implements DocumentProcessor {
     }
   }
 
-  private void labelToken(Label<Sentence> sentence, boolean hasSpaceAfter)
+  private void labelToken(Sentence sentence, boolean hasSpaceAfter)
       throws BiomedicusException {
     assert parseTokenLabeler != null : "this should never be null when the function is called";
     assert text != null : "this should never be null when the function is called";
     assert prev != null : "this is checked before the function is called";
-    String tokenText = text.subSequence(prev.getBegin(), prev.getEnd()).toString();
+    String tokenText = text.subSequence(prev.getStartIndex(), prev.getEndIndex()).toString();
 
-    parseTokenLabeler.value(ImmutableParseToken.builder()
-        .text(tokenText)
-        .hasSpaceAfter(hasSpaceAfter)
-        .build())
-        .label(sentence.derelativize(prev));
+    parseTokenLabeler.add(new ParseToken(sentence.derelativize(prev), tokenText, hasSpaceAfter));
   }
 }

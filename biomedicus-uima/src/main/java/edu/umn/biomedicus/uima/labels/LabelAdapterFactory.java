@@ -16,9 +16,10 @@
 
 package edu.umn.biomedicus.uima.labels;
 
+import edu.umn.nlpengine.Label;
 import org.apache.uima.cas.CAS;
 
-public interface LabelAdapterFactory<T> {
+public interface LabelAdapterFactory<T extends Label> {
 
   LabelAdapter<T> create(CAS cas);
 }

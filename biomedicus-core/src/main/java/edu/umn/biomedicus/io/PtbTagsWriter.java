@@ -20,17 +20,18 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javafx.geometry.Pos;
 
 public class PtbTagsWriter implements DocumentProcessor {
 
@@ -52,17 +53,15 @@ public class PtbTagsWriter implements DocumentProcessor {
 
     String text = systemView.getText();
     LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-    LabelIndex<PartOfSpeech> partOfSpeechLabelIndex = systemView.getLabelIndex(PartOfSpeech.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = systemView.getLabelIndex(PosTag.class);
 
     StringBuilder rewriter = new StringBuilder(text);
 
     int added = 0;
-    for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
-      int end = parseTokenLabel.getEnd() + added;
-      String insertion = "/" + partOfSpeechLabelIndex.withTextLocation(parseTokenLabel)
-          .orElseThrow(() -> new BiomedicusException("No part of speech for parse token."))
-          .value()
-          .toString();
+    for (ParseToken parseTokenLabel : parseTokenLabelIndex) {
+      int end = parseTokenLabel.getEndIndex() + added;
+      String insertion = "/" + partOfSpeechLabelIndex.firstAtLocation(parseTokenLabel)
+          .getPartOfSpeech().toString();
       rewriter.insert(end, insertion);
       if (rewriter.charAt(end + insertion.length()) != ' ') {
         rewriter.insert(end + insertion.length(), ' ');

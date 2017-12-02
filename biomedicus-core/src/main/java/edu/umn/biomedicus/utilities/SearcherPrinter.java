@@ -24,9 +24,9 @@ import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.Span;
 import javax.inject.Inject;
 
 /**
@@ -56,19 +56,19 @@ public class SearcherPrinter implements DocumentProcessor {
         break;
       }
       System.out
-          .println("Matching Text: " + searcher.getSpan().get().getCovered(systemView.getText()));
+          .println("Matching Text: " + searcher.getSpan().get().coveredString(systemView.getText()));
 
       for (String group : searcher.getGroupNames()) {
         System.out.println("\tGroup Name: " + group);
 
         if (searcher.getSpan(group).isPresent()) {
           Span span = searcher.getSpan(group).get();
-          System.out.println("\t\tCovered Text: " + span.getCovered(systemView.getText()));
+          System.out.println("\t\tCovered Text: " + span.coveredString(systemView.getText()));
         }
 
         if (searcher.getLabel(group).isPresent()) {
-          Label<?> label = searcher.getLabel(group).get();
-          System.out.println("\t\tStored Label: " + label.getValue().toString());
+          Label label = searcher.getLabel(group).get();
+          System.out.println("\t\tStored Label: " + label.toString());
         }
       }
     }

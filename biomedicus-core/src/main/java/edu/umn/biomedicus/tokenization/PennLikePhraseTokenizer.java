@@ -16,9 +16,8 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.measures.UnitRecognizer;
+import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -119,10 +118,10 @@ public final class PennLikePhraseTokenizer {
   }
 
   Stream<TokenCandidate> splitTrailingPeriod(TokenCandidate tokenCandidate) {
-    if (!tokenCandidate.isLast) {
+    if (!tokenCandidate.isLast()) {
       return Stream.of(tokenCandidate);
     } else {
-      Matcher matcher = TRAILING_PERIOD.matcher(tokenCandidate.getCovered(sentenceText));
+      Matcher matcher = TRAILING_PERIOD.matcher(tokenCandidate.coveredText(sentenceText));
       if (matcher.find()) {
         return Stream
             .of(new TokenCandidate(tokenCandidate.derelativize(new Span(0, matcher.start())),
@@ -136,7 +135,7 @@ public final class PennLikePhraseTokenizer {
   }
 
   Stream<TokenCandidate> splitWordByMiddleBreaks(TokenCandidate tokenCandidate) {
-    CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
+    CharSequence tokenText = tokenCandidate.coveredText(sentenceText);
 
     Stream.Builder<TokenCandidate> builder = Stream.builder();
 
@@ -168,7 +167,7 @@ public final class PennLikePhraseTokenizer {
       }
       Span lastSplit = tokenCandidate.derelativize(new Span(end, tokenText.length()));
       if (lastSplit.length() > 0) {
-        builder.add(new TokenCandidate(lastSplit, tokenCandidate.isLast));
+        builder.add(new TokenCandidate(lastSplit, tokenCandidate.isLast()));
       }
     } else {
       builder.add(tokenCandidate);
@@ -180,16 +179,16 @@ public final class PennLikePhraseTokenizer {
     LinkedList<TokenCandidate> candidates = new LinkedList<>();
 
     while (true) {
-      CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
+      CharSequence tokenText = tokenCandidate.coveredText(sentenceText);
       Matcher endBreaksMatcher = END_BREAKS.matcher(tokenText);
       if (endBreaksMatcher.find()) {
         int start = endBreaksMatcher.start(1);
         Span rest = tokenCandidate.derelativize(new Span(0, start));
         Span endSplit = tokenCandidate.derelativize(new Span(start, endBreaksMatcher.end()));
-        candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast));
+        candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast()));
         tokenCandidate = new TokenCandidate(rest, false);
       } else {
-        if (tokenCandidate.getBegin() != tokenCandidate.getEnd()) {
+        if (tokenCandidate.getStartIndex() != tokenCandidate.getEndIndex()) {
           candidates.addFirst(tokenCandidate);
         }
         return candidates.stream();
@@ -198,50 +197,17 @@ public final class PennLikePhraseTokenizer {
   }
 
   Stream<TokenCandidate> splitUnitsOffTheEnd(TokenCandidate tokenCandidate) {
-    CharSequence tokenText = tokenCandidate.getCovered(sentenceText);
+    CharSequence tokenText = tokenCandidate.coveredText(sentenceText);
     Matcher matcher = NUMBER_WORD.matcher(tokenText);
     if (matcher.matches()) {
       String suffix = matcher.group("suffix");
       if (suffix != null && RECOGNIZER.isUnitOfMeasureWord(suffix)) {
-        int numBegin = tokenCandidate.getBegin();
-        int numEnd = tokenCandidate.getEnd() - suffix.length();
+        int numBegin = tokenCandidate.getStartIndex();
+        int numEnd = tokenCandidate.getEndIndex() - suffix.length();
         return Stream.of(new TokenCandidate(numBegin, numEnd, false),
-            new TokenCandidate(numEnd, tokenCandidate.end(), tokenCandidate.isLast()));
+            new TokenCandidate(numEnd, tokenCandidate.getEndIndex(), tokenCandidate.isLast()));
       }
     }
     return Stream.of(tokenCandidate);
-  }
-
-  class TokenCandidate implements TextLocation {
-
-    private final int begin;
-    private final int end;
-    private final boolean isLast;
-
-    TokenCandidate(Span span, boolean isLast) {
-      begin = span.getBegin();
-      end = span.getEnd();
-      this.isLast = isLast;
-    }
-
-    TokenCandidate(int begin, int end, boolean isLast) {
-      this.begin = begin;
-      this.end = end;
-      this.isLast = isLast;
-    }
-
-    @Override
-    public int getBegin() {
-      return begin;
-    }
-
-    @Override
-    public int getEnd() {
-      return end;
-    }
-
-    public boolean isLast() {
-      return isLast;
-    }
   }
 }

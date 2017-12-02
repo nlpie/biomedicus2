@@ -16,31 +16,29 @@
 
 package edu.umn.biomedicus.socialhistory;
 
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.AMOUNT;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.FREQUENCY;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.METHOD;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.STATUS;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.TEMPORAL;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageElementType.TYPE;
-import static edu.umn.biomedicus.common.types.semantics.SubstanceUsageKind.ALCOHOL;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.AMOUNT;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.FREQUENCY;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.METHOD;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.STATUS;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.TEMPORAL;
+import static edu.umn.biomedicus.sections.SubstanceUsageElementType.TYPE;
+import static edu.umn.biomedicus.sections.SubstanceUsageKind.ALCOHOL;
 
 import com.google.inject.Singleton;
-import edu.umn.biomedicus.common.types.semantics.ImmutableSubstanceUsageElement;
-import edu.umn.biomedicus.common.types.semantics.SocialHistoryCandidate;
-import edu.umn.biomedicus.common.types.semantics.SubstanceUsageElement;
-import edu.umn.biomedicus.common.types.text.ConstituencyParse;
-import edu.umn.biomedicus.common.types.text.DependencyParse;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Section;
-import edu.umn.biomedicus.common.types.text.SectionContent;
-import edu.umn.biomedicus.common.types.text.SectionTitle;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.parsing.ConstituencyParse;
+import edu.umn.biomedicus.parsing.DependencyParse;
+import edu.umn.biomedicus.sections.Section;
+import edu.umn.biomedicus.sections.SectionContent;
+import edu.umn.biomedicus.sections.SectionTitle;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.sh.SocialHistoryCandidate;
+import edu.umn.biomedicus.sh.SubstanceUsageElement;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.Span;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -287,14 +285,11 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
   }
 
-  static ImmutableSubstanceUsageElement.Builder elementBuilder() {
-    return ImmutableSubstanceUsageElement.builder().kind(ALCOHOL);
-  }
-
   @Override
-  public void processCandidate(TextView document,
-      Label<SocialHistoryCandidate> socialHistoryCandidateLabel)
-      throws BiomedicusException {
+  public void processCandidate(
+      TextView document,
+      SocialHistoryCandidate socialHistoryCandidateLabel
+  ) throws BiomedicusException {
 
     sectionLabels = document.getLabelIndex(Section.class);
     sectionTitleLabels = document.getLabelIndex(SectionTitle.class);
@@ -305,51 +300,46 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
         .getLabeler(SubstanceUsageElement.class);
     parseTokenLabels = document.getLabelIndex(ParseToken.class);
 
-    Label<Sentence> sentenceLabel = document.getLabelIndex(Sentence.class)
-        .withTextLocation(socialHistoryCandidateLabel)
-        .orElseThrow(() -> new BiomedicusException(
-            "SocialHistory Candidate does not have sentence"));
+    Sentence sentence = document.getLabelIndex(Sentence.class)
+        .firstAtLocation(socialHistoryCandidateLabel);
 
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentence).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
-    Label<DependencyParse> dependencyParseLabel = document
+    DependencyParse dependencyParseLabel = document
         .getLabelIndex(DependencyParse.class)
-        .withTextLocation(sentenceLabel)
-        .orElseThrow(() -> new BiomedicusException(
-            "No parse for sentence."));
+        .firstAtLocation(sentence);
 
-    Label<ConstituencyParse> consttParseLabel = document
+    ConstituencyParse consttParseLabel = document
         .getLabelIndex(ConstituencyParse.class)
-        .withTextLocation(sentenceLabel)
-        .orElseThrow(() -> new BiomedicusException(
-            "No constituency parse for sentence."));
+        .firstAtLocation(
+            sentence);
 
-    String strDepen = dependencyParseLabel.value().parseTree();
-    String strConstt = consttParseLabel.value().parse();
+    String strDepen = dependencyParseLabel.getParseTree();
+    String strConstt = consttParseLabel.getParseTree();
 
     Hashtable<String, Object> googleRelationHash = new Hashtable<>();
     googleRelationHash.put("DEP_STR", strDepen);
     Helpers.getGoogleDepenRelations(strDepen, googleRelationHash);
 
     allElementsSpanHash = new Hashtable<Integer, Integer>();
-    extractType(sentenceLabel);
-    extractTemporal(sentenceLabel, googleRelationHash, strConstt);
-    extractAmount(sentenceLabel, googleRelationHash);
-    extractFrequency(sentenceLabel, googleRelationHash);
-    extractMethod(sentenceLabel, googleRelationHash);
-    extractStatus(sentenceLabel, googleRelationHash);
+    extractType(sentence);
+    extractTemporal(sentence, googleRelationHash, strConstt);
+    extractAmount(sentence, googleRelationHash);
+    extractFrequency(sentence, googleRelationHash);
+    extractMethod(sentence, googleRelationHash);
+    extractStatus(sentence, googleRelationHash);
 
 
   }
 
-  private void extractTemporal(Label<Sentence> sentenceLabel,
+  private void extractTemporal(Sentence sentenceLabel,
       Hashtable<String, Object> googleRelationHash,
       String strConstt) throws BiomedicusException {
 
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentenceLabel).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
     // Get all possible longest frequency patterns
     Hashtable<Integer, Integer> spanHash
@@ -460,8 +450,8 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       Integer start = enumKey.nextElement();
       Integer end = spanHash.get(start);
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentenceLabel.getStartIndex() + start,
+          sentenceLabel.getStartIndex() + end);
       List<Integer> usageTokens = new ArrayList<>();
       allElementsSpanHash.put(start, end);
 
@@ -476,31 +466,25 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       if (!strSentence.matches(strDrugPattern)
           && !strSentence.matches(strTobaccoPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder()
-                .type(TEMPORAL)
-                .build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(new SubstanceUsageElement(substanceUsageSpan, ALCOHOL,
+            TEMPORAL));
       }
       // Check if ancesters of all matched tokens related to alcohol
       else if (Helpers.checkSubstanceDepenRelated(usageTokens,
           KindSubstanceUsageDetector.strAlcoholKeywords,
           googleRelationHash)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder()
-                .type(TEMPORAL)
-                .build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(new SubstanceUsageElement(substanceUsageSpan, ALCOHOL,
+            TEMPORAL));
       }
     }
   }
 
-  private void extractStatus(Label<Sentence> sentenceLabel,
+  private void extractStatus(Sentence sentenceLabel,
       Hashtable<String, Object> googleRelationHash)
       throws BiomedicusException {
 
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentenceLabel).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
     // Get all exact longest frequency patterns
@@ -561,12 +545,12 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       Integer start = enumKey.nextElement();
       Integer end = spanHash.get(start);
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentenceLabel.getStartIndex() + start,
+          sentenceLabel.getStartIndex() + end);
 
-      SubstanceUsageElementLabeler
-          .value(elementBuilder().type(STATUS).build())
-          .label(substanceUsageSpan);
+      SubstanceUsageElementLabeler.add(
+          new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, STATUS)
+      );
     }
 
     // Get all possible longest  patterns
@@ -627,8 +611,8 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       Integer start = enumKey.nextElement();
       Integer end = spanHash.get(start);
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentenceLabel.getStartIndex() + start,
+          sentenceLabel.getStartIndex() + end);
       // Get goggle tokens of the span
       List<Integer> usageTokens = new ArrayList<>();
       Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
@@ -641,30 +625,31 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       if (!strSentence.matches(strDrugPattern)
           && !strSentence.matches(strTobaccoPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(STATUS).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, STATUS)
+        );
       }
       // Check if ancesters of all matched tokens related to alcohol
       else {
         if (Helpers.checkSubstanceDepenRelated(usageTokens,
             KindSubstanceUsageDetector.strAlcoholKeywords,
             googleRelationHash)) {
-          SubstanceUsageElementLabeler
-              .value(elementBuilder().type(STATUS).build())
-              .label(substanceUsageSpan);
+          SubstanceUsageElementLabeler.add(
+              new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, STATUS)
+          );
         }
       }
     }
   }
 
-  private void extractMethod(Label<Sentence> sentenceLabel,
-      Hashtable<String, Object> googleRelationHash)
-      throws BiomedicusException {
+  private void extractMethod(
+      Sentence sentence,
+      Hashtable<String, Object> googleRelationHash
+  ) throws BiomedicusException {
 
     // Match method phrases that explicitly indicate alcohol drink method
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentence).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
     Matcher matcher = methodPattern.matcher(strSentence);
@@ -672,12 +657,12 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
       int start = matcher.start();
       int end = matcher.end();
 
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentence.getStartIndex() + start,
+          sentence.getStartIndex() + end);
 
       // Get goggle tokens of the span
       List<Integer> usageTokens = new ArrayList<>();
-      Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+      Helpers.getUsageTokens(parseTokenLabels, sentence, start, end,
           usageTokens);
 
       //Check if the word is noun
@@ -686,9 +671,9 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 //                if (posHash.get(usageTokens.get(0)).toString().matches(".*NN.*")) continue;
 //            }
 
-      SubstanceUsageElementLabeler
-          .value(elementBuilder().type(STATUS).build())
-          .label(substanceUsageSpan);
+      SubstanceUsageElementLabeler.add(
+          new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, STATUS)
+      );
     }
 
     // Match methods hint words that may indicate alcohol drink method, need find if related to alcohol
@@ -696,8 +681,8 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
     while (matcher.find()) {
       int start = matcher.start();
       int end = matcher.end();
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentence.getStartIndex() + start,
+          sentence.getStartIndex() + end);
 
             /*
             * Check if related to alcohol
@@ -705,8 +690,7 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       // Get goggle tokens of the span
       List<Integer> usageTokens = new ArrayList<>();
-      Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
-          usageTokens);
+      Helpers.getUsageTokens(parseTokenLabels, sentence, start, end, usageTokens);
 
       //Check if the word is noun
 //            if (usageTokens.uniqueTerms() == 1 ){
@@ -721,27 +705,26 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       if (!strSentence.matches(strDrugPattern) && !strSentence
           .matches(strTobaccoPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(METHOD).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, METHOD)
+        );
       }
       // Check if ancesters of all matched tokens related to alcohol
       else if (Helpers.checkSubstanceDepenRelated(usageTokens,
           KindSubstanceUsageDetector.strAlcoholKeywords,
           googleRelationHash)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(METHOD).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, METHOD)
+        );
       }
     }
   }
 
-  private void extractFrequency(Label<Sentence> sentenceLabel,
+  private void extractFrequency(Sentence sentence,
       Hashtable<String, Object> googleRelationHash)
       throws BiomedicusException {
 
-    List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+    List<ParseToken> sentenceTermTokens = parseTokenLabels.insideSpan(sentence).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
     // Get all possible longest frequency patterns like "weekly basis"
@@ -854,8 +837,8 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       Integer start = enumKey.nextElement();
       Integer end = spanHash.get(start);
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentence.getStartIndex() + start,
+          sentence.getStartIndex() + end);
       List<Integer> usageTokens = new ArrayList<>();
 
       // See if it's in a larger temporal annotation
@@ -865,7 +848,7 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
       allElementsSpanHash.put(start, end);
 
       // Get goggle tokens of the span
-      Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+      Helpers.getUsageTokens(parseTokenLabels, sentence, start, end,
           usageTokens);
 
       String strDrugPattern = ".*(?i)("
@@ -875,27 +858,27 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       if (!strSentence.matches(strDrugPattern)
           && !strSentence.matches(strTobaccoPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(FREQUENCY).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, FREQUENCY)
+        );
       }
       // Check if ancesters of all matched tokens related to alcohol
       else if (Helpers.checkSubstanceDepenRelated(usageTokens,
           KindSubstanceUsageDetector.strAlcoholKeywords,
           googleRelationHash)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(FREQUENCY).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, FREQUENCY)
+        );
       }
     }
   }
 
 
-  private void extractType(Label<Sentence> sentenceLabel)
+  private void extractType(Sentence sentence)
       throws BiomedicusException {
 
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentence).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
     Matcher matcher = typePattern.matcher(strSentence);
@@ -904,20 +887,21 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
       int end = matcher.end();
       String strUsage = strSentence.substring(start, end);
 
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
-      SubstanceUsageElementLabeler
-          .value(elementBuilder().type(TYPE).build())
-          .label(substanceUsageSpan);
+      Span substanceUsageSpan = new Span(sentence.getStartIndex() + start,
+          sentence.getStartIndex() + end);
+      SubstanceUsageElementLabeler.add(
+          new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, TYPE)
+      );
     }
   }
 
-  private void extractAmount(Label<Sentence> sentenceLabel,
-      Hashtable<String, Object> googleRelationHash)
-      throws BiomedicusException {
+  private void extractAmount(
+      Sentence sentence,
+      Hashtable<String, Object> googleRelationHash
+  ) throws BiomedicusException {
 
     List<ParseToken> sentenceTermTokens = parseTokenLabels
-        .insideSpan(sentenceLabel).valuesAsList();
+        .insideSpan(sentence).asList();
     String strSentence = helper.toTokensString(sentenceTermTokens);
 
     Hashtable<Integer, Integer> spanHash
@@ -1033,15 +1017,15 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       Integer start = enumKey.nextElement();
       Integer end = spanHash.get(start);
-      Span substanceUsageSpan = sentenceLabel
-          .derelativize(new Span(start, end));
+      Span substanceUsageSpan = new Span(sentence.getStartIndex() + start,
+          sentence.getStartIndex() + end);
 
       allElementsSpanHash.put(start, end);
       String strMatch = strSentence.substring(start, end);
 
       //Check if the word is verb
       List<Integer> usageTokens = new ArrayList<>();
-      Helpers.getUsageTokens(parseTokenLabels, sentenceLabel, start, end,
+      Helpers.getUsageTokens(parseTokenLabels, sentence, start, end,
           usageTokens);
       if (usageTokens.size() == 1) {
         Hashtable<Integer, String> posHash
@@ -1069,21 +1053,21 @@ public class AlcoholKindSubstanceUsageDetector implements KindSubstanceUsageDete
 
       if (!strSentence.matches(strDrugPattern)
           && !strSentence.matches(strTobaccoPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(AMOUNT).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, AMOUNT)
+        );
       } else if (strMatch.matches(strAlcoholPattern)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(AMOUNT).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, AMOUNT)
+        );
       }
       // Check if ancesters of all matched tokens related to alcohol
       else if (Helpers.checkSubstanceDepenRelated(usageTokens,
           KindSubstanceUsageDetector.strAlcoholKeywords,
           googleRelationHash)) {
-        SubstanceUsageElementLabeler
-            .value(elementBuilder().type(AMOUNT).build())
-            .label(substanceUsageSpan);
+        SubstanceUsageElementLabeler.add(
+            new SubstanceUsageElement(substanceUsageSpan, ALCOHOL, AMOUNT)
+        );
       }
     }
   }

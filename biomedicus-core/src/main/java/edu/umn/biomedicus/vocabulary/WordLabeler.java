@@ -20,16 +20,14 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import edu.umn.biomedicus.common.types.text.ImmutableWordIndex;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.WordIndex;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
 import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.biomedicus.tokenization.WordIndex;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +57,10 @@ public final class WordLabeler implements DocumentProcessor {
     LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
     Labeler<WordIndex> wordIndexLabeler = systemView.getLabeler(WordIndex.class);
 
-    for (Label<ParseToken> parseTokenLabel : parseTokenLabelIndex) {
-      ParseToken token = parseTokenLabel.value();
-      StringIdentifier termIdentifier = wordIndex.getTermIdentifier(token.text().toLowerCase(Locale.ENGLISH));
-      WordIndex wordIndex = ImmutableWordIndex.builder()
-          .term(termIdentifier)
-          .build();
-      wordIndexLabeler.value(wordIndex).label(parseTokenLabel);
+    for (ParseToken parseToken : parseTokenLabelIndex) {
+      String lowercase = parseToken.getText().toLowerCase(Locale.ENGLISH);
+      StringIdentifier termIdentifier = wordIndex.getTermIdentifier(lowercase);
+      wordIndexLabeler.add(new WordIndex(parseToken, termIdentifier));
     }
   }
 }
