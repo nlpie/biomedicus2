@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentBuilder;
 import edu.umn.biomedicus.framework.DocumentSource;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
@@ -129,13 +129,11 @@ public class PtbDocumentSource implements DocumentSource {
         sentenceLabels.add(new Sentence(sentBegin, sentEnd));
       }
 
-      TextView systemView = document.newTextView().withText(documentBuilder.toString())
-          .withName(viewName)
-          .build();
+      LabeledText systemView = document.attachText(viewName, documentBuilder.toString());
 
-      systemView.getLabeler(Sentence.class).labelAll(sentenceLabels);
-      systemView.getLabeler(ParseToken.class).labelAll(parseTokenLabels);
-      systemView.getLabeler(PosTag.class).labelAll(partOfSpeechLabels);
+      systemView.labeler(Sentence.class).addAll(sentenceLabels);
+      systemView.labeler(ParseToken.class).addAll(parseTokenLabels);
+      systemView.labeler(PosTag.class).addAll(partOfSpeechLabels);
 
       return document;
     } catch (IOException e) {

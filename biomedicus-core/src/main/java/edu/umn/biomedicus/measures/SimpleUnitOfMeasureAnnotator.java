@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
@@ -38,12 +38,12 @@ public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
 
   @Override
   public void process(@Nonnull Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<ParseToken> tokensIndex = systemView.getLabelIndex(ParseToken.class);
+    LabelIndex<ParseToken> tokensIndex = systemView.labelIndex(ParseToken.class);
 
     Labeler<CandidateUnitOfMeasure> candidateUnitOfMeasureLabeler = systemView
-        .getLabeler(CandidateUnitOfMeasure.class);
+        .labeler(CandidateUnitOfMeasure.class);
 
     for (ParseToken parseToken : tokensIndex) {
       if (unitRecognizer.isUnitOfMeasureWord(parseToken.getText())) {

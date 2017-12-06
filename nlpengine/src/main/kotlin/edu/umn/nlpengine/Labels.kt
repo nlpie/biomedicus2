@@ -1,10 +1,22 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
- * Unauthorized Copying of this file, via any medium is strictly prohibited
- * Proprietary and Confidential
+ * Copyright (c) 2018 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package edu.umn.nlpengine
+
+import java.util.regex.Matcher
 
 /**
  * A location in text. Its indices consistent with [String.substring] and [CharSequence.subSequence]
@@ -17,53 +29,26 @@ package edu.umn.nlpengine
  * consistent with [compareLocation] (returning 0 iff compareLocation returns 0, and having
  * ordering first determined by [compareLocation] then by any other factors). Kotlin data classes
  * are an excellent choice for implementations of label.
+ *
+ * @property startIndex the index of the first character
+ * @property endIndex the index after any characters included in this label
  */
-interface Label {
-    /**
-     * The index of the first character in the the label
-     */
+interface TextRange {
     val startIndex: Int
 
-    /**
-     * The index immediately following the last character in the label
-     */
     val endIndex: Int
-
-    /**
-     * Takes an index relative to this label's basis (0) and makes it relative to this label's
-     * [startIndex] as a basis.
-     */
-    fun relativize(index: Int): Int = index - startIndex
-
-    /**
-     * Takes an index relative to this label's [startIndex] and normalizes it to the basis (0) of
-     * this label
-     */
-    fun normalize(index: Int): Int = startIndex + index
 
     /**
      * Checks if the location in text of this label equals the location in text of the label [other]
      */
-    fun locationEquals(other: Label): Boolean =
+    fun locationEquals(other: TextRange): Boolean =
             startIndex == other.startIndex && endIndex == other.endIndex
 
     /**
      * Checks if the label [other] is contained by this label
      */
-    fun contains(other: Label): Boolean =
+    fun contains(other: TextRange): Boolean =
             startIndex <= other.startIndex && endIndex >= other.endIndex
-
-    /**
-     * Checks if this label is contained in the span designated by [startIndex] and [endIndex].
-     */
-    fun isContainedBy(startIndex: Int, endIndex: Int): Boolean =
-            this.startIndex >= startIndex && this.endIndex <= endIndex
-
-    /**
-     * Check if the label [other] contains this label
-     */
-    fun isContainedBy(other: Label): Boolean =
-            startIndex >= other.startIndex && endIndex <= other.endIndex
 
     /**
      * The number of characters covered by this label
@@ -84,17 +69,17 @@ interface Label {
     /**
      * Compares the location of two labels, first comparing [startIndex], then comparing [endIndex]
      */
-    fun compareLocation(label: Label): Int {
-        val compare = startIndex.compareTo(label.startIndex)
+    fun compareLocation(textRange: TextRange): Int {
+        val compare = startIndex.compareTo(textRange.startIndex)
         if (compare != 0) return compare
-        return endIndex.compareTo(label.endIndex)
+        return endIndex.compareTo(textRange.endIndex)
     }
 
     /**
      * Compares the [startIndex] of two labels using natural ordering
      */
-    fun compareStart(label: Label): Int {
-        return startIndex.compareTo(label.startIndex)
+    fun compareStart(textRange: TextRange): Int {
+        return startIndex.compareTo(textRange.startIndex)
     }
 
     /**
@@ -102,33 +87,37 @@ interface Label {
      */
     fun toSpan(): Span = Span(startIndex, endIndex)
 
-    /**
-     * Takes the argument [label], which has the same 0-basis as this label, and makes relative to
-     * this label, i.e. having a 0-basis of this label's [startIndex]
-     */
-    fun relativize(label: Label): Span =
-            Span(label.startIndex - startIndex, label.endIndex - startIndex)
+    fun relativize(startIndex: Int, endIndex: Int): Span =
+            Span(startIndex - this.startIndex, endIndex - this.startIndex)
 
     /**
-     * Takes the argument [label], which is relative to this label, and changes it to have the same
+     * Takes the argument [textRange], which is relative to this label, and changes it to have the same
      * 0-basis as this label.
      */
-    fun derelativize(label: Label): Span =
-            Span(label.startIndex + startIndex, label.endIndex + startIndex)
+    fun normalize(textRange: TextRange): Span =
+            Span(textRange.startIndex + startIndex, textRange.endIndex + startIndex)
+
+    fun normalize(startIndex: Int, endIndex: Int): Span =
+            Span(startIndex + this.startIndex, endIndex + this.startIndex)
+
+    fun offset(value: Int): Span = Span(startIndex + value, endIndex + value)
+
+    fun offsetByStartIndex(textRange: TextRange): Span =
+            Span(startIndex + textRange.startIndex, endIndex + textRange.startIndex)
 }
 
 /**
- * Used to implement [Label] in Java since default method implementations on Kotlin interfaces are
+ * Used to implement [TextRange] in Java since default method implementations on Kotlin interfaces are
  * not pulled through
  */
-abstract class AbstractLabel(
+abstract class AbstractTextRange(
         override val startIndex: Int,
         override val endIndex: Int
-) : Label {
+) : TextRange {
     /**
      * Constructor which copies the bounds of another label
      */
-    constructor(label: Label) : this(label.startIndex, label.endIndex)
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
 /**
@@ -137,18 +126,20 @@ abstract class AbstractLabel(
 data class Span(
         override val startIndex: Int,
         override val endIndex: Int
-) : Label, Comparable<Label> {
+) : TextRange, Comparable<TextRange> {
     /**
      * Convience constructor that copies the location of another label
      */
-    constructor(label: Label) : this(label.startIndex, label.endIndex)
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+
+    constructor(matcher: Matcher): this(matcher.start(), matcher.end())
 
     /**
      * Compares by comparing locations
      *
      * @see compareLocation
      */
-    override fun compareTo(other: Label): Int {
+    override fun compareTo(other: TextRange): Int {
         return compareLocation(other)
     }
 
@@ -163,51 +154,69 @@ data class Span(
 
 
 /**
- * A generalizable label that holds an object [value] as its data
+ * A generalizable label that references an object [value] as its data
+ *
+ * @property value the object referenced by this label
+ * @param T the type of object contained by this label
  */
 data class ReferenceLabel<out T>(
         override val startIndex: Int,
         override val endIndex: Int,
         val value: T
-) : Label {
+) : TextRange {
     /**
-     * Constructor which copies the bounds of [label]
+     * Constructor which copies the bounds of [textRange]
      */
-    constructor(label: Label, value: T) : this(label.startIndex, label.endIndex, value)
+    constructor(textRange: TextRange, value: T) : this(textRange.startIndex, textRange.endIndex, value)
 }
 
 /**
- * A generalizable label that holds two objects [first] and [second] as its data
+ * A generalizable label that holds two objects [first] and [second] as its data.
+ *
+ * @property startIndex the index before any characters labeled
+ * @property endIndex the index after any characters labeled.
+ * @property first first value
+ * @property second second value
+ * @param A the type of the first element of the pair
+ * @param B the type of the second element of the pair
  */
-data class PairLabel<out T, out U>(
+data class PairLabel<out A, out B>(
         override val startIndex: Int,
         override val endIndex: Int,
-        val first: T,
-        val second: U
-) : Label {
+        val first: A,
+        val second: B
+) : TextRange {
     /**
-     * Constructor which copies the bounds of [label].
+     * Constructor which copies the bounds of [textRange].
      */
     constructor(
-            label: Label,
-            first: T,
-            second: U
-    ): this(label.startIndex, label.endIndex, first, second)
+            textRange: TextRange,
+            first: A,
+            second: B
+    ): this(textRange.startIndex, textRange.endIndex, first, second)
+
+    /**
+     * Creates a pair containing just the data objects.
+     */
+    fun toPair(): Pair<A, B> = Pair(first, second)
 }
 
 /**
- * A collection of labels ordered by their location in text.
+ * A collection of labels ordered by their location in text. By default sorts by ascending
+ * [TextRange.startIndex] and then ascending [TextRange.endIndex].
+ *
+ * @param T the type of label that this label index contains.
  */
-interface LabelIndex<out T : Label> : Collection<T> {
+interface LabelIndex<out T : TextRange> : Collection<T> {
     /**
      * The collection of labels that contain the text specified by [startIndex] and [endIndex]
      */
     fun containing(startIndex: Int, endIndex: Int): LabelIndex<T>
 
     /**
-     * The collection of labels that contain the text covered by [label]
+     * The collection of labels that contain the text covered by [textRange]
      */
-    fun containing(label: Label): LabelIndex<T> = containing(label.startIndex, label.endIndex)
+    fun containing(textRange: TextRange): LabelIndex<T> = containing(textRange.startIndex, textRange.endIndex)
 
     /**
      * The collection of labels inside the span of text from [startIndex] to [endIndex]
@@ -215,9 +224,9 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T>
 
     /**
-     * The collection of labels inside [label]
+     * The collection of labels inside [textRange]
      */
-    fun insideSpan(label: Label): LabelIndex<T> = insideSpan(label.startIndex, label.endIndex)
+    fun insideSpan(textRange: TextRange): LabelIndex<T> = insideSpan(textRange.startIndex, textRange.endIndex)
 
     /**
      * The labels in this label index sorted according to ascending span
@@ -255,27 +264,27 @@ interface LabelIndex<out T : Label> : Collection<T> {
 
     /**
      * All the labels in this label index that are before [index], i.e. where their
-     * [Label.endIndex] is less than or equal to [index]
+     * [TextRange.endIndex] is less than or equal to [index]
      */
     fun toTheLeftOf(index: Int): LabelIndex<T>
 
     /**
-     * All the labels in this index that are before [label], i.e. where their [Label.endIndex] are
-     * less than or equal to [label]'s [Label.startIndex]
+     * All the labels in this index that are before [textRange], i.e. where their [TextRange.endIndex] are
+     * less than or equal to [textRange]'s [TextRange.startIndex]
      */
-    fun toTheLeftOf(label: Label): LabelIndex<T> = toTheLeftOf(label.startIndex)
+    fun toTheLeftOf(textRange: TextRange): LabelIndex<T> = toTheLeftOf(textRange.startIndex)
 
     /**
-     * All the labels in this index that are after [index], i.e. where their [Label.startIndex] is
+     * All the labels in this index that are after [index], i.e. where their [TextRange.startIndex] is
      * greater than or equal to [index]
      */
     fun toTheRightOf(index: Int): LabelIndex<T>
 
     /**
-     * All the labels in this index that are after [label], i.e. where their [Label.startIndex] are
-     * greater than or equal to [label]'s [Label.endIndex]
+     * All the labels in this index that are after [textRange], i.e. where their [TextRange.startIndex] are
+     * greater than or equal to [textRange]'s [TextRange.endIndex]
      */
-    fun toTheRightOf(label: Label): LabelIndex<T> = toTheRightOf(label.endIndex)
+    fun toTheRightOf(textRange: TextRange): LabelIndex<T> = toTheRightOf(textRange.endIndex)
 
     /**
      * A label index that goes through labels working forward from [index]
@@ -285,11 +294,11 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun forwardFrom(index: Int): LabelIndex<T> = toTheLeftOf(index).descendingStartIndex()
 
     /**
-     * A label index that goes through labels working forward from [label]
+     * A label index that goes through labels working forward from [textRange]
      *
      * @see toTheRightOf
      */
-    fun forwardFrom(label: Label): LabelIndex<T> = forwardFrom(label.startIndex)
+    fun forwardFrom(textRange: TextRange): LabelIndex<T> = forwardFrom(textRange.startIndex)
 
     /**
      * A label index that goes through labels working backwards from [index]
@@ -299,11 +308,11 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun backwardFrom(index: Int): LabelIndex<T> = toTheRightOf(index)
 
     /**
-     * A label index that goes through labels working backwards from [label]
+     * A label index that goes through labels working backwards from [textRange]
      *
      * @see toTheLeftOf
      */
-    fun backwardFrom(label: Label): LabelIndex<T> = backwardFrom(label.endIndex)
+    fun backwardFrom(textRange: TextRange): LabelIndex<T> = backwardFrom(textRange.endIndex)
 
     /**
      * Returns the first label in this label index or null if it is empty
@@ -311,9 +320,9 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun first(): T?
 
     /**
-     * Returns a collection of all the labels with the same location as [label].
+     * Returns a collection of all the labels with the same location as [textRange].
      */
-    fun atLocation(label: Label): Collection<T>
+    fun atLocation(textRange: TextRange): Collection<T>
 
     /**
      * Alias for [atLocation] taking a start index and end index
@@ -322,10 +331,10 @@ interface LabelIndex<out T : Label> : Collection<T> {
             atLocation(Span(startIndex, endIndex))
 
     /**
-     * Returns the first element of this index that has the same bounds as [label] or null if there
+     * Returns the first element of this index that has the same bounds as [textRange] or null if there
      * is no such object
      */
-    fun firstAtLocation(label: Label): T? = atLocation(label).firstOrNull()
+    fun firstAtLocation(textRange: TextRange): T? = atLocation(textRange).firstOrNull()
 
     /**
      * Returns the first element of this index that has the same bounds specified by [startIndex]
@@ -340,9 +349,9 @@ interface LabelIndex<out T : Label> : Collection<T> {
     fun asList(): List<T>
 
     /**
-     * Returns true if this contains a label with the same location as [label]
+     * Returns true if this contains a label with the same location as [textRange]
      */
-    fun containsSpan(label: Label): Boolean
+    fun containsSpan(textRange: TextRange): Boolean
 
     /**
      * Alias for [containsSpan] taking creating a new [Span] form [startIndex] and [endIndex]
@@ -357,12 +366,14 @@ interface LabelIndex<out T : Label> : Collection<T> {
  * Used to implement [LabelIndex] in Java since default method implementations are not pulled from
  * interfaces in Java.
  */
-abstract class AbstractLabelIndex<out T : Label> : LabelIndex<T>
+abstract class AbstractLabelIndex<out T : TextRange> : LabelIndex<T>
 
 /**
  * Used to add labels to the document label indices.
+ *
+ * @param T the type of label that can be added using this labeler
  */
-interface Labeler<in T : Label> {
+interface Labeler<in T : TextRange> {
     /**
      * Adds [label] to the document
      */
@@ -371,5 +382,5 @@ interface Labeler<in T : Label> {
     /**
      * Adds all the labels in the [Iterable] [elements] to the document.
      */
-    fun labelAll(elements: Iterable<T>) = elements.forEach { this.add(it) }
+    fun addAll(elements: Iterable<T>) = elements.forEach { this.add(it) }
 }

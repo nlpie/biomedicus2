@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
@@ -27,8 +27,8 @@ import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
@@ -94,11 +94,11 @@ public class TntPosTagger implements DocumentProcessor {
 
   @Override
   public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-    Labeler<PosTag> partOfSpeechLabeler = systemView.getLabeler(PosTag.class);
+    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
+    Labeler<PosTag> partOfSpeechLabeler = systemView.labeler(PosTag.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
       Collection<ParseToken> tokens = parseTokenLabelIndex.insideSpan(sentence);

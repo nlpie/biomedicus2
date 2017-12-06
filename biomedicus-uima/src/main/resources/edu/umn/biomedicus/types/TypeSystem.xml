@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -400,6 +400,18 @@
     <typeDescription>
       <name>edu.umn.biomedicus.uima.type1_8.CandidateUnitOfMeasure</name>
       <supertypeName>uima.tcas.Annotation</supertypeName>
+    </typeDescription>
+
+    <typeDescription>
+      <name>edu.umn.biomedicus.uima.type2_0.Relative</name>
+      <description>A reference to a family relation</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>value</name>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
     </typeDescription>
 
     <typeDescription>

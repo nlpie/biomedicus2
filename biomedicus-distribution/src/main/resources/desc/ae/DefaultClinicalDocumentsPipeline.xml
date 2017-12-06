@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,40 +20,40 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="sentence">
-      <import location="annotator/syntax/SentenceDetector.xml"/>
+      <import location="annotator/SentenceDetector.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="section">
-      <import location="annotator/semantics/RuleBasedSectionDetector.xml"/>
+      <import location="annotator/RuleBasedSectionDetector.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
-      <import location="annotator/syntax/PennLikeTokenizer.xml"/>
+      <import location="annotator/PennLikeTokenizer.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="numbers">
-      <import location="annotator/lexical/NumberRecognizer.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="numberRanges">
-      <import location="annotator/lexical/NumberRangeLabeler.xml"/>
+    <delegateAnalysisEngine key="measuresPipeline">
+      <import location="MeasuresPipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="words">
-      <import location="annotator/lexical/WordLabeler.xml"/>
+      <import location="annotator/WordLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="posAnnotator">
-      <import location="annotator/syntax/PosTagger.xml"/>
+      <import location="annotator/PosTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="normalizer">
-      <import location="annotator/lexical/Normalizer.xml"/>
+      <import location="annotator/Normalizer.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="termTokens">
-      <import location="annotator/syntax/TermTokenMerger.xml"/>
+      <import location="annotator/TermTokenMerger.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="timePipeline">
+      <import location="TimePipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="acronyms">
-      <import location="annotator/semantics/AcronymProcessor.xml"/>
+      <import location="annotator/AcronymProcessor.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="dictionaryMapper">
-      <import location="annotator/semantics/DictionaryConceptRecognizer.xml"/>
+      <import location="annotator/DictionaryConceptRecognizer.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="modification">
-      <import location="annotator/semantics/Modification.xml"/>
+      <import location="annotator/Modification.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -65,10 +65,10 @@
         <node>sentence</node>
         <node>section</node>
         <node>parseTokens</node>
-        <node>numbers</node>
-        <node>numberRanges</node>
+        <node>measuresPipeline</node>
         <node>words</node>
         <node>posAnnotator</node>
+        <node>timePipeline</node>
         <node>normalizer</node>
         <node>termTokens</node>
         <node>acronyms</node>
@@ -79,10 +79,10 @@
     <capabilities>
       <capability>
         <inputSofas>
-          <sofaName>SystemView</sofaName>
+          <sofaName>System</sofaName>
         </inputSofas>
         <outputSofas>
-          <sofaName>SystemView</sofaName>
+          <sofaName>System</sofaName>
         </outputSofas>
       </capability>
     </capabilities>

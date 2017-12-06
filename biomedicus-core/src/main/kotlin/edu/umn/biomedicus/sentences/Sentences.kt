@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.sentences
 
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
-data class Sentence(override val startIndex: Int, override val endIndex: Int) : Label {
-    constructor(label: Label) : this(label.startIndex, label.endIndex)
+data class Sentence(override val startIndex: Int, override val endIndex: Int) : TextRange {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class TextSegment(override val startIndex: Int, override val endIndex: Int) : Label {
-    constructor(label: Label) : this(label.startIndex, label.endIndex)
+data class TextSegment(override val startIndex: Int, override val endIndex: Int) : TextRange {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

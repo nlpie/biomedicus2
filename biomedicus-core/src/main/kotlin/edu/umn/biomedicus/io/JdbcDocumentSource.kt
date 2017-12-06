@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package edu.umn.biomedicus.io
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.biomedicus.framework.DocumentBuilder
 import edu.umn.biomedicus.framework.DocumentSource
-import edu.umn.biomedicus.framework.store.Document
+import edu.umn.nlpengine.Document
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileInputStream
@@ -31,6 +31,9 @@ import java.sql.Statement
 import java.util.*
 import javax.inject.Inject
 
+/**
+ * A document source that pulls from a database using JDBC.
+ */
 class JdbcDocumentSource @Inject internal constructor(
         @ProcessorSetting("configFile") private val configFile: Path
 ) : DocumentSource {
@@ -49,7 +52,6 @@ class JdbcDocumentSource @Inject internal constructor(
     private val textViewName: String
 
     private val size: Int
-
 
     init {
         @Suppress("UNCHECKED_CAST")
@@ -94,12 +96,12 @@ class JdbcDocumentSource @Inject internal constructor(
         val document = factory.create(id)
 
         metadataMappings.forEach { column, target ->
-            document.putMetadata(target, resultSet.getString(column))
+            document.metadata[target] = resultSet.getString(column)
         }
 
         val text = resultSet.getString(textColumn)
 
-        document.newTextView().withName(textViewName).withText(text).build()
+        document.attachText(textViewName, text)
 
         return document
     }

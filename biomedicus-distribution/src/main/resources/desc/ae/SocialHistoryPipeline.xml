@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="sectionHeaders">
+      <import location="annotator/sh/SocialHistorySectionHeaderDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineCandidates">
+      <import location="annotator/sh/NicotineCandidateDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageFrequencyPhrases">
+      <import location="annotator/sh/UsageFrequencyPhraseDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageFrequencies">
+      <import location="annotator/sh/UsageFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageStatuses">
+      <import location="annotator/sh/UsageStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="genericMethodPhrases">
+      <import location="annotator/sh/GenericMethodPhraseDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineAmountUnits">
+      <import location="annotator/sh/NicotineUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineAmounts">
+      <import location="annotator/sh/NicotineAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineFrequencies">
+      <import location="annotator/sh/NicotineFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineTemporals">
+      <import location="annotator/sh/NicotineTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineTypes">
+      <import location="annotator/sh/NicotineTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineStatuses">
+      <import location="annotator/sh/NicotineStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineMethods">
+      <import location="annotator/sh/NicotineMethodDetector.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>Social History Pipeline</name>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <flowConstraints>
+      <fixedFlow>
+        <node>sectionHeaders</node>
+        <node>nicotineCandidates</node>
+        <node>usageFrequencyPhrases</node>
+        <node>usageFrequencies</node>
+        <node>usageStatuses</node>
+        <node>genericMethodPhrases</node>
+        <node>nicotineAmountUnits</node>
+        <node>nicotineAmounts</node>
+        <node>nicotineFrequencies</node>
+        <node>nicotineTemporals</node>
+        <node>nicotineTypes</node>
+        <node>nicotineStatuses</node>
+        <node>nicotineMethods</node>
+      </fixedFlow>
+    </flowConstraints>
+    <capabilities>
+      <capability>
+        <inputSofas>
+          <sofaName>System</sofaName>
+        </inputSofas>
+        <outputSofas>
+          <sofaName>System</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
+</analysisEngineDescription>

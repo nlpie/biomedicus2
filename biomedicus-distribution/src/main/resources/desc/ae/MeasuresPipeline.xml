@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="numbers">
+      <import location="annotator/measures/NumberRecognizer.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="numberRanges">
+      <import location="annotator/measures/NumberRangeLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="quantifierCues">
+      <import location="annotator/measures/IndefiniteQuantifierDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="quantifiers">
+      <import location="annotator/measures/QuantifierDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="standaloneQuantifiers">
+      <import location="annotator/measures/StandaloneQuantifierDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="timeUnits">
+      <import location="annotator/measures/TimeUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="timeFrequencyUnits">
+      <import location="annotator/measures/TimeFrequencyUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>Measures Pipeline</name>
+    <description>Responsible for detecting measure components and measures.</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <flowConstraints>
+      <fixedFlow>
+        <node>numbers</node>
+        <node>numberRanges</node>
+        <node>quantifierCues</node>
+        <node>quantifiers</node>
+        <node>standaloneQuantifiers</node>
+        <node>timeUnits</node>
+        <node>timeFrequencyUnits</node>
+      </fixedFlow>
+    </flowConstraints>
+    <capabilities>
+      <capability>
+        <inputSofas>
+          <sofaName>System</sofaName>
+        </inputSofas>
+        <outputSofas>
+          <sofaName>System</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
+</analysisEngineDescription>

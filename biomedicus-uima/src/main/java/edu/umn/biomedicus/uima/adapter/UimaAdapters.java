@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.nlpengine.Document;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;

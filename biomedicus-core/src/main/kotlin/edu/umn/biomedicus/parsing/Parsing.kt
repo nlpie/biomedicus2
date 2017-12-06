@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 
 package edu.umn.biomedicus.parsing
 
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
 data class DependencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
         val parseTree: String
-): Label {
-    constructor(label: Label, parseTree: String): this(label.startIndex, label.endIndex, parseTree)
+): TextRange {
+    constructor(textRange: TextRange, parseTree: String): this(textRange.startIndex, textRange.endIndex, parseTree)
 }
 
 data class ConstituencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
         val parseTree: String
-): Label {
-    constructor(label: Label, parseTree: String): this(label.startIndex, label.endIndex, parseTree)
+): TextRange {
+    constructor(textRange: TextRange, parseTree: String): this(textRange.startIndex, textRange.endIndex, parseTree)
 }

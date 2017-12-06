@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.rtf.beans.keywords.ControlKeywordsDescription;
 import edu.umn.biomedicus.rtf.beans.properties.PropertiesDescription;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
@@ -26,7 +27,6 @@ import edu.umn.biomedicus.rtf.reader.RtfKeywordParser;
 import edu.umn.biomedicus.rtf.reader.RtfReader;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
 import edu.umn.biomedicus.rtf.reader.State;
-import edu.umn.biomedicus.uima.common.Views;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +134,7 @@ class CasRtfParser {
         annotationTypeForSymbolName,
         casMappings.getPropertyCasMappings(), cas);
 
-    CAS originalDocumentView = cas.getView(Views.ORIGINAL_DOCUMENT_VIEW);
+    CAS originalDocumentView = cas.getView(TextIdentifiers.ORIGINAL_DOCUMENT);
     IndexListener indexListener
         = new CasIndexListener(originalDocumentView);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 package edu.umn.biomedicus.normalization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
 data class NormForm(
         override val startIndex: Int,
         override val endIndex: Int,
         val normalForm: String,
         val normIdentifier: StringIdentifier
-) : Label {
+) : TextRange {
     constructor(
-            label: Label,
+            textRange: TextRange,
             normalForm: String,
             normIdentifier: StringIdentifier
-    ) : this(label.startIndex, label.endIndex, normalForm, normIdentifier)
+    ) : this(textRange.startIndex, textRange.endIndex, normalForm, normIdentifier)
 }
 

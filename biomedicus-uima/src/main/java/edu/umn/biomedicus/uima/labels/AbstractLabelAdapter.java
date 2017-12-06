@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.uima.labels;
 
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 
-public abstract class AbstractLabelAdapter<T extends Label> implements LabelAdapter<T> {
+public abstract class AbstractLabelAdapter<T extends TextRange> implements LabelAdapter {
 
   protected final CAS cas;
   protected final Type type;
@@ -36,11 +36,12 @@ public abstract class AbstractLabelAdapter<T extends Label> implements LabelAdap
     return type;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public final AnnotationFS labelToAnnotation(T label) {
+  public final AnnotationFS labelToAnnotation(TextRange label) {
     AnnotationFS annotation = cas.createAnnotation(type, label.getStartIndex(),
         label.getEndIndex());
-    fillAnnotation(label, annotation);
+    fillAnnotation((T) label, annotation);
     cas.addFsToIndexes(annotation);
     return annotation;
   }

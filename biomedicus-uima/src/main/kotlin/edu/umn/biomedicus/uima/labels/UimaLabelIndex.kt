@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,15 @@ package edu.umn.biomedicus.uima.labels
 import com.google.inject.Inject
 import edu.umn.nlpengine.*
 import org.apache.uima.cas.CAS
-import org.apache.uima.cas.Type
 import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.cas.text.AnnotationIndex
 
 
-class UimaLabelIndex<T : Label> @Inject constructor(
-        private val cas: CAS, 
+class UimaLabelIndex<T : TextRange> @Inject constructor(
+        cas: CAS,
         private val labelAdapter: LabelAdapter<T>
 ) : AbstractLabelIndex<T>() {
-    private val index: AnnotationIndex<AnnotationFS>
-
-    private val annotationType: Type
+    private val index: AnnotationIndex<AnnotationFS> = cas.getAnnotationIndex(labelAdapter.type)
 
     private val inflated: LabelIndex<T> by lazy {
         if (labelAdapter.isDistinct) DistinctLabelIndex(this) else StandardLabelIndex(this)
@@ -44,12 +41,6 @@ class UimaLabelIndex<T : Label> @Inject constructor(
             count++
         }
         count
-    }
-
-    init {
-        annotationType = cas.typeSystem.getType("uima.tcas.Annotation")
-        val type = labelAdapter.type
-        index = cas.getAnnotationIndex(type)
     }
 
     override fun containing(startIndex: Int, endIndex: Int): LabelIndex<T> {
@@ -91,16 +82,16 @@ class UimaLabelIndex<T : Label> @Inject constructor(
         } else it.next()
     }
 
-    override fun atLocation(label: Label): Collection<T> {
-        return inflated.atLocation(label)
+    override fun atLocation(textRange: TextRange): Collection<T> {
+        return inflated.atLocation(textRange)
     }
 
     override fun asList(): List<T> {
         return inflated.asList()
     }
 
-    override fun containsSpan(label: Label): Boolean {
-        return inflated.containsSpan(label)
+    override fun containsSpan(textRange: TextRange): Boolean {
+        return inflated.containsSpan(textRange)
     }
 
     override fun isEmpty(): Boolean {
@@ -114,8 +105,9 @@ class UimaLabelIndex<T : Label> @Inject constructor(
                 return iterator.hasNext()
             }
 
+            @Suppress("UNCHECKED_CAST")
             override fun next(): T {
-                return labelAdapter.annotationToLabel(iterator.next())
+                return labelAdapter.annotationToLabel(iterator.next()) as T
             }
         }
     }

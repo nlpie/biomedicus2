@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,9 +104,11 @@ class SettingsTransformer {
         @SuppressWarnings("unchecked")
         Map<String, Object> valueMap = (Map<String, Object>) value;
         recursiveAddSettings(valueMap, key);
-      } else if (endsWithPathFileDir(key)) {
+      } else if (value instanceof String && endsWithPathFileDir(key)) {
         Path path = absoluteOrResolveAgainstData(Paths.get((String) value));
         settings.putIfAbsent(Key.get(Path.class, annotationFunction.apply(key)), path);
+        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key)), path.toString());
+        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key + ".orig")), value);
       } else {
         addSetting(key, value, value.getClass());
       }

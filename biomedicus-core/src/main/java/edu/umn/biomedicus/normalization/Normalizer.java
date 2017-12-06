@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
@@ -61,13 +61,13 @@ final public class Normalizer implements DocumentProcessor {
   @Override
   public void process(Document document) throws BiomedicusException {
     LOGGER.debug("Normalizing tokens in a document.");
-    TextView textView = StandardViews.getSystemView(document);
+    LabeledText labeledText = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<WordIndex> wordIndexLabelIndex = textView.getLabelIndex(WordIndex.class);
-    LabelIndex<PosTag> posTagIndex = textView.getLabelIndex(PosTag.class);
-    Labeler<NormForm> normFormLabeler = textView.getLabeler(NormForm.class);
+    LabelIndex<WordIndex> wordIndexLabelIndex = labeledText.labelIndex(WordIndex.class);
+    LabelIndex<PosTag> posTagIndex = labeledText.labelIndex(PosTag.class);
+    Labeler<NormForm> normFormLabeler = labeledText.labeler(NormForm.class);
 
-    LabelIndex<ParseToken> parseTokenLabelIndex = textView.getLabelIndex(ParseToken.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = labeledText.labelIndex(ParseToken.class);
 
     for (WordIndex wordIndex : wordIndexLabelIndex) {
       PartOfSpeech partOfSpeech = posTagIndex

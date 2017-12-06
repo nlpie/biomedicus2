@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@
       <nameValuePair>
         <name>targetViewName</name>
         <value>
-          <string>SystemView</string>
+          <string>System</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -159,7 +159,7 @@
           <sofaName>OriginalDocumentView</sofaName>
         </inputSofas>
         <outputSofas>
-          <sofaName>SystemView</sofaName>
+          <sofaName>System</sofaName>
           <sofaName>RtfAuthorDestination</sofaName>
           <sofaName>RtfBackupTimeDestination</sofaName>
           <sofaName>RtfColorTableDestination</sofaName>

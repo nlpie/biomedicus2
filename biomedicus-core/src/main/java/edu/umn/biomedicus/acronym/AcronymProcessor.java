@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,17 @@ package edu.umn.biomedicus.acronym;
 import edu.umn.biomedicus.acronyms.Acronym;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.Token;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.EnumSet;
@@ -102,12 +102,12 @@ class AcronymProcessor implements DocumentProcessor {
   public void process(Document document) throws BiomedicusException {
     LOGGER.debug("Detecting acronyms in a document.");
 
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<TermToken> termTokenLabels = systemView.getLabelIndex(TermToken.class);
-    LabelIndex<PosTag> partOfSpeechLabels = systemView.getLabelIndex(PosTag.class);
-    LabelIndex<ParseToken> parseTokenLabels = systemView.getLabelIndex(ParseToken.class);
-    acronymLabeler = systemView.getLabeler(Acronym.class);
+    LabelIndex<TermToken> termTokenLabels = systemView.labelIndex(TermToken.class);
+    LabelIndex<PosTag> partOfSpeechLabels = systemView.labelIndex(PosTag.class);
+    LabelIndex<ParseToken> parseTokenLabels = systemView.labelIndex(ParseToken.class);
+    acronymLabeler = systemView.labeler(Acronym.class);
 
     List<TermToken> termTokenLabelList = termTokenLabels.asList();
     termTokens = termTokenLabels.asList();
@@ -133,7 +133,7 @@ class AcronymProcessor implements DocumentProcessor {
     }
   }
 
-  private <T extends Token&Label> boolean checkAndLabel(int i, T token)
+  private <T extends Token& TextRange> boolean checkAndLabel(int i, T token)
       throws BiomedicusException {
     boolean found = false;
     if (model.hasAcronym(token)

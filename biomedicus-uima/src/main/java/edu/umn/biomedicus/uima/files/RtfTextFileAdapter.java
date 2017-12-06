@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
-
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.io.IllegalXmlCharacter;
 import edu.umn.biomedicus.uima.adapter.GuiceInjector;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import edu.umn.biomedicus.uima.common.Views;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -105,7 +104,7 @@ public class RtfTextFileAdapter implements InputFileAdapter {
 
     List<IllegalXmlCharacter> illegalXmlCharacters = new ArrayList<>();
     StringBuilder stringBuilder = new StringBuilder();
-    try (Reader stringReader = Files.newBufferedReader(path, US_ASCII)) {
+    try (Reader stringReader = Files.newBufferedReader(path, Charset.forName("Cp1252"))) {
       int ch;
       while ((ch = stringReader.read()) != -1) {
         if (isValid(ch)) {
@@ -125,11 +124,8 @@ public class RtfTextFileAdapter implements InputFileAdapter {
     }
 
     String documentText = stringBuilder.toString();
-    TextView odTextView = document.newTextView()
-        .withName(Views.ORIGINAL_DOCUMENT_VIEW)
-        .withText(documentText)
-        .build();
-    odTextView.getLabeler(IllegalXmlCharacter.class).labelAll(illegalXmlCharacters);
+    LabeledText odLabeledText = document.attachText(TextIdentifiers.ORIGINAL_DOCUMENT, documentText);
+    odLabeledText.labeler(IllegalXmlCharacter.class).addAll(illegalXmlCharacters);
   }
 
   @Override

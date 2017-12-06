@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.formatting.Bold;
 import edu.umn.biomedicus.formatting.Underlined;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
@@ -63,15 +63,15 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
   @Override
   public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
-    LabelIndex<Bold> boldLabelIndex = systemView.getLabelIndex(Bold.class);
-    LabelIndex<Underlined> underlinedLabelIndex = systemView.getLabelIndex(Underlined.class);
+    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
+    LabelIndex<Bold> boldLabelIndex = systemView.labelIndex(Bold.class);
+    LabelIndex<Underlined> underlinedLabelIndex = systemView.labelIndex(Underlined.class);
 
-    sectionLabeler = systemView.getLabeler(Section.class);
-    sectionTitleLabeler = systemView.getLabeler(SectionTitle.class);
-    sectionContentLabeler = systemView.getLabeler(SectionContent.class);
+    sectionLabeler = systemView.labeler(Section.class);
+    sectionTitleLabeler = systemView.labeler(SectionTitle.class);
+    sectionContentLabeler = systemView.labeler(SectionContent.class);
 
     String text = systemView.getText();
 

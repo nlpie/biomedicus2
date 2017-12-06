@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import static edu.umn.biomedicus.modification.ModificationType.HISTORICAL;
 import static edu.umn.biomedicus.modification.ModificationType.NEGATED;
 import static edu.umn.biomedicus.modification.ModificationType.PROBABLE;
 
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.concepts.DictionaryTerm;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.TermToken;
@@ -127,21 +127,29 @@ public class ModificationDetector implements DocumentProcessor {
 
   @Override
   public void process(Document document) throws BiomedicusException {
-    TextView textView = document.getTextView(StandardViews.SYSTEM)
-        .orElseThrow(() -> new BiomedicusException("No system view"));
+    LabeledText labeledText = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<TermToken> tokenLabelIndex = textView.getLabelIndex(TermToken.class);
-    LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = textView
-        .getLabelIndex(DictionaryTerm.class);
-    LabelIndex<Sentence> sentenceLabelIndex = textView.getLabelIndex(Sentence.class);
-    LabelIndex<PosTag> partOfSpeechLabelIndex = textView.getLabelIndex(PosTag.class);
+    if (labeledText == null) {
+      throw new BiomedicusException("no System text");
+    }
 
-    Labeler<Probable> probableLabeler = textView.getLabeler(Probable.class);
-    Labeler<Historical> historicalLabeler = textView.getLabeler(Historical.class);
-    Labeler<Negated> negatedLabeler = textView.getLabeler(Negated.class);
+    LabelIndex<TermToken> tokenLabelIndex = labeledText.labelIndex(TermToken.class);
+    LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = labeledText
+        .labelIndex(DictionaryTerm.class);
+    LabelIndex<Sentence> sentenceLabelIndex = labeledText.labelIndex(Sentence.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = labeledText.labelIndex(PosTag.class);
+
+    Labeler<Probable> probableLabeler = labeledText.labeler(Probable.class);
+    Labeler<Historical> historicalLabeler = labeledText.labeler(Historical.class);
+    Labeler<Negated> negatedLabeler = labeledText.labeler(Negated.class);
 
     for (DictionaryTerm termLabel : dictionaryTermLabelIndex) {
       Sentence sentenceLabel = sentenceLabelIndex.containing(termLabel).first();
+
+      if (sentenceLabel == null) {
+        sentenceLabelIndex.containing(termLabel);
+        throw new BiomedicusException("Term outside of a sentence.");
+      }
 
       LabelIndex<TermToken> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel);
 

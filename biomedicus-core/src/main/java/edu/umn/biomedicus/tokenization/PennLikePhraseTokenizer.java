@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,10 +124,10 @@ public final class PennLikePhraseTokenizer {
       Matcher matcher = TRAILING_PERIOD.matcher(tokenCandidate.coveredText(sentenceText));
       if (matcher.find()) {
         return Stream
-            .of(new TokenCandidate(tokenCandidate.derelativize(new Span(0, matcher.start())),
+            .of(new TokenCandidate(tokenCandidate.normalize(new Span(0, matcher.start())),
                     false),
                 new TokenCandidate(
-                    tokenCandidate.derelativize(new Span(matcher.start(), matcher.end())), true));
+                    tokenCandidate.normalize(new Span(matcher.start(), matcher.end())), true));
       } else {
         return Stream.of(tokenCandidate);
       }
@@ -144,28 +144,28 @@ public final class PennLikePhraseTokenizer {
       int begin = midBreaksMatcher.start();
       int end = midBreaksMatcher.end();
 
-      Span beginSplit = tokenCandidate.derelativize(new Span(0, begin));
+      Span beginSplit = tokenCandidate.normalize(new Span(0, begin));
       if (beginSplit.length() > 0) {
         builder.add(new TokenCandidate(beginSplit, false));
       }
 
-      Span matchedSplit = tokenCandidate.derelativize(new Span(begin, end));
+      Span matchedSplit = tokenCandidate.normalize(new Span(begin, end));
       builder.add(new TokenCandidate(matchedSplit, false));
 
       while (midBreaksMatcher.find()) {
         begin = midBreaksMatcher.start();
-        Span beforeSplit = tokenCandidate.derelativize(new Span(end, begin));
+        Span beforeSplit = tokenCandidate.normalize(new Span(end, begin));
         if (beforeSplit.length() > 0) {
           builder.add(new TokenCandidate(beforeSplit, false));
         }
 
         end = midBreaksMatcher.end();
-        matchedSplit = tokenCandidate.derelativize(new Span(begin, end));
+        matchedSplit = tokenCandidate.normalize(new Span(begin, end));
         if (matchedSplit.length() > 0) {
           builder.add(new TokenCandidate(matchedSplit, false));
         }
       }
-      Span lastSplit = tokenCandidate.derelativize(new Span(end, tokenText.length()));
+      Span lastSplit = tokenCandidate.normalize(new Span(end, tokenText.length()));
       if (lastSplit.length() > 0) {
         builder.add(new TokenCandidate(lastSplit, tokenCandidate.isLast()));
       }
@@ -183,8 +183,8 @@ public final class PennLikePhraseTokenizer {
       Matcher endBreaksMatcher = END_BREAKS.matcher(tokenText);
       if (endBreaksMatcher.find()) {
         int start = endBreaksMatcher.start(1);
-        Span rest = tokenCandidate.derelativize(new Span(0, start));
-        Span endSplit = tokenCandidate.derelativize(new Span(start, endBreaksMatcher.end()));
+        Span rest = tokenCandidate.normalize(new Span(0, start));
+        Span endSplit = tokenCandidate.normalize(new Span(start, endBreaksMatcher.end()));
         candidates.addFirst(new TokenCandidate(endSplit, tokenCandidate.isLast()));
         tokenCandidate = new TokenCandidate(rest, false);
       } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@
 package edu.umn.biomedicus.acronyms
 
 import edu.umn.biomedicus.tokenization.Token
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
+/**
+ * An acronym or abbreviation in text.
+ */
 data class Acronym(
         override val startIndex: Int,
         override val endIndex: Int,
         override val text: String,
         override val hasSpaceAfter: Boolean
-): Label, Token {
+): TextRange, Token {
     constructor(
-            label: Label,
+            textRange: TextRange,
             text: String,
             hasSpaceAfter: Boolean
-    ): this(label.startIndex, label.endIndex, text, hasSpaceAfter)
+    ): this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }

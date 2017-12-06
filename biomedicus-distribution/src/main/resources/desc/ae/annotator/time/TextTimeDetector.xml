@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>true</primitive>
+  <!-- Do not change this -->
+  <annotatorImplementationName>
+    edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+  </annotatorImplementationName>
+  <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
+  <analysisEngineMetaData>
+    <name>Text Time Detector</name>
+    <description>Detects instances of times in text.</description>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentProcessor</name>
+        <description>The document processor class to instantiate.
+        </description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>eagerLoad</name>
+        <description>
+          The name of any classes that need to be eagerly loaded by
+          the Guice injector. Classes which are
+          instances of LoadableDataModel will have the loadData method
+          called.
+        </description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>postProcessors</name>
+        <description>
+          The class names of any post processors that should be run
+          after all documents have been processed.
+        </description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentProcessor</name>
+        <value>
+          <string>edu.umn.biomedicus.time.TextTimeDetector</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+          <name>eagerLoad</name>
+          <value>
+              <array>
+                  <string>edu.umn.biomedicus.time.TextTimePattern</string>
+              </array>
+          </value>
+      </nameValuePair>
+    </configurationParameterSettings>
+    <typeSystemDescription>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystem"/>
+      </imports>
+    </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>
+            edu.umn.biomedicus.uima.adapter.GuiceInjector
+          </resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
+</analysisEngineDescription>
+

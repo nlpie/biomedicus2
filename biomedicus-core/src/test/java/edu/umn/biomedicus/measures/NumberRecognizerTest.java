@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 package edu.umn.biomedicus.measures;
 
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
@@ -40,6 +40,7 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.VerificationsInOrder;
 import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 
 public class NumberRecognizerTest {
 
@@ -61,7 +62,7 @@ public class NumberRecognizerTest {
   Document document;
 
   @Mocked
-  TextView textView;
+  LabeledText labeledText;
 
   @Mocked
   LabelIndex<Sentence> sentenceLabelIndex;
@@ -92,12 +93,15 @@ public class NumberRecognizerTest {
       }
     };
 
+    Map<String, LabeledText> labeledTextMap = Maps.newHashMap();
+    labeledTextMap.put(TextIdentifiers.SYSTEM, labeledText);
+
     new Expectations() {{
-      document.getTextView(StandardViews.SYSTEM); result = Optional.of(textView);
-      textView.getLabelIndex(Sentence.class); result = sentenceLabelIndex;
-      textView.getLabeler(Number.class); result = numberLabeler;
+      document.getLabeledTexts(); result = labeledTextMap;
+      labeledText.labelIndex(Sentence.class); result = sentenceLabelIndex;
+      labeledText.labeler(Number.class); result = numberLabeler;
       sentenceLabelIndex.iterator(); result = Collections.singletonList(sentenceLabel).iterator();
-      textView.getLabelIndex(ParseToken.class); result = parseTokenLabelIndex;
+      labeledText.labelIndex(ParseToken.class); result = parseTokenLabelIndex;
       parseTokenLabelIndex.insideSpan(sentenceLabel); result = parseTokenLabelIndex;
       parseTokenLabelIndex.iterator(); result = parseTokenLabels.iterator();
 

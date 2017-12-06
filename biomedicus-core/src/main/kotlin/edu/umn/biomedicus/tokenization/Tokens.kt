@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package edu.umn.biomedicus.tokenization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
-interface Token : Label {
+interface Token : TextRange {
     val text: String
     val hasSpaceAfter: Boolean
 }
@@ -31,10 +31,10 @@ data class TermToken(
         override val hasSpaceAfter: Boolean
 ) : Token {
     constructor(
-            label: Label,
+            textRange: TextRange,
             text: String,
             hasSpaceAfter: Boolean
-    ) : this(label.startIndex, label.endIndex, text, hasSpaceAfter)
+    ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }
 
 data class ParseToken(
@@ -44,27 +44,27 @@ data class ParseToken(
         override val hasSpaceAfter: Boolean
 ) : Token {
     constructor(
-            label: Label,
+            textRange: TextRange,
             text: String,
             hasSpaceAfter: Boolean
-    ) : this(label.startIndex, label.endIndex, text, hasSpaceAfter)
+    ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }
 
 data class TokenCandidate(
         override val startIndex: Int,
         override val endIndex: Int,
         val isLast: Boolean
-) : Label {
-    constructor(label: Label, isLast: Boolean) : this(label.startIndex, label.endIndex, isLast)
+) : TextRange {
+    constructor(textRange: TextRange, isLast: Boolean) : this(textRange.startIndex, textRange.endIndex, isLast)
 }
 
 data class WordIndex(
         override val startIndex: Int,
         override val endIndex: Int,
         val stringIdentifier: StringIdentifier
-) : Label {
+) : TextRange {
     constructor(
-            label: Label,
+            textRange: TextRange,
             stringIdentifier: StringIdentifier
-    ) : this(label.startIndex, label.endIndex, stringIdentifier)
+    ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier)
 }

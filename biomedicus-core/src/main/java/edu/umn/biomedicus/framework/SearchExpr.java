@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.framework.SearchExpr.TypeMatch.PropertyMatch;
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.LabeledText;
+import edu.umn.nlpengine.TextRange;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,18 +38,18 @@ import javax.annotation.Nullable;
 
 /**
  * Class used to search the structure of labels on a document to find specific expressions.
+ * Instances of SearchExpr are thread-safe but the instances of Searcher created against specific
+ * documents are not.
  *
  * @author Ben Knoll
  * @since 1.6.0
  */
 public class SearchExpr {
 
-  private static final Pattern NON_WHITESPACE = Pattern.compile("[\\p{all}&&[^\\p{Blank}]]");
-
   static final Node ACCEPT = new Node() {
     @Nullable
     @Override
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return null;
     }
 
@@ -57,7 +58,6 @@ public class SearchExpr {
       throw new IllegalStateException("Should never swap next on the accept node");
     }
   };
-
   static final Node FINAL_ACCEPT = new Node() {
     @Override
     State search(DefaultSearcher search, State state) {
@@ -71,7 +71,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return null;
     }
 
@@ -80,9 +80,8 @@ public class SearchExpr {
       throw new IllegalStateException("Should never swap next on the final accept node");
     }
   };
-
   static final int LOOP_LIMIT = 10_000;
-
+  private static final Pattern NON_WHITESPACE = Pattern.compile("[\\p{all}&&[^\\p{Blank}]]");
   private final Node root;
 
   private final Node searchRoot;
@@ -120,22 +119,22 @@ public class SearchExpr {
   /**
    * Uses the expression to search an entire text view.
    *
-   * @param textView the document text view to search
+   * @param labeledText the document text view to search
    * @return a {@link Searcher} object of this expression on the entire text view.
    */
-  public Searcher createSearcher(TextView textView) {
-    return new DefaultSearcher(textView, textView.getDocumentSpan());
+  public Searcher createSearcher(LabeledText labeledText) {
+    return new DefaultSearcher(labeledText, labeledText.getDocumentSpan());
   }
 
   /**
    * Uses the expression to search a portion of a text view.
    *
-   * @param textView the text view to search
+   * @param labeledText the text view to search
    * @param span the portion of the text view to search
    * @return a {@link Searcher} object of this expression on the portion of the text view
    */
-  public Searcher createSearcher(TextView textView, Span span) {
-    return new DefaultSearcher(textView, span);
+  public Searcher createSearcher(LabeledText labeledText, Span span) {
+    return new DefaultSearcher(labeledText, span);
   }
 
   /**
@@ -183,7 +182,7 @@ public class SearchExpr {
       LoadBegin end = new LoadBegin(localsCount++);
       end.next = FINAL_ACCEPT;
       Node root = alts(end);
-      Class<?> aClass = root.firstType();
+      Class<? extends TextRange> aClass = root.firstType();
 
       Node searchRoot;
       if (aClass == null) {
@@ -194,7 +193,7 @@ public class SearchExpr {
         join.swapNext(new SaveBegin(end.local));
         join.next.swapNext(root);
         Branch branch = new Branch();
-        TypeMatch typeMatch = new TypeMatch(aClass, true, false, true, -1);
+        TypeMatch typeMatch = new TypeMatch(aClass, true, true, false, -1);
         typeMatch.swapNext(join);
         branch.add(join);
         branch.add(typeMatch);
@@ -249,6 +248,19 @@ public class SearchExpr {
             }
 
             continue;
+          case '-':
+            read();
+            expect('>', "Missing > for ->");
+
+            NoText noText = new NoText();
+            if (tail == null) {
+              head = noText;
+              tail = noText;
+            } else {
+              tail.next = noText;
+              tail = tail.next;
+            }
+            continue;
           case '|':
           case ')':
           case ']':
@@ -256,7 +268,7 @@ public class SearchExpr {
           case 0:
             break LOOP;
           default:
-            node = type(false);
+            node = type(false, false);
         }
 
         Chain rep = atomicRepetition(node);
@@ -540,7 +552,12 @@ public class SearchExpr {
       int ch = peekPastWhiteSpace();
       boolean seek = false;
       boolean covered = false;
-      if (ch == '?') {
+      boolean contains = false;
+      if (ch == '^') {
+        contains = true;
+        seek = true;
+        read();
+      } else if (ch == '?') {
         seek = true;
         read();
       }
@@ -549,7 +566,7 @@ public class SearchExpr {
         read();
       }
 
-      Node pinned = type(seek);
+      Node pinned = type(seek, contains);
 
       if (accept(']')) {
         return new Chain(pinned);
@@ -570,7 +587,7 @@ public class SearchExpr {
     }
 
     @SuppressWarnings("unchecked")
-    private Node type(boolean seek) {
+    private Node type(boolean seek, boolean contains) {
       int ch = read();
       if (!Character.isAlphabetic(ch) && !Character.isDigit(ch)) {
         throw error("Illegal identifier");
@@ -588,10 +605,10 @@ public class SearchExpr {
       } else {
         type = first;
       }
-      Class<?> aClass = labelAliases.getLabelable(type);
+      Class<? extends TextRange> aClass = labelAliases.getLabelable(type);
       if (aClass == null) {
         try {
-          aClass = Class.forName(type);
+          aClass = Class.forName(type).asSubclass(TextRange.class);
         } catch (ClassNotFoundException e) {
           throw error("Couldn't find a type with alias or name " + type);
         }
@@ -609,15 +626,8 @@ public class SearchExpr {
         }
       }
       ch = peek();
-      boolean noTextBefore = false;
-      if (ch == '!') {
-        read();
-        ch = peek();
-        noTextBefore = true;
-      }
 
-
-      TypeMatch node = new TypeMatch(aClass, seek, noTextBefore, false, group);
+      TypeMatch node = new TypeMatch(aClass, seek, contains, contains, group);
       if (ch == '<') {
         next();
         do {
@@ -789,6 +799,11 @@ public class SearchExpr {
           value = true;
         } else if (ch == 'f' || ch == 'F' || ch == 'n' || ch == 'N') {
           value = false;
+        } else if (ch == 'e') {
+          ch = read();
+          String enumName = readAlphanumeric(ch);
+          typeMatch.addEnumMatch(propertyName, enumName);
+          return;
         } else {
           throw error("Invalid property value");
         }
@@ -898,7 +913,7 @@ public class SearchExpr {
     }
 
     @Nullable
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return next.firstType();
     }
 
@@ -916,7 +931,7 @@ public class SearchExpr {
     @Override
     State search(DefaultSearcher search, State state) {
       for (int i = state.end; i < state.limit; i++) {
-        State res = next.search(search, new State(i, i, state.limit));
+        State res = next.search(search, new State(i, i, state.limit, new ArrayList<>()));
         if (res.isHit()) {
           return res;
         }
@@ -976,7 +991,9 @@ public class SearchExpr {
     State search(DefaultSearcher search, State state) {
       search.groups[groupIndex] = state.begin;
       search.groups[groupIndex + 1] = state.end;
-      return next.search(search, state);
+      State result = next.search(search, state);
+      result.addValidGroup(groupIndex);
+      return result;
     }
   }
 
@@ -1000,13 +1017,28 @@ public class SearchExpr {
 
     @Override
     public State search(DefaultSearcher search, State state) {
+      List<State> hits = null;
       for (int i = 0; i < size; i++) {
         State res = paths[i].search(search, state);
         if (res.isHit()) {
-          return res;
+          if (hits == null) {
+            hits = new ArrayList<>();
+          }
+          hits.add(res);
         }
       }
-      return State.miss();
+      if (hits == null) {
+        return State.miss();
+      }
+
+      State first = hits.get(0);
+      for (int i = 1; i < hits.size(); i++) {
+        State other = hits.get(i);
+        if (other.begin < first.begin && other.begin >= state.end) {
+          first = other;
+        }
+      }
+      return first;
     }
   }
 
@@ -1103,15 +1135,31 @@ public class SearchExpr {
 
     @Override
     State search(DefaultSearcher search, State state) {
-      State res = option.search(search, state);
-      if (res.isHit()) {
-        State nextRes = next.search(search, res);
-        if (nextRes.isHit()) {
-          return nextRes;
-        }
-      }
+      if (state.begin == state.end) {
+        State noOptionRes = next.search(search, state);
+        State optionRes = option.search(search, state);
 
-      return next.search(search, state);
+        if (optionRes.isHit()) {
+          if (noOptionRes.isHit() && noOptionRes.begin < optionRes.begin) {
+            return noOptionRes;
+          }
+          State nextRes = next.search(search, optionRes);
+          if (nextRes.isHit()) {
+            return nextRes.setBegin(optionRes.begin);
+          }
+        }
+
+        return noOptionRes;
+      } else {
+        State result = option.search(search, state);
+        if (result.isHit()) {
+          State nextRes = next.search(search, result);
+          if (nextRes.isHit()) {
+            return nextRes.setBegin(result.begin);
+          }
+        }
+        return next.search(search, state);
+      }
     }
   }
 
@@ -1156,13 +1204,22 @@ public class SearchExpr {
 
     @Override
     State search(DefaultSearcher search, State state) {
-      State res = node.search(search, state);
+      State noOptionRes = next.search(search, state);
 
-      if (res.isHit()) {
-        return next.search(search, res);
-      } else {
-        return next.search(search, state);
+      State optionRes = node.search(search, state);
+
+      if (optionRes.isHit()) {
+        if (noOptionRes.isHit() && noOptionRes.begin < optionRes.begin) {
+          return noOptionRes;
+        }
+        State nextRes = next.search(search, optionRes);
+        if (nextRes.isHit()) {
+          return nextRes.setBegin(optionRes.begin);
+        }
+        return nextRes;
       }
+
+      return noOptionRes;
     }
   }
 
@@ -1201,7 +1258,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return body.firstType();
     }
   }
@@ -1232,8 +1289,9 @@ public class SearchExpr {
       } else if (0 < max) {
         search.locals[countLocal] = 1;
         result = body.search(search, state);
-        if (result.isMiss()) {
-          result = next.search(search, state);
+        State nextResult = next.search(search, state);
+        if (result.isMiss() || nextResult.begin < result.begin) {
+          result = nextResult;
         }
       } else {
         result = next.search(search, state);
@@ -1364,14 +1422,16 @@ public class SearchExpr {
       } else if (0 < max) {
         search.locals[countLocal] = 1;
         result = body.search(search, state);
-        if (result.isMiss()) {
-          result = next.search(search, state);
+        State nextResult = next.search(search, state);
+        if (result.isMiss() || nextResult.begin < result.begin) {
+          result = nextResult;
         }
       } else {
         search.locals[countLocal] = 1;
         result = body.search(search, state);
-        if (result.isMiss()) {
-          result = next.search(search, state);
+        State nextResult = next.search(search, state);
+        if (result.isMiss() || nextResult.begin < result.begin) {
+          result = nextResult;
         }
       }
 
@@ -1440,7 +1500,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return recursiveLoop.firstType();
     }
   }
@@ -1484,32 +1544,59 @@ public class SearchExpr {
     }
   }
 
+  static class NoText extends Node {
+
+    @Override
+    State search(DefaultSearcher search, State state) {
+      State result = next.search(search, state);
+
+      if (result.isMiss()) {
+        return result;
+      }
+
+      if (NON_WHITESPACE.matcher(search.document.getText().subSequence(state.end, result.begin))
+          .find()) {
+        return State.miss();
+      }
+
+      return result;
+    }
+  }
+
   /**
-   * Performs a standard type match atomic.
+   * Performs a standard type match atomically.
    */
   static class TypeMatch extends Node {
 
-    final Class<? extends Label> labelType;
+    final Class<? extends TextRange> labelType;
     final List<PropertyMatch> requiredProperties = new ArrayList<>();
     final boolean seek;
-    final boolean noTextBefore;
     final boolean anonymous;
     final int group;
+    final boolean contains;
 
-    TypeMatch(Class labelType, boolean seek, boolean noTextBefore, boolean anonymous, int group) {
+    TypeMatch(
+        Class<? extends TextRange> labelType,
+        boolean seek,
+        boolean anonymous,
+        boolean contains,
+        int group
+    ) {
       this.labelType = labelType;
       this.seek = seek;
-      this.noTextBefore = noTextBefore;
       this.anonymous = anonymous;
       this.group = group;
+      this.contains = contains;
     }
 
     @Override
-    public State search(DefaultSearcher search, State state) {
-      LabelIndex<?> labelIndex = search.document.getLabelIndex(labelType)
-          .insideSpan(state.getUncovered());
+    State search(DefaultSearcher search, State state) {
+      LabelIndex<?> labelIndex = contains
+          ? search.document.labelIndex(labelType).containing(state.getCovered())
+          : search.document.labelIndex(labelType).insideSpan(state.getUncovered());
+
       if (!seek) {
-        Label label = labelIndex.first();
+        TextRange label = labelIndex.first();
         if (label == null) {
           return State.miss();
         }
@@ -1521,23 +1608,23 @@ public class SearchExpr {
           search.groups[group + 1] = label.getEndIndex();
           search.labels[group] = label;
         }
-        State advance = state.advance(label.getStartIndex(), label.getEndIndex());
+        State advance =
+            anonymous ? state : state.advance(label.getStartIndex(), label.getEndIndex());
         State result = next.search(search, advance);
         if (result.isHit()) {
-          if (noTextBefore && NON_WHITESPACE.matcher(search.document.getText()
-              .substring(state.end, label.getStartIndex())).find()) {
-            return State.miss();
+          if (group != -1) {
+            result.addValidGroup(group);
           }
 
           if (anonymous) {
-            return result;
+            return result.setBegin(result.begin, labelType);
           }
-          return result.setBegin(label.getStartIndex());
+          return result.setBegin(label.getStartIndex(), labelType);
         }
 
         return result;
       }
-      for (Label label : labelIndex) {
+      for (TextRange label : labelIndex) {
         if (!propertiesMatch(search, label)) {
           continue;
         }
@@ -1546,18 +1633,18 @@ public class SearchExpr {
           search.groups[group + 1] = label.getEndIndex();
           search.labels[group] = label;
         }
-        State advance = state.advance(label.getStartIndex(), label.getEndIndex());
+        State advance =
+            anonymous ? state : state.advance(label.getStartIndex(), label.getEndIndex());
         State result = next.search(search, advance);
         if (result.isHit()) {
-          if (noTextBefore && NON_WHITESPACE.matcher(search.document.getText()
-              .substring(state.end, label.getStartIndex())).find()) {
-            return State.miss();
+          if (group != -1) {
+            result.addValidGroup(group);
           }
 
           if (anonymous) {
-            return result;
+            return result.setBegin(result.begin, labelType);
           }
-          return result.setBegin(label.getStartIndex());
+          return result.setBegin(label.getStartIndex(), labelType);
         }
       }
       return State.miss();
@@ -1565,11 +1652,11 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<?> firstType() {
+    Class<? extends TextRange> firstType() {
       return labelType;
     }
 
-    boolean propertiesMatch(DefaultSearcher search, Label label) {
+    boolean propertiesMatch(DefaultSearcher search, TextRange label) {
       for (PropertyMatch requiredProperty : requiredProperties) {
         if (!requiredProperty.doesMatch(search, label)) {
           return false;
@@ -1606,6 +1693,10 @@ public class SearchExpr {
       requiredProperties.add(new SpanBackReference(name, group));
     }
 
+    public void addEnumMatch(String propertyName, String enumName) {
+      requiredProperties.add(new EnumPropertyMatch(propertyName, enumName));
+    }
+
     abstract class PropertyMatch {
 
       final String name;
@@ -1620,7 +1711,7 @@ public class SearchExpr {
         }
       }
 
-      abstract boolean doesMatch(DefaultSearcher search, Label label);
+      abstract boolean doesMatch(DefaultSearcher search, TextRange label);
     }
 
     class RegexPropertyMatch extends PropertyMatch {
@@ -1633,7 +1724,7 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         try {
           Object value = readMethod.invoke(label);
           return value != null && value instanceof CharSequence
@@ -1654,7 +1745,7 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         try {
           Object result = readMethod.invoke(label);
           if (result == null || !(result instanceof CharSequence)) {
@@ -1680,7 +1771,7 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         for (PropertyMatch propertyMatch : propertyMatches) {
           if (propertyMatch.doesMatch(search, label)) {
             return true;
@@ -1700,7 +1791,7 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         try {
           Object invoke = readMethod.invoke(label);
           if (invoke == null || !(invoke instanceof Number)) {
@@ -1725,7 +1816,7 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         try {
           Object invoke = readMethod.invoke(label);
           return value.equals(invoke);
@@ -1749,8 +1840,8 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
-        Label groupLabel = search.getLabel(group)
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
+        TextRange groupLabel = search.getLabel(group)
             .orElseThrow(
                 () -> new IllegalStateException("Not set"));
         try {
@@ -1772,12 +1863,43 @@ public class SearchExpr {
       }
 
       @Override
-      boolean doesMatch(DefaultSearcher search, Label label) {
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
         Span span = search.getSpan(group).orElseThrow(() -> new IllegalStateException("Not set"));
         try {
           return span.equals(readMethod.invoke(label));
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new IllegalStateException("");
+        }
+      }
+    }
+
+    class EnumPropertyMatch extends PropertyMatch {
+
+      private Enum value;
+
+      EnumPropertyMatch(String name, String enumName) {
+        super(name);
+        Class<? extends Enum> enumType = readMethod.getReturnType().asSubclass(Enum.class);
+        Enum[] constants = enumType.getEnumConstants();
+        value = null;
+        for (Enum constant : constants) {
+          if (constant.name().equals(enumName)) {
+            value = constant;
+          }
+        }
+
+        if (value == null) {
+          throw new IllegalArgumentException("Enum not found: " + enumName);
+        }
+      }
+
+      @Override
+      boolean doesMatch(DefaultSearcher search, TextRange label) {
+        try {
+          Object invoke = readMethod.invoke(label);
+          return value.equals(invoke);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+          throw new IllegalStateException(e);
         }
       }
     }
@@ -1788,27 +1910,35 @@ public class SearchExpr {
     final int begin;
     final int end;
     final int limit;
+    List<Integer> validGroups;
 
-    State(int begin, int end, int limit) {
+    State(int begin, int end, int limit, List<Integer> validGroups) {
       this.begin = begin;
       this.end = end;
       this.limit = limit;
+      this.validGroups = validGroups;
     }
 
     static State miss() {
-      return new State(-1, -1, -1);
+      State state = new State(-1, -1, -1, Collections.emptyList());
+      state.validGroups = Collections.emptyList();
+      return state;
     }
 
     State advance(int begin, int end) {
-      return new State(begin, end, limit);
+      return new State(begin, end, limit, validGroups);
     }
 
     State setBegin(int begin) {
-      return new State(begin, end, limit);
+      return new State(begin, end, limit, validGroups);
+    }
+
+    State setBegin(int begin, Class<?> firstType) {
+      return new State(begin, end, limit, validGroups);
     }
 
     State pin() {
-      return new State(begin, begin, end);
+      return new State(begin, begin, end, validGroups);
     }
 
     boolean isMiss() {
@@ -1832,7 +1962,14 @@ public class SearchExpr {
     }
 
     public State copy() {
-      return new State(begin, end, limit);
+      return new State(begin, end, limit, validGroups);
+    }
+
+    void addValidGroup(int groupNo) {
+      if (!validGroups.contains(groupNo)) {
+        validGroups = new ArrayList<>(validGroups);
+        validGroups.add(groupNo);
+      }
     }
   }
 
@@ -1841,8 +1978,8 @@ public class SearchExpr {
    */
   class DefaultSearcher implements Searcher {
 
-    final TextView document;
-    final Label[] labels;
+    final LabeledText document;
+    final TextRange[] labels;
     final int[] groups;
     final int[] locals;
     boolean anchored;
@@ -1850,9 +1987,9 @@ public class SearchExpr {
     int from, to;
     State result = State.miss();
 
-    DefaultSearcher(TextView document, Span span) {
+    DefaultSearcher(LabeledText document, Span span) {
       this.document = document;
-      labels = new Label[numberGroups];
+      labels = new TextRange[numberGroups];
       groups = new int[numberGroups * 2];
       locals = new int[numberLocals];
       from = span.getStartIndex();
@@ -1861,9 +1998,9 @@ public class SearchExpr {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Optional<Label> getLabel(String name) {
+    public Optional<TextRange> getLabel(String name) {
       Integer integer = groupNames.get(name);
-      if (integer == null) {
+      if (integer == null || !result.validGroups.contains(integer)) {
         return Optional.empty();
       }
       return Optional.ofNullable(labels[integer]);
@@ -1872,7 +2009,7 @@ public class SearchExpr {
     @Override
     public Optional<Span> getSpan(String name) {
       Integer integer = groupNames.get(name);
-      if (integer == null) {
+      if (integer == null || !result.validGroups.contains(integer)) {
         return Optional.empty();
       }
       int begin = groups[integer];
@@ -1894,14 +2031,14 @@ public class SearchExpr {
       Arrays.fill(groups, -1);
       Arrays.fill(labels, null);
 
-      result = searchRoot.search(this, new State(from, from, to));
+      result = searchRoot.search(this, new State(from, from, to, new ArrayList<>()));
       from = result.end;
       return found = result.isHit();
     }
 
     @Override
     public boolean search(int begin, int end) {
-      from = begin;
+      from = Math.max(from, begin);
       to = end;
       return search();
     }
@@ -1917,7 +2054,7 @@ public class SearchExpr {
       Arrays.fill(groups, -1);
       Arrays.fill(labels, null);
 
-      result = root.search(this, new State(from, from, to));
+      result = root.search(this, new State(from, from, to, new ArrayList<>()));
       return found = result.isHit();
     }
 
@@ -1932,7 +2069,6 @@ public class SearchExpr {
     public boolean match(Span span) {
       return match(span.getStartIndex(), span.getEndIndex());
     }
-
 
     @Override
     public Optional<Span> getSpan() {
