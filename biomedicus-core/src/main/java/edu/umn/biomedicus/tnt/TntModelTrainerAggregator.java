@@ -30,7 +30,6 @@ import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import javafx.geometry.Pos;
 
 /**
  * Trains the TnT model using the tagged parts of speech in all documents.
