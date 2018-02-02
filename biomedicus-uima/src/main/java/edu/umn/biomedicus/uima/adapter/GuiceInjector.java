@@ -23,7 +23,10 @@ import edu.umn.biomedicus.framework.Application;
 import edu.umn.biomedicus.framework.DocumentProcessorRunner;
 import edu.umn.biomedicus.framework.DocumentSourceRunner;
 import edu.umn.biomedicus.framework.LifecycleManager;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
+import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.resource.Resource_ImplBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,12 @@ public final class GuiceInjector extends Resource_ImplBase {
       throw new IllegalStateException("Somehow attached Integer.MAX_VALUE things to Guice resource");
     }
     return injector;
+  }
+
+  @Override
+  public boolean initialize(ResourceSpecifier aSpecifier, Map<String, Object> aAdditionalParams)
+      throws ResourceInitializationException {
+    return super.initialize(aSpecifier, aAdditionalParams);
   }
 
   public void detach() throws BiomedicusException {

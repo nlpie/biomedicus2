@@ -102,7 +102,7 @@ public final class DocumentProcessorRunner extends ScopedWork {
         return null;
       });
     } catch (Exception e) {
-      LOGGER.error("Error during processing");
+      LOGGER.error("Processing failed on document: " + document.getDocumentId());
       throw new BiomedicusException(e);
     }
   }
