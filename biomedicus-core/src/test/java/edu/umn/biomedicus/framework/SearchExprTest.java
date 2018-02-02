@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import edu.umn.biomedicus.framework.store.TextView;
-import edu.umn.nlpengine.AbstractLabel;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.AbstractTextRange;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.StandardLabelIndex;
+import edu.umn.nlpengine.LabeledText;
+import edu.umn.nlpengine.TextRange;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import mockit.Expectations;
@@ -38,7 +40,7 @@ import org.testng.annotations.Test;
 public class SearchExprTest {
 
   @Mocked
-  TextView document;
+  LabeledText document;
 
   @Mocked
   LabelAliases labelAliases;
@@ -62,7 +64,7 @@ public class SearchExprTest {
   public void testMatchType() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -79,7 +81,7 @@ public class SearchExprTest {
   public void testNoMatchType() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); result = null;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -97,7 +99,7 @@ public class SearchExprTest {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 13);
       document.getText(); result = "this is text.";
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
           new Blah(0, 4),
           new Blah(5, 7)
@@ -105,7 +107,7 @@ public class SearchExprTest {
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
-    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah Blah!");
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah -> Blah");
 
     Searcher searcher = blah.createSearcher(document);
     assertTrue(searcher.search());
@@ -116,7 +118,7 @@ public class SearchExprTest {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 13);
       document.getText(); result = "this is text.";
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
           new Blah(0, 4),
           new Blah(8, 12)
@@ -124,7 +126,7 @@ public class SearchExprTest {
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
 
-    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah Blah!");
+    SearchExpr blah = SearchExpr.parse(labelAliases, "Blah -> Blah");
 
     Searcher searcher = blah.createSearcher(document);
     assertFalse(searcher.search());
@@ -134,7 +136,7 @@ public class SearchExprTest {
   public void testMatchPin() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(label, label1, label2);
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -151,7 +153,7 @@ public class SearchExprTest {
   public void testNoMatchPin() {
     new Expectations() {{
       document.getDocumentSpan(); result = new Span(0, 10);
-      document.getLabelIndex(Blah.class); result = labelIndex;
+      document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(label, null);
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -530,6 +532,67 @@ public class SearchExprTest {
     assertFalse(searcher.found());
   }
 
+  enum BAZ {
+    FOO,
+    BAR
+  }
+
+  static class HasEnum extends AbstractTextRange {
+    BAZ baz;
+
+    public HasEnum(int startIndex, int endIndex) {
+      super(startIndex, endIndex);
+    }
+
+    public BAZ getBaz() {
+      return baz;
+    }
+  }
+
+  @Test
+  public void testEnumPropertyMatch() throws Exception {
+    HasEnum hasEnum = new HasEnum(0, 5);
+    hasEnum.baz = BAZ.FOO;
+
+    LabelIndex<HasEnum> index = StandardLabelIndex.create(hasEnum);
+
+    new Expectations() {{
+      labelAliases.getLabelable("HasEnum"); result = HasEnum.class;
+
+      document.getDocumentSpan(); result = new Span(0, 10);
+      document.labelIndex(HasEnum.class); result = index;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "HasEnum<getBaz=eFOO>");
+
+    Searcher searcher = blah.createSearcher(document);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 0);
+    assertEquals(searcher.getEnd(), 5);
+  }
+
+  @Test
+  public void testEnumPropertyMiss() throws Exception {
+    HasEnum hasEnum = new HasEnum(0, 5);
+    hasEnum.baz = BAZ.BAR;
+
+    LabelIndex<HasEnum> index = StandardLabelIndex.create(hasEnum);
+
+    new Expectations() {{
+      labelAliases.getLabelable("HasEnum"); result = HasEnum.class;
+
+      document.getDocumentSpan(); result = new Span(0, 10);
+      document.labelIndex(HasEnum.class); result = index;
+    }};
+
+    SearchExpr blah = SearchExpr.parse(labelAliases, "HasEnum<getBaz=eFOO>");
+
+    Searcher searcher = blah.createSearcher(document);
+
+    assertFalse(searcher.search());
+  }
+
   @Test
   public void testPropertyMatchNull() {
     Foo foo = new Foo(0, 5);
@@ -621,7 +684,7 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Label> opt = searcher.getLabel("instance");
+    Optional<TextRange> opt = searcher.getLabel("instance");
     assertTrue(opt.isPresent());
     assertEquals(opt.get(), label);
   }
@@ -642,7 +705,7 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Label> opt = searcher.getLabel("instance");
+    Optional<TextRange> opt = searcher.getLabel("instance");
     assertTrue(opt.isPresent());
     assertEquals(opt.get(), label);
 
@@ -856,7 +919,7 @@ public class SearchExprTest {
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(new Blah(0, 5), null);
+      labelIndex.first(); returns(new Blah(0, 5), new Blah(0, 5), (Object) null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah?+ Blah");
@@ -874,7 +937,7 @@ public class SearchExprTest {
 
       document.getDocumentSpan(); result = new Span(0, 100);
 
-      labelIndex.first(); returns(new Blah(0, 5), null);
+      labelIndex.first(); returns(new Blah(0, 5), null, new Blah(0, 5), null);
     }};
 
     SearchExpr searchExpr = SearchExpr.parse(labelAliases, "Blah? opt:Blah*");
@@ -1263,18 +1326,190 @@ public class SearchExprTest {
     assertEquals(searcher.getEnd(), 13);
   }
 
-  static class Blah extends AbstractLabel {
+  @Test
+  public void testContainsTrue() throws Exception {
+    List<Foo> foos = Collections.singletonList(new Foo(0, 6));
+
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 13);
+
+      labelIndex.first(); result = new Blah(2, 5);
+
+      labelIndex.iterator(); result = foos.iterator();
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah[^Foo]");
+
+    Searcher searcher = expr.createSearcher(document);
+    boolean find = searcher.search();
+    assertTrue(find);
+    assertEquals(searcher.getBegin(), 2);
+    assertEquals(searcher.getEnd(), 5);
+  }
+
+  @Test
+  public void testContainsFalse() throws Exception {
+    List<Foo> foos = Collections.emptyList();
+
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 13);
+
+      labelIndex.first(); result = new Blah(2, 5);
+
+      labelIndex.iterator(); result = foos.iterator();
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah[^Foo]");
+
+    Searcher searcher = expr.createSearcher(document);
+    boolean find = searcher.search();
+    assertFalse(find);
+  }
+
+  @Test
+  public void testOptionalFindsFirst() throws Exception {
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 13);
+
+      labelIndex.first(); returns(new Foo(3, 4), new Blah(6, 7), new Foo(8, 9), new Blah(6, 7),
+          new Foo(8, 9));
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah? Foo");
+
+    Searcher searcher = expr.createSearcher(document);
+
+    boolean find = searcher.search();
+    assertTrue(find);
+    assertEquals(searcher.getBegin(), 3);
+    assertEquals(searcher.getEnd(), 4);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 6);
+    assertEquals(searcher.getEnd(), 9);
+  }
+
+  @Test
+  public void testGreedyLoopPreemption() throws Exception {
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 25);
+
+      document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
+      document.labelIndex(Blah.class); result = blahs; minTimes = 1;
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah* Foo");
+
+    Searcher searcher = expr.createSearcher(document);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 0);
+    assertEquals(searcher.getEnd(), 5);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 10);
+    assertEquals(searcher.getEnd(), 25);
+
+    assertFalse(searcher.search());
+  }
+
+  @Test
+  public void testPossessiveLoopPreemption() throws Exception {
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 25);
+
+      document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
+      document.labelIndex(Blah.class); result = blahs; minTimes = 1;
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah*+ Foo");
+
+    Searcher searcher = expr.createSearcher(document);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 0);
+    assertEquals(searcher.getEnd(), 5);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 10);
+    assertEquals(searcher.getEnd(), 25);
+
+    assertFalse(searcher.search());
+  }
+
+  @Test
+  public void testAlternationsProperOrdering() throws Exception {
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+
+    new Expectations() {{
+      labelAliases.getLabelable("Blah"); result = Blah.class;
+      labelAliases.getLabelable("Foo"); result = Foo.class;
+
+      document.getDocumentSpan(); result = new Span(0, 25);
+
+      document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
+      document.labelIndex(Blah.class); result = blahs; minTimes = 1;
+    }};
+
+    SearchExpr expr = SearchExpr.parse(labelAliases, "Blah | Foo");
+
+    Searcher searcher = expr.createSearcher(document);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 0);
+    assertEquals(searcher.getEnd(), 5);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 10);
+    assertEquals(searcher.getEnd(), 14);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 15);
+    assertEquals(searcher.getEnd(), 20);
+
+    assertTrue(searcher.search());
+    assertEquals(searcher.getBegin(), 20);
+    assertEquals(searcher.getEnd(), 25);
+
+    assertFalse(searcher.search());
+  }
+
+
+
+  static class Blah extends AbstractTextRange {
 
     public Blah(int startIndex, int endIndex) {
       super(startIndex, endIndex);
     }
 
-    public Blah(Label label) {
+    public Blah(TextRange label) {
       super(label);
     }
   }
 
-  public static class Foo extends AbstractLabel {
+  public static class Foo extends AbstractTextRange {
 
     private String value;
     private int baz;
@@ -1283,7 +1518,7 @@ public class SearchExprTest {
       super(startIndex, endIndex);
     }
 
-    public Foo(Label label) {
+    public Foo(TextRange label) {
       super(label);
     }
 

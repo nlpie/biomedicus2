@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import com.google.inject.Module;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Application;
 import edu.umn.biomedicus.framework.Bootstrapper;
+import edu.umn.biomedicus.uima.labels.AutoAdapters;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
+import edu.umn.nlpengine.TextRange;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +40,9 @@ public final class UimaBootstrapper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UimaBootstrapper.class);
 
-  public static Application create(Module... additionalModules) throws BiomedicusException {
+  public static Application create(
+      Module... additionalModules
+  ) throws BiomedicusException {
     ArrayList<Module> modules = new ArrayList<>();
     modules.add(new UimaModule());
     modules.addAll(Arrays.asList(additionalModules));
@@ -67,11 +71,17 @@ public final class UimaBootstrapper {
 
       UimaPlugin plugin = application.getInstance(pluginClass);
 
-      Map<Class<?>, LabelAdapterFactory> labelAdapterFactories = plugin.getLabelAdapterFactories();
-      for (Map.Entry<Class<?>, LabelAdapterFactory> entry : labelAdapterFactories.entrySet()) {
+      Map<Class<? extends TextRange>, LabelAdapterFactory> labelAdapterFactories = plugin
+          .getLabelAdapterFactories();
+      for (Map.Entry<Class<? extends TextRange>, LabelAdapterFactory> entry : labelAdapterFactories
+          .entrySet()) {
         LabelAdapterFactory value = entry.getValue();
         labelAdapters.addLabelAdapter(entry.getKey(), value);
       }
+
+      AutoAdapters autoAdapters = application.getInstance(AutoAdapters.class);
+      autoAdapters.addAllDistinctAutoAdaptedClasses(plugin.getDistinctAutoAdapted());
+      autoAdapters.addAllIndistinctAutoAdaptedClasses(plugin.getAutoAdapted());
     }
 
     return application;

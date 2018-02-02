@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import edu.umn.biomedicus.uima.common.Views;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.uima.files.FileNameProviders;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -74,11 +74,11 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    CAS originalDocumentView = aCAS.getView(Views.ORIGINAL_DOCUMENT_VIEW);
+    CAS originalDocumentView = aCAS.getView(TextIdentifiers.ORIGINAL_DOCUMENT);
     SymbolIndexedDocument symbolIndexedDocument
         = SymbolIndexedDocument.fromView(originalDocumentView);
 
-    CAS view = aCAS.getView(Views.SYSTEM_VIEW);
+    CAS view = aCAS.getView(TextIdentifiers.SYSTEM);
 
     TreeSet<Integer> covered = new TreeSet<>();
     for (String annotationType : Objects.requireNonNull(annotationTypes)) {
@@ -107,7 +107,7 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
           .withBeginTag("\\u2222221B ")
           .withEndTag("\\u2222221E ")
           .withSymbolIndexedDocument(symbolIndexedDocument)
-          .withDestinationName(Views.SYSTEM_VIEW)
+          .withDestinationName(TextIdentifiers.SYSTEM)
           .withBegin(first)
           .withEnd(last)
           .createRegionTagger()

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.LabelIndex;
@@ -34,7 +34,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
@@ -60,11 +59,11 @@ public class NumberContextWriter implements DocumentProcessor {
 
   @Override
   public void process(@Nonnull Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<Number> numbersIndex = systemView.getLabelIndex(Number.class);
-    LabelIndex<Sentence> sentencesIndex = systemView.getLabelIndex(Sentence.class);
-    LabelIndex<ParseToken> tokensIndex = systemView.getLabelIndex(ParseToken.class);
+    LabelIndex<Number> numbersIndex = systemView.labelIndex(Number.class);
+    LabelIndex<Sentence> sentencesIndex = systemView.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> tokensIndex = systemView.labelIndex(ParseToken.class);
 
     try (BufferedWriter bufferedWriter = Files
         .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),

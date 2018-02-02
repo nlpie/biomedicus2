@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,46 +16,69 @@
 
 package edu.umn.biomedicus.measures
 
-import edu.umn.biomedicus.common.StandardViews
+import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.exc.BiomedicusException
 import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExprFactory
-import edu.umn.biomedicus.framework.store.Document
 import edu.umn.biomedicus.numbers.NumberType
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.Document
+import edu.umn.nlpengine.TextRange
 import java.math.BigDecimal
 import javax.inject.Inject
+import javax.inject.Singleton
 
+/**
+ * A number in text.
+ * @property numerator the BigDecimal representation
+ * @property denominator the BigDecimal representation
+ * @property numberType
+ */
 data class Number(
         override val startIndex: Int,
         override val endIndex: Int,
         val numerator: String,
         val denominator: String,
         val numberType: NumberType
-): Label {
+): TextRange {
     fun value(): BigDecimal {
         return BigDecimal(numerator).divide(BigDecimal(denominator), BigDecimal.ROUND_HALF_UP)
     }
 }
 
+/**
+ * A number range from one number to another in text.
+ */
 data class NumberRange(
         override val startIndex: Int,
         override val endIndex: Int,
         val lower: BigDecimal,
         val upper: BigDecimal
-): Label
+): TextRange
 
-class NumberRangesLabeler @Inject internal constructor(
-        searchExprFactory: SearchExprFactory
-): DocumentProcessor {
+/**
+ * The shared resource that provides the compiled number ranges pattern.
+ */
+@Singleton
+class NumberRangesPattern @Inject constructor(
+     searchExprFactory: SearchExprFactory
+) {
     val expr = searchExprFactory.parse(
-            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> [upper:Number!]) | ParseToken<getText=i\"between\"> [?lower:Number] ParseToken<getText=\"and\"> [upper:Number!])"
+            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | ParseToken<getText=i\"between\"> [?lower:Number] ParseToken<getText=\"and\"> -> upper:Number)"
     )
+}
+
+/**
+ * The document processor which is responsible for detecting number ranges in text.
+ */
+class NumberRangesLabeler @Inject internal constructor(
+        numberRangesPattern: NumberRangesPattern
+): DocumentProcessor {
+    private val expr = numberRangesPattern.expr
 
     override fun process(document: Document) {
-        val systemView = StandardViews.getSystemView(document)
+        val systemView = TextIdentifiers.getSystemLabeledText(document)
 
-        val labeler = systemView.getLabeler(NumberRange::class.java)
+        val labeler = systemView.labeler(NumberRange::class.java)
 
         val searcher = expr.createSearcher(systemView)
 

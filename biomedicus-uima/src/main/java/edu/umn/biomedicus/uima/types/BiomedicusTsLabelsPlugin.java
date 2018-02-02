@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,19 @@ import edu.umn.biomedicus.acronyms.Acronym;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.concepts.DictionaryTerm;
+import edu.umn.biomedicus.family.Relative;
 import edu.umn.biomedicus.formatting.Bold;
 import edu.umn.biomedicus.formatting.Underlined;
 import edu.umn.biomedicus.io.IllegalXmlCharacter;
 import edu.umn.biomedicus.measures.CandidateUnitOfMeasure;
+import edu.umn.biomedicus.measures.FuzzyValue;
+import edu.umn.biomedicus.measures.IndefiniteQuantifierCue;
 import edu.umn.biomedicus.measures.Number;
 import edu.umn.biomedicus.measures.NumberRange;
+import edu.umn.biomedicus.measures.Quantifier;
+import edu.umn.biomedicus.measures.StandaloneQuantifier;
+import edu.umn.biomedicus.measures.TimeFrequencyUnit;
+import edu.umn.biomedicus.measures.TimeUnit;
 import edu.umn.biomedicus.modification.DictionaryTermModifier;
 import edu.umn.biomedicus.modification.Historical;
 import edu.umn.biomedicus.modification.Negated;
@@ -38,17 +45,38 @@ import edu.umn.biomedicus.parsing.DependencyParse;
 import edu.umn.biomedicus.sections.Section;
 import edu.umn.biomedicus.sections.SectionContent;
 import edu.umn.biomedicus.sections.SectionTitle;
-import edu.umn.biomedicus.sections.SubstanceUsageElementType;
-import edu.umn.biomedicus.sections.SubstanceUsageKind;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.sentences.TextSegment;
-import edu.umn.biomedicus.sh.SocialHistoryCandidate;
-import edu.umn.biomedicus.sh.SubstanceUsageElement;
+import edu.umn.biomedicus.sh.AlcoholCandidate;
+import edu.umn.biomedicus.sh.DrugCandidate;
+import edu.umn.biomedicus.sh.GenericMethodPhrase;
+import edu.umn.biomedicus.sh.NicotineAmount;
+import edu.umn.biomedicus.sh.NicotineCandidate;
+import edu.umn.biomedicus.sh.NicotineCue;
+import edu.umn.biomedicus.sh.NicotineFrequency;
+import edu.umn.biomedicus.sh.NicotineMethod;
+import edu.umn.biomedicus.sh.NicotineStatus;
+import edu.umn.biomedicus.sh.NicotineTemporal;
+import edu.umn.biomedicus.sh.NicotineType;
+import edu.umn.biomedicus.sh.NicotineUnit;
+import edu.umn.biomedicus.sh.SocialHistorySectionHeader;
+import edu.umn.biomedicus.sh.UsageFrequency;
+import edu.umn.biomedicus.sh.UsageFrequencyPhrase;
+import edu.umn.biomedicus.sh.UsageStatus;
 import edu.umn.biomedicus.structure.Cell;
 import edu.umn.biomedicus.structure.NestedCell;
 import edu.umn.biomedicus.structure.NestedRow;
 import edu.umn.biomedicus.structure.Row;
 import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.time.DayOfWeek;
+import edu.umn.biomedicus.time.Month;
+import edu.umn.biomedicus.time.SeasonWord;
+import edu.umn.biomedicus.time.TemporalPhrase;
+import edu.umn.biomedicus.time.TextDate;
+import edu.umn.biomedicus.time.TextTime;
+import edu.umn.biomedicus.time.TimeOfDayWord;
+import edu.umn.biomedicus.time.YearNumber;
+import edu.umn.biomedicus.time.YearRange;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
@@ -56,8 +84,11 @@ import edu.umn.biomedicus.uima.labels.AbstractLabelAdapter;
 import edu.umn.biomedicus.uima.labels.LabelAdapterFactory;
 import edu.umn.biomedicus.uima.labels.UimaPlugin;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +109,50 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
 
 
   @Override
-  public Map<Class<?>, LabelAdapterFactory> getLabelAdapterFactories() {
-    Map<Class<?>, LabelAdapterFactory> map = new HashMap<>();
+  public List<Class<? extends TextRange>> getDistinctAutoAdapted() {
+    return Arrays.asList(
+        SocialHistorySectionHeader.class,
+        NicotineCandidate.class,
+        NicotineCue.class,
+        AlcoholCandidate.class,
+        DrugCandidate.class,
+        IndefiniteQuantifierCue.class,
+        FuzzyValue.class,
+        Quantifier.class,
+        TimeUnit.class,
+        TimeFrequencyUnit.class,
+        StandaloneQuantifier.class,
+        DayOfWeek.class,
+        Month.class,
+        YearNumber.class,
+        YearRange.class,
+        TextDate.class,
+        TemporalPhrase.class,
+        SeasonWord.class,
+        TimeOfDayWord.class,
+        TextTime.class,
+        UsageFrequency.class,
+        UsageFrequencyPhrase.class,
+        UsageStatus.class,
+        GenericMethodPhrase.class,
+        NicotineUnit.class,
+        NicotineAmount.class,
+        NicotineFrequency.class,
+        NicotineTemporal.class,
+        NicotineType.class,
+        NicotineStatus.class,
+        NicotineMethod.class
+    );
+  }
+
+  @Override
+  public List<Class<? extends TextRange>> getAutoAdapted() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Map<Class<? extends TextRange>, LabelAdapterFactory> getLabelAdapterFactories() {
+    Map<Class<? extends TextRange>, LabelAdapterFactory> map = new HashMap<>();
     map.put(Section.class, SectionLabelAdapter::new);
     map.put(SectionTitle.class, SectionTitleLabelAdapter::new);
     map.put(SectionContent.class, SectionContentLabelAdapter::new);
@@ -98,19 +171,16 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(NormForm.class, NormFormLabelAdapter::new);
     map.put(Bold.class, BoldLabelAdapter::new);
     map.put(Underlined.class, UnderlinedLabelAdapter::new);
-    map.put(SocialHistoryCandidate.class,
-        SocialHistoryCandidateLabelAdapter::new);
-    map.put(SubstanceUsageElement.class,
-        SubstanceUsageElementLabelAdapter::new);
     map.put(ConstituencyParse.class, ConstituencyParseLabelAdapter::new);
     map.put(Row.class, RowLabelAdapter::new);
     map.put(Cell.class, CellLabelAdapter::new);
     map.put(NestedRow.class, NestedRowLabelAdapter::new);
-    map.put(NestedCellLabelAdapter.class, NestedCellLabelAdapter::new);
+    map.put(NestedCell.class, NestedCellLabelAdapter::new);
     map.put(Number.class, NumberLabelAdapter::new);
     map.put(CandidateUnitOfMeasure.class, CanididateUnitOfMeasureAdapter::new);
     map.put(IllegalXmlCharacter.class, IllegalXmlCharacterAdapter::new);
     map.put(NumberRange.class, NumberRangeAdapter::new);
+    map.put(Relative.class, RelativeAdapter::new);
     return map;
   }
 
@@ -495,63 +565,6 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     }
   }
 
-  public static class SocialHistoryCandidateLabelAdapter extends
-      AbstractLabelAdapter<SocialHistoryCandidate> {
-
-    private final Feature substanceUsageKind;
-
-    SocialHistoryCandidateLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem().getType(
-          "edu.umn.biomedicus.uima.type1_6.SocialHistoryCandidate"));
-      substanceUsageKind = type.getFeatureByBaseName("substanceUsageKind");
-    }
-
-    @Override
-    protected void fillAnnotation(SocialHistoryCandidate label, AnnotationFS annotationFS) {
-      SubstanceUsageKind substanceUsageKind = label.getSubstanceUsageKind();
-      annotationFS.setStringValue(this.substanceUsageKind, substanceUsageKind.name());
-    }
-
-    @Override
-    public SocialHistoryCandidate annotationToLabel(AnnotationFS annotationFS) {
-      String strVal = annotationFS.getStringValue(substanceUsageKind);
-      SubstanceUsageKind kind = SubstanceUsageKind.valueOf(strVal);
-      return new SocialHistoryCandidate(annotationFS.getBegin(), annotationFS.getEnd(), kind);
-    }
-  }
-
-  public static class SubstanceUsageElementLabelAdapter extends
-      AbstractLabelAdapter<SubstanceUsageElement> {
-
-    private final Feature kindFeature;
-    private final Feature elementTypeFeature;
-
-    SubstanceUsageElementLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem().getType(
-          "edu.umn.biomedicus.uima.type1_6.SubstanceUsageElement"));
-      kindFeature = type.getFeatureByBaseName("substanceUsageKind");
-      elementTypeFeature = type
-          .getFeatureByBaseName("substanceUsageElementType");
-    }
-
-
-    @Override
-    protected void fillAnnotation(SubstanceUsageElement label, AnnotationFS annotationFS) {
-      annotationFS.setStringValue(kindFeature, label.getSubstanceUsageKind().name());
-      annotationFS.setStringValue(elementTypeFeature, label.getSubstanceUsageElementType().name());
-    }
-
-    @Override
-    public SubstanceUsageElement annotationToLabel(AnnotationFS annotationFS) {
-      String typeVal = annotationFS.getStringValue(elementTypeFeature);
-      SubstanceUsageElementType type = SubstanceUsageElementType
-          .valueOf(typeVal);
-      String kindVal = annotationFS.getStringValue(kindFeature);
-      SubstanceUsageKind kind = SubstanceUsageKind.valueOf(kindVal);
-      return new SubstanceUsageElement(annotationFS.getBegin(), annotationFS.getEnd(), kind, type);
-    }
-  }
-
   public static class ConstituencyParseLabelAdapter
       extends AbstractLabelAdapter<ConstituencyParse> {
 
@@ -715,6 +728,28 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
       return new NumberRange(annotationFS.getBegin(), annotationFS.getEnd(),
           new BigDecimal(annotationFS.getStringValue(lowerValueFeature)),
           new BigDecimal(annotationFS.getStringValue(upperValueFeature)));
+    }
+  }
+
+  public static class RelativeAdapter extends AbstractLabelAdapter<Relative> {
+
+    private final Feature valueFeature;
+
+    public RelativeAdapter(CAS cas) {
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type2_0.Relative"));
+      valueFeature = cas.getTypeSystem()
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type2_0.Relative:value");
+    }
+
+    @Override
+    public Relative annotationToLabel(AnnotationFS annotationFS) {
+      return new Relative(annotationFS.getBegin(), annotationFS.getEnd(),
+          annotationFS.getStringValue(valueFeature));
+    }
+
+    @Override
+    protected void fillAnnotation(Relative label, AnnotationFS annotationFS) {
+      annotationFS.setStringValue(valueFeature, label.getValue());
     }
   }
 }

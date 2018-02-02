@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import edu.umn.biomedicus.common.TextIdentifiers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +51,7 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
     Type paragraphInTableType = typeSystem
         .getType("edu.umn.biomedicus.rtfuima.type.ParagraphInTable");
 
-    CAS systemView = aCAS.getView("SystemView");
+    CAS systemView = aCAS.getView(TextIdentifiers.SYSTEM);
 
     AnnotationIndex<AnnotationFS> paragraphInTableIndex = systemView
         .getAnnotationIndex(paragraphInTableType);

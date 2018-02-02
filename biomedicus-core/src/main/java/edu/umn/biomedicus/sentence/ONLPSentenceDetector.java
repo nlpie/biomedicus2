@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.sentences.TextSegment;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
@@ -48,10 +48,10 @@ public class ONLPSentenceDetector implements DocumentProcessor {
 
   @Override
   public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
     String text = systemView.getText();
-    Labeler<Sentence> sentenceLabeler = systemView.getLabeler(Sentence.class);
-    LabelIndex<TextSegment> textSegmentLabelIndex = systemView.getLabelIndex(TextSegment.class);
+    Labeler<Sentence> sentenceLabeler = systemView.labeler(Sentence.class);
+    LabelIndex<TextSegment> textSegmentLabelIndex = systemView.labelIndex(TextSegment.class);
 
     Iterable<TextSegment> segments;
     if (textSegmentLabelIndex.isEmpty()) {
@@ -60,7 +60,7 @@ public class ONLPSentenceDetector implements DocumentProcessor {
       segments = textSegmentLabelIndex;
     }
 
-    for (Label segment : segments) {
+    for (TextRange segment : segments) {
       if (segment.length() == 0) {
         continue;
       }
@@ -87,10 +87,9 @@ public class ONLPSentenceDetector implements DocumentProcessor {
 
       LOGGER.trace("Detecting sentences: {}", segmentText);
       for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
-        Span spanInSegment = new Span(onlpSpan.getStart(), onlpSpan.getEnd());
-        Span sentenceSpan = segment.derelativize(spanInSegment);
-        if (Patterns.NON_WHITESPACE.matcher(sentenceSpan.coveredString(text)).find()) {
-          sentenceLabeler.add(new Sentence(sentenceSpan));
+        Span span = new Span(onlpSpan.getStart(), onlpSpan.getEnd()).offsetByStartIndex(segment);
+        if (Patterns.NON_WHITESPACE.matcher(span.coveredString(text)).find()) {
+          sentenceLabeler.add(new Sentence(span));
         }
       }
     }

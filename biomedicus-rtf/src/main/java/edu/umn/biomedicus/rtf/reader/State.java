@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.rtf.reader;
 
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.Span;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -194,7 +194,7 @@ public class State {
    * @throws RtfReaderException if there is some kind of error in writing to the output
    * destination.
    */
-  public void writeCharacter(int code, Label originalDocumentTextLocation)
+  public void writeCharacter(int code, TextRange originalDocumentTextLocation)
       throws RtfReaderException {
     if (skippingDestination) {
       return;
@@ -233,7 +233,7 @@ public class State {
    * @param originalDocumentTextLocation the span of the character in the original document.
    * @throws RtfReaderException if there is some kind of failure writing to output destination.
    */
-  public void directWriteCharacter(char ch, Label originalDocumentTextLocation)
+  public void directWriteCharacter(char ch, TextRange originalDocumentTextLocation)
       throws RtfReaderException {
     if (ignoreNextChars > 0) {
       ignoreNextChars--;

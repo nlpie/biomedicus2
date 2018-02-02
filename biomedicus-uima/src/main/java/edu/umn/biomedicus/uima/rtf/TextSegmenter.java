@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
+import edu.umn.biomedicus.common.TextIdentifiers;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -41,7 +42,7 @@ public class TextSegmenter extends CasAnnotator_ImplBase {
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
     LOGGER.debug("Segmenting rtf text.");
-    CAS systemView = aCAS.getView("SystemView");
+    CAS systemView = aCAS.getView(TextIdentifiers.SYSTEM);
     TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
 
     TypeSystem typeSystem = systemView.getTypeSystem();

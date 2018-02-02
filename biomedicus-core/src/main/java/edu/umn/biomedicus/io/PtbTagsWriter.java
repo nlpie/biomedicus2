@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.LabelIndex;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javafx.geometry.Pos;
 
 public class PtbTagsWriter implements DocumentProcessor {
 
@@ -48,12 +46,15 @@ public class PtbTagsWriter implements DocumentProcessor {
   public void process(Document document) throws BiomedicusException {
     String documentId = document.getDocumentId();
 
-    TextView systemView = document.getTextView(StandardViews.SYSTEM)
-        .orElseThrow(() -> new BiomedicusException("Missing System View"));
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+
+    if (systemView == null) {
+      throw new BiomedicusException("null system view");
+    }
 
     String text = systemView.getText();
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-    LabelIndex<PosTag> partOfSpeechLabelIndex = systemView.getLabelIndex(PosTag.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = systemView.labelIndex(PosTag.class);
 
     StringBuilder rewriter = new StringBuilder(text);
 

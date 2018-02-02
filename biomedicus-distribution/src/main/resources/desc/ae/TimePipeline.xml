@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="days">
+      <import location="annotator/time/DaysOfWeekDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="timesOfDay">
+      <import location="annotator/time/TimeOfDayWordDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="seasonWords">
+      <import location="annotator/time/SeasonWordDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="months">
+      <import location="annotator/time/MonthDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="yearNumbers">
+      <import location="annotator/time/YearNumberDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="yearRanges">
+      <import location="annotator/time/YearRangeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="times">
+      <import location="annotator/time/TextTimeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="dates">
+      <import location="annotator/time/DateDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="temporalPhrases">
+      <import location="annotator/time/TemporalPhraseDetector.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>Time Pipeline</name>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <flowConstraints>
+      <fixedFlow>
+        <node>days</node>
+        <node>timesOfDay</node>
+        <node>seasonWords</node>
+        <node>months</node>
+        <node>yearNumbers</node>
+        <node>yearRanges</node>
+        <node>times</node>
+        <node>dates</node>
+        <node>temporalPhrases</node>
+      </fixedFlow>
+    </flowConstraints>
+    <capabilities>
+      <capability>
+        <inputSofas>
+          <sofaName>System</sofaName>
+        </inputSofas>
+        <outputSofas>
+          <sofaName>System</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
+</analysisEngineDescription>

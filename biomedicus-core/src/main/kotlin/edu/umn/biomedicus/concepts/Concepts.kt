@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts
 
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
 interface Concept {
     val identifier: String
@@ -28,6 +28,9 @@ interface Concept {
     val confidence: Double
 }
 
+/**
+ * A dictionary concept - a standardized code for the idea the text represents.
+ */
 data class DictionaryConcept(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -35,16 +38,19 @@ data class DictionaryConcept(
         override val source: String,
         override val type: String,
         override val confidence: Double
-) : Label, Concept {
-    constructor(label: Label, identifier: String, source: String, type: String, confidence: Double):
-            this(label.startIndex, label.endIndex, identifier, source, type, confidence)
+) : TextRange, Concept {
+    constructor(textRange: TextRange, identifier: String, source: String, type: String, confidence: Double):
+            this(textRange.startIndex, textRange.endIndex, identifier, source, type, confidence)
 }
 
+/**
+ * A dictionary term - a span of text that has one or more dictionary concepts associated with it.
+ */
 data class DictionaryTerm(
         override val startIndex: Int,
         override val endIndex: Int,
         val concepts: List<DictionaryConcept>
-) : Label {
-    constructor(label: Label, concepts: List<DictionaryConcept>) :
-            this(label.startIndex, label.endIndex, concepts)
+) : TextRange {
+    constructor(textRange: TextRange, concepts: List<DictionaryConcept>) :
+            this(textRange.startIndex, textRange.endIndex, concepts)
 }

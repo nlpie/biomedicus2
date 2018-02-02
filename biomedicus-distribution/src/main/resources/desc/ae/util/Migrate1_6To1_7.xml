@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -50,6 +50,11 @@
         <import name="edu.umn.biomedicus.types.1_6TypeSystem"/>
       </imports>
     </typeSystemDescription>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

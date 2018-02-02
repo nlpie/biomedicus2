@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.concepts;
 
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
@@ -74,7 +74,7 @@ public class SuiCuiTui implements Serializable {
     return tui;
   }
 
-  public DictionaryConcept toConcept(Label label, double confidence) {
+  public DictionaryConcept toConcept(TextRange label, double confidence) {
     return new DictionaryConcept(label, cui.toString(), "UMLS", tui.toString(), confidence);
   }
 

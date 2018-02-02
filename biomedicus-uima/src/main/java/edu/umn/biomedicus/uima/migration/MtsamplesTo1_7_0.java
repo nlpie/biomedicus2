@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import org.apache.uima.cas.ArrayFS;
@@ -315,20 +316,21 @@ public class MtsamplesTo1_7_0 implements TypeSystemMigration {
     assert documentId != null : "should not be null at this point";
 
     CASDocument casDocument = CASDocument.initialize(null, newCAS, documentId);
+    Map<String, String> metadata = casDocument.getMetadata();
 
     FSIterator<FeatureStructure> allSDI = oldCAS.getIndexRepository().getAllIndexedFS(sdiType);
     if (allSDI.hasNext()) {
       FeatureStructure sdi = allSDI.next();
       FsAccessor fsAccessor = new FsAccessor(sdi);
-      casDocument.putMetadata("uri", fsAccessor.getStringValue("uri"));
+      metadata.put("uri", fsAccessor.getStringValue("uri"));
 
-      casDocument.putMetadata("offsetInSource",
+      metadata.put("offsetInSource",
           String.valueOf(fsAccessor.getIntValue("offsetInSource")));
 
-      casDocument.putMetadata("documentSize",
+      metadata.put("documentSize",
           String.valueOf(fsAccessor.getIntValue("documentSize")));
 
-      casDocument.putMetadata("lastSegment",
+      metadata.put("lastSegment",
           String.valueOf(fsAccessor.getBooleanValue("lastSegment")));
     }
 
@@ -338,10 +340,10 @@ public class MtsamplesTo1_7_0 implements TypeSystemMigration {
       FeatureStructure document = allDocument.next();
       FsAccessor fsAccessor = new FsAccessor(document);
 
-      casDocument.putMetadata("sampleId", fsAccessor.getStringValue("sampleId"));
-      casDocument.putMetadata("sampleName", fsAccessor.getStringValue("sampledName"));
-      casDocument.putMetadata("typeId", fsAccessor.getStringValue("typeId"));
-      casDocument.putMetadata("typeName", fsAccessor.getStringValue("typeName"));
+      metadata.put("sampleId", fsAccessor.getStringValue("sampleId"));
+      metadata.put("sampleName", fsAccessor.getStringValue("sampledName"));
+      metadata.put("typeId", fsAccessor.getStringValue("typeId"));
+      metadata.put("typeName", fsAccessor.getStringValue("typeName"));
     }
   }
 

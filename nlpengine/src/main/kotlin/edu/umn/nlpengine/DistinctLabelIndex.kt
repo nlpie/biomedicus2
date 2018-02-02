@@ -1,7 +1,17 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
- * Unauthorized Copying of this file, via any medium is strictly prohibited
- * Proprietary and Confidential
+ * Copyright (c) 2018 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package edu.umn.nlpengine
@@ -13,7 +23,7 @@ import java.util.Collections.unmodifiableCollection
 /**
  * A label index where the labels are distinct i.e. non-overlapping.
  */
-class DistinctLabelIndex<out T : Label> internal constructor(
+class DistinctLabelIndex<out T : TextRange> internal constructor(
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
@@ -53,11 +63,11 @@ class DistinctLabelIndex<out T : Label> internal constructor(
 
     override fun first() = if (values.isNotEmpty()) values[0] else null
 
-    override fun atLocation(label: Label) = internalAtLocation(label)
+    override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
     override fun contains(element: @UnsafeVariance T) = internalIndexOf(element) != -1
 
-    override fun containsSpan(label: Label) = internalContainsLocation(label)
+    override fun containsSpan(textRange: TextRange) = internalContainsLocation(textRange)
 
     override fun asList() = object : List<T> by Collections.unmodifiableList(values) {
         override fun indexOf(element: @UnsafeVariance T) = internalIndexOf(element)
@@ -73,27 +83,31 @@ class DistinctLabelIndex<out T : Label> internal constructor(
             fromIndex: Int = 0,
             toIndex: Int = size
     ): Int {
-        var index = values.binarySearchBy(startIndex, fromIndex, toIndex) { it.endIndex }
-
-        if (index < 0) {
-            index = -1 * (index + 1)
+        if (values.isEmpty()) {
+            return -1
         }
 
-        return if (values[index].startIndex <= startIndex && values[index].endIndex >= endIndex) {
+        var index = values.binarySearchBy(startIndex, fromIndex, toIndex) { it.startIndex }
+
+        if (index < 0) {
+            index = -1 * (index + 1) - 1
+        }
+
+        return if (index >= 0 && index < values.size && values[index].startIndex <= startIndex && values[index].endIndex >= endIndex) {
             index
         } else -1
     }
 
     internal fun internalAtLocation(
-            label: Label,
+            textRange: TextRange,
             fromIndex: Int = 0,
             toIndex: Int = values.size
     ): Collection<T> {
-        val index = values.binarySearch(label, Comparator { o1, o2 ->
+        val index = values.binarySearch(textRange, Comparator { o1, o2 ->
             o1.compareStart(o2)
         }, fromIndex, toIndex)
 
-        return if (index >= 0 && values[index].endIndex == label.endIndex) {
+        return if (index >= 0 && values[index].endIndex == textRange.endIndex) {
             listOf(values[index])
         } else emptyList()
     }
@@ -111,15 +125,15 @@ class DistinctLabelIndex<out T : Label> internal constructor(
     }
 
     internal fun internalContainsLocation(
-            label: Label,
+            textRange: TextRange,
             fromIndex: Int = 0,
             toIndex: Int = size
     ): Boolean {
-        val index = values.binarySearch(label, Comparator { o1, o2 ->
+        val index = values.binarySearch(textRange, Comparator { o1, o2 ->
             o1.compareStart(o2)
         }, fromIndex, toIndex)
 
-        return index >= 0 && values[index].endIndex == label.endIndex
+        return index >= 0 && values[index].endIndex == textRange.endIndex
     }
 
     /**
@@ -191,7 +205,7 @@ class DistinctLabelIndex<out T : Label> internal constructor(
 
         override fun isEmpty() = size == 0
 
-        override fun atLocation(label: Label) = internalAtLocation(label, left, right + 1)
+        override fun atLocation(textRange: TextRange) = internalAtLocation(textRange, left, right + 1)
 
         override fun contains(element: @UnsafeVariance T) =
                 internalIndexOf(element, left, right + 1) != -1
@@ -199,8 +213,8 @@ class DistinctLabelIndex<out T : Label> internal constructor(
         override fun containsAll(elements: Collection<@UnsafeVariance T>) =
                 elements.all { contains(it) }
 
-        override fun containsSpan(label: Label) =
-                internalContainsLocation(label, left, right + 1)
+        override fun containsSpan(textRange: TextRange) =
+                internalContainsLocation(textRange, left, right + 1)
 
         override fun toTheLeftOf(index: Int) = updateBounds(maxTextIndex = index)
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Aggregator;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
@@ -67,13 +67,16 @@ public class TntModelTrainerAggregator implements Aggregator {
 
   @Override
   public void addDocument(Document document) throws BiomedicusException {
-    TextView view = document.getTextView(viewName)
-        .orElseThrow(
-            () -> new BiomedicusException("Specified view " + viewName + " does not exist"));
+    LabeledText view = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<Sentence> sentences = view.getLabelIndex(Sentence.class);
-    LabelIndex<ParseToken> tokens = view.getLabelIndex(ParseToken.class);
-    LabelIndex<PosTag> partsOfSpeech = view.getLabelIndex(PosTag.class);
+    if (view == null) {
+      throw new BiomedicusException("View was null: " + viewName);
+    }
+
+
+    LabelIndex<Sentence> sentences = view.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> tokens = view.labelIndex(ParseToken.class);
+    LabelIndex<PosTag> partsOfSpeech = view.labelIndex(PosTag.class);
 
     for (Sentence sentence : sentences) {
       List<ParseToken> sentenceTokens = tokens.insideSpan(sentence).asList();

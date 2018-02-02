@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package edu.umn.biomedicus.formatting
 
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 
-data class Bold(override val startIndex: Int, override val endIndex: Int): Label
+/**
+ * Text that has been bolded.
+ */
+data class Bold(override val startIndex: Int, override val endIndex: Int): TextRange
 
-data class Underlined(override val startIndex: Int, override val endIndex: Int): Label
+/**
+ * Text that has been underlined.
+ */
+data class Underlined(override val startIndex: Int, override val endIndex: Int): TextRange

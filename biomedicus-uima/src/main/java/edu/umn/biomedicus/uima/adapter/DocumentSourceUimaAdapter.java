@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,7 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
     } catch (BiomedicusException e) {
       throw new CollectionException(e);
     }
+    completed++;
   }
 
   @Override
@@ -145,7 +146,7 @@ public class DocumentSourceUimaAdapter extends CollectionReader_ImplBase {
 
   @Override
   public Progress[] getProgress() {
-    return new Progress[]{new ProgressImpl(completed, total, "Documents", true)};
+    return new Progress[]{new ProgressImpl(completed, total, Progress.ENTITIES, false)};
   }
 
   @Override

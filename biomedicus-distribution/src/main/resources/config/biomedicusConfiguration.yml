@@ -18,6 +18,19 @@ settings:
       includePercent: no
     units:
       modelPath: measures/concepts.tsv
+    indefiniteQuantifiers:
+      leftPath: measures/leftIndefiniteQuantifiers.txt
+      rightPath: measures/rightIndefiniteQuantifiers.txt
+      localPath: measures/localIndefiniteQuantifiers.txt
+      fuzzyPath: measures/fuzzyValues.txt
+    standaloneQuantifiersPath: measures/standaloneQuantifiers.txt
+    timeUnitsPath: measures/timeUnits.txt
+    timeFrequencyUnitsPath: measures/timeFrequencyUnits.txt
+  time:
+    daysPath: time/days.txt
+    monthsPath: time/months.txt
+    timesOfDayPath: time/timesOfDay.txt
+    seasonsPath: time/seasons.txt
   tnt:
     trigram.path: tnt/trigram.yml
     word:
@@ -73,6 +86,19 @@ settings:
     history.path: modification/history.yml
     negation.path: modification/negation.yml
     probability.path: modification/probability.yml
+  family:
+    relativesPath: family/relatives.txt
+  sh:
+    usageFrequencyPhrasesPath: sh/usageFrequencyPhrases.txt
+    usageFrequencyPatternsPath: sh/usageFrequencyPatterns.txt
+    statusPhrasesPath: sh/genericStatusPhrases.txt
+    genericMethodPhrasesPath: sh/genericMethodPhrases.txt
+    nicotine:
+      candidateCuesPath: sh/nicotine/candidateCues.txt
+      typesPath: sh/nicotine/types.txt
+      amountUnitsPath: sh/nicotine/amountUnits.txt
+      statusPhrasesPath: sh/nicotine/statusPhrases.txt
+      methodPhrasesPath: sh/nicotine/methodPhrases.txt
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
   acronym.model: edu.umn.biomedicus.acronym.AcronymModel

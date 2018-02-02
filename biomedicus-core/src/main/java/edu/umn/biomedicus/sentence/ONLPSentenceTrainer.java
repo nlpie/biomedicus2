@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Aggregator;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -125,13 +125,16 @@ public class ONLPSentenceTrainer implements Aggregator {
   }
 
   @Override
-  public void addDocument(Document document) {
-    TextView textView = document.getTextView(StandardViews.SYSTEM)
-        .orElseThrow(() -> new IllegalStateException("No system view."));
+  public void addDocument(Document document) throws BiomedicusException {
+    LabeledText labeledTextView = TextIdentifiers.getSystemLabeledText(document);
 
-    String text = textView.getText();
+    if (labeledTextView == null) {
+      throw new IllegalStateException("null system view");
+    }
 
-    for (Sentence sentence : textView.getLabelIndex(Sentence.class)) {
+    String text = labeledTextView.getText();
+
+    for (Sentence sentence : labeledTextView.labelIndex(Sentence.class)) {
       CharSequence sample = sentence.coveredString(text);
       samplesQueue.add(sample.toString());
     }

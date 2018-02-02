@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.nlpengine.Document;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;

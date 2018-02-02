@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.nlpengine.LabelIndex;
@@ -53,9 +53,9 @@ public final class WordLabeler implements DocumentProcessor {
   public void process(Document document) throws BiomedicusException {
     LOGGER.debug("Labeling word term index identifiers in a document.");
 
-    TextView systemView = StandardViews.getSystemView(document);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-    Labeler<WordIndex> wordIndexLabeler = systemView.getLabeler(WordIndex.class);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
+    Labeler<WordIndex> wordIndexLabeler = systemView.labeler(WordIndex.class);
 
     for (ParseToken parseToken : parseTokenLabelIndex) {
       String lowercase = parseToken.getText().toLowerCase(Locale.ENGLISH);

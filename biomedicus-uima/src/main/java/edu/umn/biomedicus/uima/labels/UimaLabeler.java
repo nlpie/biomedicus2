@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.uima.labels;
 
 import com.google.inject.Inject;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.Labeler;
 import org.jetbrains.annotations.NotNull;
 
-public final class UimaLabeler<T extends Label> implements Labeler<T> {
+public final class UimaLabeler<T extends TextRange> implements Labeler<T> {
 
   private final LabelAdapter<T> labelAdapter;
 
@@ -36,7 +36,7 @@ public final class UimaLabeler<T extends Label> implements Labeler<T> {
   }
 
   @Override
-  public void labelAll(@NotNull Iterable<? extends T> elements) {
+  public void addAll(@NotNull Iterable<? extends T> elements) {
     elements.forEach(this::add);
   }
 }

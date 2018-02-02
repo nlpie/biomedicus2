@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.nlpengine.Document;
 
 /**
  * A source for new documents.

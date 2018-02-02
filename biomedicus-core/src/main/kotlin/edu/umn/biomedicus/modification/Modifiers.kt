@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.modification
 
-import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.TextRange
 import edu.umn.nlpengine.Span
 
-interface DictionaryTermModifier : Label {
+interface DictionaryTermModifier : TextRange {
     val cueTerms: List<Span>
 }
 
@@ -28,8 +28,8 @@ data class Historical(
         override val endIndex: Int,
         override val cueTerms: List<Span>
 ) : DictionaryTermModifier {
-    constructor(label: Label, cueTerms: List<Span>):
-            this(label.startIndex, label.endIndex, cueTerms)
+    constructor(textRange: TextRange, cueTerms: List<Span>):
+            this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
 data class Negated(
@@ -37,8 +37,8 @@ data class Negated(
         override val endIndex: Int,
         override val cueTerms: List<Span>
 ) : DictionaryTermModifier {
-    constructor(label: Label, cueTerms: List<Span>):
-            this(label.startIndex, label.endIndex, cueTerms)
+    constructor(textRange: TextRange, cueTerms: List<Span>):
+            this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
 data class Probable(
@@ -46,6 +46,6 @@ data class Probable(
         override val endIndex: Int,
         override val cueTerms: List<Span>
 ) : DictionaryTermModifier {
-    constructor(label: Label, cueTerms: List<Span>):
-            this(label.startIndex, label.endIndex, cueTerms)
+    constructor(textRange: TextRange, cueTerms: List<Span>):
+            this(textRange.startIndex, textRange.endIndex, cueTerms)
 }

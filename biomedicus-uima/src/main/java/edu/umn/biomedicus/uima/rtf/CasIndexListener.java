@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import edu.umn.biomedicus.rtf.reader.IndexListener;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
@@ -57,7 +57,7 @@ class CasIndexListener implements IndexListener {
   @Override
   public void wroteToDestination(String destinationName,
       int destinationIndex,
-      Label originalDocumentTextLocation) {
+      TextRange originalDocumentTextLocation) {
     AnnotationFS viewIndex = originalDocumentView
         .createAnnotation(viewIndexType, originalDocumentTextLocation.getStartIndex(),
             originalDocumentTextLocation.getEndIndex());

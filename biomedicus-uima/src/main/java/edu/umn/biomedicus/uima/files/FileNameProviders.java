@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.files;
 
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;
@@ -80,7 +80,7 @@ public final class FileNameProviders {
   }
 
   /**
-   * Creates a file name provider from a biomedicus {@link TextView} type.
+   * Creates a file name provider from a biomedicus {@link LabeledText} type.
    *
    * @param document the document to pull the document identifier from.
    * @param extension the extension to give the file name

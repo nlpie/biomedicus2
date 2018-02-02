@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package edu.umn.biomedicus.utilities;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentBuilder;
 import edu.umn.biomedicus.framework.DocumentSource;
-import edu.umn.biomedicus.framework.store.Document;
+import edu.umn.nlpengine.Document;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -63,8 +63,8 @@ public class MipacqSourceReader implements DocumentSource {
         }
       });
       Document document = factory.create(next.getFileName().toString());
-      document.putMetadata("path", next.toString());
-      document.newTextView().withName(StandardViews.SYSTEM).withText(sb.toString()).build();
+      document.getMetadata().put("path", next.toString());
+      document.attachText(TextIdentifiers.SYSTEM, sb.toString());
       return document;
     } catch (IOException e) {
       throw new BiomedicusException(e);

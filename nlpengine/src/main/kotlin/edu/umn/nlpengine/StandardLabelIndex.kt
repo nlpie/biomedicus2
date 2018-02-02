@@ -1,7 +1,17 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
- * Unauthorized Copying of this file, via any medium is strictly prohibited
- * Proprietary and Confidential
+ * Copyright (c) 2018 Regents of the University of Minnesota.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package edu.umn.nlpengine
@@ -10,9 +20,9 @@ import java.util.*
 import java.util.Collections.unmodifiableCollection
 
 /**
- * A label index backed by a immutable sorted array of [Label] values.
+ * A label index backed by a immutable sorted array of [TextRange] values.
  */
-class StandardLabelIndex<out T : Label> internal constructor(
+class StandardLabelIndex<out T : TextRange> internal constructor(
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
@@ -27,6 +37,12 @@ class StandardLabelIndex<out T : Label> internal constructor(
     }))
 
     constructor(comparator: Comparator<T>, labels: Iterable<T>): this(labels.sortedWith(comparator))
+
+    companion object Factory {
+        @JvmStatic fun <T : TextRange> create(vararg labels: T): StandardLabelIndex<T> {
+            return StandardLabelIndex(*labels)
+        }
+    }
 
     override fun containing(startIndex: Int, endIndex: Int): LabelIndex<T> = AscendingView(
             maxBegin = startIndex,
@@ -56,11 +72,11 @@ class StandardLabelIndex<out T : Label> internal constructor(
 
     override fun first() = if (values.isNotEmpty()) values[0] else null
 
-    override fun atLocation(label: Label) = internalAtLocation(label)
+    override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
     override fun contains(element: @UnsafeVariance T) = internalIndexOf(element) != -1
 
-    override fun containsSpan(label: Label) = internalContainsLocation(label)
+    override fun containsSpan(textRange: TextRange) = internalContainsLocation(textRange)
 
     override fun asList() = object : List<T> by Collections.unmodifiableList(values) {
         override fun indexOf(element: @UnsafeVariance T) = internalIndexOf(element)
@@ -71,23 +87,23 @@ class StandardLabelIndex<out T : Label> internal constructor(
     }
 
     internal fun internalAtLocation(
-            label: Label,
+            textRange: TextRange,
             fromIndex: Int = 0,
             toIndex: Int = size
     ): Collection<T> {
-        val index = values.binarySearch(label, Comparator { o1, o2 ->
+        val index = values.binarySearch(textRange, Comparator { o1, o2 ->
             o1.compareLocation(o2)
         }, fromIndex, toIndex)
 
         if (index < 0) return emptyList()
 
         var left = index
-        while (left > fromIndex && values[left - 1].locationEquals(label)) {
+        while (left > fromIndex && values[left - 1].locationEquals(textRange)) {
             left--
         }
 
         var right = index
-        while (right < toIndex && values[right].locationEquals(label)) {
+        while (right < toIndex && values[right].locationEquals(textRange)) {
             right++
         }
 
@@ -157,10 +173,10 @@ class StandardLabelIndex<out T : Label> internal constructor(
     }
 
     internal fun internalContainsLocation(
-            label: Label,
+            textRange: TextRange,
             fromIndex: Int = 0,
             toIndex: Int = size
-    ) = 0 <= values.binarySearch(label, Comparator { o1, o2 ->
+    ) = 0 <= values.binarySearch(textRange, Comparator { o1, o2 ->
         o1.compareLocation(o2)
     }, fromIndex, toIndex)
 
@@ -326,9 +342,9 @@ class StandardLabelIndex<out T : Label> internal constructor(
             return null
         }
 
-        override fun atLocation(label: Label): Collection<T> {
-            if (!insideView(label)) return emptyList()
-            return internalAtLocation(label, left, right + 1)
+        override fun atLocation(textRange: TextRange): Collection<T> {
+            if (!insideView(textRange)) return emptyList()
+            return internalAtLocation(textRange, left, right + 1)
         }
 
         override fun isEmpty() = size == 0
@@ -341,9 +357,9 @@ class StandardLabelIndex<out T : Label> internal constructor(
         override fun containsAll(elements: Collection<@UnsafeVariance T>) =
                 elements.all { contains(it) }
 
-        override fun containsSpan(label: Label): Boolean {
-            if (!insideView(label)) return false
-            return internalContainsLocation(label, left, right + 1)
+        override fun containsSpan(textRange: TextRange): Boolean {
+            if (!insideView(textRange)) return false
+            return internalContainsLocation(textRange, left, right + 1)
         }
 
         override fun toTheLeftOf(index: Int) = updateBounds(
@@ -372,8 +388,8 @@ class StandardLabelIndex<out T : Label> internal constructor(
 
         override fun iterator() = ViewIterator(0)
 
-        internal fun insideView(label: Label) =
-                label.startIndex in minBegin..maxBegin && label.endIndex in minEnd..maxEnd
+        internal fun insideView(textRange: TextRange) =
+                textRange.startIndex in minBegin..maxBegin && textRange.endIndex in minEnd..maxEnd
 
         internal fun endsInView(index: Int) =
                 if (index == -1 || values[index].endIndex in minEnd..maxEnd) index else -1

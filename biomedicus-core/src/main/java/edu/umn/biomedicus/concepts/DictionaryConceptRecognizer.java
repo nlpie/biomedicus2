@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,20 +29,20 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.WDT;
 import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.XX;
 
 import edu.umn.biomedicus.acronyms.Acronym;
-import edu.umn.biomedicus.common.StandardViews;
+import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.normalization.NormForm;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.Token;
-import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
@@ -169,7 +169,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     }
   }
 
-  private void makeTerm(Label label, List<SuiCuiTui> cuis, double confidence) {
+  private void makeTerm(TextRange label, List<SuiCuiTui> cuis, double confidence) {
 
     assert termLabeler != null;
     List<DictionaryConcept> concepts = new ArrayList<>(cuis.size());
@@ -184,14 +184,14 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
   public void process(Document document) throws BiomedicusException {
     LOGGER.debug("Finding concepts in document.");
 
-    TextView systemView = StandardViews.getSystemView(document);
+    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
 
-    LabelIndex<Sentence> sentences = systemView.getLabelIndex(Sentence.class);
-    normIndexes = systemView.getLabelIndex(NormForm.class);
-    termLabeler = systemView.getLabeler(DictionaryTerm.class);
-    posTags = systemView.getLabelIndex(PosTag.class);
-    LabelIndex<TermToken> termTokenLabelIndex = systemView.getLabelIndex(TermToken.class);
-    LabelIndex<Acronym> acronymLabelIndex = systemView.getLabelIndex(Acronym.class);
+    LabelIndex<Sentence> sentences = systemView.labelIndex(Sentence.class);
+    normIndexes = systemView.labelIndex(NormForm.class);
+    termLabeler = systemView.labeler(DictionaryTerm.class);
+    posTags = systemView.labelIndex(PosTag.class);
+    LabelIndex<TermToken> termTokenLabelIndex = systemView.labelIndex(TermToken.class);
+    LabelIndex<Acronym> acronymLabelIndex = systemView.labelIndex(Acronym.class);
 
     String documentText = systemView.getText();
     for (Sentence sentence : sentences) {

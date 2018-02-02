@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,17 +43,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class DocumentProcessorUimaAdapter extends CasAnnotator_ImplBase {
 
-  private static final List<String> KNOWN_PARAMETERS = Arrays
-      .asList("viewName", "eagerLoad", "postProcessors");
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(DocumentProcessorUimaAdapter.class);
+  private static final List<String> KNOWN_PARAMETERS = Arrays.asList("eagerLoad", "postProcessors");
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentProcessorUimaAdapter.class);
 
   @Nullable
   private DocumentProcessorRunner documentProcessorRunner;
 
   @Nullable
   private LabelAdapters labelAdapters;
-
 
   private GuiceInjector guiceInjector;
 

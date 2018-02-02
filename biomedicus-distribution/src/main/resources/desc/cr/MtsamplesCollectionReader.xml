@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<!-- A simple collection reader that reads text files from a directory in the
-     filesystem.  The Java class for this collection reader is in uima_core.jar. -->
 
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
@@ -100,7 +97,7 @@
       <nameValuePair>
         <name>targetViewName</name>
         <value>
-          <string>SystemView</string>
+          <string>System</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -110,6 +107,11 @@
         <import name="edu.umn.biomedicus.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>

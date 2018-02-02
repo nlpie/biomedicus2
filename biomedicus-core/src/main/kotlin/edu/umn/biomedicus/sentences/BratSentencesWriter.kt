@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package edu.umn.biomedicus.sentences
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.biomedicus.common.StandardViews
+import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.framework.DocumentProcessor
-import edu.umn.biomedicus.framework.store.Document
+import edu.umn.nlpengine.Document
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -32,7 +32,7 @@ class BratSentencesWriter @Inject internal constructor(
 ) : DocumentProcessor {
     override fun process(document: Document) {
         val documentId = java.lang.String.format("%07d", document.documentId.toInt())
-        val systemView = StandardViews.getSystemView(document)
+        val systemView = TextIdentifiers.getSystemLabeledText(document)
 
         val text = systemView.text
         val textPath = outputDirectory.resolve(documentId + ".txt")
@@ -42,7 +42,7 @@ class BratSentencesWriter @Inject internal constructor(
         textPath.toFile().writeText(text, StandardCharsets.UTF_8)
 
         annPath.toFile().bufferedWriter(charset = StandardCharsets.UTF_8).use { writer ->
-            val sentences = systemView.getLabelIndex(Sentence::class.java)
+            val sentences = systemView.labelIndex(Sentence::class.java)
 
             var i = 1
             for (sentence in sentences) {
