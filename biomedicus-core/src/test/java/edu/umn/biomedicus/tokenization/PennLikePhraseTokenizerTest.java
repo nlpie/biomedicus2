@@ -210,4 +210,17 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(list.get(0), Span.create(0, 1));
     assertEquals(list.get(1), Span.create(1, 4));
   }
+
+  @Test
+  public void testSplitNumbersSeparatedByX() throws Exception {
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("2x3x4")
+        .collect(Collectors.toList());
+
+    assertEquals(list.size(), 5);
+    assertEquals(list.get(0), Span.create(0, 1));
+    assertEquals(list.get(1), Span.create(1, 2));
+    assertEquals(list.get(2), Span.create(2, 3));
+    assertEquals(list.get(3), Span.create(3, 4));
+    assertEquals(list.get(4), Span.create(4, 5));
+  }
 }

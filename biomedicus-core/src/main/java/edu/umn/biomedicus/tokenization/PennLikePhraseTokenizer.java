@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 public final class PennLikePhraseTokenizer {
 
@@ -52,7 +53,11 @@ public final class PennLikePhraseTokenizer {
 
 
 
-  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9]++(?<suffix>[\\p{Alpha}]++)$");
+  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9.xX]++(?<suffix>[\\p{Alpha}]++)$");
+
+  private static final Pattern NUMBER_X = Pattern.compile(".*?[0-9.]++([xX][0-9.]++)+$");
+
+  private static final Pattern X = Pattern.compile("[xX]");
 
   private static final UnitRecognizer RECOGNIZER;
 
@@ -80,6 +85,7 @@ public final class PennLikePhraseTokenizer {
         .flatMap(sentenceTokenizer::splitWordByMiddleBreaks)
         .flatMap(sentenceTokenizer::splitWordByEndBreaks)
         .flatMap(sentenceTokenizer::splitUnitsOffTheEnd)
+        .flatMap(sentenceTokenizer::splitNumbersByX)
         .map(TokenCandidate::toSpan);
   }
 
@@ -90,6 +96,7 @@ public final class PennLikePhraseTokenizer {
         .flatMap(tokenizer::splitWordByMiddleBreaks)
         .flatMap(tokenizer::splitWordByEndBreaks)
         .flatMap(tokenizer::splitUnitsOffTheEnd)
+        .flatMap(tokenizer::splitNumbersByX)
         .map(TokenCandidate::toSpan);
   }
 
@@ -207,6 +214,26 @@ public final class PennLikePhraseTokenizer {
         return Stream.of(new TokenCandidate(numBegin, numEnd, false),
             new TokenCandidate(numEnd, tokenCandidate.getEndIndex(), tokenCandidate.isLast()));
       }
+    }
+    return Stream.of(tokenCandidate);
+  }
+
+  Stream<TokenCandidate> splitNumbersByX(TokenCandidate tokenCandidate) {
+    CharSequence tokenText = tokenCandidate.coveredText(sentenceText);
+    Matcher matcher = NUMBER_X.matcher(tokenText);
+    if (matcher.matches()) {
+      int begin = tokenCandidate.getStartIndex();
+      int prev = begin;
+      Builder<TokenCandidate> builder = Stream.builder();
+      Matcher xMatcher = X.matcher(tokenText);
+      while (xMatcher.find()) {
+        builder.add(new TokenCandidate(prev, begin + xMatcher.start(), false));
+        prev = begin + xMatcher.end();
+        builder.add(new TokenCandidate(begin + xMatcher.start(), prev, false));
+      }
+      builder.add(new TokenCandidate(prev, tokenCandidate.getEndIndex(),
+          tokenCandidate.isLast()));
+      return builder.build();
     }
     return Stream.of(tokenCandidate);
   }

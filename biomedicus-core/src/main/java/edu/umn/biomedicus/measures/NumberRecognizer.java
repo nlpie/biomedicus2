@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Regents of the University of Minnesota.
+ * Copyright (c) 2017 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@ import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
+import edu.umn.biomedicus.numbers.NumberResult;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
@@ -55,7 +54,7 @@ public class NumberRecognizer implements DocumentProcessor {
       @ProcessorSetting("measures.numbers.includePercent") boolean includePercent,
       @ProcessorSetting("measures.numbers.includeFractions") boolean includeFractions
   ) {
-    numberDetector = Numbers.createNumberDetector(numberModel, includePercent, includeFractions);
+    numberDetector = Numbers.createNumberDetector(numberModel);
   }
 
   void setLabeler(Labeler<Number> labeler) {
@@ -70,8 +69,8 @@ public class NumberRecognizer implements DocumentProcessor {
     LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
     labeler = systemView.labeler(Number.class);
 
-    for (Sentence sentence : sentenceLabelIndex) {
-      extract(parseTokenLabelIndex.insideSpan(sentence));
+    for (Sentence sentenceLabel : sentenceLabelIndex) {
+      extract(parseTokenLabelIndex.insideSpan(sentenceLabel));
     }
   }
 
@@ -82,52 +81,31 @@ public class NumberRecognizer implements DocumentProcessor {
    * @throws BiomedicusException if there is an error labeling the text
    */
   void extract(Iterable<ParseToken> labels) throws BiomedicusException {
-    Iterator<ParseToken> iterator = labels.iterator();
-    ParseToken tokenLabel = null;
-    while (true) {
-      if (tokenLabel == null) {
-        if (!iterator.hasNext()) {
-          break;
-        }
-        tokenLabel = iterator.next();
-      }
-
+    for (ParseToken tokenLabel : labels) {
       String text = tokenLabel.getText();
       int begin = tokenLabel.getStartIndex();
       int end = tokenLabel.getEndIndex();
-      if (numberDetector.tryToken(text, begin, end)) {
-        labelSeq();
-        if (!numberDetector.getConsumedLastToken()) {
-          continue;
-        }
+      for (NumberResult numberResult : numberDetector.tryToken(text, begin, end)) {
+        labelSeq(numberResult);
       }
-      tokenLabel = null;
     }
 
-    if (numberDetector.finish()) {
-      labelSeq();
+    for (NumberResult numberResult : numberDetector.finish()) {
+      labelSeq(numberResult);
     }
 
   }
 
-  private void labelSeq() throws BiomedicusException {
-    BigDecimal numerator = numberDetector.getNumerator();
-    assert numerator != null
-        : "This method should only get called when value is nonnull";
-    NumberType numberType = numberDetector.getNumberType();
-    assert numberType != null
-        : "Number type should never be null at this point";
-    BigDecimal denominator = numberDetector.getDenominator();
+  private void labelSeq(NumberResult numberResult) throws BiomedicusException {
+    BigDecimal numerator = numberResult.getNumerator();
+    NumberType numberType = numberResult.getNumberType();
+    BigDecimal denominator = numberResult.getDenominator();
     if (denominator == null) {
-      labeler.add(
-          new Number(numberDetector.getBegin(), numberDetector.getEnd(), numerator.toString(),
-              BigInteger.ONE.toString(), numberType)
-      );
+      labeler.add(new Number(numberResult.getBegin(), numberResult.getEnd(), numerator.toString(),
+          BigDecimal.ONE.toString(), numberType));
     } else {
-      labeler.add(
-          new Number(numberDetector.getBegin(), numberDetector.getEnd(), numerator.toString(),
-              denominator.toString(), numberType)
-      );
+      labeler.add(new Number(numberResult.getBegin(), numberResult.getEnd(), numerator.toString(),
+          denominator.toString(), numberType));
     }
   }
 }
