@@ -22,7 +22,7 @@
   <groupId>edu.umn.biomedicus</groupId>
   <artifactId>biomedicus</artifactId>
   <packaging>pom</packaging>
-  <version>1.8.2</version>
+  <version>1.8.3</version>
 
   <modules>
     <module>biomedicus-core</module>
@@ -37,7 +37,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <biomedicus.version>1.8.2</biomedicus.version>
+    <biomedicus.version>1.8.3</biomedicus.version>
   </properties>
 
   <build>

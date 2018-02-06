@@ -21,7 +21,7 @@
   <parent>
     <artifactId>biomedicus</artifactId>
     <groupId>edu.umn.biomedicus</groupId>
-    <version>1.8.2</version>
+    <version>1.8.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -76,7 +76,7 @@
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
       <artifactId>biomedicus-measures</artifactId>
-      <version>1.0.0</version>
+      <version>2.0.0</version>
     </dependency>
   </dependencies>
 

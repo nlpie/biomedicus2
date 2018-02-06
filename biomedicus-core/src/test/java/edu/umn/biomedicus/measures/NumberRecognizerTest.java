@@ -28,6 +28,7 @@ import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.framework.store.ValueLabeler;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
+import edu.umn.biomedicus.numbers.NumberResult;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
 import java.math.BigDecimal;
@@ -100,6 +101,9 @@ public class NumberRecognizerTest {
       }
     };
 
+    NumberResult twentyFiveResult = new NumberResult(0, 2, BigDecimal.valueOf(25), BigDecimal.ONE, NumberType.DECIMAL);
+    NumberResult threeResult = new NumberResult(3, 4, BigDecimal.valueOf(3), BigDecimal.ONE, NumberType.DECIMAL);
+
     new Expectations() {{
       document.getTextView(StandardViews.SYSTEM); result = Optional.of(textView);
       textView.getLabelIndex(Sentence.class); result = sentenceLabelIndex;
@@ -109,18 +113,9 @@ public class NumberRecognizerTest {
       parseTokenLabelIndex.insideSpan(sentenceLabel); result = parseTokenLabelIndex;
       parseTokenLabelIndex.iterator(); result = parseTokenLabels.iterator();
 
-      combinedNumberDetector.tryToken("25", 0, 2); result = false;
-      combinedNumberDetector.tryToken("3", 3, 4); returns(true, false);
-      combinedNumberDetector.finish(); result = true;
-
-      combinedNumberDetector.getNumerator(); returns(new BigDecimal(25), new BigDecimal(3));
-      combinedNumberDetector.getDenominator(); returns(new BigDecimal(1), new BigDecimal(1));
-      combinedNumberDetector.getNumberType(); result = NumberType.DECIMAL; times = 2;
-      combinedNumberDetector.getBegin(); returns(0, 3);
-      combinedNumberDetector.getEnd(); returns(2, 4);
-      combinedNumberDetector.getNumberType(); returns(NumberType.DECIMAL, NumberType.DECIMAL);
-
-      combinedNumberDetector.getConsumedLastToken(); result = false;
+      combinedNumberDetector.tryToken("25", 0, 2); result = Collections.emptyList();
+      combinedNumberDetector.tryToken("3", 3, 4); result = Collections.singletonList(twentyFiveResult);
+      combinedNumberDetector.finish(); result = Collections.singletonList(threeResult);
 
       numberLabeler.value((Number) any); result = valueLabeler;
     }};
