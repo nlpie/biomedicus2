@@ -26,15 +26,14 @@ import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.framework.store.Label;
 import edu.umn.biomedicus.framework.store.LabelIndex;
 import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.framework.store.TextView;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
+import edu.umn.biomedicus.numbers.NumberResult;
 import edu.umn.biomedicus.numbers.NumberType;
 import edu.umn.biomedicus.numbers.Numbers;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Iterator;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
@@ -57,7 +56,7 @@ public class NumberRecognizer implements DocumentProcessor {
       @ProcessorSetting("measures.numbers.includePercent") boolean includePercent,
       @ProcessorSetting("measures.numbers.includeFractions") boolean includeFractions
   ) {
-    numberDetector = Numbers.createNumberDetector(numberModel, includePercent, includeFractions);
+    numberDetector = Numbers.createNumberDetector(numberModel);
   }
 
   void setLabeler(Labeler<Number> labeler) {
@@ -84,55 +83,38 @@ public class NumberRecognizer implements DocumentProcessor {
    * @throws BiomedicusException if there is an error labeling the text
    */
   void extract(Iterable<Label<ParseToken>> labels) throws BiomedicusException {
-    Iterator<Label<ParseToken>> iterator = labels.iterator();
-    Label<ParseToken> tokenLabel = null;
-    while (true) {
-      if (tokenLabel == null) {
-        if (!iterator.hasNext()) {
-          break;
-        }
-        tokenLabel = iterator.next();
-      }
-
+    for (Label<ParseToken> tokenLabel : labels) {
       String text = tokenLabel.getValue().text();
       int begin = tokenLabel.getBegin();
       int end = tokenLabel.getEnd();
-      if (numberDetector.tryToken(text, begin, end)) {
-        labelSeq();
-        if (!numberDetector.getConsumedLastToken()) {
-          continue;
-        }
+      for (NumberResult numberResult : numberDetector.tryToken(text, begin, end)) {
+        labelSeq(numberResult);
       }
-      tokenLabel = null;
     }
 
-    if (numberDetector.finish()) {
-      labelSeq();
+    for (NumberResult numberResult : numberDetector.finish()) {
+      labelSeq(numberResult);
     }
 
   }
 
-  private void labelSeq() throws BiomedicusException {
-    BigDecimal numerator = numberDetector.getNumerator();
-    assert numerator != null
-        : "This method should only get called when value is nonnull";
-    NumberType numberType = numberDetector.getNumberType();
-    assert numberType != null
-        : "Number type should never be null at this point";
-    BigDecimal denominator = numberDetector.getDenominator();
+  private void labelSeq(NumberResult numberResult) throws BiomedicusException {
+    BigDecimal numerator = numberResult.getNumerator();
+    NumberType numberType = numberResult.getNumberType();
+    BigDecimal denominator = numberResult.getDenominator();
     if (denominator == null) {
       ImmutableNumber number = ImmutableNumber.builder()
           .numerator(numerator.toString())
           .numberType(numberType)
           .denominator(BigInteger.ONE.toString()).build();
-      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
+      labeler.value(number).label(numberResult.getBegin(), numberResult.getEnd());
     } else {
       ImmutableNumber number = ImmutableNumber.builder()
           .numerator(numerator.toString())
           .denominator(denominator.toString())
           .numberType(numberType)
           .build();
-      labeler.value(number).label(numberDetector.getBegin(), numberDetector.getEnd());
+      labeler.value(number).label(numberResult.getBegin(), numberResult.getEnd());
     }
   }
 }
