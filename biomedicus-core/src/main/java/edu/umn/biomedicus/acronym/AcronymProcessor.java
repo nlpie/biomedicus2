@@ -17,6 +17,8 @@
 package edu.umn.biomedicus.acronym;
 
 import edu.umn.biomedicus.acronyms.Acronym;
+import edu.umn.biomedicus.acronyms.OtherAcronymSense;
+import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.TextIdentifiers;
@@ -77,9 +79,12 @@ class AcronymProcessor implements DocumentProcessor {
 
   private final boolean checkParseTokens;
 
+  private final Boolean labelOtherSenses;
+
   private Labeler<Acronym> acronymLabeler;
 
   private List<TermToken> termTokens;
+  private Labeler<OtherAcronymSense> otherSenseLabeler;
 
   /**
    * Constructor to initialize the acronym detector
@@ -91,11 +96,13 @@ class AcronymProcessor implements DocumentProcessor {
   public AcronymProcessor(
       @Setting("acronym.model") AcronymModel model,
       @ProcessorSetting("acronym.checkParseTokens") Boolean checkParseTokens,
+      @ProcessorSetting("acronym.labelOtherSenses") Boolean labelOtherSenses,
       @Nullable OrthographicAcronymModel orthographicModel
   ) {
     this.orthographicModel = orthographicModel;
     this.model = model;
     this.checkParseTokens = checkParseTokens;
+    this.labelOtherSenses = labelOtherSenses;
   }
 
   @Override
@@ -108,6 +115,7 @@ class AcronymProcessor implements DocumentProcessor {
     LabelIndex<PosTag> partOfSpeechLabels = systemView.labelIndex(PosTag.class);
     LabelIndex<ParseToken> parseTokenLabels = systemView.labelIndex(ParseToken.class);
     acronymLabeler = systemView.labeler(Acronym.class);
+    otherSenseLabeler = systemView.labeler(OtherAcronymSense.class);
 
     List<TermToken> termTokenLabelList = termTokenLabels.asList();
     termTokens = termTokenLabels.asList();
@@ -138,10 +146,18 @@ class AcronymProcessor implements DocumentProcessor {
     boolean found = false;
     if (model.hasAcronym(token)
         || (orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token))) {
-      String sense = model.findBestSense(termTokens, i);
-      if (!Acronyms.UNKNOWN.equals(sense) && !sense.equalsIgnoreCase(token.getText())) {
-        LOGGER.trace("Labeling acronym expansion: {}", sense);
-        acronymLabeler.add(new Acronym(token, token.getText(), token.getHasSpaceAfter()));
+      List<ScoredSense> senses = model.findBestSense(termTokens, i);
+      if (senses.size() > 0) {
+        ScoredSense first = senses.get(0);
+        acronymLabeler.add(new Acronym(token, first.getSense(), token.getHasSpaceAfter(),
+            first.getScore()));
+        if (labelOtherSenses) {
+          for (int j = 1; j < senses.size(); j++) {
+            ScoredSense scoredSense = senses.get(j);
+            otherSenseLabeler.add(new OtherAcronymSense(token, scoredSense.getSense(),
+                token.getHasSpaceAfter(), scoredSense.getScore()));
+          }
+        }
         found = true;
       }
     }

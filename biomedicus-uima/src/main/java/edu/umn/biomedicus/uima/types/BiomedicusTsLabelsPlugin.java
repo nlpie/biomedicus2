@@ -18,6 +18,7 @@ package edu.umn.biomedicus.uima.types;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.acronyms.Acronym;
+import edu.umn.biomedicus.acronyms.OtherAcronymSense;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.concepts.DictionaryTerm;
@@ -141,13 +142,14 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
         NicotineTemporal.class,
         NicotineType.class,
         NicotineStatus.class,
-        NicotineMethod.class
+        NicotineMethod.class,
+        Acronym.class
     );
   }
 
   @Override
   public List<Class<? extends TextRange>> getAutoAdapted() {
-    return Collections.emptyList();
+    return Collections.singletonList(OtherAcronymSense.class);
   }
 
   @Override
@@ -164,7 +166,6 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     map.put(Historical.class, HistoricalLabelAdapter::new);
     map.put(Probable.class, ProbableLabelAdapter::new);
     map.put(TermToken.class, TermTokenLabelAdapter::new);
-    map.put(Acronym.class, AcronymLabelAdapter::new);
     map.put(ParseToken.class, ParseTokenLabelAdapter::new);
     map.put(PosTag.class, PosTagAdapter::new);
     map.put(WordIndex.class, WordIndexLabelAdapter::new);
@@ -414,20 +415,6 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     @Override
     protected TermToken createToken(int begin, int end, String text, boolean hasSpaceAfter) {
       return new TermToken(begin, end, text, hasSpaceAfter);
-    }
-  }
-
-  public static class AcronymLabelAdapter extends AbstractTokenLabelAdapter<Acronym> {
-
-    @Inject
-    public AcronymLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem()
-          .getType("edu.umn.biomedicus.uima.type1_6.Acronym"));
-    }
-
-    @Override
-    protected Acronym createToken(int begin, int end, String text, boolean hasSpaceAfter) {
-      return new Acronym(begin, end, text, hasSpaceAfter);
     }
   }
 

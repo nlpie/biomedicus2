@@ -260,7 +260,7 @@ public class AcronymVectorOfflineTrainer {
     }
     LOGGER.info(senseVectors.size() + " vectors total");
     LOGGER.info("initializing acronym vector model");
-    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, null, aem, null);
+    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, null, aem, null, 0.0d);
     // can help to do the GC before trying to serialize a big model
 
     LOGGER.info("writing acronym vector model");

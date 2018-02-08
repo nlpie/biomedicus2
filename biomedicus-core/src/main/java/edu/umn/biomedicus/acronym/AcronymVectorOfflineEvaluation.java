@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
+import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.tokenization.Token;
 import edu.umn.nlpengine.AbstractTextRange;
@@ -46,7 +47,7 @@ public class AcronymVectorOfflineEvaluation {
     AcronymExpansionsModel aem = new AcronymExpansionsModel.Loader(expansionsModelPath).loadModel();
 
     AcronymVectorModel avm = new AcronymVectorModel.Loader(null, false, vectorSpacePath,
-        senseMapPath, true, aem).loadModel();
+        senseMapPath, true, 0.0d, aem).loadModel();
 
     int correct = 0;
     int total = 0;
@@ -86,14 +87,17 @@ public class AcronymVectorOfflineEvaluation {
         i++;
       }
 
-      String hyp = avm.findBestSense(tokenList, tokenOfInterest);
-      results.add(new Result(acronym, expansion, hyp));
-      if (hyp.equals(expansion)) {
-        correct++;
+      List<ScoredSense> senses = avm.findBestSense(tokenList, tokenOfInterest);
+      if (senses.size() > 0) {
+        String hyp = senses.get(0).getSense();
+        results.add(new Result(acronym, expansion, hyp));
+        if (hyp.equals(expansion)) {
+          correct++;
+        }
+        System.out.format(
+            "\r%d   %d   %.1f%%           %s     %s                                                         ",
+            total, correct, 100. * correct / total, hyp, expansion);
       }
-      System.out.format(
-          "\r%d   %d   %.1f%%           %s     %s                                                         ",
-          total, correct, 100. * correct / total, hyp, expansion);
       total++;
     }
     System.out.println();

@@ -46,10 +46,12 @@ settings:
     inMemory: no
   acronym:
     checkParseTokens: yes
+    labelOtherSenses: yes
     useAlignment: no
     expansionsModel.path: acronym/expansions.txt
     alignmentModel.path: acronym-alignment/alignment.yml
     model: vector
+    cutoffScore: 0.001
     vector:
       model.path: acronym/vectorSpace.yml
       trainer:

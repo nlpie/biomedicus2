@@ -26,11 +26,30 @@ data class Acronym(
         override val startIndex: Int,
         override val endIndex: Int,
         override val text: String,
-        override val hasSpaceAfter: Boolean
+        override val hasSpaceAfter: Boolean,
+        val score: Double
 ): TextRange, Token {
     constructor(
             textRange: TextRange,
             text: String,
-            hasSpaceAfter: Boolean
-    ): this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
+            hasSpaceAfter: Boolean,
+            score: Double
+    ): this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter, score)
 }
+
+data class OtherAcronymSense(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        override val text: String,
+        override val hasSpaceAfter: Boolean,
+        val score: Double
+): TextRange, Token {
+    constructor(
+            textRange: TextRange,
+            text: String,
+            hasSpaceAfter: Boolean,
+            score: Double
+    ): this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter, score)
+}
+
+internal data class ScoredSense(val sense: String, val score: Double)
