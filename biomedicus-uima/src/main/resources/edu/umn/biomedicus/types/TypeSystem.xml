@@ -339,7 +339,7 @@
     </typeDescription>
 
     <typeDescription>
-      <name>edu.umn.biomedicus.uima.type1_8.Number</name>
+      <name>edu.umn.biomedicus.uima.type2_0.Number</name>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
@@ -357,7 +357,7 @@
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
         <featureDescription>
-          <name>type</name>
+          <name>numberType</name>
           <description>
             The type of number
           </description>

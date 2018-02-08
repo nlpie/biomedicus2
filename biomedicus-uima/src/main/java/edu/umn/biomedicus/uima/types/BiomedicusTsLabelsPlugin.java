@@ -645,13 +645,13 @@ public final class BiomedicusTsLabelsPlugin implements UimaPlugin {
     private final Feature typeFeature;
 
     NumberLabelAdapter(CAS cas) {
-      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_8.Number"));
+      super(cas, cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type2_0.Number"));
       numFeature = cas.getTypeSystem()
-          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:numerator");
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type2_0.Number:numerator");
       denomFeature = cas.getTypeSystem()
-          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:denominator");
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type2_0.Number:denominator");
       typeFeature = cas.getTypeSystem()
-          .getFeatureByFullName("edu.umn.biomedicus.uima.type1_8.Number:type");
+          .getFeatureByFullName("edu.umn.biomedicus.uima.type2_0.Number:numberType");
 
     }
 

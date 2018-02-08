@@ -65,27 +65,24 @@
   </analysisEngineMetaData>
   <externalResourceDependencies>
     <externalResourceDependency>
-      <key>typeSystemWriterResource</key>
+      <key>typeSystemWriter</key>
       <description>Responsible for writing the type system out to the folder.</description>
-      <interfaceName>edu.umn.biomedicus.uima.xmi.TypeSystemWriterResource</interfaceName>
     </externalResourceDependency>
   </externalResourceDependencies>
   <resourceManagerConfiguration>
     <externalResources>
       <externalResource>
-        <name>TypeSystemWriterResourceImpl</name>
+        <name>typeSystemWriter</name>
         <description>Writes the type system once.</description>
-        <fileResourceSpecifier>
-          <fileUrl>file:edu/umn/biomedicus/types/TypeSystem.xml</fileUrl>
-        </fileResourceSpecifier>
-        <implementationName>edu.umn.biomedicus.uima.xmi.TypeSystemWriterResourceImpl
-        </implementationName>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.xmi.TypeSystemWriter</resourceClassName>
+        </customResourceSpecifier>
       </externalResource>
     </externalResources>
     <externalResourceBindings>
       <externalResourceBinding>
-        <key>typeSystemWriterResource</key>
-        <resourceName>TypeSystemWriterResourceImpl</resourceName>
+        <key>typeSystemWriter</key>
+        <resourceName>typeSystemWriter</resourceName>
       </externalResourceBinding>
     </externalResourceBindings>
   </resourceManagerConfiguration>

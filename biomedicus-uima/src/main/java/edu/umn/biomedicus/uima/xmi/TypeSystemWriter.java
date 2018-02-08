@@ -16,16 +16,15 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
+import edu.umn.biomedicus.exc.BiomedicusException;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Semaphore;
-import org.apache.uima.cas.TypeSystem;
-import org.apache.uima.resource.DataResource;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.SharedResourceObject;
+import org.apache.uima.resource.Resource_ImplBase;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
-import org.apache.uima.util.TypeSystemUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,8 +33,7 @@ import org.xml.sax.SAXException;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class TypeSystemWriterResourceImpl implements TypeSystemWriterResource,
-    SharedResourceObject {
+public class TypeSystemWriter extends Resource_ImplBase {
 
   /**
    * Semaphore which prevents the type system from being written more than once.
@@ -46,19 +44,14 @@ public class TypeSystemWriterResourceImpl implements TypeSystemWriterResource,
    * {@inheritDoc} <p>Writes the type system to the path if it hasn't already been written. Uses the
    * semaphore with 1 permit {@code writeOnce}.</p>
    */
-  @Override
-  public void writeToPath(Path path, TypeSystem typeSystem) throws IOException, SAXException {
+  public void writeToPath(Path path) throws BiomedicusException {
     if (writeOnce.tryAcquire()) {
-      Path folder = path.getParent();
-      Files.createDirectories(folder);
-      TypeSystemDescription typeSystemDescription = TypeSystemUtil
-          .typeSystem2TypeSystemDescription(typeSystem);
-      typeSystemDescription.toXML(Files.newOutputStream(path));
+      try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path)) {
+        TypeSystemDescription description = getCasManager().getCasDefinition().getTypeSystemDescription();
+        description.toXML(bufferedWriter);
+      } catch (IOException | ResourceInitializationException | SAXException e) {
+        throw new BiomedicusException(e);
+      }
     }
-  }
-
-  @Override
-  public void load(DataResource aData) throws ResourceInitializationException {
-
   }
 }
