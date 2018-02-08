@@ -11,7 +11,7 @@
   <parent>
     <artifactId>biomedicus</artifactId>
     <groupId>edu.umn.biomedicus</groupId>
-    <version>1.8.3</version>
+    <version>1.8.4</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
