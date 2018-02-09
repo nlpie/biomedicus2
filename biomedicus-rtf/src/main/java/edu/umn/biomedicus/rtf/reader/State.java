@@ -17,8 +17,8 @@
 package edu.umn.biomedicus.rtf.reader;
 
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
-import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -130,9 +130,11 @@ public class State {
    * @param outputDestinationFactory factory for new output destinations.
    * @return newly created State object.
    */
-  public static State createState(OutputDestinationFactory outputDestinationFactory,
+  public static State createState(
+      OutputDestinationFactory outputDestinationFactory,
       Map<String, Map<String, Integer>> properties,
-      IndexListener indexListener) throws RtfReaderException {
+      IndexListener indexListener
+  ) throws RtfReaderException {
     Map<String, OutputDestination> outputDestinationMap = new HashMap<>();
     outputDestinationMap.put("Rtf", outputDestinationFactory.create("Rtf"));
     return new State(outputDestinationMap, outputDestinationFactory, properties, indexListener);
@@ -211,6 +213,10 @@ public class State {
         directWriteCharacter((char) code, originalDocumentTextLocation);
         break;
       case HEX:
+        if (!((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f')
+            || (code >= 'A' && code <= 'F'))) {
+          throw new RtfReaderException("Invalid hex code character: " + (char) code);
+        }
         hexStringBuilder.append((char) code);
         if (hexStringBuilder.length() == 2) {
           String hexString = hexStringBuilder.toString();

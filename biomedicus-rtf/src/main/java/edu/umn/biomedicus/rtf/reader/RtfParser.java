@@ -18,9 +18,10 @@ package edu.umn.biomedicus.rtf.reader;
 
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.nlpengine.Span;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible for parsing an RTF document.
@@ -28,7 +29,9 @@ import java.util.Deque;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class RtfReader {
+public class RtfParser {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RtfParser.class);
 
   /**
    * Parses the rtf control words.
@@ -57,7 +60,7 @@ public class RtfReader {
    * @param rtfSource the source of rtf data.
    * @param initialState the initial state.
    */
-  public RtfReader(RtfKeywordParser rtfKeywordParser, RtfSource rtfSource, State initialState) {
+  public RtfParser(RtfKeywordParser rtfKeywordParser, RtfSource rtfSource, State initialState) {
     this.rtfKeywordParser = rtfKeywordParser;
     this.rtfSource = rtfSource;
     this.currentState = initialState;
@@ -67,7 +70,7 @@ public class RtfReader {
   /**
    * Runs the parsing.
    */
-  public void parseFile() throws IOException, RtfReaderException {
+  public void parseFile() throws RtfReaderException {
     while (true) {
       int index = rtfSource.getIndex();
       int ch = rtfSource.readCharacter();
@@ -80,6 +83,9 @@ public class RtfReader {
           currentState = currentState.copy();
           break;
         case '}':
+          if (stateStack.size() == 0) {
+            throw new RtfReaderException("Extra closing brace.");
+          }
           currentState = stateStack.removeFirst();
           break;
         case '\\':
@@ -93,6 +99,20 @@ public class RtfReader {
           break;
       }
     }
+  }
+
+  /**
+   * Finalizes the parsed rtf by finishing the current state.
+   *
+   * @return true if it was the initial state that was finalized, false if there are still unpopped
+   * states (indicates unbalanced brackets)
+   */
+  public boolean finish() {
     currentState.finishState();
+    if (stateStack.size() != 0) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

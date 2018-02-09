@@ -19,7 +19,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.umn.biomedicus.uima.rtf.Parser</annotatorImplementationName>
+  <annotatorImplementationName>edu.umn.biomedicus.uima.rtf.RtfParserAnnotator</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>RTF Parser Annotator</name>
     <description>Processes read RTF documents into plain text.</description>
@@ -70,7 +70,7 @@
       <nameValuePair>
         <name>originalDocumentViewName</name>
         <value>
-          <string>OriginalDocumentView</string>
+          <string>OriginalDocument</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -127,7 +127,7 @@
           <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.LineBreak</type>
         </outputs>
         <inputSofas>
-          <sofaName>OriginalDocumentView</sofaName>
+          <sofaName>OriginalDocument</sofaName>
         </inputSofas>
         <outputSofas>
           <sofaName>System</sofaName>

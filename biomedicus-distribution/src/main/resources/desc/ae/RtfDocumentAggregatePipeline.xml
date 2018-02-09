@@ -96,7 +96,7 @@
       <nameValuePair>
         <name>originalDocumentViewName</name>
         <value>
-          <string>OriginalDocumentView</string>
+          <string>OriginalDocument</string>
         </value>
       </nameValuePair>
       <nameValuePair>
@@ -156,7 +156,7 @@
           <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.TextSegmentAnnotation</type>
         </outputs>
         <inputSofas>
-          <sofaName>OriginalDocumentView</sofaName>
+          <sofaName>OriginalDocument</sofaName>
         </inputSofas>
         <outputSofas>
           <sofaName>System</sofaName>

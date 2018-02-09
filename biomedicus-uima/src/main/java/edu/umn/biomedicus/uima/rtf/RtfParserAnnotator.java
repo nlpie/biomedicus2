@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.nlpengine.Document;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
+import edu.umn.biomedicus.rtf.reader.RtfParser;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import java.io.IOException;
+import edu.umn.nlpengine.Document;
 import java.io.StringReader;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.3.0
  */
-public class Parser extends CasAnnotator_ImplBase {
+public class RtfParserAnnotator extends CasAnnotator_ImplBase {
 
   /**
    * UIMA Parameter for the original document view name.
@@ -64,12 +64,12 @@ public class Parser extends CasAnnotator_ImplBase {
   /**
    * Class logger.
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RtfParserAnnotator.class);
   /**
    * The Rtf parser.
    */
   @Nullable
-  private CasRtfParser casRtfParser;
+  private RtfParserFactory rtfParserFactory;
 
   /**
    * Original document view name.
@@ -97,7 +97,7 @@ public class Parser extends CasAnnotator_ImplBase {
     String rtfCasMappingsDesc = (String) aContext
         .getConfigParameterValue(PARAM_RTF_CAS_MAPPINGS_DESC);
 
-    casRtfParser = CasRtfParser
+    rtfParserFactory = RtfParserFactory
         .createByLoading(rtfPropertiesDesc, rtfControlKeywordsDesc, rtfCasMappingsDesc);
 
     originalDocumentViewName = (String) aContext
@@ -108,7 +108,7 @@ public class Parser extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    Objects.requireNonNull(casRtfParser);
+    Objects.requireNonNull(rtfParserFactory);
     Objects.requireNonNull(originalDocumentViewName);
     Objects.requireNonNull(targetViewName);
 
@@ -118,16 +118,31 @@ public class Parser extends CasAnnotator_ImplBase {
 
     String documentText = originalDocument.getDocumentText();
 
+    Document document = UimaAdapters.getDocument(aCAS, null);
+
     CAS targetView;
     boolean isRtf;
+    boolean parsed = false;
     if (documentText.indexOf("{\\rtf1") == 0) {
       StringReader reader = new StringReader(documentText);
       RtfSource rtfSource = new ReaderRtfSource(reader);
 
+      RtfParser parser;
       try {
-        casRtfParser.parseFile(aCAS, rtfSource);
-      } catch (IOException | RtfReaderException e) {
+        parser = rtfParserFactory.createParser(aCAS, rtfSource);
+      } catch (RtfReaderException e) {
+        LOGGER.error("Failed to initialize rtf parser.");
         throw new AnalysisEngineProcessException(e);
+      }
+      try {
+        parser.parseFile();
+        parsed = true;
+      } catch (RtfReaderException e) {
+        LOGGER.warn("Irrecoverable error during parsing: " + document.getDocumentId(), e);
+      }
+      if (!parser.finish()) {
+        LOGGER.warn("Document with unclosed Rtf group(s): " + document.getDocumentId());
+        parsed = false;
       }
 
       isRtf = true;
@@ -136,8 +151,11 @@ public class Parser extends CasAnnotator_ImplBase {
       targetView.setDocumentText(documentText);
       isRtf = false;
     }
+    if (!parsed) {
+      LOGGER.warn("Failed to completely parse document from rtf: " + document.getDocumentId());
+    }
+    document.getMetadata().put("isRtfComplete", Boolean.toString(parsed));
 
-    Document document = UimaAdapters.getDocument(aCAS, null);
     document.getMetadata().put("isRtf", Boolean.toString(isRtf));
   }
 }

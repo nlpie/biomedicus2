@@ -42,7 +42,7 @@
         <outputs>
         </outputs>
         <outputSofas>
-          <sofaName>OriginalDocumentView</sofaName>
+          <sofaName>OriginalDocument</sofaName>
         </outputSofas>
       </capability>
     </capabilities>
