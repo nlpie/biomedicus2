@@ -17,9 +17,8 @@
 package edu.umn.biomedicus.sentences
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.nlpengine.Document
+import edu.umn.nlpengine.DocumentProcessor
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -31,10 +30,9 @@ class BratSentencesWriter @Inject internal constructor(
         @ProcessorSetting("outputDirectory") private val outputDirectory: Path
 ) : DocumentProcessor {
     override fun process(document: Document) {
-        val documentId = java.lang.String.format("%07d", document.documentId.toInt())
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val documentId = java.lang.String.format("%07d", document.artifactID.toInt())
 
-        val text = systemView.text
+        val text = document.text
         val textPath = outputDirectory.resolve(documentId + ".txt")
         val annPath = outputDirectory.resolve(documentId + ".ann")
 
@@ -42,11 +40,11 @@ class BratSentencesWriter @Inject internal constructor(
         textPath.toFile().writeText(text, StandardCharsets.UTF_8)
 
         annPath.toFile().bufferedWriter(charset = StandardCharsets.UTF_8).use { writer ->
-            val sentences = systemView.labelIndex(Sentence::class.java)
+            val sentences = document.labelIndex(Sentence::class.java)
 
             var i = 1
             for (sentence in sentences) {
-                val covered = sentence.coveredText(systemView.text)
+                val covered = sentence.coveredText(document.text)
                 val builder = StringBuilder(covered)
                 writer.write("T${i++}\tSentence ${sentence.startIndex}")
                 var offset = 0

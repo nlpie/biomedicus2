@@ -38,7 +38,7 @@ class UmlsConcept implements Concept {
     return identifier.toString();
   }
 
-  public String getType() {
+  public String getSemanticType() {
     return type.toString();
   }
 

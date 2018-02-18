@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.5.0
  */
-class SettingsTransformer {
+public class SettingsTransformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsTransformer.class);
 
@@ -68,7 +68,7 @@ class SettingsTransformer {
   /**
    * Adds all of the specified settings to be transformed to Guice keys.
    */
-  void addAll(Map<String, Object> settingsMap) {
+  void addAll(Map<String, ?> settingsMap) {
     Preconditions.checkNotNull(annotationFunction,
         "Annotation function not initialized");
     recursiveAddSettings(settingsMap, null);
@@ -82,10 +82,10 @@ class SettingsTransformer {
     return settings;
   }
 
-  private void recursiveAddSettings(Map<String, Object> settingsMap, @Nullable String prevKey) {
+  private void recursiveAddSettings(Map<String, ?> settingsMap, @Nullable String prevKey) {
     assert annotationFunction != null : "checked at entry points";
 
-    for (Map.Entry<String, Object> settingEntry : settingsMap.entrySet()) {
+    for (Map.Entry<String, ?> settingEntry : settingsMap.entrySet()) {
       String entryKey = settingEntry.getKey();
       String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
       Object value = settingEntry.getValue();

@@ -16,38 +16,30 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
 import java.util.Iterator;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public final class PennLikeTokenizer implements DocumentProcessor {
 
-  @Nullable
   private Labeler<ParseToken> parseTokenLabeler = null;
 
-  @Nullable
   private CharSequence text = null;
 
-  @Nullable
   private Span prev = null;
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    parseTokenLabeler = systemView.labeler(ParseToken.class);
+  public void process(@NotNull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    parseTokenLabeler = document.labeler(ParseToken.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
-      text = sentence.coveredText(systemView.getText());
+      text = sentence.coveredText(document.getText());
 
       Iterator<Span> iterator = PennLikePhraseTokenizer.tokenizeSentence(text).iterator();
 
@@ -70,11 +62,7 @@ public final class PennLikeTokenizer implements DocumentProcessor {
     }
   }
 
-  private void labelToken(Sentence sentence, boolean hasSpaceAfter)
-      throws BiomedicusException {
-    assert parseTokenLabeler != null : "this should never be null when the function is called";
-    assert text != null : "this should never be null when the function is called";
-    assert prev != null : "this is checked before the function is called";
+  private void labelToken(Sentence sentence, boolean hasSpaceAfter) {
     String tokenText = text.subSequence(prev.getStartIndex(), prev.getEndIndex()).toString();
 
     parseTokenLabeler.add(new ParseToken(sentence.normalize(prev), tokenText, hasSpaceAfter));

@@ -18,14 +18,11 @@ package edu.umn.biomedicus.syntaxnet;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.parsing.DependencyParse;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.io.BufferedReader;
@@ -37,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Collection;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,17 +85,12 @@ public final class SyntaxnetParser implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@NotNull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
 
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+    LabelIndex<ParseToken> tokenLabelIndex = document.labelIndex(ParseToken.class);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView
-        .labelIndex(Sentence.class);
-
-    LabelIndex<ParseToken> tokenLabelIndex = systemView.labelIndex(ParseToken.class);
-
-    Labeler<DependencyParse> dependencyParseLabeler = systemView
-        .labeler(DependencyParse.class);
+    Labeler<DependencyParse> dependencyParseLabeler = document.labeler(DependencyParse.class);
 
     Path parserEval = installationDir.resolve("bazel-bin/syntaxnet/parser_eval");
     Path modelDir = installationDir.resolve(modelDirString);
@@ -176,7 +169,7 @@ public final class SyntaxnetParser implements DocumentProcessor {
       parser.destroy();
       tagger.destroy();
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

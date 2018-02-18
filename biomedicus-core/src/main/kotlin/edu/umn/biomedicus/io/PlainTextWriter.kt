@@ -17,9 +17,8 @@
 package edu.umn.biomedicus.io
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.nlpengine.Document
+import edu.umn.nlpengine.DocumentProcessor
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
@@ -29,17 +28,13 @@ import javax.inject.Inject
  * Writes the contents of a view to a directory.
  */
 class PlainTextWriter @Inject constructor(
-        @ProcessorSetting("viewName") val viewName: String,
         @ProcessorSetting("outputDirectory") val outputDirectory: Path,
         @ProcessorSetting("charset") val charsetName: String
 ) : DocumentProcessor {
     override fun process(document: Document) {
-        val text = document.labeledTexts[viewName]
-                ?: throw BiomedicusException("No labeledText with key: " + viewName)
-
-        outputDirectory.resolve("${document.documentId}.txt")
+        outputDirectory.resolve("${document.artifactID}.txt")
                 .also { Files.createDirectories(it.parent) }
-                .toFile().writeText(text.text, Charset.forName(charsetName))
+                .toFile().writeText(document.text, Charset.forName(charsetName))
 
     }
 }

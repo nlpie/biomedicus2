@@ -82,12 +82,18 @@ class SettingsBinder {
         bindInterfaceImplementation(interfaceClass, key, implementation);
       });
     });
+
     binder.bind(new TypeLiteral<Map<String, Class<?>>>() {
     }).annotatedWith(Names.named("settingInterfaces"))
         .toInstance(settingInterfaces);
+
     binder.bind(new TypeLiteral<Map<String, Object>>() {
     }).annotatedWith(Names.named("globalSettings"))
         .toInstance(settings);
+
+    binder.bind(new TypeLiteral<Map<String, ?>>() {
+    }).annotatedWith(Names.named("globalSettings")).toInstance(settings);
+
     binder.bind(Path.class).annotatedWith(new SettingImpl("paths.data")).toInstance(dataPath);
     binder.bind(Path.class).annotatedWith(new SettingImpl("paths.home")).toInstance(homePath);
     binder.bind(Path.class).annotatedWith(new SettingImpl("paths.conf")).toInstance(confPath);

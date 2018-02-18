@@ -18,6 +18,10 @@ package edu.umn.nlpengine
 
 import java.util.regex.Matcher
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class LabelMetadata(val versionId: String, val distinct: Boolean = false)
+
 /**
  * A location in text. Its indices consistent with [String.substring] and [CharSequence.subSequence]
  *
@@ -106,6 +110,11 @@ interface TextRange {
             Span(startIndex + textRange.startIndex, endIndex + textRange.startIndex)
 }
 
+abstract class Label : TextRange {
+    var internalLabeledOnDocument: Document? = null
+    var internalLabelIdentifier: Int? = null
+}
+
 /**
  * Used to implement [TextRange] in Java since default method implementations on Kotlin interfaces are
  * not pulled through
@@ -152,62 +161,15 @@ data class Span(
     }
 }
 
-
-/**
- * A generalizable label that references an object [value] as its data
- *
- * @property value the object referenced by this label
- * @param T the type of object contained by this label
- */
-data class ReferenceLabel<out T>(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val value: T
-) : TextRange {
-    /**
-     * Constructor which copies the bounds of [textRange]
-     */
-    constructor(textRange: TextRange, value: T) : this(textRange.startIndex, textRange.endIndex, value)
-}
-
-/**
- * A generalizable label that holds two objects [first] and [second] as its data.
- *
- * @property startIndex the index before any characters labeled
- * @property endIndex the index after any characters labeled.
- * @property first first value
- * @property second second value
- * @param A the type of the first element of the pair
- * @param B the type of the second element of the pair
- */
-data class PairLabel<out A, out B>(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val first: A,
-        val second: B
-) : TextRange {
-    /**
-     * Constructor which copies the bounds of [textRange].
-     */
-    constructor(
-            textRange: TextRange,
-            first: A,
-            second: B
-    ): this(textRange.startIndex, textRange.endIndex, first, second)
-
-    /**
-     * Creates a pair containing just the data objects.
-     */
-    fun toPair(): Pair<A, B> = Pair(first, second)
-}
-
 /**
  * A collection of labels ordered by their location in text. By default sorts by ascending
  * [TextRange.startIndex] and then ascending [TextRange.endIndex].
  *
  * @param T the type of label that this label index contains.
  */
-interface LabelIndex<out T : TextRange> : Collection<T> {
+interface LabelIndex<T : Label> : Collection<T> {
+    val labelClass: Class<T>
+
     /**
      * The collection of labels that contain the text specified by [startIndex] and [endIndex]
      */
@@ -366,14 +328,14 @@ interface LabelIndex<out T : TextRange> : Collection<T> {
  * Used to implement [LabelIndex] in Java since default method implementations are not pulled from
  * interfaces in Java.
  */
-abstract class AbstractLabelIndex<out T : TextRange> : LabelIndex<T>
+abstract class AbstractLabelIndex<T : Label> : LabelIndex<T>
 
 /**
  * Used to add labels to the document label indices.
  *
  * @param T the type of label that can be added using this labeler
  */
-interface Labeler<in T : TextRange> {
+interface Labeler<T : Label> {
     /**
      * Adds [label] to the document
      */

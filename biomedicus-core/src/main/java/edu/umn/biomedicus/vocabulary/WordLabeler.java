@@ -17,18 +17,16 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +48,11 @@ public final class WordLabeler implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@NotNull Document document) {
     LOGGER.debug("Labeling word term index identifiers in a document.");
 
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
-    Labeler<WordIndex> wordIndexLabeler = systemView.labeler(WordIndex.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    Labeler<WordIndex> wordIndexLabeler = document.labeler(WordIndex.class);
 
     for (ParseToken parseToken : parseTokenLabelIndex) {
       String lowercase = parseToken.getText().toLowerCase(Locale.ENGLISH);

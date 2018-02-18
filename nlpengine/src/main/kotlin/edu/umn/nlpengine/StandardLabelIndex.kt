@@ -19,28 +19,68 @@ package edu.umn.nlpengine
 import java.util.*
 import java.util.Collections.unmodifiableCollection
 
+inline fun <reified T: Label> StandardLabelIndex(vararg labels: T): StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, *labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        comparator: Comparator<T>,
+        vararg labels: T
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, comparator, *labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        labels: Iterable<T>
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        comparator: Comparator<T>,
+        labels: Iterable<T>
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, comparator, labels)
+}
+
 /**
  * A label index backed by a immutable sorted array of [TextRange] values.
  */
-class StandardLabelIndex<out T : TextRange> internal constructor(
+class StandardLabelIndex<T : Label> internal constructor(
+        override val labelClass: Class<T>,
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
-    constructor(vararg labels: T) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareLocation(o2)
     }))
 
-    constructor(comparator: Comparator<T>, vararg labels: T): this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(comparator))
 
-    constructor(labels: Iterable<T>) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareLocation(o2)
     }))
 
-    constructor(comparator: Comparator<T>, labels: Iterable<T>): this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(comparator))
 
     companion object Factory {
-        @JvmStatic fun <T : TextRange> create(vararg labels: T): StandardLabelIndex<T> {
-            return StandardLabelIndex(*labels)
+        @JvmStatic
+        fun <T : Label> create(labelClass: Class<T>, vararg labels: T): StandardLabelIndex<T> {
+            return StandardLabelIndex(labelClass, *labels)
         }
     }
 
@@ -296,6 +336,8 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             left: Int,
             right: Int
     ) : LabelIndex<T> {
+        override val labelClass get() = this@StandardLabelIndex.labelClass
+
         val left: Int
 
         val right: Int

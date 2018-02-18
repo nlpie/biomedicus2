@@ -16,24 +16,20 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
+import org.jetbrains.annotations.NotNull;
 
 public final class TermTokenMergerProcessor implements DocumentProcessor {
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<ParseToken> parseTokens = systemView.labelIndex(ParseToken.class);
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    Labeler<TermToken> termTokenLabeler = systemView.labeler(TermToken.class);
+  public void process(@NotNull Document document) {
+    LabelIndex<ParseToken> parseTokens = document.labelIndex(ParseToken.class);
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    Labeler<TermToken> termTokenLabeler = document.labeler(TermToken.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
       LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentence);

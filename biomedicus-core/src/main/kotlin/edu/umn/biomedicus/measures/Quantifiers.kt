@@ -20,14 +20,11 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 
 /**
  * A type of indefinite quantifier
@@ -55,11 +52,12 @@ enum class IndefiniteQuantifierType {
  * @property endIndex the end of the cue phrase
  * @property type
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class IndefiniteQuantifierCue(
         override val startIndex: Int,
         override val endIndex: Int,
         val type: String
-) : TextRange {
+) : Label() {
     constructor(
             textRange: TextRange,
             type: String
@@ -75,7 +73,31 @@ data class IndefiniteQuantifierCue(
 /**
  * A standalone value which doesn't have a definite amount, like "a few" or "some."
  */
-data class FuzzyValue(override val startIndex: Int, override val endIndex: Int) : TextRange
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class FuzzyValue(override val startIndex: Int, override val endIndex: Int) : Label()
+
+/**
+ * A word that functions as a quantifier without modifying a unit. "never", "significant", "few",
+ * "heavy".
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class StandaloneQuantifier(
+        override val startIndex: Int,
+        override val endIndex: Int
+): Label()
+
+/**
+ * An amount of something. Modifies a unit
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Quantifier(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val isExact: Boolean
+) : Label() {
+
+    constructor(range: TextRange, isExact: Boolean): this(range.startIndex, range.endIndex, isExact)
+}
 
 private val test: (String, Token) -> Boolean = { word, token: Token ->
     token.text.equals(word, true)
@@ -102,13 +124,11 @@ class IndefiniteQuantifierDetector @Inject internal constructor(
         private val cues: IndefiniteQuantifierCues
 ) : DocumentProcessor {
     override fun process(document: Document) {
-        val view = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = view.labelIndex(Sentence::class)
-        val tokens = view.labelIndex(ParseToken::class)
-
-        val cueLabeler = view.labeler(IndefiniteQuantifierCue::class)
-        val fuzzyLabeler = view.labeler(FuzzyValue::class)
+        val cueLabeler = document.labeler<IndefiniteQuantifierCue>()
+        val fuzzyLabeler = document.labeler<FuzzyValue>()
 
         for (sentence in sentences) {
             val sentenceTokens = tokens.insideSpan(sentence).asList()
@@ -138,11 +158,6 @@ class IndefiniteQuantifierDetector @Inject internal constructor(
     }
 }
 
-data class StandaloneQuantifier(
-        override val startIndex: Int,
-        override val endIndex: Int
-): TextRange
-
 @Singleton
 class StandaloneQuantifiers @Inject constructor(
         @Setting("measures.standaloneQuantifiersPath") path: String
@@ -156,12 +171,10 @@ class StandaloneQuantifierDetector @Inject constructor(
     val detector = standaloneQuantifiers.detector
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = text.labelIndex(Sentence::class)
-        val tokens = text.labelIndex(ParseToken::class)
-
-        val labeler = text.labeler(StandaloneQuantifier::class)
+        val labeler = document.labeler<StandaloneQuantifier>()
 
         sentences
                 .map { tokens.insideSpan(it).asList() }
@@ -172,14 +185,6 @@ class StandaloneQuantifierDetector @Inject constructor(
                     }
                 }
     }
-}
-
-data class Quantifier(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val isExact: Boolean
-) : TextRange {
-    constructor(range: TextRange, isExact: Boolean): this(range.startIndex, range.endIndex, isExact)
 }
 
 @Singleton
@@ -195,11 +200,9 @@ class QuantifierDetector @Inject constructor(
     val expr = expr.expr
 
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val searcher = expr.createSearcher(document)
 
-        val searcher = expr.createSearcher(systemView)
-
-        val labeler = systemView.labeler(Quantifier::class)
+        val labeler = document.labeler<Quantifier>()
 
         while (searcher.search()) {
             val isExact = !searcher.getLabel("indef").isPresent

@@ -17,17 +17,15 @@
 package edu.umn.biomedicus.utilities;
 
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
+import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
-import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import javax.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -45,10 +43,8 @@ public class SearcherPrinter implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    Searcher searcher = searchExpr.createSearcher(systemView);
+  public void process(@NotNull Document document) {
+    Searcher searcher = searchExpr.createSearcher(document);
 
     while (true) {
       boolean found = searcher.search();
@@ -56,14 +52,14 @@ public class SearcherPrinter implements DocumentProcessor {
         break;
       }
       System.out
-          .println("Matching Text: " + searcher.getSpan().get().coveredString(systemView.getText()));
+          .println("Matching Text: " + searcher.getSpan().get().coveredString(document.getText()));
 
       for (String group : searcher.getGroupNames()) {
         System.out.println("\tGroup Name: " + group);
 
         if (searcher.getSpan(group).isPresent()) {
           Span span = searcher.getSpan(group).get();
-          System.out.println("\t\tCovered Text: " + span.coveredString(systemView.getText()));
+          System.out.println("\t\tCovered Text: " + span.coveredString(document.getText()));
         }
 
         if (searcher.getLabel(group).isPresent()) {

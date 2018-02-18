@@ -17,19 +17,17 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.formatting.Bold;
 import edu.umn.biomedicus.formatting.Underlined;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Section detector based off rules for clinical notes.
@@ -62,18 +60,16 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+  public void process(@NotNull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<Bold> boldLabelIndex = document.labelIndex(Bold.class);
+    LabelIndex<Underlined> underlinedLabelIndex = document.labelIndex(Underlined.class);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    LabelIndex<Bold> boldLabelIndex = systemView.labelIndex(Bold.class);
-    LabelIndex<Underlined> underlinedLabelIndex = systemView.labelIndex(Underlined.class);
+    sectionLabeler = document.labeler(Section.class);
+    sectionTitleLabeler = document.labeler(SectionTitle.class);
+    sectionContentLabeler = document.labeler(SectionContent.class);
 
-    sectionLabeler = systemView.labeler(Section.class);
-    sectionTitleLabeler = systemView.labeler(SectionTitle.class);
-    sectionContentLabeler = systemView.labeler(SectionContent.class);
-
-    String text = systemView.getText();
+    String text = document.getText();
 
     Iterator<Sentence> sentenceLabelIterator = sentenceLabelIndex
         .iterator();

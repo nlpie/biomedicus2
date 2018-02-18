@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -26,6 +26,7 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +43,19 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(TableAnnotator.class);
 
+  private String documentName;
+
+  @Override
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+
+    documentName = ((String) aContext.getConfigParameterValue("documentName"));
+  }
+
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
     LOGGER.debug("Annotating rtf tables.");
-    CAS systemView = aCAS.getView(TextIdentifiers.SYSTEM);
+    CAS systemView = aCAS.getView(documentName);
 
     TypeSystem typeSystem = aCAS.getTypeSystem();
     Type intblType = typeSystem

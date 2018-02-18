@@ -16,18 +16,32 @@
 
 package edu.umn.biomedicus.sections
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
+class SectionsModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<Section>()
+        addLabelClass<SectionTitle>()
+        addLabelClass<SectionContent>()
+    }
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Section(
         override val startIndex: Int,
         override val endIndex: Int,
         val kind: String?
-): TextRange {
+): Label() {
     constructor(textRange: TextRange, kind: String?): this(textRange.startIndex, textRange.endIndex, kind)
 }
 
-data class SectionTitle(override val startIndex: Int, override val endIndex: Int): TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class SectionTitle(override val startIndex: Int, override val endIndex: Int): Label() {
     constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }
 
-data class SectionContent(override val startIndex: Int, override val endIndex: Int): TextRange
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class SectionContent(override val startIndex: Int, override val endIndex: Int): Label()

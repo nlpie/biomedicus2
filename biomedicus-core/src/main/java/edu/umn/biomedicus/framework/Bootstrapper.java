@@ -21,8 +21,10 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.measures.MeasuresModule;
+import edu.umn.biomedicus.measures.BiomedicusMeasuresModule;
 import edu.umn.biomedicus.vocabulary.VocabularyModule;
+import edu.umn.nlpengine.Systems;
+import edu.umn.nlpengine.SystemsModule;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +62,7 @@ public final class Bootstrapper {
 
   public Bootstrapper() {
     modules.add(new VocabularyModule());
-    modules.add(new MeasuresModule());
+    modules.add(new BiomedicusMeasuresModule());
   }
 
   /**
@@ -206,6 +208,10 @@ public final class Bootstrapper {
         .createSettingsLoader(configurationFilePath);
     configurationSettingsLoader.loadSettings();
     configurationSettingsLoader.addToBinder(settingsBinder);
+
+    Systems systems = new Systems();
+    systems.addSystems(configurationSettingsLoader.getSystemClasses());
+
     try {
       Iterator<Path> settingsFilesItr = Files.walk(configDir)
           .filter(path -> path.getFileName().toString()
@@ -217,6 +223,7 @@ public final class Bootstrapper {
             .createSettingsLoader(settingsFilePath);
         settingsLoader.loadSettings();
         settingsLoader.addToBinder(settingsBinder);
+        systems.addSystems(settingsLoader.getSystemClasses());
       }
     } catch (IOException e) {
       throw new BiomedicusException(e);
@@ -226,6 +233,7 @@ public final class Bootstrapper {
       settingsBinder.addSettings(overloadedSettings);
     }
 
+    modules.add(new SystemsModule(systems));
     modules.add(new BiomedicusModule());
     modules.add(settingsBinder.createModule());
   }

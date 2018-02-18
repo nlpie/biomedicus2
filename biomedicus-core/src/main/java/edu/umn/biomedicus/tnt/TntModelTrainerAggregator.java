@@ -18,14 +18,12 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.Aggregator;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Aggregator;
+import edu.umn.nlpengine.Artifact;
+import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,13 +64,22 @@ public class TntModelTrainerAggregator implements Aggregator {
   }
 
   @Override
-  public void addDocument(Document document) throws BiomedicusException {
-    LabeledText view = TextIdentifiers.getSystemLabeledText(document);
+  public void done() {
+    TntModel model = tntModelTrainer.createModel();
+    try {
+      model.write(outputDir);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void process(Artifact artifact) {
+    Document view = artifact.getDocuments().get(viewName);
 
     if (view == null) {
-      throw new BiomedicusException("View was null: " + viewName);
+      throw new RuntimeException("View was null: " + viewName);
     }
-
 
     LabelIndex<Sentence> sentences = view.labelIndex(Sentence.class);
     LabelIndex<ParseToken> tokens = view.labelIndex(ParseToken.class);
@@ -83,16 +90,6 @@ public class TntModelTrainerAggregator implements Aggregator {
       List<PosTag> sentencesPos = partsOfSpeech.insideSpan(sentence).asList();
 
       tntModelTrainer.addSentence(sentenceTokens, sentencesPos);
-    }
-  }
-
-  @Override
-  public void done() throws BiomedicusException {
-    TntModel model = tntModelTrainer.createModel();
-    try {
-      model.write(outputDir);
-    } catch (IOException e) {
-      throw new BiomedicusException(e);
     }
   }
 }

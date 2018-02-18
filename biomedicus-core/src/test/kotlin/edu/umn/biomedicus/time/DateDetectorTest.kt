@@ -16,14 +16,14 @@
 
 package edu.umn.biomedicus.time
 
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.measures.Number
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.StandardDocument
+import edu.umn.nlpengine.StandardArtifact
+import edu.umn.nlpengine.addTo
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
@@ -45,24 +45,20 @@ class DateDetectorTest {
 
     @Test
     fun testMonthDay() {
-        val document = StandardDocument("doc")
+        val document = StandardArtifact("1").addDocument("doc", "May 5")
 
-        val text = document.attachText(TextIdentifiers.SYSTEM, "May 5")
+        Sentence(0, 5).addTo(document)
+        ParseToken(0, 3, "May", true).addTo(document)
+        ParseToken(4, 5, "5", false).addTo(document)
 
-        text.labeler(Sentence::class).add(Sentence(0, 5))
+        Month(0, 3).addTo(document)
 
-        val tokenLabeler = text.labeler(ParseToken::class)
-        tokenLabeler.add(ParseToken(0, 3, "May", true))
-        tokenLabeler.add(ParseToken(4, 5, "5", false))
-
-
-        text.labeler(Month::class).add(Month(0, 3))
-        text.labeler(Number::class).add(Number(4, 5, "5",
-                "1", NumberType.CARDINAL))
+        Number(4, 5, "5", "1", NumberType.CARDINAL)
+                .addTo(document)
 
         detector.process(document)
 
-        val list = text.labelIndex(TextDate::class).asList()
+        val list = document.labelIndex<TextDate>().asList()
         assertEquals(list.size, 1)
         assertEquals(list[0].startIndex, 0)
         assertEquals(list[0].endIndex, 5)
@@ -70,25 +66,21 @@ class DateDetectorTest {
 
     @Test
     fun testWeekdayMonthDay() {
-        val document = StandardDocument("doc")
+        val document = StandardArtifact("1").addDocument("doc", "Friday May 5")
 
-        val text = document.attachText(TextIdentifiers.SYSTEM, "Friday May 5")
+        Sentence(0, 12).addTo(document)
+        ParseToken(0, 6, "Friday", true).addTo(document)
+        ParseToken(7, 10, "May", true).addTo(document)
+        ParseToken(11, 12, "5", false).addTo(document)
 
-        text.labeler(Sentence::class).add(Sentence(0, 12))
-
-        val tokenLabeler = text.labeler(ParseToken::class)
-        tokenLabeler.add(ParseToken(0, 6, "Friday", true))
-        tokenLabeler.add(ParseToken(7, 10, "May", true))
-        tokenLabeler.add(ParseToken(11, 12, "5", false))
-
-        text.labeler(DayOfWeek::class).add(DayOfWeek(0, 6))
-        text.labeler(Month::class).add(Month(7, 10))
-        text.labeler(Number::class).add(Number(11, 12, "5",
-                "1", NumberType.CARDINAL))
+        DayOfWeek(0, 6).addTo(document)
+        Month(7, 10).addTo(document)
+        Number(11, 12, "5", "1", NumberType.CARDINAL)
+                .addTo(document)
 
         detector.process(document)
 
-        val list = text.labelIndex(TextDate::class).asList()
+        val list = document.labelIndex<TextDate>().asList()
         assertEquals(list.size, 1)
         assertEquals(list[0].startIndex, 0)
         assertEquals(list[0].endIndex, 12)
@@ -101,20 +93,17 @@ class DateDetectorTest {
 
     @Test
     fun testShort() {
-        val document = StandardDocument("doc")
+        val document = StandardArtifact("1").addDocument("doc", "5/5")
 
-        val text = document.attachText(TextIdentifiers.SYSTEM, "5/5")
+        Sentence(0, 3).addTo(document)
 
-        text.labeler(Sentence::class).add(Sentence(0, 3))
-
-        val tokenLabeler = text.labeler(ParseToken::class)
-        tokenLabeler.add(ParseToken(0, 1, "5", false))
-        tokenLabeler.add(ParseToken(1, 2, "/", false))
-        tokenLabeler.add(ParseToken(2, 3, "5", false))
+        ParseToken(0, 1, "5", false).addTo(document)
+        ParseToken(1, 2, "/", false).addTo(document)
+        ParseToken(2, 3, "5", false).addTo(document)
 
         detector.process(document)
 
-        val list = text.labelIndex(TextDate::class).asList()
+        val list = document.labelIndex<TextDate>().asList()
         assertEquals(list.size, 1)
         assertEquals(list[0].startIndex, 0)
         assertEquals(list[0].endIndex, 3)

@@ -21,12 +21,11 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.Aggregator;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.Aggregator;
+import edu.umn.nlpengine.Artifact;
+import edu.umn.nlpengine.Document;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -44,6 +43,7 @@ import opennlp.tools.sentdetect.SentenceSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.StringList;
 import opennlp.tools.util.TrainingParameters;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +57,7 @@ public class ONLPSentenceTrainer implements Aggregator {
   private final Dictionary abbrevs;
   private final Path outputPath;
   private final CountDownLatch modelTrained = new CountDownLatch(1);
+  private final String documentName;
 
   @Nullable
   private SentenceModel sentenceModel = null;
@@ -65,9 +66,13 @@ public class ONLPSentenceTrainer implements Aggregator {
   private IOException ioException = null;
 
   @Inject
-  ONLPSentenceTrainer(AcronymExpansionsModel acronymExpansionsModel,
-      @ProcessorSetting("opennlp.sentence.trainerOutputDirectory") Path outputPath) {
+  ONLPSentenceTrainer(
+      AcronymExpansionsModel acronymExpansionsModel,
+      @ProcessorSetting("opennlp.sentence.trainerOutputDirectory") Path outputPath,
+      @ProcessorSetting("documentName") String documentName
+  ) {
     this.outputPath = outputPath;
+    this.documentName = documentName;
     abbrevs = new Dictionary(true);
     for (String s : acronymExpansionsModel.getAcronyms()) {
       abbrevs.put(new StringList(s));
@@ -125,42 +130,42 @@ public class ONLPSentenceTrainer implements Aggregator {
   }
 
   @Override
-  public void addDocument(Document document) throws BiomedicusException {
-    LabeledText labeledTextView = TextIdentifiers.getSystemLabeledText(document);
-
-    if (labeledTextView == null) {
-      throw new IllegalStateException("null system view");
-    }
-
-    String text = labeledTextView.getText();
-
-    for (Sentence sentence : labeledTextView.labelIndex(Sentence.class)) {
-      CharSequence sample = sentence.coveredString(text);
-      samplesQueue.add(sample.toString());
-    }
-  }
-
-  @Override
-  public void done() throws BiomedicusException {
+  public void done() {
 
     samplesQueue.add(POISON);
     try {
       modelTrained.await();
       if (ioException != null) {
-        throw new BiomedicusException(ioException);
+        throw new RuntimeException(ioException);
       }
 
       if (sentenceModel == null) {
-        throw new BiomedicusException("Error training sentence model.");
+        throw new RuntimeException("Error training sentence model.");
       }
 
       OutputStream outputStream = Files.newOutputStream(outputPath.resolve("sentence.bin"), CREATE,
           TRUNCATE_EXISTING);
       sentenceModel.serialize(outputStream);
     } catch (InterruptedException e) {
-      throw new BiomedicusException("Interrupted before model could be saved.");
+      throw new RuntimeException("Interrupted before model could be saved.");
     } catch (IOException e) {
-      throw new BiomedicusException("Failed to write out model.");
+      throw new RuntimeException("Failed to write out model.");
+    }
+  }
+
+  @Override
+  public void process(@NotNull Artifact artifact) {
+    Document document = artifact.getDocuments().get(documentName);
+
+    if (document == null) {
+      throw new RuntimeException("No document with name: " + documentName);
+    }
+
+    String text = document.getText();
+
+    for (Sentence sentence : document.labelIndex(Sentence.class)) {
+      CharSequence sample = sentence.coveredString(text);
+      samplesQueue.add(sample.toString());
     }
   }
 }

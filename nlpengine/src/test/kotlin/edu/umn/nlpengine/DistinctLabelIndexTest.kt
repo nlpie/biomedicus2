@@ -22,12 +22,14 @@ import org.testng.annotations.Test
 import java.util.*
 
 class DistinctLabelIndexTest {
-    val tested = DistinctLabelIndex<Span>(
-            Span(0, 3),
-            Span(3, 5),
-            Span(6, 10),
-            Span(11, 15),
-            Span(16, 20)
+    data class TestLabel(override val startIndex: Int, override val endIndex: Int): Label()
+
+    val tested = DistinctLabelIndex(
+            TestLabel(0, 3),
+            TestLabel(3, 5),
+            TestLabel(6, 10),
+            TestLabel(11, 15),
+            TestLabel(16, 20)
     )
 
     @Test
@@ -92,12 +94,12 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testContaining() {
-        val containing = tested.containing(Span(6, 10))
+        val containing = tested.containing(TestLabel(6, 10))
 
         assertEquals(containing.size, 1)
 
         val it = containing.iterator()
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(6, 10))
         assertFalse(it.hasNext())
     }
 
@@ -118,9 +120,9 @@ class DistinctLabelIndexTest {
         assertEquals(insideSpan.size, 3)
 
         val it = insideSpan.iterator()
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
         assertFalse(it.hasNext())
     }
 
@@ -158,11 +160,11 @@ class DistinctLabelIndexTest {
         assertEquals(descendingBegin.size, 5)
 
         val it = descendingBegin.iterator()
-        assertEquals(it.next(), Span(16, 20))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(0, 3))
+        assertEquals(it.next(), TestLabel(16, 20))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(0, 3))
         assertFalse(it.hasNext())
     }
 
@@ -188,9 +190,9 @@ class DistinctLabelIndexTest {
         assertEquals(toTheLeftOf.size, 3)
 
         val it = toTheLeftOf.iterator()
-        assertEquals(it.next(), Span(0, 3))
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(0, 3))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
         assertFalse(it.hasNext())
     }
 
@@ -201,58 +203,58 @@ class DistinctLabelIndexTest {
         assertEquals(toTheRightOf.size, 4)
 
         val it = toTheRightOf.iterator()
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertFalse(it.hasNext())
     }
 
     @Test
     fun testFirstEmpty() {
-        val standardLabelIndex = StandardLabelIndex<Span>()
+        val standardLabelIndex = StandardLabelIndex<TestLabel>()
 
         Assert.assertNull(standardLabelIndex.first())
     }
 
     @Test
     fun testFirst() {
-        assertEquals(tested.first(), Span(0, 3))
+        assertEquals(tested.first(), TestLabel(0, 3))
     }
 
     @Test
     fun testGetOne() {
-        val get = tested.atLocation(Span(3, 5))
+        val get = tested.atLocation(TestLabel(3, 5))
 
         assertEquals(get.size, 1)
-        assertEquals(get.iterator().next(), Span(3, 5))
+        assertEquals(get.iterator().next(), TestLabel(3, 5))
     }
 
     @Test
     fun testGetNone() {
-        val get = tested.atLocation(Span(0, 30))
+        val get = tested.atLocation(TestLabel(0, 30))
 
         assertEquals(get.size, 0)
     }
 
     @Test
     fun testContainsTrue() {
-        Assert.assertTrue(tested.contains(Span(3, 5)))
+        Assert.assertTrue(tested.contains(TestLabel(3, 5)))
     }
 
     @Test
     fun testContainsFalse() {
-        assertFalse(tested.contains(Span(0, 30)))
+        assertFalse(tested.contains(TestLabel(0, 30)))
     }
 
     @Test
     fun testContainsSpanTrue() {
-        Assert.assertTrue(tested.containsSpan(Span(3, 5)))
+        Assert.assertTrue(tested.containsSpan(TestLabel(3, 5)))
     }
 
     @Test
     fun testContainsSpanFalse() {
-        assertFalse(tested.containsSpan(Span(0, 30)))
+        assertFalse(tested.containsSpan(TestLabel(0, 30)))
     }
 
     @Test
@@ -260,11 +262,11 @@ class DistinctLabelIndexTest {
         val asList = tested.asList()
 
         assertEquals(asList,
-                Arrays.asList(Span(0, 3),
-                        Span(3, 5),
-                        Span(6, 10),
-                        Span(11, 15),
-                        Span(16, 20))
+                Arrays.asList(TestLabel(0, 3),
+                        TestLabel(3, 5),
+                        TestLabel(6, 10),
+                        TestLabel(11, 15),
+                        TestLabel(16, 20))
         )
     }
 
@@ -272,42 +274,42 @@ class DistinctLabelIndexTest {
     fun testAsListIndexOf() {
         val asList = tested.asList()
 
-        assertEquals(asList.indexOf(Span(3, 5)), 1)
+        assertEquals(asList.indexOf(TestLabel(3, 5)), 1)
     }
 
     @Test
     fun testAsListIndexOfNone() {
         val asList = tested.asList()
 
-        assertEquals(asList.indexOf(Span(0, 30)), -1)
+        assertEquals(asList.indexOf(TestLabel(0, 30)), -1)
     }
 
     @Test
     fun testAsListLastIndexOf() {
         val asList = tested.asList()
 
-        assertEquals(asList.lastIndexOf(Span(3, 5)), 1)
+        assertEquals(asList.lastIndexOf(TestLabel(3, 5)), 1)
     }
 
     @Test
     fun testAsListLastIndexOfNone() {
         val asList = tested.asList()
 
-        assertEquals(asList.indexOf(Span(0, 30)), -1)
+        assertEquals(asList.indexOf(TestLabel(0, 30)), -1)
     }
 
     @Test
     fun testAsListContains() {
         val asList = tested.asList()
 
-        Assert.assertTrue(asList.contains(Span(3, 5)))
+        Assert.assertTrue(asList.contains(TestLabel(3, 5)))
     }
 
     @Test
     fun testAsListContainsFalse() {
         val asList = tested.asList()
 
-        assertFalse(asList.contains(Span(0, 30)))
+        assertFalse(asList.contains(TestLabel(0, 30)))
     }
 
     val ascending = tested.insideSpan(0, 20)
@@ -326,25 +328,25 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testAscendingFirst() {
-        assertEquals(ascending.first(), Span(0, 3))
+        assertEquals(ascending.first(), TestLabel(0, 3))
     }
 
     @Test
     fun testDescendingFirst() {
-        assertEquals(descending.first(), Span(16, 20))
+        assertEquals(descending.first(), TestLabel(16, 20))
     }
 
     @Test
     fun testViewGet() {
-        val get = descending.atLocation(Span(16, 20))
+        val get = descending.atLocation(TestLabel(16, 20))
         assertEquals(get.size, 1)
 
-        assertEquals(get.iterator().next(), Span(16, 20))
+        assertEquals(get.iterator().next(), TestLabel(16, 20))
     }
 
     @Test
     fun testViewGetNotInsideView() {
-        val get = descending.atLocation(Span(0, 0))
+        val get = descending.atLocation(TestLabel(0, 0))
         assertEquals(get.size, 0)
         assertFalse(get.iterator().hasNext())
     }
@@ -369,18 +371,18 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewContains() {
-        assertTrue(descending.contains(Span(3, 5)))
+        assertTrue(descending.contains(TestLabel(3, 5)))
     }
 
     @Test
     fun testViewContainsNotFound() {
-        assertFalse(descending.contains(Span(0, 0)))
+        assertFalse(descending.contains(TestLabel(0, 0)))
     }
 
     @Test
     fun testViewNotContains() {
         val nothing = tested.insideSpan(0, 0)
-        assertFalse(nothing.contains(Span(3, 5)))
+        assertFalse(nothing.contains(TestLabel(3, 5)))
     }
 
     @Test
@@ -406,9 +408,9 @@ class DistinctLabelIndexTest {
         assertEquals(toTheLeft.size, 3)
 
         val it = toTheLeft.iterator()
-        assertEquals(it.next(), Span(0, 3))
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(0, 3))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
     }
 
     @Test
@@ -418,9 +420,9 @@ class DistinctLabelIndexTest {
         assertEquals(toTheRight.size, 3)
 
         val it = toTheRight.iterator()
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertFalse(it.hasNext())
     }
 
@@ -429,10 +431,10 @@ class DistinctLabelIndexTest {
         assertEquals(insideSpan.size, 4)
 
         val it = insideSpan.iterator()
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertFalse(it.hasNext())
     }
 
@@ -463,7 +465,7 @@ class DistinctLabelIndexTest {
         assertEquals(containing.size, 1)
 
         val it = containing.iterator()
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(6, 10))
         assertFalse(it.hasNext())
     }
 
@@ -474,9 +476,9 @@ class DistinctLabelIndexTest {
         assertEquals(descendingInsideSpan.size, 3)
 
         val it = descendingInsideSpan.iterator()
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(3, 5))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(3, 5))
         assertFalse(it.hasNext())
     }
 
@@ -487,11 +489,11 @@ class DistinctLabelIndexTest {
         assertEquals(ascendingBegin.size, 5)
 
         val it = ascendingBegin.iterator()
-        assertEquals(it.next(), Span(0, 3))
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(0, 3))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertFalse(it.hasNext())
     }
 
@@ -530,32 +532,32 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testDescendingListContainsTrue() {
-        assertTrue(descendingList.contains(Span(16, 20)))
+        assertTrue(descendingList.contains(TestLabel(16, 20)))
     }
 
     @Test
     fun testDescendingListContainsFalse() {
-        assertFalse(descendingList.contains(Span(0, 40)))
+        assertFalse(descendingList.contains(TestLabel(0, 40)))
     }
 
     @Test
     fun testDescendingListContainsAll() {
-        assertTrue(descendingList.containsAll(listOf(Span(3, 5), Span(6, 10), Span(11, 15))))
+        assertTrue(descendingList.containsAll(listOf(TestLabel(3, 5), TestLabel(6, 10), TestLabel(11, 15))))
     }
 
     @Test
     fun testDescendingListContainsAllFalse() {
-        assertFalse(descendingList.containsAll(listOf(Span(0, 3), Span(3, 5), Span(6, 10), Span(3, 20))))
+        assertFalse(descendingList.containsAll(listOf(TestLabel(0, 3), TestLabel(3, 5), TestLabel(6, 10), TestLabel(3, 20))))
     }
 
     @Test
     fun testDescendingListGet() {
-        assertEquals(descendingList[0], Span(16, 20))
+        assertEquals(descendingList[0], TestLabel(16, 20))
     }
 
     @Test
     fun testDescendingListIndexOf() {
-        assertEquals(descendingList.indexOf(Span(3, 5)), 3)
+        assertEquals(descendingList.indexOf(TestLabel(3, 5)), 3)
     }
 
     @Test
@@ -563,9 +565,9 @@ class DistinctLabelIndexTest {
         val subList = descendingList.subList(1, 4)
 
         val it = subList.iterator()
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(3, 5))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(3, 5))
         assertFalse(it.hasNext())
     }
 
@@ -576,33 +578,33 @@ class DistinctLabelIndexTest {
         assertFalse(it.hasPrevious())
 
         assertEquals(it.nextIndex(), 0)
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertEquals(it.previousIndex(), 0)
 
         assertEquals(it.nextIndex(), 1)
-        assertEquals(it.next(), Span(11, 15))
+        assertEquals(it.next(), TestLabel(11, 15))
         assertEquals(it.previousIndex(), 1)
 
         assertEquals(it.nextIndex(), 2)
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(6, 10))
         assertEquals(it.previousIndex(), 2)
 
         assertEquals(it.nextIndex(), 3)
-        assertEquals(it.next(), Span(3, 5))
+        assertEquals(it.next(), TestLabel(3, 5))
         assertEquals(it.previousIndex(), 3)
 
         assertEquals(it.nextIndex(), 4)
-        assertEquals(it.next(), Span(0, 3))
+        assertEquals(it.next(), TestLabel(0, 3))
         assertEquals(it.previousIndex(), 4)
 
         assertFalse(it.hasNext())
         assertTrue(it.hasPrevious())
 
-        assertEquals(it.previous(), Span(0, 3))
-        assertEquals(it.previous(), Span(3, 5))
-        assertEquals(it.previous(), Span(6, 10))
-        assertEquals(it.previous(), Span(11, 15))
-        assertEquals(it.previous(), Span(16, 20))
+        assertEquals(it.previous(), TestLabel(0, 3))
+        assertEquals(it.previous(), TestLabel(3, 5))
+        assertEquals(it.previous(), TestLabel(6, 10))
+        assertEquals(it.previous(), TestLabel(11, 15))
+        assertEquals(it.previous(), TestLabel(16, 20))
 
         assertFalse(it.hasPrevious())
         assertTrue(it.hasNext())
@@ -619,9 +621,9 @@ class DistinctLabelIndexTest {
         assertEquals(ascendingInsideSpan.size, 3)
 
         val it = ascendingInsideSpan.iterator()
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
         assertFalse(it.hasNext())
     }
 
@@ -639,11 +641,11 @@ class DistinctLabelIndexTest {
         assertEquals(descendingBegin.size, 5)
 
         val it = descendingBegin.iterator()
-        assertEquals(it.next(), Span(16, 20))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(3, 5))
-        assertEquals(it.next(), Span(0, 3))
+        assertEquals(it.next(), TestLabel(16, 20))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(3, 5))
+        assertEquals(it.next(), TestLabel(0, 3))
         assertFalse(it.hasNext())
     }
 
@@ -676,32 +678,32 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testAscendingListContainsTrue() {
-        assertTrue(insideSpanList.contains(Span(16, 20)))
+        assertTrue(insideSpanList.contains(TestLabel(16, 20)))
     }
 
     @Test
     fun testAscendingListContainsFalse() {
-        assertFalse(insideSpanList.contains(Span(0, 3)))
+        assertFalse(insideSpanList.contains(TestLabel(0, 3)))
     }
 
     @Test
     fun testAscendingListContainsAll() {
-        assertTrue(insideSpanList.containsAll(listOf(Span(3, 5), Span(6, 10), Span(11, 15))))
+        assertTrue(insideSpanList.containsAll(listOf(TestLabel(3, 5), TestLabel(6, 10), TestLabel(11, 15))))
     }
 
     @Test
     fun testAscendingListContainsAllFalse() {
-        assertFalse(insideSpanList.containsAll(listOf(Span(0, 3), Span(3, 5), Span(6, 10))))
+        assertFalse(insideSpanList.containsAll(listOf(TestLabel(0, 3), TestLabel(3, 5), TestLabel(6, 10))))
     }
 
     @Test
     fun testAscendingListGet() {
-        assertEquals(insideSpanList[0], Span(3, 5))
+        assertEquals(insideSpanList[0], TestLabel(3, 5))
     }
 
     @Test
     fun testAscendingListIndexOf() {
-        assertEquals(insideSpanList.indexOf(Span(3, 5)), 0)
+        assertEquals(insideSpanList.indexOf(TestLabel(3, 5)), 0)
     }
 
     @Test
@@ -709,9 +711,9 @@ class DistinctLabelIndexTest {
         val subList = insideSpanList.subList(1, 4)
 
         val it = subList.iterator()
-        assertEquals(it.next(), Span(6, 10))
-        assertEquals(it.next(), Span(11, 15))
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(6, 10))
+        assertEquals(it.next(), TestLabel(11, 15))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertFalse(it.hasNext())
     }
 
@@ -722,33 +724,33 @@ class DistinctLabelIndexTest {
         assertFalse(it.hasPrevious())
 
         assertEquals(it.nextIndex(), 0)
-        assertEquals(it.next(), Span(0, 3))
+        assertEquals(it.next(), TestLabel(0, 3))
         assertEquals(it.previousIndex(), 0)
 
         assertEquals(it.nextIndex(), 1)
-        assertEquals(it.next(), Span(3, 5))
+        assertEquals(it.next(), TestLabel(3, 5))
         assertEquals(it.previousIndex(), 1)
 
         assertEquals(it.nextIndex(), 2)
-        assertEquals(it.next(), Span(6, 10))
+        assertEquals(it.next(), TestLabel(6, 10))
         assertEquals(it.previousIndex(), 2)
 
         assertEquals(it.nextIndex(), 3)
-        assertEquals(it.next(), Span(11, 15))
+        assertEquals(it.next(), TestLabel(11, 15))
         assertEquals(it.previousIndex(), 3)
 
         assertEquals(it.nextIndex(), 4)
-        assertEquals(it.next(), Span(16, 20))
+        assertEquals(it.next(), TestLabel(16, 20))
         assertEquals(it.previousIndex(), 4)
 
         assertFalse(it.hasNext())
         assertTrue(it.hasPrevious())
 
-        assertEquals(it.previous(), Span(16, 20))
-        assertEquals(it.previous(), Span(11, 15))
-        assertEquals(it.previous(), Span(6, 10))
-        assertEquals(it.previous(), Span(3, 5))
-        assertEquals(it.previous(), Span(0, 3))
+        assertEquals(it.previous(), TestLabel(16, 20))
+        assertEquals(it.previous(), TestLabel(11, 15))
+        assertEquals(it.previous(), TestLabel(6, 10))
+        assertEquals(it.previous(), TestLabel(3, 5))
+        assertEquals(it.previous(), TestLabel(0, 3))
 
         assertFalse(it.hasPrevious())
         assertTrue(it.hasNext())

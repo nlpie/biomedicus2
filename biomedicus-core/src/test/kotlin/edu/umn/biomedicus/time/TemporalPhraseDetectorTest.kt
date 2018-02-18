@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.time
 
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
@@ -27,7 +26,7 @@ import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.StandardDocument
+import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
@@ -56,26 +55,25 @@ class TemporalPhraseDetectorTest {
 
     @Test
     fun testSinceTheAgeOf() {
-        val doc = StandardDocument("Doc")
+        val document = StandardArtifact("1")
+                .addDocument("doc", "since the age of 33")
 
-        val text = doc.attachText(TextIdentifiers.SYSTEM, "since the age of 33")
+        Sentence(0, 19).addTo(document)
 
-        text.labeler(Sentence::class).add(Sentence(0, 19))
+        ParseToken(0, 5, "since", true).addTo(document)
+        ParseToken(6, 9, "the", true).addTo(document)
+        ParseToken(10, 13, "age", true).addTo(document)
+        ParseToken(14, 16, "of", true).addTo(document)
+        ParseToken(17, 19, "33", false).addTo(document)
 
-        val tokenLabeler = text.labeler(ParseToken::class)
-        tokenLabeler.add(ParseToken(0, 5, "since", true))
-        tokenLabeler.add(ParseToken(6, 9, "the", true))
-        tokenLabeler.add(ParseToken(10, 13, "age", true))
-        tokenLabeler.add(ParseToken(14, 16, "of", true))
-        tokenLabeler.add(ParseToken(17, 19, "33", false))
+        PosTag(0, 5, PartOfSpeech.IN).addTo(document)
 
-        text.labeler(PosTag::class).add(PosTag(0, 5, PartOfSpeech.IN))
+        Number(17, 19, "33", "1", NumberType.CARDINAL)
+                .addTo(document)
 
-        text.labeler(Number::class).add(Number(17, 19, "33", "1", NumberType.CARDINAL))
+        detector.process(document)
 
-        detector.process(doc)
-
-        val temporals = text.labelIndex(TemporalPhrase::class).asList()
+        val temporals = document.labelIndex<TemporalPhrase>().asList()
         assertEquals(temporals.size, 1)
         assertEquals(temporals[0].startIndex, 0)
         assertEquals(temporals[0].endIndex, 19)
@@ -83,21 +81,18 @@ class TemporalPhraseDetectorTest {
 
     @Test
     fun testATimeUnit() {
-        val doc = StandardDocument("Doc")
+        val document = StandardArtifact("1").addDocument("doc", "a week")
 
-        val text = doc.attachText(TextIdentifiers.SYSTEM, "a week")
+        document.labeler(Sentence::class.java).add(Sentence(0, 6))
 
-        text.labeler(Sentence::class.java).add(Sentence(0, 6))
+        ParseToken(0, 1, "a", true).addTo(document)
+        ParseToken(2, 6, "week", false).addTo(document)
 
-        val tokenLabeler = text.labeler(ParseToken::class.java)
-        tokenLabeler.add(ParseToken(0, 1, "a", true))
-        tokenLabeler.add(ParseToken(2, 6, "week", false))
+        TimeUnit(2, 6).addTo(document)
 
-        text.labeler(TimeUnit::class.java).add(TimeUnit(2, 6))
+        detector.process(document)
 
-        detector.process(doc)
-
-        val temporals = text.labelIndex(TemporalPhrase::class.java).asList()
+        val temporals = document.labelIndex(TemporalPhrase::class.java).asList()
         assertEquals(temporals.size, 1)
         assertEquals(temporals[0].startIndex, 0)
         assertEquals(temporals[0].endIndex, 6)
@@ -105,22 +100,20 @@ class TemporalPhraseDetectorTest {
 
     @Test
     fun testNumberYearsAgo() {
-        val doc = StandardDocument("doc")
+        val document = StandardArtifact("1").addDocument("doc", "30 years ago")
 
-        val text = doc.attachText(TextIdentifiers.SYSTEM, "30 years ago")
+        Sentence(0, 12).addTo(document)
+        ParseToken(0, 2, "30", true).addTo(document)
+        ParseToken(3, 8, "years", true).addTo(document)
+        ParseToken(9, 12, "ago", true).addTo(document)
 
-        Sentence(0, 12).addTo(text)
-        ParseToken(0, 2, "30", true).addTo(text)
-        ParseToken(3, 8, "years", true).addTo(text)
-        ParseToken(9, 12, "ago", true).addTo(text)
+        Quantifier(0, 2, true).addTo(document)
 
-        Quantifier(0, 2, true).addTo(text)
+        TimeUnit(3, 8).addTo(document)
 
-        TimeUnit(3, 8).addTo(text)
+        detector.process(document)
 
-        detector.process(doc)
-
-        val temporals = text.labelIndex<TemporalPhrase>().asList()
+        val temporals = document.labelIndex<TemporalPhrase>().asList()
         assertEquals(temporals.size, 1)
         assertEquals(temporals[0].startIndex, 0)
         assertEquals(temporals[0].endIndex, 12)

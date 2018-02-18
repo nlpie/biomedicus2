@@ -16,20 +16,37 @@
 
 package edu.umn.biomedicus.structure
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
-data class Row(override val startIndex: Int, override val endIndex: Int) : TextRange {
+class StructureModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<Row>()
+        addLabelClass<Cell>()
+        addLabelClass<NestedRow>()
+        addLabelClass<NestedCell>()
+    }
+
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Row(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class Cell(override val startIndex: Int, override val endIndex: Int) : TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Cell(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class NestedRow(override val startIndex: Int, override val endIndex: Int) : TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NestedRow(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class NestedCell(override val startIndex: Int, override val endIndex: Int) : TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NestedCell(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

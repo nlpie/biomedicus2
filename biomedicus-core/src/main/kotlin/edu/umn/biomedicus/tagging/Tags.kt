@@ -17,13 +17,26 @@
 package edu.umn.biomedicus.tagging
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
+class TaggingModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<PosTag>()
+
+        addEnumClass<PartOfSpeech>()
+    }
+
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class PosTag(
         override val startIndex: Int,
         override val endIndex: Int,
         val partOfSpeech: PartOfSpeech
-) : TextRange {
+) : Label() {
     constructor(
             textRange: TextRange,
             partOfSpeech: PartOfSpeech

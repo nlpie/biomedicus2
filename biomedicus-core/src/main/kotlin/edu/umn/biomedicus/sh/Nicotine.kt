@@ -20,10 +20,8 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.exc.BiomedicusException
 import edu.umn.biomedicus.family.Relative
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.sections.Section
 import edu.umn.biomedicus.sections.SectionContent
@@ -31,25 +29,54 @@ import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.time.TemporalPhrase
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 
 /**
  * A social history candidate for smoking status.
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class NicotineCandidate(
         override val startIndex: Int,
         override val endIndex: Int
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class NicotineCue(
         override val startIndex: Int,
         override val endIndex: Int
-) : TextRange {
+) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineUnit(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineAmount(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineTemporal(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineType(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineStatus(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineMethod(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
 
 @Singleton
 class NicotineCues @Inject constructor(
@@ -65,20 +92,18 @@ class NicotineCandidateDetector @Inject constructor(
         val cues: NicotineCues
 ) : DocumentProcessor {
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val shHeaders = document.labelIndex<SocialHistorySectionHeader>()
 
-        val shHeaders = systemView.labelIndex<SocialHistorySectionHeader>()
+        val sections = document.labelIndex<Section>()
+        val sectionContents = document.labelIndex<SectionContent>()
 
-        val sections = systemView.labelIndex<Section>()
-        val sectionContents = systemView.labelIndex<SectionContent>()
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = systemView.labelIndex<Sentence>()
-        val tokens = systemView.labelIndex<ParseToken>()
+        val relatives = document.labelIndex<Relative>()
 
-        val relatives = systemView.labelIndex<Relative>()
-
-        val labeler = systemView.labeler<NicotineCandidate>()
-        val cueLabeler = systemView.labeler<NicotineCue>()
+        val labeler = document.labeler<NicotineCandidate>()
+        val cueLabeler = document.labeler<NicotineCue>()
 
         for (header in shHeaders) {
             val section = sections.containing(header).first()
@@ -87,7 +112,7 @@ class NicotineCandidateDetector @Inject constructor(
                     ?: throw BiomedicusException("No contents for section: $section")
 
             sentences.insideSpan(contents)
-                    .filter { systemView.text[it.endIndex - 1] != ':' }
+                    .filter { document.text[it.endIndex - 1] != ':' }
                     .filter { relatives.insideSpan(it).isEmpty() }
                     .forEach { sentence ->
                         val sentenceTokens = tokens.insideSpan(sentence).asList()
@@ -105,7 +130,6 @@ class NicotineCandidateDetector @Inject constructor(
     }
 }
 
-data class NicotineUnit(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 class NicotineAmountUnits @Inject constructor(
@@ -123,14 +147,12 @@ class NicotineUnitDetector @Inject constructor(
     val detector = amountUnits.detector
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = text.labelIndex<Sentence>()
-        val tokens = text.labelIndex<ParseToken>()
+        val candidates = document.labelIndex<NicotineCandidate>()
 
-        val candidates = text.labelIndex<NicotineCandidate>()
-
-        val labeler = text.labeler<NicotineUnit>()
+        val labeler = document.labeler<NicotineUnit>()
 
         candidates
                 .map { sentences.insideSpan(it) }
@@ -149,7 +171,6 @@ class NicotineUnitDetector @Inject constructor(
     }
 }
 
-data class NicotineAmount(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 class NicotineAmountPattern @Inject constructor(
@@ -164,13 +185,11 @@ class NicotineAmountDetector @Inject constructor(
     private val expr = nicotineAmountPattern.expr
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val searcher = expr.createSearcher(document)
 
-        val searcher = expr.createSearcher(text)
+        val candidates = document.labelIndex<NicotineCandidate>()
 
-        val candidates = text.labelIndex<NicotineCandidate>()
-
-        val labeler = text.labeler<NicotineAmount>()
+        val labeler = document.labeler<NicotineAmount>()
 
         for (candidate in candidates) {
             while (searcher.search(candidate)) {
@@ -180,20 +199,15 @@ class NicotineAmountDetector @Inject constructor(
     }
 }
 
-data class NicotineFrequency(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 class NicotineFrequencyDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
-        val nicotineCandidates = systemView.labelIndex<NicotineCandidate>()
+        val amounts = document.labelIndex<NicotineAmount>()
 
-        val amounts = systemView.labelIndex<NicotineAmount>()
-
-        val usageFrequencies = systemView.labelIndex<UsageFrequency>()
-        val labeler = systemView.labeler<NicotineFrequency>()
+        val usageFrequencies = document.labelIndex<UsageFrequency>()
+        val labeler = document.labeler<NicotineFrequency>()
 
         for (nicotineCandidate in nicotineCandidates) {
             usageFrequencies
@@ -204,21 +218,16 @@ class NicotineFrequencyDetector : DocumentProcessor {
     }
 }
 
-data class NicotineTemporal(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 class NicotineTemporalDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
-        val nicotineCandidates = systemView.labelIndex<NicotineCandidate>()
+        val frequencies = document.labelIndex<NicotineFrequency>()
+        val amounts = document.labelIndex<NicotineAmount>()
 
-        val frequencies = systemView.labelIndex<NicotineFrequency>()
-        val amounts = systemView.labelIndex<NicotineAmount>()
-
-        val temporalPhrases = systemView.labelIndex<TemporalPhrase>()
-        val temporalLabeler = systemView.labeler<NicotineTemporal>()
+        val temporalPhrases = document.labelIndex<TemporalPhrase>()
+        val temporalLabeler = document.labeler<NicotineTemporal>()
 
         for (nicotineCandidate in nicotineCandidates) {
             temporalPhrases.insideSpan(nicotineCandidate)
@@ -229,7 +238,6 @@ class NicotineTemporalDetector : DocumentProcessor {
     }
 }
 
-data class NicotineType(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 data class NicotineTypes(val sequenceDetector: SequenceDetector<String, ParseToken>) {
@@ -245,12 +253,10 @@ data class NicotineTypeDetector(
     @Inject constructor(nicotineTypes: NicotineTypes) : this(nicotineTypes.sequenceDetector)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val candidates = document.labelIndex<NicotineCandidate>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val candidates = text.labelIndex<NicotineCandidate>()
-        val tokens = text.labelIndex<ParseToken>()
-
-        val labeler = text.labeler<NicotineType>()
+        val labeler = document.labeler<NicotineType>()
 
         candidates
                 .map { tokens.insideSpan(it).asList() }
@@ -264,9 +270,6 @@ data class NicotineTypeDetector(
     }
 }
 
-data class NicotineStatus(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 @Singleton
 data class NicotineStatusPhrases(val detector: SequenceDetector<String, ParseToken>) {
@@ -282,15 +285,13 @@ data class NicotineStatusDetector(
     @Inject constructor(statusPhrases: NicotineStatusPhrases) : this(statusPhrases.detector)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val tokens = document.labelIndex<ParseToken>()
 
-        val tokens = text.labelIndex<ParseToken>()
+        val candidates = document.labelIndex<NicotineCandidate>()
 
-        val candidates = text.labelIndex<NicotineCandidate>()
+        val usageStatuses = document.labelIndex<UsageStatus>()
 
-        val usageStatuses = text.labelIndex<UsageStatus>()
-
-        val labeler = text.labeler<NicotineStatus>()
+        val labeler = document.labeler<NicotineStatus>()
 
         candidates
                 .onEach {
@@ -308,9 +309,6 @@ data class NicotineStatusDetector(
     }
 }
 
-data class NicotineMethod(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 @Singleton
 data class NicotineMethodPhrases(val detector: SequenceDetector<String, ParseToken>) {
@@ -326,14 +324,12 @@ data class NicotineMethodDetector(
     @Inject constructor(phrases: NicotineMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val candidates = document.labelIndex<NicotineCandidate>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val candidates = text.labelIndex<NicotineCandidate>()
-        val tokens = text.labelIndex<ParseToken>()
+        val genericMethods = document.labelIndex<GenericMethodPhrase>()
 
-        val genericMethods = text.labelIndex<GenericMethodPhrase>()
-
-        val labeler = text.labeler<NicotineMethod>()
+        val labeler = document.labeler<NicotineMethod>()
 
         candidates
                 .onEach {

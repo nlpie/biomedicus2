@@ -60,6 +60,36 @@
     <name>Default BioMedICUS Pipeline</name>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>sentence/documentName</parameter>
+          <parameter>section/documentName</parameter>
+          <parameter>parseTokens/documentName</parameter>
+          <parameter>measuresPipeline/documentName</parameter>
+          <parameter>words/documentName</parameter>
+          <parameter>posAnnotator/documentName</parameter>
+          <parameter>normalizer/documentName</parameter>
+          <parameter>termTokens/documentName</parameter>
+          <parameter>timePipeline/documentName</parameter>
+          <parameter>acronyms/documentName</parameter>
+          <parameter>dictionaryMapper/documentName</parameter>
+          <parameter>modification/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Default</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>sentence</node>

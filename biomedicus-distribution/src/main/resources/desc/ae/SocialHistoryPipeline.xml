@@ -63,6 +63,37 @@
     <name>Social History Pipeline</name>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>sectionHeaders/documentName</parameter>
+          <parameter>nicotineCandidates/documentName</parameter>
+          <parameter>usageFrequencyPhrases/documentName</parameter>
+          <parameter>usageFrequencies/documentName</parameter>
+          <parameter>usageStatuses/documentName</parameter>
+          <parameter>genericMethodPhrases/documentName</parameter>
+          <parameter>nicotineAmountUnits/documentName</parameter>
+          <parameter>nicotineAmounts/documentName</parameter>
+          <parameter>nicotineFrequencies/documentName</parameter>
+          <parameter>nicotineTemporals/documentName</parameter>
+          <parameter>nicotineTypes/documentName</parameter>
+          <parameter>nicotineStatuses/documentName</parameter>
+          <parameter>nicotineMethods/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Default</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>sectionHeaders</node>

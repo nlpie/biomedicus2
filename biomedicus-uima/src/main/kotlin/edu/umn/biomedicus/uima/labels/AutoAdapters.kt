@@ -16,77 +16,1185 @@
 
 package edu.umn.biomedicus.uima.labels
 
-import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.Span
+import edu.umn.nlpengine.Systems
 import org.apache.uima.cas.*
 import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.resource.metadata.FeatureDescription
 import org.apache.uima.resource.metadata.TypeDescription
 import org.apache.uima.resource.metadata.TypeSystemDescription
 import org.apache.uima.resource.metadata.impl.AllowedValue_impl
+import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.KClass
-import kotlin.reflect.KClassifier
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.findParameterByName
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.*
 
 private val featureDesc = "Automatically generated feature"
 
 @Singleton
-class AutoAdapters @Inject constructor(val labelAdapters: LabelAdapters) {
-    private val distincts = ArrayList<Class<out TextRange>>()
-    private val indistinct = ArrayList<Class<out TextRange>>()
+class AutoAdapters @Inject constructor(
+        internal val labelAdapters: LabelAdapters,
+        systems: Systems?
+) {
+    private val labels = ArrayList<Class<out Label>>()
     private val enums = ArrayList<Class<*>>()
 
-    fun addDistinctAutoAdaptedClass(clazz: Class<out TextRange>) {
-        distincts.add(clazz)
+    init {
+        systems?.forEachEnumClass { enums.add(it) }
+        systems?.forEachLabelClass { labels.add(it) }
     }
 
-    fun addAllDistinctAutoAdaptedClasses(elements: Iterable<Class<out TextRange>>) {
-        elements.forEach { addDistinctAutoAdaptedClass(it) }
-    }
-
-    fun addIndistinctAutoAdaptedClass(clazz: Class<out TextRange>) {
-        indistinct.add(clazz)
-    }
-
-    fun addAllIndistinctAutoAdaptedClasses(elements: Iterable<Class<out TextRange>>) {
-        elements.forEach { addIndistinctAutoAdaptedClass(it) }
+    fun addLabelClass(clazz: Class<out Label>) {
+        labels.add(clazz)
     }
 
     fun addEnumClass(clazz: Class<*>) {
         enums.add(clazz)
     }
 
-    fun addAllEnumClasses(elements: Iterable<Class<*>>) {
-        elements.forEach { addEnumClass(it) }
-    }
 
     fun addToTypeSystem(typeSystemDescription: TypeSystemDescription) {
 
         enums.forEach { typeSystemDescription.addEnum(it) }
 
-        val map = distincts.asSequence().map { Pair(it, AutoAdapter<TextRange>(it, true)) }
-                .plus(indistinct.asSequence()
-                        .map { Pair(it, AutoAdapter<TextRange>(it, false)) })
-                .toMap()
+        labels.asSequence()
+                .map { it -> AutoAdapter(it) }
+                .onEach {
+                    labelAdapters.addFactory(it)
+                }
+                .onEach {
+                    it.addTypeToTypeSystem(typeSystemDescription)
+                }
+                .forEach {
+                    it.addFeaturesToTypeSystem()
+                }
+    }
 
-        map.values.onEach { it.addTypeToTypeSystem(typeSystemDescription) }
-                .onEach { it.addFeaturesToTypeSystem(map) }
+    inner class AutoAdapter<T : Label>(
+            override val labelClass: Class<T>
+    ) : LabelAdapterFactory<T> {
+        private val clazz = labelClass.kotlin
 
-        map.forEach { clazz, adapter ->
-            labelAdapters.addLabelAdapter(clazz, adapter)
+        private val distinct: Boolean
+
+        override val typeName: String
+
+        @Suppress("UNCHECKED_CAST")
+        private val primaryConstructor = (clazz.primaryConstructor
+                ?: throw IllegalArgumentException("Class does not have primary constructor"))
+
+        private var typeDescription: TypeDescription? = null
+
+        private val propertyMappings: Collection<PropertyMapping<*>> = clazz.primaryConstructor
+                ?.parameters
+                ?.filter { it.name != "startIndex" && it.name != "endIndex" }
+                ?.map { parameter ->
+                    Pair(parameter, clazz.memberProperties.firstOrNull { it.name == parameter.name }
+                            ?: throw IllegalStateException(
+                                    "Property not found for primary constructor parameter " +
+                                            "${parameter.name}"
+                            )
+                    )
+                }
+                ?.map { (parameter, property) -> createPropertyMapping(property, parameter) }
+                ?: throw IllegalStateException("")
+
+        private var isInitialized = false
+
+        init {
+            val label = labelClass.kotlin.findAnnotation<LabelMetadata>()
+                    ?: throw IllegalStateException("Label class without @Label annotation")
+
+            distinct = label.distinct
+
+            typeName = "edu.umn.nlpengine.generated${label.versionId}.${clazz.simpleName}"
+        }
+
+        fun addTypeToTypeSystem(description: TypeSystemDescription) {
+            typeDescription = description.addType(typeName,
+                    "Automatically generated type from ${clazz.qualifiedName}",
+                    "uima.tcas.Annotation")
+        }
+
+        fun addFeaturesToTypeSystem() {
+            for (propertyMapping in propertyMappings) {
+                propertyMapping.createFeatureDescription()
+            }
+        }
+
+        override fun create(cas: CAS): LabelAdapter<T> {
+            synchronized(this) {
+                if (!isInitialized) {
+                    propertyMappings.forEach { it.initFeat(cas) }
+                }
+            }
+
+            return object : LabelAdapter<T> {
+                override val type get() = cas.typeSystem.getType(typeName)
+
+                override val labelClass: Class<T> = this@AutoAdapter.labelClass
+                override val distinct = this@AutoAdapter.distinct
+
+                override fun annotationToLabel(annotationFS: AnnotationFS): T {
+                    val parameters = HashMap<KParameter, Any?>()
+                    for (propertyMapping in propertyMappings) {
+                        val value = propertyMapping.copyFromAnnotation(annotationFS)
+
+                        val parameter = primaryConstructor
+                                .findParameterByName(propertyMapping.property.name)
+
+                        parameters[parameter!!] = value
+                    }
+
+                    parameters[primaryConstructor.findParameterByName("startIndex")!!] =
+                            annotationFS.begin
+
+                    parameters[primaryConstructor.findParameterByName("endIndex")!!] =
+                            annotationFS.end
+
+                    return primaryConstructor.callBy(parameters)
+                }
+
+                override fun labelToAnnotation(label: T): AnnotationFS {
+                    val annotation = cas
+                            .createAnnotation<AnnotationFS>(type, label.startIndex, label.endIndex)
+
+                    propertyMappings.forEach { it.copyToAnnotation(label, cas, annotation) }
+
+                    cas.addFsToIndexes(annotation)
+                    return annotation
+                }
+            }
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun createPropertyMapping(
+                property: KProperty1<T, *>,
+                parameter: KParameter
+        ): PropertyMapping<*> {
+            return when (property.returnType.classifier) {
+                Boolean::class -> {
+                    checkPrimitiveProperty(property)
+                    BooleanPropertyMapping(property as KProperty1<T, Boolean>, parameter)
+                }
+                Byte::class -> {
+                    checkPrimitiveProperty(property)
+                    BytePropertyMapping(property as KProperty1<T, Byte>, parameter)
+                }
+                Short::class -> {
+                    checkPrimitiveProperty(property)
+                    ShortPropertyMapping(property as KProperty1<T, Short>, parameter)
+                }
+                Int::class -> {
+                    checkPrimitiveProperty(property)
+                    IntPropertyMapping(property as KProperty1<T, Int>, parameter)
+                }
+                Long::class -> {
+                    checkPrimitiveProperty(property)
+                    LongPropertyMapping(property as KProperty1<T, Long>, parameter)
+                }
+                Float::class -> {
+                    checkPrimitiveProperty(property)
+                    FloatPropertyMapping(property as KProperty1<T, Float>, parameter)
+                }
+                Double::class -> {
+                    checkPrimitiveProperty(property)
+                    DoublePropertyMapping(property as KProperty1<T, Double>, parameter)
+                }
+                String::class -> {
+                    StringPropertyMapping(property as KProperty1<T, String>, parameter)
+                }
+                BigDecimal::class -> {
+                    BigDecimalPropertyMapping(property as KProperty1<T, BigDecimal>, parameter)
+                }
+                BooleanArray::class -> {
+                    BooleanArrayPropertyMapping(property as KProperty1<T, BooleanArray>, parameter)
+                }
+                ByteArray::class -> {
+                    ByteArrayPropertyMapping(property as KProperty1<T, ByteArray>, parameter)
+                }
+                ShortArray::class -> {
+                    ShortArrayPropertyMapping(property as KProperty1<T, ShortArray>, parameter)
+                }
+                IntArray::class -> {
+                    IntArrayPropertyMapping(property as KProperty1<T, IntArray>, parameter)
+                }
+                LongArray::class -> {
+                    LongArrayPropertyMapping(property as KProperty1<T, LongArray>, parameter)
+                }
+                FloatArray::class -> {
+                    FloatArrayPropertyMapping(property as KProperty1<T, FloatArray>, parameter)
+                }
+                DoubleArray::class -> {
+                    DoubleArrayPropertyMapping(property as KProperty1<T, DoubleArray>, parameter)
+                }
+                Span::class -> SpanPropertyMapping(property as KProperty1<T, Span>, parameter)
+                Array<Any>::class -> {
+                    val clazz = (property.returnType as KClass<*>).java
+                    val componentType = clazz.componentType
+                    when {
+                        componentType == String::class.java -> {
+                            StringArrayPropertyMapping(
+                                    property as KProperty1<T, Array<String>>,
+                                    parameter
+                            )
+                        }
+                        componentType.isEnum -> {
+                            EnumArrayPropertyMapping(
+                                    property as KProperty1<T, Array<Any>>,
+                                    parameter
+                            )
+                        }
+                        Label::class.java.isAssignableFrom(componentType) -> {
+                            LabelArrayPropertyMapping(
+                                    property as KProperty1<T, Array<Label>>,
+                                    parameter,
+                                    componentType as Class<Label>
+                            )
+                        }
+                        else -> {
+                            throw IllegalStateException(
+                                    "Not able to map property ${property.name} with type " +
+                                            "${property.returnType} on ${labelClass.canonicalName}"
+                            )
+                        }
+                    }
+                }
+                List::class -> {
+                    val componentClass = property.returnType.arguments.firstOrNull()
+                            ?.type
+                            ?.classifier
+                            ?.let { it as KClass<*> }
+                            ?: throw IllegalStateException("List should have a component type.")
+
+                    when {
+                        componentClass == Boolean::class -> {
+                            BooleanListPropertyMapping(
+                                    property as KProperty1<T, List<Boolean>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == Byte::class -> {
+                            ByteListPropertyMapping(
+                                    property as KProperty1<T, List<Byte>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == Short::class -> {
+                            ShortListPropertyMapping(
+                                    property as KProperty1<T, List<Short>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == Int::class -> {
+                            IntListPropertyMapping(property as KProperty1<T, List<Int>>, parameter)
+                        }
+                        componentClass == Long::class -> {
+                            LongListPropertyMapping(
+                                    property as KProperty1<T, List<Long>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == Float::class -> {
+                            FloatListPropertyMapping(
+                                    property as KProperty1<T, List<Float>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == Double::class -> {
+                            DoubleListPropertyMapping(
+                                    property as KProperty1<T, List<Double>>,
+                                    parameter
+                            )
+                        }
+                        componentClass == String::class -> {
+                            StringListPropertyMapping(
+                                    property as KProperty1<T, List<String>>,
+                                    parameter
+                            )
+                        }
+                        componentClass.java.isEnum -> {
+                            EnumListPropertyMapping(property as KProperty1<T, List<Any>>, parameter)
+                        }
+                        componentClass.isSubclassOf(Label::class) -> {
+                            LabelListPropertyMapping(
+                                    property as KProperty1<T, List<Label>>,
+                                    parameter,
+                                    componentClass.java as Class<Label>
+                            )
+                        }
+                        componentClass == Span::class -> {
+                            SpanListPropertyMapping(
+                                    property as KProperty1<T, List<Span>>,
+                                    parameter
+                            )
+                        }
+                        else -> {
+                            throw IllegalStateException(
+                                    "Not able to map property ${property.name} with type " +
+                                            "${property.returnType} on ${labelClass.canonicalName}"
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    val clazz = (property.returnType.classifier as KClass<*>)
+                    when {
+                        clazz.java.isEnum -> EnumPropertyMapping(property, parameter)
+                        clazz.isSubclassOf(Label::class) -> {
+                            LabelPropertyMapping(property as KProperty1<T, Label>, parameter)
+                        }
+                        clazz == Span::class -> {
+                            SpanArrayPropertyMapping(
+                                    property as KProperty1<T, Array<Span>>,
+                                    parameter
+                            )
+                        }
+                        else -> {
+                            throw IllegalStateException(
+                                    "Not able to map property ${property.name} with type " +
+                                            "${property.returnType} on ${labelClass.canonicalName}"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        abstract inner class PropertyMapping<R : Any>(
+                val property: KProperty1<T, R>,
+                val parameter: KParameter
+        ) {
+            @Suppress("UNCHECKED_CAST")
+            protected val returnType: KClass<R> = property.returnType.classifier as KClass<R>
+
+            private var featureDescription: FeatureDescription? = null
+
+            private var _feat: Feature? = null
+            protected val feat: Feature
+                get() = _feat ?: throw IllegalStateException("Feature not initialized")
+
+            abstract val uimaType: String
+
+            fun initFeat(cas: CAS) {
+                _feat = cas.typeSystem.getType(typeName)
+                        .getFeatureByBaseName(featureDescription!!.name)
+            }
+
+            fun createFeatureDescription() {
+                featureDescription = typeDescription
+                        ?.addFeature(
+                                property.name,
+                                featureDesc,
+                                uimaType
+                        ) ?: throw IllegalStateException("typeDescription was null")
+            }
+
+            open fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                copyValueToAnnotation(property.get(label), cas, annotationFS)
+            }
+
+            open fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS) {
+                throw UnsupportedOperationException("Not implemented")
+            }
+
+            abstract fun copyFromAnnotation(annotationFS: AnnotationFS): R?
+        }
+
+        inner class BooleanPropertyMapping(
+                property: KProperty1<T, Boolean>,
+                parameter: KParameter
+        ) : PropertyMapping<Boolean>(property, parameter) {
+            override val uimaType: String = CAS.TYPE_NAME_BOOLEAN
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setBooleanValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Boolean? {
+                return annotationFS.getBooleanValue(feat)
+            }
+        }
+
+        inner class BytePropertyMapping(
+                property: KProperty1<T, Byte>, parameter: KParameter
+        ) : PropertyMapping<Byte>(property, parameter) {
+            override val uimaType: String = CAS.TYPE_NAME_BYTE
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setByteValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Byte? {
+                return annotationFS.getByteValue(feat)
+            }
+        }
+
+        inner class ShortPropertyMapping(
+                property: KProperty1<T, Short>,
+                parameter: KParameter
+        ) : PropertyMapping<Short>(property, parameter) {
+            override val uimaType: String = CAS.TYPE_NAME_SHORT
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setShortValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Short? {
+                return annotationFS.getShortValue(feat)
+            }
+        }
+
+        inner class IntPropertyMapping(
+                property: KProperty1<T, Int>,
+                parameter: KParameter
+        ) : PropertyMapping<Int>(property, parameter) {
+            override val uimaType: String = CAS.TYPE_NAME_INTEGER
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setIntValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Int {
+                return annotationFS.getIntValue(feat)
+            }
+        }
+
+        inner class LongPropertyMapping(
+                property: KProperty1<T, Long>,
+                parameter: KParameter
+        ) : PropertyMapping<Long>(property, parameter) {
+            override val uimaType: String = CAS.TYPE_NAME_LONG
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setLongValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Long {
+                return annotationFS.getLongValue(feat)
+            }
+        }
+
+        inner class FloatPropertyMapping(
+                property: KProperty1<T, Float>,
+                parameter: KParameter
+        ) : PropertyMapping<Float>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FLOAT
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setFloatValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Float {
+                return annotationFS.getFloatValue(feat)
+            }
+        }
+
+        inner class DoublePropertyMapping(
+                property: KProperty1<T, Double>,
+                parameter: KParameter
+        ) : PropertyMapping<Double>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_DOUBLE
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                annotationFS.setDoubleValue(feat, property.get(label))
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Double {
+                return annotationFS.getDoubleValue(feat)
+            }
+        }
+
+        inner class StringPropertyMapping(
+                property: KProperty1<T, String?>,
+                parameter: KParameter
+        ) : PropertyMapping<String?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val get = property.get(label) ?: return
+                annotationFS.setStringValue(feat, get)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): String? {
+                return annotationFS.getStringValue(feat)
+            }
+        }
+
+        inner class BooleanArrayPropertyMapping(
+                property: KProperty1<T, BooleanArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<BooleanArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_BOOLEAN_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+
+                val to = cas.createBooleanArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): BooleanArray? {
+                return (annotationFS.getFeatureValue(feat) as BooleanArrayFS?)
+                        ?.run { BooleanArray(size()) { get(it) } }
+            }
+        }
+
+        inner class BooleanListPropertyMapping(
+                property: KProperty1<T, List<Boolean>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Boolean>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_BOOLEAN_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Boolean>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+
+                val booleanArrayFS = cas.createBooleanArrayFS(value.size)
+                value.forEachIndexed { i, b -> booleanArrayFS[i] = b }
+                cas.addFsToIndexes(booleanArrayFS)
+
+                annotationFS.setFeatureValue(feat, booleanArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Boolean>? {
+                return (annotationFS.getFeatureValue(feat) as BooleanArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class ByteArrayPropertyMapping(
+                property: KProperty1<T, ByteArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<ByteArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_BYTE_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+
+                val to = cas.createByteArrayFS(from.size)
+
+                to.copyFromArray(from, 0, 0, from.size)
+
+                cas.addFsToIndexes(to)
+
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): ByteArray? {
+                return (annotationFS.getFeatureValue(feat) as ByteArrayFS?)
+                        ?.run { ByteArray(size()) { get(it) } }
+            }
+        }
+
+        inner class ByteListPropertyMapping(
+                property: KProperty1<T, List<Byte>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Byte>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_BYTE_ARRAY
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Byte>? {
+                return (annotationFS.getFeatureValue(feat) as ByteArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+
+            override fun copyValueToAnnotation(
+                    value: List<Byte>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val arrayFS = cas.createByteArrayFS(value.size)
+                value.forEachIndexed { i, byte -> arrayFS[i] = byte }
+                cas.addFsToIndexes(arrayFS)
+                annotationFS.setFeatureValue(feat, arrayFS)
+            }
+        }
+
+        inner class ShortArrayPropertyMapping(
+                property: KProperty1<T, ShortArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<ShortArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_SHORT_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createShortArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): ShortArray? {
+                return (annotationFS.getFeatureValue(feat) as ShortArrayFS?)
+                        ?.run { ShortArray(size()) { get(it) } }
+            }
+        }
+
+        inner class ShortListPropertyMapping(
+                property: KProperty1<T, List<Short>>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Short>>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_SHORT_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Short>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val shortArrayFS = cas.createShortArrayFS(value.size)
+                value.forEachIndexed { index, sh -> shortArrayFS[index] = sh }
+                cas.addFsToIndexes(shortArrayFS)
+                annotationFS.setFeatureValue(feat, shortArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Short>? {
+                return (annotationFS.getFeatureValue(feat) as ShortArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class IntArrayPropertyMapping(
+                property: KProperty1<T, IntArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<IntArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_INTEGER_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createIntArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): IntArray? {
+                return (annotationFS.getFeatureValue(feat) as IntArrayFS?)
+                        ?.run { IntArray(size()) { get(it) } }
+            }
+        }
+
+        inner class IntListPropertyMapping(
+                property: KProperty1<T, List<Int>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Int>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_INTEGER_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Int>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val intArrayFS = cas.createIntArrayFS(value.size)
+                value.forEachIndexed { index, i -> intArrayFS[index] = i }
+                cas.addFsToIndexes(intArrayFS)
+                annotationFS.setFeatureValue(feat, intArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Int>? {
+                return (annotationFS.getFeatureValue(feat) as IntArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class LongArrayPropertyMapping(
+                property: KProperty1<T, LongArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<LongArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_LONG_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createLongArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): LongArray? {
+                return (annotationFS.getFeatureValue(feat) as LongArrayFS?)
+                        ?.run { LongArray(size()) { get(it) } }
+            }
+        }
+
+        inner class LongListPropertyMapping(
+                property: KProperty1<T, List<Long>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Long>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_LONG_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Long>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val longArrayFS = cas.createLongArrayFS(value.size)
+                value.forEachIndexed { index, l -> longArrayFS[index] = l }
+                cas.addFsToIndexes(longArrayFS)
+                annotationFS.setFeatureValue(feat, longArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Long>? {
+                return (annotationFS.getFeatureValue(feat) as LongArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class FloatArrayPropertyMapping(
+                property: KProperty1<T, FloatArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<FloatArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FLOAT_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createFloatArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): FloatArray? {
+                return (annotationFS.getFeatureValue(feat) as FloatArrayFS?)
+                        ?.run { FloatArray(size()) { get(it) } }
+            }
+        }
+
+        inner class FloatListPropertyMapping(
+                property: KProperty1<T, List<Float>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Float>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FLOAT_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Float>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val floatArrayFS = cas.createFloatArrayFS(value.size)
+                value.forEachIndexed { index, fl -> floatArrayFS[index] = fl }
+                cas.addFsToIndexes(floatArrayFS)
+                annotationFS.setFeatureValue(feat, floatArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Float>? {
+                return (annotationFS.getFeatureValue(feat) as FloatArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class DoubleArrayPropertyMapping(
+                property: KProperty1<T, DoubleArray?>,
+                parameter: KParameter
+        ) : PropertyMapping<DoubleArray?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_DOUBLE_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createDoubleArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): DoubleArray? {
+                return (annotationFS.getFeatureValue(feat) as DoubleArrayFS?)
+                        ?.run { DoubleArray(size()) { get(it) } }
+            }
+        }
+
+        inner class DoubleListPropertyMapping(
+                property: KProperty1<T, List<Double>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Double>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_DOUBLE_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<Double>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val doubleArrayFS = cas.createDoubleArrayFS(value.size)
+                value.forEachIndexed { index, d -> doubleArrayFS[index] = d }
+                cas.addFsToIndexes(doubleArrayFS)
+                annotationFS.setFeatureValue(feat, doubleArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Double>? {
+                return (annotationFS.getFeatureValue(feat) as DoubleArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class StringArrayPropertyMapping(
+                property: KProperty1<T, Array<String>?>,
+                parameter: KParameter
+        ) : PropertyMapping<Array<String>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createStringArrayFS(from.size)
+                to.copyFromArray(from, 0, 0, from.size)
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<String>? {
+                return (annotationFS.getFeatureValue(feat) as StringArrayFS?)
+                        ?.run { Array(size()) { get(it) } }
+            }
+        }
+
+        inner class StringListPropertyMapping(
+                property: KProperty1<T, List<String>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<String>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING_ARRAY
+
+            override fun copyValueToAnnotation(
+                    value: List<String>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                if (value == null) return
+                val stringArrayFS = cas.createStringArrayFS(value.size)
+                value.forEachIndexed { index, s -> stringArrayFS[index] = s }
+                cas.addFsToIndexes(stringArrayFS)
+                annotationFS.setFeatureValue(feat, stringArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<String>? {
+                return (annotationFS.getFeatureValue(feat) as StringArrayFS?)
+                        ?.run { List(size()) { get(it) } }
+            }
+        }
+
+        inner class EnumPropertyMapping(
+                property: KProperty1<T, Any?>,
+                parameter: KParameter
+        ) : PropertyMapping<Any?>(property, parameter) {
+            override val uimaType: String
+                get() = createEnumTypeName(returnType.java)
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val enumVal = property.get(label) as Enum<*>
+                annotationFS.setStringValue(feat, enumVal.name)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Any? {
+                val value = annotationFS.getStringValue(feat)
+                return returnType.java.enumConstants
+                        .map { it as Enum<*> }
+                        .find { it.name == value }
+            }
+        }
+
+        inner class EnumArrayPropertyMapping(
+                property: KProperty1<T, Array<Any>?>,
+                parameter: KParameter
+        ) : PropertyMapping<Array<Any>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING_ARRAY
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val from = property.get(label) ?: return
+                val to = cas.createStringArrayFS(from.size)
+                for (i in 0 until from.size) {
+                    to[i] = from[i].let { it as Enum<*> }.name
+                }
+                cas.addFsToIndexes(to)
+                annotationFS.setFeatureValue(feat, to)
+            }
+
+            @Suppress("CAST_NEVER_SUCCEEDS")
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<Any>? {
+                val from = annotationFS.getFeatureValue(feat) as StringArrayFS? ?: return null
+                return Array(from.size()) { i ->
+                    returnType.java.enumConstants
+                            .map { it as Enum<*> }
+                            .find { it.name == from[i] }
+                            ?: throw IllegalStateException("Enum value not found")
+                }
+            }
+        }
+
+        inner class EnumListPropertyMapping(
+                property: KProperty1<T, List<Any>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Any>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING_ARRAY
+
+            override fun copyValueToAnnotation(value: List<Any>?, cas: CAS, annotationFS: AnnotationFS) {
+                if (value == null) return
+                val stringArrayFS = cas.createStringArrayFS(value.size)
+                value.forEachIndexed { index, enum -> stringArrayFS[index] = (enum as Enum<*>).name }
+                cas.addFsToIndexes(stringArrayFS)
+                annotationFS.setFeatureValue(feat, stringArrayFS)
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Any>? {
+                val from = annotationFS.getFeatureValue(feat) as StringArrayFS? ?: return null
+                return List(from.size()) { index ->
+                    returnType.java.enumConstants
+                            .map { it as Enum<*> }
+                            .find { it.name == from[index] }
+                            ?: throw IllegalStateException("Problem mapping enum")
+                }
+            }
+        }
+
+        inner class BigDecimalPropertyMapping(
+                property: KProperty1<T, BigDecimal?>,
+                parameter: KParameter
+        ) : PropertyMapping<BigDecimal?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_STRING
+
+            override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+                val bigDecimal = property.get(label) ?: return
+                annotationFS.setStringValue(feat, bigDecimal.toString())
+            }
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): BigDecimal? {
+                return annotationFS.getStringValue(feat)?.let { BigDecimal(it) }
+            }
+        }
+
+        inner class SpanPropertyMapping(
+                property: KProperty1<T, Span?>,
+                parameter: KParameter
+        ) : PropertyMapping<Span?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_ANNOTATION
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Span? {
+                return (annotationFS.getFeatureValue(feat) as AnnotationFS?)
+                        ?.run { Span(begin, end) }
+
+            }
+
+            override fun copyValueToAnnotation(value: Span?, cas: CAS, annotationFS: AnnotationFS) {
+                value ?: return
+                val spannotation = cas.createAnnotation<AnnotationFS>(
+                        cas.annotationType,
+                        value.startIndex,
+                        value.endIndex
+                )
+                cas.addFsToIndexes(spannotation)
+                annotationFS.setFeatureValue(
+                        feat,
+                        spannotation
+                )
+            }
+        }
+
+        inner class SpanArrayPropertyMapping(
+                property: KProperty1<T, Array<Span>?>,
+                parameter: KParameter
+        ) : PropertyMapping<Array<Span>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FS_ARRAY
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<Span>? {
+                return (annotationFS.getFeatureValue(feat) as ArrayFS?)?.run {
+                    Array(size()) {
+                        val annotation = get(it) as AnnotationFS
+                        Span(annotation.begin, annotation.end)
+                    }
+                }
+            }
+
+            override fun copyValueToAnnotation(
+                    value: Array<Span>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                value ?: return
+                val arrayFS = cas.createArrayFS(value.size)
+                value.forEachIndexed { index, span ->
+                    val spannotation = cas.createAnnotation<AnnotationFS>(
+                            cas.annotationType,
+                            span.startIndex,
+                            span.endIndex
+                    )
+                    cas.addFsToIndexes(spannotation)
+                    arrayFS[index] = spannotation
+                }
+            }
+        }
+
+        inner class SpanListPropertyMapping(
+                property: KProperty1<T, List<Span>?>,
+                parameter: KParameter
+        ) : PropertyMapping<List<Span>?>(property, parameter) {
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FS_ARRAY
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Span>? {
+                return (annotationFS.getFeatureValue(feat) as ArrayFS?)?.run {
+                    List(size()) {
+                        val annotation = get(it) as AnnotationFS
+                        Span(annotation.begin, annotation.end)
+                    }
+                }
+            }
+
+            override fun copyValueToAnnotation(value: List<Span>?, cas: CAS, annotationFS: AnnotationFS) {
+                value ?: return
+                val arrayFS = cas.createArrayFS(value.size)
+                value.forEachIndexed { index, span ->
+                    val spannotation = cas.createAnnotation<AnnotationFS>(
+                            cas.annotationType,
+                            span.startIndex,
+                            span.endIndex
+                    )
+                    cas.addFsToIndexes(spannotation)
+                    arrayFS[index] = spannotation
+                }
+            }
+        }
+
+        inner class LabelPropertyMapping<R : Label>(
+                property: KProperty1<T, R?>,
+                parameter: KParameter
+        ) : PropertyMapping<R?>(property, parameter) {
+            @Suppress("UNCHECKED_CAST")
+            private val factory =
+                    labelAdapters.getLabelAdapterFactory(returnType.java as Class<out Label>)
+                            as LabelAdapterFactory<R>
+
+            override val uimaType: String
+                get() = factory.typeName
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): R? {
+                val adapter = factory.create(annotationFS.cas)
+                val from = annotationFS.getFeatureValue(feat) as AnnotationFS? ?: return null
+                return adapter.annotationToLabel(from)
+            }
+
+            override fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS) {
+                value ?: return
+                val adapter = factory.create(annotationFS.cas)
+                annotationFS.setFeatureValue(feat, adapter.labelToAnnotation(value))
+            }
+        }
+
+        inner class LabelArrayPropertyMapping<R : Label>(
+                property: KProperty1<T, Array<R>>,
+                parameter: KParameter,
+                componentClass: Class<R>
+        ) : PropertyMapping<Array<R>>(property, parameter) {
+            private val factory = labelAdapters.getLabelAdapterFactory(componentClass)
+
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FS_ARRAY
+
+            @Suppress("UNCHECKED_CAST")
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<R>? {
+                val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null
+                val adapter = factory.create(annotationFS.cas)
+                return Array<Label>(arrayFS.size()) {
+                    adapter.annotationToLabel(arrayFS[it] as AnnotationFS)
+                } as Array<R>
+            }
+
+            override fun copyValueToAnnotation(
+                    value: Array<R>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                value ?: return
+                val arrayFS = cas.createArrayFS(value.size)
+                val adapter = factory.create(cas)
+                value.forEachIndexed { index, r -> arrayFS[index] = adapter.labelToAnnotation(r) }
+                cas.addFsToIndexes(arrayFS)
+                annotationFS.setFeatureValue(feat, arrayFS)
+            }
+        }
+
+        inner class LabelListPropertyMapping<R : Label>(
+                property: KProperty1<T, List<R>>,
+                parameter: KParameter,
+                componentClass: Class<R>
+        ) : PropertyMapping<List<R>>(property, parameter) {
+            private val factory = labelAdapters.getLabelAdapterFactory(componentClass)
+
+            override val uimaType: String
+                get() = CAS.TYPE_NAME_FS_ARRAY
+
+            override fun copyFromAnnotation(annotationFS: AnnotationFS): List<R>? {
+                val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null
+                val adapter = factory.create(annotationFS.cas)
+                return List(arrayFS.size()) {
+                    adapter.annotationToLabel(arrayFS[it] as AnnotationFS)
+                }
+            }
+
+            override fun copyValueToAnnotation(
+                    value: List<R>?,
+                    cas: CAS,
+                    annotationFS: AnnotationFS
+            ) {
+                value ?: return
+                val arrayFS = cas.createArrayFS(value.size)
+                val adapter = factory.create(cas)
+                value.forEachIndexed { index, r -> arrayFS[index] = adapter.labelToAnnotation(r) }
+                cas.addFsToIndexes(arrayFS)
+                annotationFS.setFeatureValue(feat, arrayFS)
+            }
+        }
+
+        private fun checkPrimitiveProperty(property: KProperty1<T, *>) {
+            if (property.returnType.isMarkedNullable) {
+                throw IllegalStateException(
+                        "Nullable primitive property, UIMA does not support nullable primitives"
+                )
+            }
         }
     }
+
 }
 
+
 fun TypeSystemDescription.addEnum(clazz: Class<*>) {
-    val type = addType("edu.umn.biomedicus.types.auto." + clazz.simpleName,
+    val type = addType(createEnumTypeName(clazz),
             "Automatically generated type from ${clazz.canonicalName}",
             "uima.cas.String")
     type.allowedValues = clazz.enumConstants.map { it as Enum<*> }.map { it.name }
@@ -95,428 +1203,6 @@ fun TypeSystemDescription.addEnum(clazz: Class<*>) {
             .toTypedArray()
 }
 
-class AutoAdapter<T : TextRange>(
-        private val clazz: KClass<out TextRange>,
-        private val distinct: Boolean
-) : LabelAdapterFactory {
-    constructor(clazz: Class<out TextRange>, distinct: Boolean) : this(clazz.kotlin, distinct)
+private fun createEnumTypeName(clazz: Class<*>) =
+        "edu.umn.biomedicus.types.auto.${clazz.simpleName}"
 
-    private val primaryConstructor = clazz.primaryConstructor!!
-
-    private var typeDescription: TypeDescription? = null
-
-    private val propertyMappings = clazz.memberProperties
-            .filter { it.name != "startIndex" && it.name != "endIndex" }
-            .map { PropertyMapping(it) }
-
-    private var isInitialized = false
-
-    fun addTypeToTypeSystem(description: TypeSystemDescription) {
-        typeDescription = description.addType("edu.umn.biomedicus.types.auto." + clazz.simpleName,
-                "Automatically generated type from ${clazz.qualifiedName}",
-                "uima.tcas.Annotation")
-    }
-
-    fun addFeaturesToTypeSystem(map: Map<Class<out TextRange>, AutoAdapter<out TextRange>>) {
-        for (propertyMapping in propertyMappings) {
-            propertyMapping.addFeatures(map)
-            propertyMapping.initType(map)
-        }
-    }
-
-    override fun create(cas: CAS): AbstractLabelAdapter<T> {
-        val typeDescription = checkNotNull(typeDescription)
-
-        synchronized(this) {
-            if (!isInitialized) {
-                propertyMappings.forEach { it.initFeat(cas) }
-            }
-        }
-
-        return object : AbstractLabelAdapter<T>(cas, cas.typeSystem.getType(typeDescription.name)) {
-            override fun annotationToLabel(annotationFS: AnnotationFS): TextRange {
-                val parameters = HashMap<KParameter, Any>()
-                for (propertyMapping in propertyMappings) {
-                    val value = propertyMapping.copyFromAnnotation(annotationFS)
-
-                    val parameter = primaryConstructor
-                            .findParameterByName(propertyMapping.property.name)
-
-                    parameters[parameter!!] = value
-                }
-
-                parameters[primaryConstructor.findParameterByName("startIndex")!!] =
-                        annotationFS.begin
-
-                parameters[primaryConstructor.findParameterByName("endIndex")!!] =
-                        annotationFS.end
-
-                return primaryConstructor.callBy(parameters)
-            }
-
-            override fun fillAnnotation(label: T, annotationFS: AnnotationFS) {
-                for (propertyMapping in propertyMappings) {
-                    propertyMapping.copyToAnnotation(label, annotationFS)
-                }
-            }
-
-            override fun isDistinct(): Boolean {
-                return distinct
-            }
-        }
-    }
-
-
-    inner class PropertyMapping<T : TextRange>(
-            val property: KProperty1<T, *>
-    ) {
-        private val returnType: KClassifier = property.returnType.classifier!!
-
-        private var featureDescription: FeatureDescription? = null
-
-        private var copyToAnnotation: ((T, AnnotationFS) -> Unit)? = null
-
-        private var copyFromAnnotation: ((AnnotationFS) -> Any)? = null
-
-        private var feat: Feature? = null
-
-        fun initFeat(cas: CAS) {
-            feat = cas.typeSystem.getType(typeDescription!!.name).getFeatureByBaseName(property.name)
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        fun copyToAnnotation(label: TextRange, annotationFS: AnnotationFS) =
-                copyToAnnotation!!.invoke(label as T, annotationFS)
-
-        fun copyFromAnnotation(annotationFS: AnnotationFS): Any =
-                copyFromAnnotation!!.invoke(annotationFS)
-
-        fun addFeatures(
-                map: Map<Class<out TextRange>, AutoAdapter<out TextRange>>) {
-            val typeDescription = checkNotNull(typeDescription)
-
-            featureDescription = when (returnType) {
-                Boolean::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Boolean"
-                )
-                Byte::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Byte"
-                )
-                Short::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Short"
-                )
-                Int::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Integer"
-                )
-                Float::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Float"
-                )
-                Double::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.Double"
-                )
-                String::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.String"
-                )
-                BooleanArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.BooleanArray"
-                )
-                ByteArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.ByteArray"
-                )
-                ShortArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.ShortArray"
-                )
-                IntArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.IntArray"
-                )
-                FloatArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.FloatArray"
-                )
-                DoubleArray::class -> typeDescription.addFeature(
-                        property.name,
-                        featureDesc,
-                        "uima.cas.DoubleArray"
-                )
-                Array<Any>::class -> {
-                    if ((returnType as KClass<*>).java.componentType == String::class.java)
-                        typeDescription.addFeature(
-                                property.name,
-                                featureDesc,
-                                "uima.cas.StringArray"
-                        )
-                    else
-                        typeDescription.addFeature(
-                                property.name,
-                                featureDesc,
-                                "uima.cas.FSArray"
-                        )
-                }
-                else -> {
-                    val javaClass = (returnType as KClass<*>).java
-                    if (javaClass.isEnum) {
-                        typeDescription.addFeature(
-                                property.name,
-                                featureDesc,
-                                "edu.umn.biomedicus.types.auto.${javaClass.simpleName}"
-                        )
-                    } else {
-                        val referenceClass = javaClass.asSubclass(TextRange::class.java)
-                        val adapter = map[referenceClass]
-                                ?: throw BiomedicusException("Type not found: $referenceClass")
-
-                        typeDescription.addFeature(
-                                property.name,
-                                featureDesc,
-                                adapter.typeDescription?.name
-                                        ?: throw BiomedicusException("Type description not set on $referenceClass")
-                        )
-                    }
-                }
-            }
-        }
-
-        fun initType(map: Map<Class<out TextRange>, AutoAdapter<out TextRange>>) {
-            when (returnType) {
-                Boolean::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setBooleanValue(feat, property.get(label) as Boolean)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getBooleanValue(feat)
-                    }
-                }
-                Byte::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setByteValue(feat, property.get(label) as Byte)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getByteValue(feat)
-                    }
-                }
-                Short::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setShortValue(feat, property.get(label) as Short)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getShortValue(feat)
-                    }
-                }
-                Int::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setIntValue(feat, property.get(label) as Int)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getIntValue(feat)
-                    }
-                }
-                Float::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setFloatValue(feat, property.get(label) as Float)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getFloatValue(feat)
-                    }
-                }
-                Double::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setDoubleValue(feat, property.get(label) as Double)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getDoubleValue(feat)
-                    }
-                }
-                String::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        annotation.setStringValue(feat, property.get(label) as String)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        annotation.getStringValue(feat)
-                    }
-                }
-                BooleanArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as BooleanArray
-                        val to = annotation.cas.createBooleanArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as BooleanArrayFS
-                        BooleanArray(from.size(), { i -> from[i] })
-                    }
-                }
-                ByteArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as ByteArray
-                        val to = annotation.cas.createByteArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as ByteArrayFS
-                        ByteArray(from.size(), { i -> from[i] })
-                    }
-                }
-                ShortArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as ShortArray
-                        val to = annotation.cas.createShortArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as ShortArrayFS
-                        ShortArray(from.size(), { i -> from[i] })
-                    }
-                }
-                IntArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as IntArray
-                        val to = annotation.cas.createIntArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as IntArrayFS
-                        IntArray(from.size(), { i -> from[i] })
-                    }
-                }
-                FloatArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as FloatArray
-                        val to = annotation.cas.createFloatArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as FloatArrayFS
-                        FloatArray(from.size(), { i -> from[i] })
-                    }
-                }
-                DoubleArray::class -> {
-                    copyToAnnotation = { label, annotation ->
-                        val from = property.get(label) as DoubleArray
-                        val to = annotation.cas.createDoubleArrayFS(from.size)
-                        for (i in 0 until from.size) {
-                            to[i] = from[i]
-                        }
-                        annotation.cas.addFsToIndexes(to)
-                        annotation.setFeatureValue(feat, to)
-                    }
-                    copyFromAnnotation = { annotation ->
-                        val from = annotation.getFeatureValue(feat) as DoubleArrayFS
-                        DoubleArray(from.size(), { i -> from[i] })
-                    }
-                }
-                Array<Any>::class -> {
-                    if ((returnType as KClass<*>).java.componentType == String::class.java) {
-                        @Suppress("UNCHECKED_CAST")
-                        copyToAnnotation = { label, annotation ->
-                            val from = property.get(label) as Array<String>
-                            val to = annotation.cas.createStringArrayFS(from.size)
-                            for (i in 0 until from.size) {
-                                to[i] = from[i]
-                            }
-                            annotation.cas.addFsToIndexes(to)
-                            annotation.setFeatureValue(feat, to)
-                        }
-                        copyFromAnnotation = { annotation ->
-                            val from = annotation.getFeatureValue(feat) as StringArrayFS
-                            Array(from.size(), { i -> from[i] })
-                        }
-                    } else {
-                        @Suppress("UNCHECKED_CAST")
-                        copyToAnnotation = { label, annotation ->
-                            val from = property.get(label) as Array<TextRange>
-                            val cas = annotation.cas
-                            val to = cas.createArrayFS(from.size)
-                            val valuesAdapter = (map[returnType.java.componentType]
-                                    ?: throw BiomedicusException("")).create(cas)
-                            for (i in 0 until from.size) {
-                                to[i] = valuesAdapter.labelToAnnotation(from[i])
-                            }
-                            cas.addFsToIndexes(to)
-                            annotation.setFeatureValue(feat, to)
-                        }
-                        copyFromAnnotation = { annotation ->
-                            val from = annotation.getFeatureValue(feat) as ArrayFS
-                            Array(from.size(), { i -> from[i] })
-                        }
-                    }
-                }
-                else -> {
-                    if ((returnType as KClass<*>).java.isEnum) {
-                        copyToAnnotation = { label, annotation ->
-                            val enumVal = property.get(label) as Enum<*>
-                            annotation.setStringValue(feat, enumVal.name)
-                        }
-                        copyFromAnnotation = {
-                            val from = it.getStringValue(feat)
-                            returnType.java.enumConstants
-                                    .map { it as Enum<*> }
-                                    .find { it.name == from }
-                                    ?: throw IllegalStateException("Enum value not found")
-                        }
-                    } else {
-                        @Suppress("UNCHECKED_CAST")
-                        copyToAnnotation = { label, annotation ->
-                            val from = property.get(label) as Array<TextRange>
-                            val cas = annotation.cas
-                            val to = cas.createArrayFS(from.size)
-                            val valuesAdapter = (map[returnType.java.componentType]
-                                    ?: throw BiomedicusException("")).create(cas)
-                            for (i in 0 until from.size) {
-                                to[i] = valuesAdapter.labelToAnnotation(from[i])
-                            }
-                            cas.addFsToIndexes(to)
-                            annotation.setFeatureValue(feat, to)
-                        }
-                        copyFromAnnotation = { annotation ->
-                            val from = annotation.getFeatureValue(feat) as ArrayFS
-                            Array(from.size(), { i -> from[i] })
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

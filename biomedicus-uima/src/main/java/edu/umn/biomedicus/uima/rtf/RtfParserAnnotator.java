@@ -21,7 +21,7 @@ import edu.umn.biomedicus.rtf.reader.ReaderRtfSource;
 import edu.umn.biomedicus.rtf.reader.RtfParser;
 import edu.umn.biomedicus.rtf.reader.RtfSource;
 import edu.umn.biomedicus.uima.adapter.UimaAdapters;
-import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.Artifact;
 import java.io.StringReader;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -44,11 +44,11 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
   /**
    * UIMA Parameter for the original document view name.
    */
-  public static final String PARAM_ORIGINAL_DOCUMENT_VIEW_NAME = "originalDocumentViewName";
+  public static final String PARAM_ORIGINAL_DOCUMENT_VIEW_NAME = "rtfDocumentName";
   /**
    * UIMA Parameter for the target view name
    */
-  public static final String PARAM_TARGET_VIEW_NAME = "targetViewName";
+  public static final String PARAM_TARGET_VIEW_NAME = "documentName";
   /**
    * UIMA Parameter for the rtf properties descriptor classpath reference.
    */
@@ -118,7 +118,7 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
 
     String documentText = originalDocument.getDocumentText();
 
-    Document document = UimaAdapters.getDocument(aCAS, null);
+    Artifact artifact = UimaAdapters.getArtifact(aCAS, null);
 
     CAS targetView;
     boolean isRtf;
@@ -138,10 +138,10 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
         parser.parseFile();
         parsed = true;
       } catch (RtfReaderException e) {
-        LOGGER.warn("Irrecoverable error during parsing: " + document.getDocumentId(), e);
+        LOGGER.warn("Irrecoverable error during parsing: " + artifact.getArtifactID(), e);
       }
       if (!parser.finish()) {
-        LOGGER.warn("Document with unclosed Rtf group(s): " + document.getDocumentId());
+        LOGGER.warn("Document with unclosed Rtf group(s): " + artifact.getArtifactID());
         parsed = false;
       }
 
@@ -152,10 +152,10 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
       isRtf = false;
     }
     if (!parsed) {
-      LOGGER.warn("Failed to completely parse document from rtf: " + document.getDocumentId());
+      LOGGER.warn("Failed to completely parse document from rtf: " + artifact.getArtifactID());
     }
-    document.getMetadata().put("isRtfComplete", Boolean.toString(parsed));
+    artifact.getMetadata().put("isRtfComplete", Boolean.toString(parsed));
 
-    document.getMetadata().put("isRtf", Boolean.toString(isRtf));
+    artifact.getMetadata().put("isRtf", Boolean.toString(isRtf));
   }
 }

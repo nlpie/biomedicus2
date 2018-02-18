@@ -20,21 +20,20 @@ import static edu.umn.biomedicus.modification.ModificationType.HISTORICAL;
 import static edu.umn.biomedicus.modification.ModificationType.NEGATED;
 import static edu.umn.biomedicus.modification.ModificationType.PROBABLE;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.concepts.DictionaryTerm;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.TermToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -126,29 +125,27 @@ public class ModificationDetector implements DocumentProcessor {
       .build();
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText labeledText = TextIdentifiers.getSystemLabeledText(document);
+  public void process(@Nonnull Document document) {
+    LabelIndex<TermToken> tokenLabelIndex = document.labelIndex(TermToken.class);
 
-    if (labeledText == null) {
-      throw new BiomedicusException("no System text");
-    }
-
-    LabelIndex<TermToken> tokenLabelIndex = labeledText.labelIndex(TermToken.class);
-    LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = labeledText
+    LabelIndex<DictionaryTerm> dictionaryTermLabelIndex = document
         .labelIndex(DictionaryTerm.class);
-    LabelIndex<Sentence> sentenceLabelIndex = labeledText.labelIndex(Sentence.class);
-    LabelIndex<PosTag> partOfSpeechLabelIndex = labeledText.labelIndex(PosTag.class);
 
-    Labeler<Probable> probableLabeler = labeledText.labeler(Probable.class);
-    Labeler<Historical> historicalLabeler = labeledText.labeler(Historical.class);
-    Labeler<Negated> negatedLabeler = labeledText.labeler(Negated.class);
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = document.labelIndex(PosTag.class);
+
+    Labeler<Probable> probableLabeler = document.labeler(Probable.class);
+    Labeler<Historical> historicalLabeler = document.labeler(Historical.class);
+    Labeler<Negated> negatedLabeler = document.labeler(Negated.class);
+
+    Labeler<ModificationCue> cueLabeler = document.labeler(ModificationCue.class);
 
     for (DictionaryTerm termLabel : dictionaryTermLabelIndex) {
       Sentence sentenceLabel = sentenceLabelIndex.containing(termLabel).first();
 
       if (sentenceLabel == null) {
         sentenceLabelIndex.containing(termLabel);
-        throw new BiomedicusException("Term outside of a sentence.");
+        throw new RuntimeException("Term outside of a sentence.");
       }
 
       LabelIndex<TermToken> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel);
@@ -157,16 +154,22 @@ public class ModificationDetector implements DocumentProcessor {
 
       Pair<ModificationType, List<Span>> result = CUES.searchLeft(contextList,
           partOfSpeechLabelIndex);
+
       if (result != null) {
+        List<ModificationCue> cues = result.second().stream().map(span -> {
+          ModificationCue cue = new ModificationCue(span);
+          cueLabeler.add(cue);
+          return cue;
+        }).collect(Collectors.toList());
         switch (result.first()) {
           case HISTORICAL:
-            historicalLabeler.add(new Historical(termLabel, result.second()));
+            historicalLabeler.add(new Historical(termLabel, cues));
             break;
           case NEGATED:
-            negatedLabeler.add(new Negated(termLabel, result.second()));
+            negatedLabeler.add(new Negated(termLabel, cues));
             break;
           case PROBABLE:
-            probableLabeler.add(new Probable(termLabel, result.second()));
+            probableLabeler.add(new Probable(termLabel, cues));
             break;
           default:
             throw new IllegalStateException();
@@ -178,15 +181,20 @@ public class ModificationDetector implements DocumentProcessor {
 
       result = CUES.searchRight(contextList, partOfSpeechLabelIndex);
       if (result != null) {
+        List<ModificationCue> cues = result.second().stream().map(span -> {
+          ModificationCue cue = new ModificationCue(span);
+          cueLabeler.add(cue);
+          return cue;
+        }).collect(Collectors.toList());
         switch (result.first()) {
           case HISTORICAL:
-            historicalLabeler.add(new Historical(termLabel, result.second()));
+            historicalLabeler.add(new Historical(termLabel, cues));
             break;
           case NEGATED:
-            negatedLabeler.add(new Negated(termLabel, result.second()));
+            negatedLabeler.add(new Negated(termLabel, cues));
             break;
           case PROBABLE:
-            probableLabeler.add(new Probable(termLabel, result.second()));
+            probableLabeler.add(new Probable(termLabel, cues));
             break;
           default:
             throw new IllegalStateException();

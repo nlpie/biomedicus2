@@ -16,27 +16,3 @@
 
 package edu.umn.biomedicus.uima.labels;
 
-import com.google.inject.Inject;
-import edu.umn.nlpengine.TextRange;
-import edu.umn.nlpengine.Labeler;
-import org.jetbrains.annotations.NotNull;
-
-public final class UimaLabeler<T extends TextRange> implements Labeler<T> {
-
-  private final LabelAdapter<T> labelAdapter;
-
-  @Inject
-  public UimaLabeler(LabelAdapter<T> labelAdapter) {
-    this.labelAdapter = labelAdapter;
-  }
-
-  @Override
-  public void add(@NotNull T label) {
-    labelAdapter.labelToAnnotation(label);
-  }
-
-  @Override
-  public void addAll(@NotNull Iterable<? extends T> elements) {
-    elements.forEach(this::add);
-  }
-}

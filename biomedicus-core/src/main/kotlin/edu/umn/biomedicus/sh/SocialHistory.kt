@@ -20,26 +20,65 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.common.TextIdentifiers.getSystemLabeledText
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExpr
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.sections.SectionTitle
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 
+class SocialHistoryModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<AlcoholCandidate>()
+        addLabelClass<AlcoholCue>()
+
+        addLabelClass<DrugCandidate>()
+
+        addLabelClass<NicotineCandidate>()
+        addLabelClass<NicotineCue>()
+        addLabelClass<NicotineUnit>()
+        addLabelClass<NicotineAmount>()
+        addLabelClass<NicotineFrequency>()
+        addLabelClass<NicotineTemporal>()
+        addLabelClass<NicotineType>()
+        addLabelClass<NicotineStatus>()
+        addLabelClass<NicotineMethod>()
+
+        addLabelClass<SocialHistorySectionHeader>()
+        addLabelClass<UsageFrequencyPhrase>()
+        addLabelClass<UsageFrequency>()
+        addLabelClass<UsageStatus>()
+        addLabelClass<GenericMethodPhrase>()
+    }
+
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class SocialHistorySectionHeader(
         override val startIndex: Int,
         override val endIndex: Int
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-val headers = SequenceDetector(
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class UsageFrequencyPhrase(
+        override val startIndex: Int,
+        override val endIndex: Int
+) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class UsageStatus(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class GenericMethodPhrase(override val startIndex: Int, override val endIndex: Int) : Label()
+
+
+internal val headers = SequenceDetector(
         listOf("risk", "factor"),
         listOf("present", "illness"),
         listOf("cardiovascular", "risk", "analysis"),
@@ -51,20 +90,19 @@ val headers = SequenceDetector(
         listOf("tobacco")
 ) { a: String, b: Token -> b.text.startsWith(a, true) }
 
-val headersExact = SequenceDetector(
+internal val headersExact = SequenceDetector(
         listOf("ESRD"),
         listOf("SH"),
         listOf("SHX")
 ) { a: String, b: Token -> b.text.contentEquals(a) }
 
+
 class SocialHistorySectionHeaderDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val view = getSystemLabeledText(document)
+        val sectionHeaders = document.labelIndex(SectionTitle::class.java)
+        val tokens = document.labelIndex(ParseToken::class.java)
 
-        val sectionHeaders = view.labelIndex(SectionTitle::class.java)
-        val tokens = view.labelIndex(ParseToken::class.java)
-
-        val labeler = view.labeler(SocialHistorySectionHeader::class.java)
+        val labeler = document.labeler(SocialHistorySectionHeader::class.java)
 
         for (sectionHeader in sectionHeaders) {
             val headerTokens = tokens.insideSpan(sectionHeader).asList()
@@ -72,13 +110,6 @@ class SocialHistorySectionHeaderDetector : DocumentProcessor {
                 labeler.add(SocialHistorySectionHeader(sectionHeader))
         }
     }
-}
-
-data class UsageFrequencyPhrase(
-        override val startIndex: Int,
-        override val endIndex: Int
-) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
 
@@ -97,16 +128,14 @@ class UsageFrequencyPhraseDetector @Inject constructor(
     val detector = usageFrequencyPhrases.detector
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = text.labelIndex(Sentence::class)
-        val tokens = text.labelIndex(ParseToken::class)
+        val labeler = document.labeler<UsageFrequencyPhrase>()
 
-        val labeler = text.labeler(UsageFrequencyPhrase::class)
-
-        val nicotineCandidates = text.labelIndex(NicotineCandidate::class)
-        val alcoholCandidates = text.labelIndex(AlcoholCandidate::class)
-        val drugCandidates = text.labelIndex(DrugCandidate::class)
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
+        val alcoholCandidates = document.labelIndex<AlcoholCandidate>()
+        val drugCandidates = document.labelIndex<DrugCandidate>()
 
         sentences
                 .filter {
@@ -122,8 +151,6 @@ class UsageFrequencyPhraseDetector @Inject constructor(
                 }
     }
 }
-
-data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
@@ -146,16 +173,14 @@ data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
             : this(usageFrequencyPattern.searchExpr)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
 
-        val sentences = text.labelIndex<Sentence>()
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
+        val alcoholCandidates = document.labelIndex<AlcoholCandidate>()
+        val drugCandidates = document.labelIndex<DrugCandidate>()
 
-        val nicotineCandidates = text.labelIndex<NicotineCandidate>()
-        val alcoholCandidates = text.labelIndex<AlcoholCandidate>()
-        val drugCandidates = text.labelIndex<DrugCandidate>()
-
-        val searcher = expr.createSearcher(text)
-        val labeler = text.labeler<UsageFrequency>()
+        val searcher = expr.createSearcher(document)
+        val labeler = document.labeler<UsageFrequency>()
 
         sentences
                 .filter {
@@ -169,8 +194,6 @@ data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
                 }
     }
 }
-
-data class UsageStatus(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 data class UsageStatusPhrases(val detector: SequenceDetector<String, ParseToken>) {
@@ -186,16 +209,14 @@ data class UsageStatusDetector(
     @Inject constructor(phrases: UsageStatusPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = text.labelIndex<Sentence>()
-        val tokens = text.labelIndex<ParseToken>()
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
+        val alcoholCandidates = document.labelIndex<AlcoholCandidate>()
+        val drugCandidates = document.labelIndex<DrugCandidate>()
 
-        val nicotineCandidates = text.labelIndex<NicotineCandidate>()
-        val alcoholCandidates = text.labelIndex<AlcoholCandidate>()
-        val drugCandidates = text.labelIndex<DrugCandidate>()
-
-        val labeler = text.labeler<UsageStatus>()
+        val labeler = document.labeler<UsageStatus>()
 
         sentences
                 .filter {
@@ -212,8 +233,6 @@ data class UsageStatusDetector(
     }
 }
 
-data class GenericMethodPhrase(override val startIndex: Int, override val endIndex: Int) : TextRange
-
 @Singleton
 data class GenericMethodPhrases(val detector: SequenceDetector<String, ParseToken>) {
     @Inject constructor(@Setting("sh.genericMethodPhrasesPath") path: String)
@@ -228,16 +247,14 @@ data class GenericMethodPhraseDetector(
     @Inject constructor(phrases: GenericMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
 
-        val sentences = text.labelIndex<Sentence>()
-        val tokens = text.labelIndex<ParseToken>()
+        val nicotineCandidates = document.labelIndex<NicotineCandidate>()
+        val alcoholCandidates = document.labelIndex<AlcoholCandidate>()
+        val drugCandidates = document.labelIndex<DrugCandidate>()
 
-        val nicotineCandidates = text.labelIndex<NicotineCandidate>()
-        val alcoholCandidates = text.labelIndex<AlcoholCandidate>()
-        val drugCandidates = text.labelIndex<DrugCandidate>()
-
-        val labeler = text.labeler<GenericMethodPhrase>()
+        val labeler = document.labeler<GenericMethodPhrase>()
 
         sentences
                 .filter {

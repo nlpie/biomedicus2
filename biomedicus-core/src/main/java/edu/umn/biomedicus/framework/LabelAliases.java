@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.framework;
 
-import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.Label;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -28,14 +28,14 @@ import javax.inject.Singleton;
 @Singleton
 public class LabelAliases {
 
-  private final Map<String, Class<? extends TextRange>> aliases = new HashMap<>();
+  private final Map<String, Class<? extends Label>> aliases = new HashMap<>();
 
-  public void addAlias(String alias, Class<? extends TextRange> labelableClass) {
+  public void addAlias(String alias, Class<? extends Label> labelableClass) {
     aliases.put(alias, labelableClass);
   }
 
   @Nullable
-  public Class<? extends TextRange> getLabelable(String alias) {
+  public Class<? extends Label> getLabelable(String alias) {
     return aliases.get(alias);
   }
 }

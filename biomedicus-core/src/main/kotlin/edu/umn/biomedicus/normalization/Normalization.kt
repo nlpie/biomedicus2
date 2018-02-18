@@ -17,18 +17,30 @@
 package edu.umn.biomedicus.normalization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
+class NormalizationModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<NormForm>()
+    }
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class NormForm(
         override val startIndex: Int,
         override val endIndex: Int,
         val normalForm: String,
-        val normIdentifier: StringIdentifier
-) : TextRange {
+        val identifier: Int
+) : Label() {
     constructor(
             textRange: TextRange,
             normalForm: String,
             normIdentifier: StringIdentifier
-    ) : this(textRange.startIndex, textRange.endIndex, normalForm, normIdentifier)
+    ) : this(textRange.startIndex, textRange.endIndex, normalForm, normIdentifier.value())
+
+    fun normIdentifier() = StringIdentifier(identifier)
 }
 

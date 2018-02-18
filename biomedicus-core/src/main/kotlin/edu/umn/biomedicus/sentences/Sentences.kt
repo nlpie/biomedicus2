@@ -16,12 +16,25 @@
 
 package edu.umn.biomedicus.sentences
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
-data class Sentence(override val startIndex: Int, override val endIndex: Int) : TextRange {
+class SentencesModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<Sentence>()
+        addLabelClass<TextSegment>()
+    }
+
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Sentence(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class TextSegment(override val startIndex: Int, override val endIndex: Int) : TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TextSegment(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

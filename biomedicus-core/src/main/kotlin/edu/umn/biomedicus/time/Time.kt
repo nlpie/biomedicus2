@@ -17,28 +17,86 @@
 package edu.umn.biomedicus.time
 
 import edu.umn.biomedicus.annotations.Setting
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech
 import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExpr
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 import java.io.File
 import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 import javax.inject.Singleton
 
+class TimeModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<DayOfWeek>()
+        addLabelClass<TimeOfDayWord>()
+        addLabelClass<SeasonWord>()
+        addLabelClass<Month>()
+        addLabelClass<YearNumber>()
+        addLabelClass<YearRange>()
+        addLabelClass<TextTime>()
+        addLabelClass<TextDate>()
+        addLabelClass<TemporalPhrase>()
+    }
+
+}
+
 /**
  * A day of week in text, e.g. "Monday", "tue.", etc
  */
-data class DayOfWeek(override val startIndex: Int, override val endIndex: Int) : TextRange {
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class DayOfWeek(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TimeOfDayWord(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class SeasonWord(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * A month in text, e.g. "Jan", "February", "Sept."
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Month(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class YearNumber(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val value: Int
+) : Label() {
+
+
+    constructor(
+            textRange: TextRange,
+            value: Int
+    ) : this(textRange.startIndex, textRange.endIndex, value)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class YearRange(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TextTime(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TextDate(override val startIndex: Int, override val endIndex: Int) : Label()
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TemporalPhrase(override val startIndex: Int, override val endIndex: Int) : Label()
+
 
 /**
  * Data model for days of week
@@ -59,12 +117,10 @@ class DayOfWeekDetector @Inject constructor(
     private val values = daysOfWeek.values
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val tokens = document.labelIndex<ParseToken>()
+        val posTags = document.labelIndex<PosTag>()
 
-        val tokens = text.labelIndex(ParseToken::class)
-        val posTags = text.labelIndex(PosTag::class)
-
-        val labeler = text.labeler(DayOfWeek::class)
+        val labeler = document.labeler<DayOfWeek>()
 
         posTags.filter { it.partOfSpeech == PartOfSpeech.NN || it.partOfSpeech == PartOfSpeech.NNP }
                 .map {
@@ -76,9 +132,6 @@ class DayOfWeekDetector @Inject constructor(
     }
 }
 
-data class TimeOfDayWord(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 @Singleton
 class TimesOfDay @Inject constructor(@Setting("time.timesOfDayPath") path: String) {
@@ -89,19 +142,14 @@ class TimeOfDayWordDetector @Inject constructor(timesOfDay: TimesOfDay) : Docume
     private val values = timesOfDay.values
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val labeler = document.labeler<TimeOfDayWord>()
 
-        val labeler = text.labeler(TimeOfDayWord::class)
-
-        text.labelIndex(ParseToken::class)
+        document.labelIndex<ParseToken>()
                 .filter { values.contains(it.text.toLowerCase()) }
                 .forEach { labeler.add(TimeOfDayWord(it)) }
     }
 }
 
-data class SeasonWord(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 @Singleton
 class Seasons @Inject constructor(@Setting("time.seasonsPath") path: String) {
@@ -112,23 +160,14 @@ class SeasonWordDetector @Inject constructor(seasons: Seasons) : DocumentProcess
     private val values = seasons.values
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val labeler = document.labeler<SeasonWord>()
 
-        val labeler = text.labeler(SeasonWord::class)
-
-        text.labelIndex(ParseToken::class)
+        document.labelIndex<ParseToken>()
                 .filter { values.contains(it.text.toLowerCase()) }
                 .forEach { labeler.add(SeasonWord(it)) }
     }
 }
 
-
-/**
- * A month in text, e.g. "Jan", "February", "Sept."
- */
-data class Month(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 /**
  * The data model for months.
@@ -149,12 +188,10 @@ class MonthDetector @Inject constructor(
     private val months = months.months
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val tokens = document.labelIndex<ParseToken>()
+        val posTags = document.labelIndex<PosTag>()
 
-        val tokens = text.labelIndex(ParseToken::class)
-        val posTags = text.labelIndex(PosTag::class)
-
-        val labeler = text.labeler(Month::class)
+        val labeler = document.labeler<Month>()
 
         posTags
                 .filter {
@@ -170,33 +207,20 @@ class MonthDetector @Inject constructor(
     }
 }
 
-data class YearNumber(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val value: Int
-) : TextRange {
-    constructor(
-            textRange: TextRange,
-            value: Int
-    ) : this(textRange.startIndex, textRange.endIndex, value)
-}
 
 internal val yearPattern = Regex("(18|19|20)\\d{2}")
 
-class YearNumberDetector() : DocumentProcessor {
+class YearNumberDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val tokens = document.labelIndex<ParseToken>()
 
-        val tokens = systemView.labelIndex(ParseToken::class)
-
-        val labeler = systemView.labeler(YearNumber::class)
+        val labeler = document.labeler<YearNumber>()
 
         tokens.filter { yearPattern.matches(it.text) }
                 .forEach { labeler.add(YearNumber(it, it.text.toInt())) }
     }
 }
 
-data class YearRange(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 class YearRangePattern @Inject constructor(searchExprFactory: SearchExprFactory) {
@@ -207,11 +231,9 @@ class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : Documen
     private val expr = pattern.expr
 
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val searcher = expr.createSearcher(document)
 
-        val searcher = expr.createSearcher(systemView)
-
-        val labeler = systemView.labeler(YearRange::class)
+        val labeler = document.labeler<YearRange>()
 
         while (searcher.search()) {
             labeler.add(YearRange(searcher.begin, searcher.end))
@@ -219,7 +241,6 @@ class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : Documen
     }
 }
 
-data class TextTime(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 data class TextTimePattern(val expr: SearchExpr) {
@@ -235,13 +256,11 @@ class TextTimeDetector(val expr: SearchExpr) : DocumentProcessor {
     @Inject constructor(textTimePattern: TextTimePattern): this(textTimePattern.expr)
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
 
-        val sentences = text.labelIndex<Sentence>()
+        val labeler = document.labeler(TextTime::class.java)
 
-        val labeler = text.labeler(TextTime::class.java)
-
-        val searcher = expr.createSearcher(text)
+        val searcher = expr.createSearcher(document)
         for (sentence in sentences) {
             while (searcher.search(sentence)) {
                 labeler.add(TextTime(searcher.begin, searcher.end))
@@ -250,7 +269,6 @@ class TextTimeDetector(val expr: SearchExpr) : DocumentProcessor {
     }
 }
 
-data class TextDate(override val startIndex: Int, override val endIndex: Int) : TextRange
 
 @Singleton
 data class DatePattern(val expr: SearchExpr) {
@@ -268,13 +286,11 @@ class DateDetector @Inject constructor(pattern: DatePattern) : DocumentProcessor
     private val expr = pattern.expr
 
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val searcher = expr.createSearcher(document)
 
-        val searcher = expr.createSearcher(systemView)
+        val sentences = document.labelIndex<Sentence>()
 
-        val sentences = systemView.labelIndex<Sentence>()
-
-        val labeler = systemView.labeler(TextDate::class)
+        val labeler = document.labeler<TextDate>()
 
         for (sentence in sentences) {
             while (searcher.search(sentence)) {
@@ -284,9 +300,6 @@ class DateDetector @Inject constructor(pattern: DatePattern) : DocumentProcessor
     }
 }
 
-data class TemporalPhrase(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
 
 @Singleton
 class TemporalPhrasePattern @Inject constructor(
@@ -313,13 +326,11 @@ class TemporalPhraseDetector @Inject constructor(
     private val expr = pattern.expr
 
     override fun process(document: Document) {
-        val text = TextIdentifiers.getSystemLabeledText(document)
+        val sentences = document.labelIndex<Sentence>()
 
-        val sentences = text.labelIndex(Sentence::class.java)
+        val labeler = document.labeler<TemporalPhrase>()
 
-        val labeler = text.labeler(TemporalPhrase::class)
-
-        val searcher = expr.createSearcher(text)
+        val searcher = expr.createSearcher(document)
         for (sentence in sentences) {
             while (searcher.search(sentence)) {
                 labeler.add(TemporalPhrase(searcher.begin, searcher.end))

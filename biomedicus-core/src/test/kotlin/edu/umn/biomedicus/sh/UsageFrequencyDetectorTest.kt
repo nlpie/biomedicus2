@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.sh
 
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.measures.Quantifier
@@ -24,7 +23,7 @@ import edu.umn.biomedicus.measures.TimeFrequencyUnit
 import edu.umn.biomedicus.measures.TimeUnit
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.StandardDocument
+import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
@@ -47,21 +46,19 @@ class UsageFrequencyDetectorTest {
 
     @Test
     fun testATimeUnit() {
-        val doc = StandardDocument("doc")
+        val document = StandardArtifact("a").addDocument("doc", "a day")
 
-        val text = doc.attachText(TextIdentifiers.SYSTEM, "a day")
+        Sentence(0, 5).addTo(document)
+        NicotineCandidate(0, 5).addTo(document)
 
-        Sentence(0, 5).addTo(text)
-        NicotineCandidate(0, 5).addTo(text)
+        ParseToken(0, 1, "a", true).addTo(document)
+        ParseToken(2, 5, "day", true).addTo(document)
 
-        ParseToken(0, 1, "a", true).addTo(text)
-        ParseToken(2, 5, "day", true).addTo(text)
+        TimeUnit(2, 5).addTo(document)
 
-        TimeUnit(2, 5).addTo(text)
+        usageFrequencyDetector.process(document)
 
-        usageFrequencyDetector.process(doc)
-
-        val freqs = text.labelIndex<UsageFrequency>().asList()
+        val freqs = document.labelIndex<UsageFrequency>().asList()
         assertEquals(freqs.size, 1)
         assertEquals(freqs[0].startIndex, 0)
         assertEquals(freqs[0].endIndex, 5)

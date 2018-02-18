@@ -16,11 +16,12 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.TypeSystem;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +36,21 @@ public class TextSegmenter extends CasAnnotator_ImplBase {
   /**
    * Class logger.
    */
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(TextSegmenter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextSegmenter.class);
 
+  private String documentName;
+
+  @Override
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+
+    documentName = ((String) aContext.getConfigParameterValue("documentName"));
+  }
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
     LOGGER.debug("Segmenting rtf text.");
-    CAS systemView = aCAS.getView(TextIdentifiers.SYSTEM);
+    CAS systemView = aCAS.getView(documentName);
     TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
 
     TypeSystem typeSystem = systemView.getTypeSystem();

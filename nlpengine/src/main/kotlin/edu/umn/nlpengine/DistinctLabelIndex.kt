@@ -20,25 +20,62 @@ import java.util.*
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableCollection
 
+inline fun <reified T: Label> DistinctLabelIndex(vararg labels: T): DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, *labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        comparator: Comparator<T>,
+        vararg labels: T
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, comparator, *labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        labels: Iterable<T>
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        comparator: Comparator<T>,
+        labels: Iterable<T>
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, comparator, labels)
+}
+
 /**
  * A label index where the labels are distinct i.e. non-overlapping.
  */
-class DistinctLabelIndex<out T : TextRange> internal constructor(
+class DistinctLabelIndex<T : Label> internal constructor(
+        override val labelClass: Class<T>,
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
-    constructor(vararg labels: T) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>, 
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareStart(o2)
     }))
 
-    constructor(comparator: Comparator<T>, vararg labels: T) : this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(comparator))
 
-    constructor(labels: Iterable<T>) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareStart(o2)
     }))
 
-    constructor(comparator: Comparator<T>, labels: Iterable<T>) :
-            this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>, labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(comparator))
 
     override fun containing(startIndex: Int, endIndex: Int): LabelIndex<T> {
         val index = containingIndex(startIndex, endIndex)
@@ -183,6 +220,8 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
             left: Int,
             right: Int
     ) : LabelIndex<T> {
+        override val labelClass get() = this@DistinctLabelIndex.labelClass
+
         final override val size: Int
 
         val left: Int

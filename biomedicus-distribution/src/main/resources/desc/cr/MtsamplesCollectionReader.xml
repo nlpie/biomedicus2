@@ -97,7 +97,7 @@
       <nameValuePair>
         <name>targetViewName</name>
         <value>
-          <string>System</string>
+          <string>Default</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

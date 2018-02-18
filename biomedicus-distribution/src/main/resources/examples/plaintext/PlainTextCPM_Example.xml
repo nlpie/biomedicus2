@@ -20,7 +20,7 @@
   <collectionReader>
     <collectionIterator>
       <descriptor>
-        <import location="../../desc/cr/TextFilesDocumentSource.xml"/>
+        <import location="../../desc/cr/TextFilesArtifactSource.xml"/>
       </descriptor>
       <configurationParameterSettings>
         <nameValuePair>

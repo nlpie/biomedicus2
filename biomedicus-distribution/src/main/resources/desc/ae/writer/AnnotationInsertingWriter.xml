@@ -36,6 +36,16 @@
         <name>outputDirectory</name>
         <type>String</type>
       </configurationParameter>
+      <configurationParameter>
+        <name>rtfDocumentName</name>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>documentName</name>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
@@ -44,6 +54,18 @@
           <array>
             <string>edu.umn.biomedicus.type.TermAnnotation</string>
           </array>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>rtfDocumentName</name>
+        <value>
+          <string>OriginalDocument</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Default</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

@@ -18,10 +18,8 @@ package edu.umn.biomedicus.uima.adapter;
 
 import com.google.inject.Injector;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.AggregatorRunner;
 import edu.umn.biomedicus.framework.Application;
-import edu.umn.biomedicus.framework.DocumentProcessorRunner;
-import edu.umn.biomedicus.framework.DocumentSourceRunner;
+import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.framework.LifecycleManager;
 import edu.umn.biomedicus.uima.labels.AutoAdapters;
 import java.util.Map;
@@ -53,7 +51,7 @@ public final class GuiceInjector extends Resource_ImplBase {
   public GuiceInjector() {
     LOGGER.info("Initializing Guice Injector Resource");
     try {
-      Application application = UimaBootstrapper.create();
+      Application application = Bootstrapper.create();
       injector = application.getInjector();
       lifecycleManager = injector.getInstance(LifecycleManager.class);
     } catch (BiomedicusException e) {
@@ -94,18 +92,6 @@ public final class GuiceInjector extends Resource_ImplBase {
       injector = null;
       lifecycleManager.triggerShutdown();
     }
-  }
-
-  public DocumentProcessorRunner createDocumentProcessorRunner() {
-    return DocumentProcessorRunner.create(injector);
-  }
-
-  public DocumentSourceRunner createDocumentSourceRunner() {
-    return DocumentSourceRunner.create(injector);
-  }
-
-  public AggregatorRunner createAggregatorRunner() {
-    return AggregatorRunner.create(injector);
   }
 }
 

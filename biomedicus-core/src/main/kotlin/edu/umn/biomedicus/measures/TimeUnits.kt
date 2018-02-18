@@ -19,19 +19,28 @@ package edu.umn.biomedicus.measures
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 import java.io.File
 import java.nio.charset.StandardCharsets
 
+/**
+ * Some kind of time unit: days, months, years, hours
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class TimeUnit(
         override val startIndex: Int,
         override val endIndex: Int
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * A time frequency: hourly, daily, weekly, yearly.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class TimeFrequencyUnit(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }
 
 @Singleton
@@ -45,11 +54,9 @@ class TimeUnitDetector @Inject constructor(
         val units: TimeUnits
 ) : DocumentProcessor {
     override fun process(document: Document) {
-        val view = TextIdentifiers.getSystemLabeledText(document)
+        val parseTokens = document.labelIndex<ParseToken>()
 
-        val parseTokens = view.labelIndex<ParseToken>()
-
-        val labeler = view.labeler<TimeUnit>()
+        val labeler = document.labeler<TimeUnit>()
 
         parseTokens
                 .filter {
@@ -59,10 +66,6 @@ class TimeUnitDetector @Inject constructor(
                 }
                 .forEach { labeler.add(TimeUnit(it)) }
     }
-}
-
-data class TimeFrequencyUnit(override val startIndex: Int, override val endIndex: Int) : TextRange {
-    constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }
 
 @Singleton
@@ -76,11 +79,9 @@ data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentProcesso
     @Inject constructor(timeFrequencyUnits: TimeFrequencyUnits) : this(timeFrequencyUnits.units)
 
     override fun process(document: Document) {
-        val view = TextIdentifiers.getSystemLabeledText(document)
+        val parseTokens = document.labelIndex<ParseToken>()
 
-        val parseTokens = view.labelIndex(ParseToken::class)
-
-        val labeler = view.labeler(TimeFrequencyUnit::class)
+        val labeler = document.labeler<TimeFrequencyUnit>()
 
         parseTokens
                 .filter {

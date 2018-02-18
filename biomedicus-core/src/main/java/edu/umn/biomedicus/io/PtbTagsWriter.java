@@ -18,18 +18,16 @@ package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.annotation.Nonnull;
 
 public class PtbTagsWriter implements DocumentProcessor {
 
@@ -43,18 +41,12 @@ public class PtbTagsWriter implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    String documentId = document.getDocumentId();
+  public void process(@Nonnull Document document) {
+    String documentId = document.getArtifactID();
 
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    if (systemView == null) {
-      throw new BiomedicusException("null system view");
-    }
-
-    String text = systemView.getText();
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
-    LabelIndex<PosTag> partOfSpeechLabelIndex = systemView.labelIndex(PosTag.class);
+    String text = document.getText();
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    LabelIndex<PosTag> partOfSpeechLabelIndex = document.labelIndex(PosTag.class);
 
     StringBuilder rewriter = new StringBuilder(text);
 
@@ -75,7 +67,7 @@ public class PtbTagsWriter implements DocumentProcessor {
       Path fileName = outputDir.resolve(documentId);
       Files.write(fileName, rewriter.toString().getBytes(StandardCharsets.UTF_8));
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

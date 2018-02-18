@@ -39,6 +39,10 @@
         <mandatory>false</mandatory>
       </configurationParameter>
       <configurationParameter>
+        <name>documentName</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
         <name>aggregator</name>
         <description>The Aggregator to instantiate.</description>
         <type>String</type>
@@ -58,6 +62,12 @@
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Default</string>
+        </value>
+      </nameValuePair>
       <nameValuePair>
         <name>aggregator</name>
         <value>

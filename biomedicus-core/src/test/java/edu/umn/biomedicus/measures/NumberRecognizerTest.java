@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.measures;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
 import edu.umn.biomedicus.numbers.NumberResult;
@@ -26,7 +25,6 @@ import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -61,9 +59,6 @@ public class NumberRecognizerTest {
   Document document;
 
   @Mocked
-  LabeledText textView;
-
-  @Mocked
   LabelIndex<Sentence> sentenceLabelIndex;
 
   @Mocked
@@ -96,12 +91,10 @@ public class NumberRecognizerTest {
     NumberResult threeResult = new NumberResult(3, 4, BigDecimal.valueOf(3), BigDecimal.ONE, NumberType.DECIMAL);
 
     new Expectations() {{
-      document.getLabeledTexts(); result = Collections.singletonMap(TextIdentifiers.SYSTEM,
-          textView);
-      textView.labelIndex(Sentence.class); result = sentenceLabelIndex;
-      textView.labeler(Number.class); result = numberLabeler;
+      document.labelIndex(Sentence.class); result = sentenceLabelIndex;
+      document.labeler(Number.class); result = numberLabeler;
       sentenceLabelIndex.iterator(); result = Collections.singletonList(sentenceLabel).iterator();
-      textView.labelIndex(ParseToken.class); result = parseTokenLabelIndex;
+      document.labelIndex(ParseToken.class); result = parseTokenLabelIndex;
       parseTokenLabelIndex.insideSpan(sentenceLabel); result = parseTokenLabelIndex;
       parseTokenLabelIndex.iterator(); result = parseTokenLabels.iterator();
 

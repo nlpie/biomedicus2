@@ -31,7 +31,7 @@
     <configurationParameters>
       <!-- TODO: Add any configuration parameters -->
       <configurationParameter>
-        <name>aggregator</name>
+        <name>processorClass</name>
         <description>The Aggregator to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
@@ -52,7 +52,7 @@
     <configurationParameterSettings>
       <!-- TODO: Add any name/value pairs for configuration parameters -->
       <nameValuePair>
-        <name>aggregator</name>
+        <name>processorClass</name>
         <value>
           <string><!-- TODO: aggregator class name goes here --></string>
         </value>

@@ -16,13 +16,13 @@
 
 package edu.umn.biomedicus.measures
 
-import edu.umn.biomedicus.common.TextIdentifiers
 import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.DocumentProcessor
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,13 +33,14 @@ import javax.inject.Singleton
  * @property denominator the BigDecimal representation
  * @property numberType
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Number(
         override val startIndex: Int,
         override val endIndex: Int,
         val numerator: String,
         val denominator: String,
         val numberType: NumberType
-): TextRange {
+): Label() {
     fun value(): BigDecimal {
         return BigDecimal(numerator).divide(BigDecimal(denominator), BigDecimal.ROUND_HALF_UP)
     }
@@ -48,12 +49,13 @@ data class Number(
 /**
  * A number range from one number to another in text.
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class NumberRange(
         override val startIndex: Int,
         override val endIndex: Int,
         val lower: BigDecimal,
         val upper: BigDecimal
-): TextRange
+): Label()
 
 /**
  * The shared resource that provides the compiled number ranges pattern.
@@ -72,15 +74,13 @@ class NumberRangesPattern @Inject constructor(
  */
 class NumberRangesLabeler @Inject internal constructor(
         numberRangesPattern: NumberRangesPattern
-): DocumentProcessor {
+) : DocumentProcessor {
     private val expr = numberRangesPattern.expr
 
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val labeler = document.labeler(NumberRange::class.java)
 
-        val labeler = systemView.labeler(NumberRange::class.java)
-
-        val searcher = expr.createSearcher(systemView)
+        val searcher = expr.createSearcher(document)
 
         while (searcher.search()) {
             @Suppress("UNCHECKED_CAST")

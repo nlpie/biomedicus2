@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.measures
 
-import edu.umn.biomedicus.common.TextIdentifiers
+import edu.umn.biomedicus.common.DocumentIdentifiers
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.StandardDocument
+import edu.umn.nlpengine.StandardArtifact
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
@@ -39,23 +39,23 @@ class NumberRangesLabelerTest {
 
     @Test
     fun testBetween() {
-        val doc = StandardDocument("doc")
+        val artifact = StandardArtifact("doc")
 
-        val view = doc.attachText(TextIdentifiers.SYSTEM, "between 30 and 40")
+        val document = artifact.addDocument(DocumentIdentifiers.DEFAULT, "between 30 and 40")
 
-        val tokenLabeler = view.labeler(ParseToken::class)
+        val tokenLabeler = document.labeler<ParseToken>()
         tokenLabeler.add(ParseToken(0, 7, "between", true))
         tokenLabeler.add(ParseToken(8, 10, "30", true))
         tokenLabeler.add(ParseToken(11, 14, "and", true))
         tokenLabeler.add(ParseToken(15, 17, "40", false))
 
-        val numberLabeler = view.labeler(Number::class)
+        val numberLabeler = document.labeler<Number>()
         numberLabeler.add(Number(8, 10, "30", "1", NumberType.CARDINAL))
         numberLabeler.add(Number(15, 17, "40", "1", NumberType.CARDINAL))
 
-        numberRanges.process(doc)
+        numberRanges.process(document)
 
-        val numberRanges = view.labelIndex(NumberRange::class).asList()
+        val numberRanges = document.labelIndex<NumberRange>().asList()
 
         assertEquals(numberRanges.size, 1)
         assertEquals(numberRanges[0].startIndex, 0)

@@ -17,9 +17,6 @@
 package edu.umn.biomedicus.measures;
 
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
 import edu.umn.biomedicus.numbers.CombinedNumberDetector;
 import edu.umn.biomedicus.numbers.NumberModel;
 import edu.umn.biomedicus.numbers.NumberResult;
@@ -28,8 +25,8 @@ import edu.umn.biomedicus.numbers.Numbers;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
 import javax.annotation.Nonnull;
@@ -62,25 +59,17 @@ public class NumberRecognizer implements DocumentProcessor {
   }
 
   @Override
-  public void process(@Nonnull Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
-    labeler = systemView.labeler(Number.class);
+  public void process(@Nonnull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    labeler = document.labeler(Number.class);
 
     for (Sentence sentenceLabel : sentenceLabelIndex) {
       extract(parseTokenLabelIndex.insideSpan(sentenceLabel));
     }
   }
 
-  /**
-   * Gets any numbers from the labels of parse tokens and labels them as such.
-   *
-   * @param labels labels of parse tokens
-   * @throws BiomedicusException if there is an error labeling the text
-   */
-  void extract(Iterable<ParseToken> labels) throws BiomedicusException {
+  void extract(Iterable<ParseToken> labels) {
     for (ParseToken tokenLabel : labels) {
       String text = tokenLabel.getText();
       int begin = tokenLabel.getStartIndex();
@@ -96,7 +85,7 @@ public class NumberRecognizer implements DocumentProcessor {
 
   }
 
-  private void labelSeq(NumberResult numberResult) throws BiomedicusException {
+  private void labelSeq(NumberResult numberResult) {
     BigDecimal numerator = numberResult.getNumerator();
     NumberType numberType = numberResult.getNumberType();
     BigDecimal denominator = numberResult.getDenominator();

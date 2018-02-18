@@ -17,15 +17,18 @@
 package edu.umn.biomedicus.family
 
 import edu.umn.biomedicus.annotations.Setting
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.*
 import java.nio.file.Files
 import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
+
+class FamilyModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<Relative>()
+    }
+}
 
 /**
  * A family relation.
@@ -34,11 +37,12 @@ import javax.inject.Singleton
  * @property endIndex the end in text
  * @property value the word referencing the relative
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Relative(
         override val startIndex: Int,
         override val endIndex: Int,
         val value: String
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange, value: String) : this(textRange.startIndex, textRange.endIndex, value)
 }
 
@@ -61,13 +65,11 @@ class RelativeModel @Inject constructor(
  */
 class RelativeLabeler @Inject internal constructor(
         private val model: RelativeModel
-): DocumentProcessor {
+) : DocumentProcessor {
     override fun process(document: Document) {
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val labeler = document.labeler(Relative::class.java)
 
-        val labeler = systemView.labeler(Relative::class.java)
-
-        for ((startIndex, endIndex, text, _) in systemView.labelIndex(ParseToken::class.java)) {
+        for ((startIndex, endIndex, text, _) in document.labelIndex(ParseToken::class.java)) {
             if (model.isRelative(text)) {
                 labeler.add(Relative(startIndex, endIndex, text))
             }

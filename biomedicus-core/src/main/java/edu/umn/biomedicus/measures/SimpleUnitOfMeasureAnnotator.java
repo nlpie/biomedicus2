@@ -17,12 +17,9 @@
 package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import javax.annotation.Nonnull;
@@ -37,12 +34,10 @@ public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
   }
 
   @Override
-  public void process(@Nonnull Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+  public void process(@Nonnull Document document) {
+    LabelIndex<ParseToken> tokensIndex = document.labelIndex(ParseToken.class);
 
-    LabelIndex<ParseToken> tokensIndex = systemView.labelIndex(ParseToken.class);
-
-    Labeler<CandidateUnitOfMeasure> candidateUnitOfMeasureLabeler = systemView
+    Labeler<CandidateUnitOfMeasure> candidateUnitOfMeasureLabeler = document
         .labeler(CandidateUnitOfMeasure.class);
 
     for (ParseToken parseToken : tokensIndex) {
@@ -50,6 +45,5 @@ public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
         candidateUnitOfMeasureLabeler.add(new CandidateUnitOfMeasure(parseToken));
       }
     }
-
   }
 }

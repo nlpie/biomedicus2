@@ -51,6 +51,33 @@
     <name>Time Pipeline</name>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>days/documentName</parameter>
+          <parameter>timesOfDay/documentName</parameter>
+          <parameter>seasonWords/documentName</parameter>
+          <parameter>months/documentName</parameter>
+          <parameter>yearNumbers/documentName</parameter>
+          <parameter>yearRanges/documentName</parameter>
+          <parameter>times/documentName</parameter>
+          <parameter>dates/documentName</parameter>
+          <parameter>temporalPhrases/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Default</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>days</node>
