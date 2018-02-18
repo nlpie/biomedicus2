@@ -58,7 +58,6 @@ class AutoAdapters @Inject constructor(
         enums.add(clazz)
     }
 
-
     fun addToTypeSystem(typeSystemDescription: TypeSystemDescription) {
 
         enums.forEach { typeSystemDescription.addEnum(it) }
@@ -239,84 +238,6 @@ class AutoAdapter<T : Label>(
             DoubleArray::class -> {
                 DoubleArrayPropertyMapping(property as KProperty1<T, DoubleArray>, parameter)
             }
-            List::class -> {
-                val componentClass = property.returnType.arguments.firstOrNull()
-                        ?.type
-                        ?.classifier
-                        ?.let { it as KClass<*> }
-                        ?: throw IllegalStateException("List should have a component type.")
-
-                when {
-                    componentClass == Boolean::class -> {
-                        BooleanListPropertyMapping(
-                                property as KProperty1<T, List<Boolean>>,
-                                parameter
-                        )
-                    }
-                    componentClass == Byte::class -> {
-                        ByteListPropertyMapping(
-                                property as KProperty1<T, List<Byte>>,
-                                parameter
-                        )
-                    }
-                    componentClass == Short::class -> {
-                        ShortListPropertyMapping(
-                                property as KProperty1<T, List<Short>>,
-                                parameter
-                        )
-                    }
-                    componentClass == Int::class -> {
-                        IntListPropertyMapping(property as KProperty1<T, List<Int>>, parameter)
-                    }
-                    componentClass == Long::class -> {
-                        LongListPropertyMapping(
-                                property as KProperty1<T, List<Long>>,
-                                parameter
-                        )
-                    }
-                    componentClass == Float::class -> {
-                        FloatListPropertyMapping(
-                                property as KProperty1<T, List<Float>>,
-                                parameter
-                        )
-                    }
-                    componentClass == Double::class -> {
-                        DoubleListPropertyMapping(
-                                property as KProperty1<T, List<Double>>,
-                                parameter
-                        )
-                    }
-                    componentClass == String::class -> {
-                        StringListPropertyMapping(
-                                property as KProperty1<T, List<String>>,
-                                parameter
-                        )
-                    }
-                    componentClass.java.isEnum -> {
-                        EnumListPropertyMapping(property as KProperty1<T, List<Any>>, parameter,
-                                componentClass.java)
-                    }
-                    componentClass.isSubclassOf(Label::class) -> {
-                        LabelListPropertyMapping(
-                                property as KProperty1<T, List<Label>>,
-                                parameter,
-                                componentClass.java as Class<Label>
-                        )
-                    }
-                    componentClass == Span::class -> {
-                        SpanListPropertyMapping(
-                                property as KProperty1<T, List<Span>>,
-                                parameter
-                        )
-                    }
-                    else -> {
-                        throw IllegalStateException(
-                                "Not able to map property ${property.name} with type " +
-                                        "${property.returnType} on ${labelClass.canonicalName}"
-                        )
-                    }
-                }
-            }
             else -> {
                 val clazz = (property.returnType.classifier as KClass<*>)
                 when {
@@ -324,27 +245,111 @@ class AutoAdapter<T : Label>(
                     clazz.isSubclassOf(Label::class) -> {
                         LabelPropertyMapping(property as KProperty1<T, Label>, parameter)
                     }
-                    clazz.java.isArray -> {
-                        val componentType = clazz.java.componentType
+                    clazz.isSubclassOf(List::class) -> {
+                        val componentClass = property.returnType.arguments.firstOrNull()
+                                ?.type
+                                ?.classifier
+                                ?.let { it as KClass<*> }
+                                ?: throw IllegalStateException("List should have a component type.")
+
                         when {
-                            componentType == String::class.java -> {
+                            componentClass == Boolean::class -> {
+                                BooleanListPropertyMapping(
+                                        property as KProperty1<T, List<Boolean>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Byte::class -> {
+                                ByteListPropertyMapping(
+                                        property as KProperty1<T, List<Byte>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Short::class -> {
+                                ShortListPropertyMapping(
+                                        property as KProperty1<T, List<Short>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Int::class -> {
+                                IntListPropertyMapping(
+                                        property as KProperty1<T, List<Int>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Long::class -> {
+                                LongListPropertyMapping(
+                                        property as KProperty1<T, List<Long>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Float::class -> {
+                                FloatListPropertyMapping(
+                                        property as KProperty1<T, List<Float>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == Double::class -> {
+                                DoubleListPropertyMapping(
+                                        property as KProperty1<T, List<Double>>,
+                                        parameter
+                                )
+                            }
+                            componentClass == String::class -> {
+                                StringListPropertyMapping(
+                                        property as KProperty1<T, List<String>>,
+                                        parameter
+                                )
+                            }
+                            componentClass.java.isEnum -> {
+                                EnumListPropertyMapping(
+                                        property as KProperty1<T, List<Any>>,
+                                        parameter,
+                                        componentClass.java
+                                )
+                            }
+                            componentClass.isSubclassOf(Label::class) -> {
+                                LabelListPropertyMapping(
+                                        property as KProperty1<T, List<Label>>,
+                                        parameter,
+                                        componentClass.java as Class<Label>
+                                )
+                            }
+                            componentClass == Span::class -> {
+                                SpanListPropertyMapping(
+                                        property as KProperty1<T, List<Span>>,
+                                        parameter
+                                )
+                            }
+                            else -> {
+                                throw IllegalStateException(
+                                        "Not able to map property ${property.name} with type " +
+                                                "${property.returnType} on ${labelClass.canonicalName}"
+                                )
+                            }
+                        }
+                    }
+                    clazz.java.isArray -> {
+                        val componentType = clazz.java.componentType.kotlin
+                        when {
+                            componentType == String::class -> {
                                 StringArrayPropertyMapping(
                                         property as KProperty1<T, Array<String>>,
                                         parameter
                                 )
                             }
-                            componentType.isEnum -> {
+                            componentType.java.isEnum -> {
                                 EnumArrayPropertyMapping(
                                         property as KProperty1<T, Array<Any>>,
                                         parameter,
-                                        componentType
+                                        componentType.java
                                 )
                             }
-                            Label::class.java.isAssignableFrom(componentType) -> {
+                            componentType.isSubclassOf(Label::class) -> {
                                 LabelArrayPropertyMapping(
                                         property as KProperty1<T, Array<Label>>,
                                         parameter,
-                                        componentType as Class<Label>
+                                        componentType.java as Class<Label>
                                 )
                             }
                             componentType == Span::class -> {
@@ -381,7 +386,10 @@ class AutoAdapter<T : Label>(
         @Suppress("UNCHECKED_CAST")
         protected val returnType: KClass<R> = property.returnType.classifier as KClass<R>
 
-        private var featureDescription: FeatureDescription? = null
+        private var _featureDescription: FeatureDescription? = null
+        protected val featureDescription: FeatureDescription
+            get() = _featureDescription
+                    ?: throw IllegalStateException("FeatureDescription not initialized")
 
         private var _feat: Feature? = null
         protected val feat: Feature
@@ -391,11 +399,11 @@ class AutoAdapter<T : Label>(
 
         open fun initFeat(cas: CAS) {
             _feat = cas.typeSystem.getType(typeName)
-                    .getFeatureByBaseName(featureDescription!!.name)
+                    .getFeatureByBaseName(_featureDescription!!.name)
         }
 
-        fun createFeatureDescription() {
-            featureDescription = typeDescription
+        open fun createFeatureDescription() {
+            _featureDescription = typeDescription
                     ?.addFeature(
                             property.name,
                             featureDesc,
@@ -1068,6 +1076,8 @@ class AutoAdapter<T : Label>(
                 cas.addFsToIndexes(spannotation)
                 arrayFS[index] = spannotation
             }
+            cas.addFsToIndexes(arrayFS)
+            annotationFS.setFeatureValue(feat, arrayFS)
         }
     }
 
@@ -1099,6 +1109,8 @@ class AutoAdapter<T : Label>(
                 cas.addFsToIndexes(spannotation)
                 arrayFS[index] = spannotation
             }
+            cas.addFsToIndexes(arrayFS)
+            annotationFS.setFeatureValue(feat, arrayFS)
         }
     }
 
@@ -1147,7 +1159,13 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_FS_ARRAY
 
+        override fun createFeatureDescription() {
+            super.createFeatureDescription()
+            featureDescription.elementType = uimaTypeName(componentClass)
+        }
+
         override fun initFeat(cas: CAS) {
+            super.initFeat(cas)
             _factory = labelAdapters.getLabelAdapterFactory(componentClass)
         }
 
@@ -1155,9 +1173,11 @@ class AutoAdapter<T : Label>(
         override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<R>? {
             val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null
             val adapter = factory.create(annotationFS.cas)
-            return Array<Label>(arrayFS.size()) {
-                adapter.annotationToLabel(arrayFS[it] as AnnotationFS)
-            } as Array<R>
+            val array = java.lang.reflect.Array.newInstance(componentClass, arrayFS.size()) as Array<R>
+            for (i in 0 until arrayFS.size()) {
+                array[i] = adapter.annotationToLabel(arrayFS[i] as AnnotationFS)
+            }
+            return array
         }
 
         override fun copyValueToAnnotation(
@@ -1177,12 +1197,25 @@ class AutoAdapter<T : Label>(
     inner class LabelListPropertyMapping<R : Label>(
             property: KProperty1<T, List<R>>,
             parameter: KParameter,
-            componentClass: Class<R>
+            private val componentClass: Class<R>
     ) : PropertyMapping<List<R>>(property, parameter) {
-        private val factory = labelAdapters.getLabelAdapterFactory(componentClass)
+        private var _factory: LabelAdapterFactory<R>? = null
+        private val factory: LabelAdapterFactory<R>
+            get() = _factory
+                    ?: throw IllegalStateException("Label adapter not initialized")
 
         override val uimaType: String
             get() = CAS.TYPE_NAME_FS_ARRAY
+
+        override fun createFeatureDescription() {
+            super.createFeatureDescription()
+            featureDescription.elementType = uimaTypeName(componentClass)
+        }
+
+        override fun initFeat(cas: CAS) {
+            super.initFeat(cas)
+            _factory = labelAdapters.getLabelAdapterFactory(componentClass)
+        }
 
         override fun copyFromAnnotation(annotationFS: AnnotationFS): List<R>? {
             val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null

@@ -69,12 +69,39 @@ data class HasSpan(
 ) : Label()
 
 @LabelMetadata(versionId = "test")
+data class HasSpanArray(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val spans: Array<Span>
+) : Label()
+
+@LabelMetadata(versionId = "test")
+data class HasSpanList(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val spans: List<Span>
+) : Label()
+
+@LabelMetadata(versionId = "test")
 data class HasLabel(
         override val startIndex: Int,
         override val endIndex: Int,
         val hasBoolean: HasBoolean
 ) : Label()
 
+@LabelMetadata(versionId = "test")
+data class HasLabelArray(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val hasBooleans: Array<HasBoolean>
+) : Label()
+
+@LabelMetadata(versionId = "test")
+data class HasLabelList(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val hasBooleans: List<HasBoolean>
+) : Label()
 
 @LabelMetadata(versionId = "test", distinct = true)
 data class HasBoolean(
@@ -256,7 +283,11 @@ class AutoAdapterTest {
         autoAdapters.addLabelClass(HasEnumList::class.java)
         autoAdapters.addLabelClass(HasBigDecimal::class.java)
         autoAdapters.addLabelClass(HasSpan::class.java)
+        autoAdapters.addLabelClass(HasSpanArray::class.java)
+        autoAdapters.addLabelClass(HasSpanList::class.java)
         autoAdapters.addLabelClass(HasLabel::class.java)
+        autoAdapters.addLabelClass(HasLabelArray::class.java)
+        autoAdapters.addLabelClass(HasLabelList::class.java)
 
         autoAdapters.addLabelClass(HasBoolean::class.java)
         autoAdapters.addLabelClass(HasByte::class.java)
@@ -351,6 +382,39 @@ class AutoAdapterTest {
     }
 
     @Test
+    fun testEnumListFeatureToLabel() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasEnumList::class.java).create(cas)
+        val arrayFS = cas.createStringArrayFS(3)
+        arrayFS[0] = "BAR"
+        arrayFS[1] = "BAZ"
+        arrayFS[2] = "BAR"
+        cas.addFsToIndexes(arrayFS)
+        val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
+        annotation.setFeatureValue(annotation.type.getFeatureByBaseName("enums"), arrayFS)
+
+        val label = adapter.annotationToLabel(annotation)
+
+        assertEquals(label.enums, listOf(Foo.BAR, Foo.BAZ, Foo.BAR))
+    }
+
+    @Test
+    fun testEnumListFeatureToAnnotation() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasEnumList::class.java).create(cas)
+        val label = HasEnumList(0, 5, listOf(Foo.BAR, Foo.BAZ, Foo.BAR))
+        val annotation = adapter.labelToAnnotation(label)
+        val feature = annotation.type.getFeatureByBaseName("enums")
+
+        val arrayFS = annotation.getFeatureValue(feature) as StringArrayFS?
+
+        assertNotNull(arrayFS)
+        if (arrayFS != null) {
+            assertEquals(arrayFS[0], "BAR")
+            assertEquals(arrayFS[1], "BAZ")
+            assertEquals(arrayFS[2], "BAR")
+        }
+    }
+
+    @Test
     fun testBigDecimalFeatureToLabel() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasBigDecimal::class.java).create(cas)
         val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
@@ -400,6 +464,82 @@ class AutoAdapterTest {
     }
 
     @Test
+    fun testSpanArrayFeatureToLabel() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasSpanArray::class.java).create(cas)
+        val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
+        val span1 = cas.createAnnotation<AnnotationFS>(cas.annotationType, 10, 15)
+        cas.addFsToIndexes(span1)
+        val span2 = cas.createAnnotation<AnnotationFS>(cas.annotationType, 15, 20)
+        cas.addFsToIndexes(span2)
+        val arrayFS = cas.createArrayFS(2)
+        arrayFS[0] = span1
+        arrayFS[1] = span2
+        cas.addFsToIndexes(arrayFS)
+        annotation.setFeatureValue(annotation.type.getFeatureByBaseName("spans"), arrayFS)
+
+        val label = adapter.annotationToLabel(annotation)
+        val spans = label.spans
+        assertEquals(spans, arrayOf(Span(10, 15), Span(15, 20)))
+    }
+
+    @Test
+    fun testSpanArrayFeatureToAnnotation() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasSpanArray::class.java).create(cas)
+        val label = HasSpanArray(0, 5, arrayOf(Span(10, 15), Span(15, 20)))
+        val annotation = adapter.labelToAnnotation(label)
+        val feature = annotation.type.getFeatureByBaseName("spans")
+
+        val arrayFS = annotation.getFeatureValue(feature) as ArrayFS?
+        assertNotNull(arrayFS)
+        if (arrayFS != null) {
+            val first = arrayFS[0] as AnnotationFS
+            assertEquals(first.begin, 10)
+            assertEquals(first.end, 15)
+            val second = arrayFS[1] as AnnotationFS
+            assertEquals(second.begin, 15)
+            assertEquals(second.end, 20)
+        }
+    }
+
+    @Test
+    fun testSpanListFeatureToLabel() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasSpanList::class.java).create(cas)
+        val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
+        val span1 = cas.createAnnotation<AnnotationFS>(cas.annotationType, 10, 15)
+        cas.addFsToIndexes(span1)
+        val span2 = cas.createAnnotation<AnnotationFS>(cas.annotationType, 15, 20)
+        cas.addFsToIndexes(span2)
+        val arrayFS = cas.createArrayFS(2)
+        arrayFS[0] = span1
+        arrayFS[1] = span2
+        cas.addFsToIndexes(arrayFS)
+        annotation.setFeatureValue(annotation.type.getFeatureByBaseName("spans"), arrayFS)
+
+        val label = adapter.annotationToLabel(annotation)
+        val spans = label.spans
+        assertEquals(spans, listOf(Span(10, 15), Span(15, 20)))
+    }
+
+    @Test
+    fun testSpanListFeatureToAnnotation() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasSpanList::class.java).create(cas)
+        val label = HasSpanList(0, 5, listOf(Span(10, 15), Span(15, 20)))
+        val annotation = adapter.labelToAnnotation(label)
+        val feature = annotation.type.getFeatureByBaseName("spans")
+
+        val arrayFS = annotation.getFeatureValue(feature) as ArrayFS?
+        assertNotNull(arrayFS)
+        if (arrayFS != null) {
+            val first = arrayFS[0] as AnnotationFS
+            assertEquals(first.begin, 10)
+            assertEquals(first.end, 15)
+            val second = arrayFS[1] as AnnotationFS
+            assertEquals(second.begin, 15)
+            assertEquals(second.end, 20)
+        }
+    }
+
+    @Test
     fun testLabelFeatureToLabel() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasLabel::class.java).create(cas)
         val booleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
@@ -435,7 +575,124 @@ class AutoAdapterTest {
             assertEquals(hasBooleanAnnotation.end, 15)
             assertEquals(hasBooleanAnnotation.getBooleanValue(booleanFeature), true)
         }
+    }
 
+    @Test
+    fun testLabelArrayFeatureToLabel() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasLabelArray::class.java).create(cas)
+        val booleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
+        val booleanFeature = booleanAdapter.type.getFeatureByBaseName("boolean")
+
+        val arrayFS = cas.createArrayFS(2)
+
+        val booleanAnnotation1 = cas.createAnnotation<AnnotationFS>(booleanAdapter.type, 10, 15)
+        booleanAnnotation1.setBooleanValue(booleanFeature, true)
+        cas.addFsToIndexes(booleanAnnotation1)
+        arrayFS[0] = booleanAnnotation1
+
+        val booleanAnnotation2 = cas.createAnnotation<AnnotationFS>(booleanAdapter.type, 15, 20)
+        booleanAnnotation2.setBooleanValue(booleanFeature, false)
+        cas.addFsToIndexes(booleanAnnotation2)
+        arrayFS[1] = booleanAnnotation2
+
+        cas.addFsToIndexes(arrayFS)
+
+        val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
+        annotation.setFeatureValue(adapter.type.getFeatureByBaseName("hasBooleans"), arrayFS)
+
+        val label = adapter.annotationToLabel(annotation)
+
+        val hasBooleans = label.hasBooleans
+
+        assertEquals(hasBooleans.size, 2)
+        assertEquals(hasBooleans[0], HasBoolean(10, 15, true))
+        assertEquals(hasBooleans[1], HasBoolean(15, 20, false))
+    }
+
+    @Test
+    fun testLabelArrayFeatureToAnnotation() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasLabelArray::class.java).create(cas)
+        val label = HasLabelArray(0, 5, arrayOf(
+                        HasBoolean(10, 15, true),
+                        HasBoolean(15, 20, false)
+        ))
+        val annotation = adapter.labelToAnnotation(label)
+
+        val arrayFS = annotation.getFeatureValue(annotation.type.getFeatureByBaseName("hasBooleans")) as ArrayFS?
+
+        assertNotNull(arrayFS)
+        if (arrayFS != null) {
+            assertEquals(arrayFS.size(), 2)
+            val first = arrayFS[0] as AnnotationFS
+            val booleanFeature = first.type.getFeatureByBaseName("boolean")
+            assertEquals(first.begin, 10)
+            assertEquals(first.end, 15)
+            assertEquals(first.getBooleanValue(booleanFeature), true)
+
+            val second = arrayFS[1] as AnnotationFS
+            assertEquals(second.begin, 15)
+            assertEquals(second.end, 20)
+            assertEquals(second.getBooleanValue(booleanFeature), false)
+        }
+    }
+
+    @Test
+    fun testLabelListFeatureToLabel() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasLabelList::class.java).create(cas)
+        val booleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
+        val booleanFeature = booleanAdapter.type.getFeatureByBaseName("boolean")
+
+        val arrayFS = cas.createArrayFS(2)
+
+        val booleanAnnotation1 = cas.createAnnotation<AnnotationFS>(booleanAdapter.type, 10, 15)
+        booleanAnnotation1.setBooleanValue(booleanFeature, true)
+        cas.addFsToIndexes(booleanAnnotation1)
+        arrayFS[0] = booleanAnnotation1
+
+        val booleanAnnotation2 = cas.createAnnotation<AnnotationFS>(booleanAdapter.type, 15, 20)
+        booleanAnnotation2.setBooleanValue(booleanFeature, false)
+        cas.addFsToIndexes(booleanAnnotation2)
+        arrayFS[1] = booleanAnnotation2
+
+        cas.addFsToIndexes(arrayFS)
+
+        val annotation = cas.createAnnotation<AnnotationFS>(adapter.type, 0, 5)
+        annotation.setFeatureValue(adapter.type.getFeatureByBaseName("hasBooleans"), arrayFS)
+
+        val label = adapter.annotationToLabel(annotation)
+
+        val hasBooleans = label.hasBooleans
+
+        assertEquals(hasBooleans.size, 2)
+        assertEquals(hasBooleans[0], HasBoolean(10, 15, true))
+        assertEquals(hasBooleans[1], HasBoolean(15, 20, false))
+    }
+
+    @Test
+    fun testLabelListFeatureToAnnotation() {
+        val adapter = labelAdapters.getLabelAdapterFactory(HasLabelList::class.java).create(cas)
+        val label = HasLabelList(0, 5, listOf(
+                HasBoolean(10, 15, true),
+                HasBoolean(15, 20, false)
+        ))
+        val annotation = adapter.labelToAnnotation(label)
+
+        val arrayFS = annotation.getFeatureValue(annotation.type.getFeatureByBaseName("hasBooleans")) as ArrayFS?
+
+        assertNotNull(arrayFS)
+        if (arrayFS != null) {
+            assertEquals(arrayFS.size(), 2)
+            val first = arrayFS[0] as AnnotationFS
+            val booleanFeature = first.type.getFeatureByBaseName("boolean")
+            assertEquals(first.begin, 10)
+            assertEquals(first.end, 15)
+            assertEquals(first.getBooleanValue(booleanFeature), true)
+
+            val second = arrayFS[1] as AnnotationFS
+            assertEquals(second.begin, 15)
+            assertEquals(second.end, 20)
+            assertEquals(second.getBooleanValue(booleanFeature), false)
+        }
     }
 
     @Test
