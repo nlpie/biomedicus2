@@ -39,7 +39,7 @@
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
+        <name>documentName</name>
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
@@ -67,7 +67,7 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>viewName</name>
+        <name>documentName</name>
         <value>
           <string>OriginalDocument</string>
         </value>

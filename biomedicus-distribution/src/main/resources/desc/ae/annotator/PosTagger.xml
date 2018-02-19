@@ -39,7 +39,7 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
+        <name>documentName</name>
         <description>The name of the UIMA view to use.</description>
         <type>String</type>
       </configurationParameter>
@@ -64,7 +64,7 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>viewName</name>
+        <name>documentName</name>
         <value>
           <string>System</string>
         </value>
