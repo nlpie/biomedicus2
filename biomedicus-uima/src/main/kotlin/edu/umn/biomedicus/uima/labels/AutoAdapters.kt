@@ -84,9 +84,10 @@ class AutoAdapter<T : Label>(
 ) : LabelAdapterFactory<T> {
     private val clazz = labelClass.kotlin
 
-    private val distinct: Boolean
+    private val distinct: Boolean = (labelClass.kotlin.findAnnotation<LabelMetadata>()
+            ?: throw IllegalStateException("Label class without @Label annotation")).distinct
 
-    override val typeName: String
+    override val typeName: String = uimaTypeName(labelClass)
 
     @Suppress("UNCHECKED_CAST")
     private val primaryConstructor = (clazz.primaryConstructor
@@ -109,12 +110,6 @@ class AutoAdapter<T : Label>(
             ?: throw IllegalStateException("")
 
     private var isInitialized = false
-
-    init {
-        distinct = (labelClass.kotlin.findAnnotation<LabelMetadata>()
-                ?: throw IllegalStateException("Label class without @Label annotation")).distinct
-        typeName = uimaTypeName(labelClass)
-    }
 
     fun addTypeToTypeSystem(description: TypeSystemDescription) {
         typeDescription = description.addType(typeName,
@@ -928,7 +923,7 @@ class AutoAdapter<T : Label>(
             get() = createEnumTypeName(returnType.java)
 
         override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
-            val enumVal = property.get(label) as Enum<*>
+            val enumVal = property.get(label) as Enum<*>? ?: return
             annotationFS.setStringValue(feat, enumVal.name)
         }
 
