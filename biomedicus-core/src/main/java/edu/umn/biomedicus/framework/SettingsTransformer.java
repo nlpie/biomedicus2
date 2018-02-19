@@ -96,7 +96,7 @@ public class SettingsTransformer {
       }
 
       if (value == null) {
-        LOGGER.info("Null setting: {}", key);
+        LOGGER.debug("Null setting: {}", key);
         continue;
       }
 

@@ -40,7 +40,7 @@
       <nameValuePair>
         <name>documentName</name>
         <value>
-          <string>Default</string>
+          <string>Analysis</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -49,16 +49,6 @@
         <!-- TODO: put analysis engines in order here -->
       </fixedFlow>
     </flowConstraints>
-    <capabilities>
-      <capability>
-        <inputSofas>
-          <sofaName>System</sofaName>
-        </inputSofas>
-        <outputSofas>
-          <sofaName>System</sofaName>
-        </outputSofas>
-      </capability>
-    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

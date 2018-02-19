@@ -51,6 +51,7 @@ class StandardLabelIndex<T : Label> internal constructor(
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
+
     constructor(
             labelClass: Class<T>,
             vararg labels: T
@@ -110,7 +111,9 @@ class StandardLabelIndex<T : Label> internal constructor(
     override fun toTheRightOf(index: Int): LabelIndex<T> =
             AscendingView(minBegin = index, minEnd = index)
 
-    override fun first() = if (values.isNotEmpty()) values[0] else null
+    override fun first() = values.firstOrNull()
+
+    override fun last()  = values.lastOrNull()
 
     override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
@@ -354,6 +357,8 @@ class StandardLabelIndex<T : Label> internal constructor(
 
         abstract val firstIndex: Int
 
+        abstract val lastIndex: Int
+
         abstract fun updateBounds(
                 newMinBegin: Int = minBegin,
                 newMaxBegin: Int = maxBegin,
@@ -378,8 +383,15 @@ class StandardLabelIndex<T : Label> internal constructor(
         }
 
         override fun first(): T? {
-            if (firstIndex in 0 until values.size && firstIndex <= right) {
+            if (firstIndex in 0 until values.size && firstIndex <= right && firstIndex >= left) {
                 return values[firstIndex]
+            }
+            return null
+        }
+
+        override fun last(): T? {
+            if (lastIndex in 0 until values.size && lastIndex <= right && lastIndex >= left) {
+                return values[lastIndex]
             }
             return null
         }
@@ -632,6 +644,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextIndex(left - 1) }
+        override val lastIndex by lazy { prevIndex(right + 1) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -694,6 +707,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextIndex(right + 1) }
+        override val lastIndex by lazy { prevIndex(left - 1) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -754,6 +768,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextBreakAscending(left) }
+        override val lastIndex by lazy { nextBreakDescending(right) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -814,6 +829,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextBreakDescending(right) }
+        override val lastIndex by lazy { nextBreakAscending(left) }
 
         override fun updateBounds(
                 newMinBegin: Int,

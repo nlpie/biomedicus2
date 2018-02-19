@@ -36,7 +36,7 @@
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -50,11 +50,11 @@
       <nameValuePair>
         <name>documentName</name>
         <value>
-          <string>Default</string>
+          <string>Analysis</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <value>
           <string>edu.umn.biomedicus.utilities.MipacqSourceReader</string>
         </value>

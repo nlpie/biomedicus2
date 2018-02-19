@@ -25,6 +25,7 @@ import edu.umn.biomedicus.modification.ModifiersModule
 import edu.umn.biomedicus.normalization.NormalizationModule
 import edu.umn.biomedicus.parsing.ParsingModule
 import edu.umn.biomedicus.sections.SectionsModule
+import edu.umn.biomedicus.sentences.SentencesModule
 import edu.umn.biomedicus.sh.SocialHistoryModule
 import edu.umn.biomedicus.stopwords.StopwordsModule
 import edu.umn.biomedicus.structure.StructureModule
@@ -44,6 +45,7 @@ class BiomedicusSystem : System() {
         addModule(NormalizationModule())
         addModule(ParsingModule())
         addModule(SectionsModule())
+        addModule(SentencesModule())
         addModule(SocialHistoryModule())
         addModule(StopwordsModule())
         addModule(StructureModule())

@@ -34,7 +34,7 @@
       <!-- TODO: Any other processor settings go here -->
 
       <configurationParameter>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -43,7 +43,7 @@
       <!-- TODO: Any other processor settings defaults go here -->
 
       <nameValuePair>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <value>
           <string><!-- TODO: Document source class goes here --></string>
         </value>
@@ -68,18 +68,6 @@
         <import name="edu.umn.biomedicus.types.IndexCollection"/>
       </imports>
     </fsIndexCollection>
-
-    <capabilities>
-      <capability>
-        <inputs/>
-        <outputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
-        </outputs>
-        <outputSofas>
-          <sofaName>System</sofaName>
-        </outputSofas>
-      </capability>
-    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>

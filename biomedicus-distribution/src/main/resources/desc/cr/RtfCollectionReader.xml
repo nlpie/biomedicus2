@@ -43,7 +43,7 @@
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -73,7 +73,7 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <value>
           <string>edu.umn.biomedicus.io.TextFilesArtifactSource</string>
         </value>

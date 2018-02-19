@@ -51,9 +51,8 @@ class DistinctLabelIndex<T : Label> internal constructor(
         override val labelClass: Class<T>,
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
-
     constructor(
-            labelClass: Class<T>, 
+            labelClass: Class<T>,
             vararg labels: T
     ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareStart(o2)
@@ -98,7 +97,9 @@ class DistinctLabelIndex<T : Label> internal constructor(
 
     override fun toTheRightOf(index: Int): LabelIndex<T> = AscendingView(minTextIndex = index)
 
-    override fun first() = if (values.isNotEmpty()) values[0] else null
+    override fun first() = values.firstOrNull()
+
+    override fun last() = values.lastOrNull()
 
     override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
@@ -240,6 +241,8 @@ class DistinctLabelIndex<T : Label> internal constructor(
 
         abstract val firstIndex: Int
 
+        abstract val lastIndex: Int
+
         abstract fun updateEnds(newLeft: Int, newRight: Int): LabelIndex<T>
 
         override fun isEmpty() = size == 0
@@ -265,8 +268,15 @@ class DistinctLabelIndex<T : Label> internal constructor(
         )
 
         override fun first(): T? {
-            if (firstIndex in 0 until values.size && firstIndex <= right) {
+            if (firstIndex in 0 until values.size && firstIndex <= right && firstIndex >= left) {
                 return values[firstIndex]
+            }
+            return null
+        }
+
+        override fun last(): T? {
+            if (lastIndex in 0 until values.size && lastIndex >= left && lastIndex <= right) {
+                return values[lastIndex]
             }
             return null
         }
@@ -297,6 +307,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
             right: Int = lowerIndex(maxTextIndex)
     ) : View(left, right) {
         override val firstIndex = this.left
+        override val lastIndex = this.right
 
         override fun updateEnds(newLeft: Int, newRight: Int): LabelIndex<T> {
             if (newLeft == -1) {
@@ -398,6 +409,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
     ) : View(left, right) {
 
         override val firstIndex = right
+        override val lastIndex = left
 
         override fun ascendingStartIndex() = AscendingView(left = left, right = right)
 

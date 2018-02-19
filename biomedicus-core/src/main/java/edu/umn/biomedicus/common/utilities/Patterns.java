@@ -91,7 +91,7 @@ public final class Patterns {
   private static Pattern getPattern(BufferedReader reader) {
     return Pattern
         .compile(reader.lines().collect(Collectors.joining("|")),
-            Pattern.MULTILINE);
+            Pattern.MULTILINE|Pattern.UNIX_LINES);
   }
 
   public static Pattern loadPatternByJoiningLines(Path path)

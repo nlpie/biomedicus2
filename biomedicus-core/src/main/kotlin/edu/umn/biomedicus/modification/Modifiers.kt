@@ -23,6 +23,7 @@ import edu.umn.nlpengine.TextRange
 
 class ModifiersModule : SystemModule() {
     override fun setup() {
+        addLabelClass<ModificationCue>()
         addLabelClass<Historical>()
         addLabelClass<Negated>()
         addLabelClass<Probable>()

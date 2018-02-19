@@ -114,8 +114,8 @@ inline fun <reified T : Label> T.addTo(document: Document) {
     document.labeler(T::class.java).add(this)
 }
 
-fun <T : Label> T.addTo(labeler: Labeler<T>) {
-    labeler.add(this)
+fun <T : Label> T.addTo(labeler: Labeler<T>): T {
+    return apply { labeler.add(this) }
 }
 
 class StandardArtifact(

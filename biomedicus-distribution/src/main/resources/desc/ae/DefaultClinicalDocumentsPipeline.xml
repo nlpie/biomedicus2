@@ -22,8 +22,11 @@
     <delegateAnalysisEngine key="sentence">
       <import location="annotator/SentenceDetector.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="section">
+    <delegateAnalysisEngine key="sectionHeaders">
       <import location="annotator/RuleBasedSectionDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="sections">
+      <import location="annotator/SectionLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
       <import location="annotator/PennLikeTokenizer.xml"/>
@@ -68,7 +71,8 @@
         <mandatory>true</mandatory>
         <overrides>
           <parameter>sentence/documentName</parameter>
-          <parameter>section/documentName</parameter>
+          <parameter>sectionHeaders/documentName</parameter>
+          <parameter>sections/documentName</parameter>
           <parameter>parseTokens/documentName</parameter>
           <parameter>measuresPipeline/documentName</parameter>
           <parameter>words/documentName</parameter>
@@ -86,14 +90,15 @@
       <nameValuePair>
         <name>documentName</name>
         <value>
-          <string>Default</string>
+          <string>Analysis</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>sentence</node>
-        <node>section</node>
+        <node>sectionHeaders</node>
+        <node>sections</node>
         <node>parseTokens</node>
         <node>measuresPipeline</node>
         <node>words</node>

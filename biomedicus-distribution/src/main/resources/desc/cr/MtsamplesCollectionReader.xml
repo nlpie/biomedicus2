@@ -97,7 +97,7 @@
       <nameValuePair>
         <name>targetViewName</name>
         <value>
-          <string>Default</string>
+          <string>Analysis</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

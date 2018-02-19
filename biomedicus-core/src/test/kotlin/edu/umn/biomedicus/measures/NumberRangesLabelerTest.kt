@@ -41,7 +41,7 @@ class NumberRangesLabelerTest {
     fun testBetween() {
         val artifact = StandardArtifact("doc")
 
-        val document = artifact.addDocument(DocumentIdentifiers.DEFAULT, "between 30 and 40")
+        val document = artifact.addDocument(DocumentIdentifiers.ANALYSIS, "between 30 and 40")
 
         val tokenLabeler = document.labeler<ParseToken>()
         tokenLabeler.add(ParseToken(0, 7, "between", true))

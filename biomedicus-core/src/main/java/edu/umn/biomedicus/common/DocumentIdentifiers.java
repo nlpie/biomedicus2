@@ -24,7 +24,7 @@ package edu.umn.biomedicus.common;
  */
 public final class DocumentIdentifiers {
 
-  public static final String DEFAULT = "Default";
+  public static final String ANALYSIS = "Analysis";
 
   /**
    * A view containing the original encoded data before decoding. An example is rtf before it is

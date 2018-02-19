@@ -223,6 +223,11 @@ class DistinctLabelIndexTest {
     }
 
     @Test
+    fun testLast() {
+        assertEquals(tested.last(), TestLabel(16, 20))
+    }
+
+    @Test
     fun testGetOne() {
         val get = tested.atLocation(TestLabel(3, 5))
 
@@ -332,8 +337,18 @@ class DistinctLabelIndexTest {
     }
 
     @Test
+    fun testAscendingLast() {
+        assertEquals(ascending.last(), TestLabel(16, 20))
+    }
+
+    @Test
     fun testDescendingFirst() {
         assertEquals(descending.first(), TestLabel(16, 20))
+    }
+
+    @Test
+    fun testDescendingLast() {
+        assertEquals(descending.last(), TestLabel(0, 3))
     }
 
     @Test

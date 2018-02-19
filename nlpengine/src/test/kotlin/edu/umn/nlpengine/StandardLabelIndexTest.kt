@@ -197,6 +197,11 @@ class StandardLabelIndexTest {
     }
 
     @Test
+    fun testLast() {
+        assertEquals(tested.last(), TestLabel(9, 13))
+    }
+
+    @Test
     fun testGetMultiple() {
         val get = tested.atLocation(TestLabel(9, 13))
 
@@ -333,8 +338,18 @@ class StandardLabelIndexTest {
     }
 
     @Test
+    fun testAscendingLast() {
+        assertEquals(ascending.last(), TestLabel(9, 13))
+    }
+
+    @Test
     fun testAscendingReversingFirst() {
         assertEquals(ascendingReversing.first(), TestLabel(0, 7))
+    }
+
+    @Test
+    fun testAscendingReversingLast() {
+        assertEquals(ascendingReversing.last(), TestLabel(9, 10))
     }
 
     @Test
@@ -343,8 +358,18 @@ class StandardLabelIndexTest {
     }
 
     @Test
+    fun testDescendingReversingLast() {
+        assertEquals(descendingReversing.last(), TestLabel(0, 7))
+    }
+
+    @Test
     fun testDescendingFirst() {
         assertEquals(descending.first(), TestLabel(9, 13))
+    }
+
+    @Test
+    fun testDescendingLast() {
+        assertEquals(descending.last(), TestLabel(0, 5))
     }
 
     @Test

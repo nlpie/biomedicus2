@@ -78,10 +78,18 @@ data class TokenCandidate(
 data class WordIndex(
         override val startIndex: Int,
         override val endIndex: Int,
-        val stringIdentifier: StringIdentifier
+        val stringIdentifierIndex: Int
 ) : Label() {
+    constructor(
+            startIndex: Int,
+            endIndex: Int,
+            stringIdentifier: StringIdentifier
+    ) : this(startIndex, endIndex, stringIdentifier.value())
+
     constructor(
             textRange: TextRange,
             stringIdentifier: StringIdentifier
-    ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier)
+    ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier.value())
+
+    val stringIdentifier: StringIdentifier get() = StringIdentifier(stringIdentifierIndex)
 }

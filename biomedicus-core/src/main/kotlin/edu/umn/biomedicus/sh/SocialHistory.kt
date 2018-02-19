@@ -22,7 +22,7 @@ import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
 import edu.umn.biomedicus.framework.SearchExpr
 import edu.umn.biomedicus.framework.SearchExprFactory
-import edu.umn.biomedicus.sections.SectionTitle
+import edu.umn.biomedicus.sections.SectionHeader
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
@@ -99,7 +99,7 @@ internal val headersExact = SequenceDetector(
 
 class SocialHistorySectionHeaderDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val sectionHeaders = document.labelIndex(SectionTitle::class.java)
+        val sectionHeaders = document.labelIndex(SectionHeader::class.java)
         val tokens = document.labelIndex(ParseToken::class.java)
 
         val labeler = document.labeler(SocialHistorySectionHeader::class.java)

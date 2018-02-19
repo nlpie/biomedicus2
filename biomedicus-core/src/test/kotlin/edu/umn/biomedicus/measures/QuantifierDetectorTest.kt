@@ -55,7 +55,7 @@ class QuantifierDetectorTest {
     @Test
     fun testIndefiniteQuantifierNumber() {
         val document = StandardArtifact("doc")
-                .addDocument(DocumentIdentifiers.DEFAULT, "Beer: Around 25 bottles a week.")
+                .addDocument(DocumentIdentifiers.ANALYSIS, "Beer: Around 25 bottles a week.")
 
         Number(13, 15, BigInteger.valueOf(25).toString(),
                 BigInteger.ONE.toString(), NumberType.CARDINAL).addTo(document)

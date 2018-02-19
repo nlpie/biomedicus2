@@ -88,6 +88,12 @@ class UimaLabelIndex<T : Label> @Inject constructor(
         } else it.next()
     }
 
+    override fun last(): T? {
+        val it = index.iterator()
+        it.moveToLast()
+        return if (it.isValid) labelAdapter.annotationToLabel(it.get()) else null
+    }
+
     override fun atLocation(textRange: TextRange): Collection<T> {
         return inflated.atLocation(textRange)
     }
@@ -113,7 +119,7 @@ class UimaLabelIndex<T : Label> @Inject constructor(
 
             @Suppress("UNCHECKED_CAST")
             override fun next(): T {
-                return labelAdapter.annotationToLabel(iterator.next()) as T
+                return labelAdapter.annotationToLabel(iterator.next())
             }
         }
     }

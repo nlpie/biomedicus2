@@ -277,9 +277,14 @@ interface LabelIndex<T : Label> : Collection<T> {
     fun backwardFrom(textRange: TextRange): LabelIndex<T> = backwardFrom(textRange.endIndex)
 
     /**
-     * Returns the first label in this label index or null if it is empty
+     * Returns the first label in this label index or null if it is empty.
      */
     fun first(): T?
+
+    /**
+     * Returns the last label in this label index or null if it is empty.
+     */
+    fun last(): T?
 
     /**
      * Returns a collection of all the labels with the same location as [textRange].

@@ -54,7 +54,7 @@
   <destinationCasMappings>
     <destinationCasMapping>
       <destinationName>Rtf</destinationName>
-      <viewName>Default</viewName>
+      <viewName>Analysis</viewName>
     </destinationCasMapping>
   </destinationCasMappings>
 
