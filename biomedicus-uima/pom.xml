@@ -28,7 +28,7 @@
   <artifactId>biomedicus-uima</artifactId>
 
   <properties>
-    <uima.version>2.9.0</uima.version>
+    <uima.version>2.10.2</uima.version>
   </properties>
 
 

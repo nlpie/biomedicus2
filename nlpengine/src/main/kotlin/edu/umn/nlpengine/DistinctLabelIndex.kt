@@ -20,25 +20,61 @@ import java.util.*
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableCollection
 
+inline fun <reified T: Label> DistinctLabelIndex(vararg labels: T): DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, *labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        comparator: Comparator<T>,
+        vararg labels: T
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, comparator, *labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        labels: Iterable<T>
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, labels)
+}
+
+inline fun <reified T: Label> DistinctLabelIndex(
+        comparator: Comparator<T>,
+        labels: Iterable<T>
+) : DistinctLabelIndex<T> {
+    return DistinctLabelIndex(T::class.java, comparator, labels)
+}
+
 /**
  * A label index where the labels are distinct i.e. non-overlapping.
  */
-class DistinctLabelIndex<out T : TextRange> internal constructor(
+class DistinctLabelIndex<T : Label> internal constructor(
+        override val labelClass: Class<T>,
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
-
-    constructor(vararg labels: T) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareStart(o2)
     }))
 
-    constructor(comparator: Comparator<T>, vararg labels: T) : this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(comparator))
 
-    constructor(labels: Iterable<T>) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareStart(o2)
     }))
 
-    constructor(comparator: Comparator<T>, labels: Iterable<T>) :
-            this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>, labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(comparator))
 
     override fun containing(startIndex: Int, endIndex: Int): LabelIndex<T> {
         val index = containingIndex(startIndex, endIndex)
@@ -61,7 +97,9 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
 
     override fun toTheRightOf(index: Int): LabelIndex<T> = AscendingView(minTextIndex = index)
 
-    override fun first() = if (values.isNotEmpty()) values[0] else null
+    override fun first() = values.firstOrNull()
+
+    override fun last() = values.lastOrNull()
 
     override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
@@ -183,6 +221,8 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
             left: Int,
             right: Int
     ) : LabelIndex<T> {
+        override val labelClass get() = this@DistinctLabelIndex.labelClass
+
         final override val size: Int
 
         val left: Int
@@ -200,6 +240,8 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
         }
 
         abstract val firstIndex: Int
+
+        abstract val lastIndex: Int
 
         abstract fun updateEnds(newLeft: Int, newRight: Int): LabelIndex<T>
 
@@ -226,8 +268,15 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
         )
 
         override fun first(): T? {
-            if (firstIndex in 0 until values.size && firstIndex <= right) {
+            if (firstIndex in 0 until values.size && firstIndex <= right && firstIndex >= left) {
                 return values[firstIndex]
+            }
+            return null
+        }
+
+        override fun last(): T? {
+            if (lastIndex in 0 until values.size && lastIndex >= left && lastIndex <= right) {
+                return values[lastIndex]
             }
             return null
         }
@@ -258,6 +307,7 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
             right: Int = lowerIndex(maxTextIndex)
     ) : View(left, right) {
         override val firstIndex = this.left
+        override val lastIndex = this.right
 
         override fun updateEnds(newLeft: Int, newRight: Int): LabelIndex<T> {
             if (newLeft == -1) {
@@ -359,6 +409,7 @@ class DistinctLabelIndex<out T : TextRange> internal constructor(
     ) : View(left, right) {
 
         override val firstIndex = right
+        override val lastIndex = left
 
         override fun ascendingStartIndex() = AscendingView(left = left, right = right)
 

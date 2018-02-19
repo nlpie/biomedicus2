@@ -19,7 +19,7 @@
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <implementationName>
-    edu.umn.biomedicus.uima.adapter.DocumentSourceUimaAdapter
+    edu.umn.biomedicus.uima.adapter.ArtifactSourceUimaAdapter
   </implementationName>
   <processingResourceMetaData>
     <name>MiPACQ Source Reader</name>
@@ -32,7 +32,11 @@
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>documentSource</name>
+        <name>documentName</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -44,7 +48,13 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>documentSource</name>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>sourceClass</name>
         <value>
           <string>edu.umn.biomedicus.utilities.MipacqSourceReader</string>
         </value>

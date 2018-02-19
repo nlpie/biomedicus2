@@ -29,31 +29,28 @@ import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.WDT;
 import static edu.umn.biomedicus.common.types.syntax.PartOfSpeech.XX;
 
 import edu.umn.biomedicus.acronyms.Acronym;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.StringsBag;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.normalization.NormForm;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.Token;
-import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,14 +73,13 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
   private final ConceptDictionary conceptDictionary;
 
-  @Nullable
   private Labeler<DictionaryTerm> termLabeler;
 
-  @Nullable
   private LabelIndex<PosTag> posTags;
 
-  @Nullable
   private LabelIndex<NormForm> normIndexes;
+
+  private Labeler<DictionaryConcept> conceptLabeler;
 
   /**
    * Creates a dictionary concept recognizer from a concept dictionary and a document.
@@ -115,8 +111,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     return Collections.unmodifiableSet(builder);
   }
 
-  private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod)
-      throws BiomedicusException {
+  private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) {
     List<SuiCuiTui> phraseSUI = conceptDictionary.forPhrase(phrase);
 
     if (phraseSUI != null) {
@@ -139,11 +134,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     return false;
   }
 
-  private void checkTokenSet(List<TermToken> tokenSet) throws BiomedicusException {
-
-    assert normIndexes != null;
-    assert posTags != null;
-
+  private void checkTokenSet(List<TermToken> tokenSet) {
     if (tokenSet.size() <= 1) {
       return;
     }
@@ -159,7 +150,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
         continue;
       }
 
-      builder.addTerm(normForm.getNormIdentifier());
+      builder.addTerm(normForm.normIdentifier());
     }
     StringsBag normBag = builder.build();
 
@@ -170,30 +161,25 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
   }
 
   private void makeTerm(TextRange label, List<SuiCuiTui> cuis, double confidence) {
-
-    assert termLabeler != null;
-    List<DictionaryConcept> concepts = new ArrayList<>(cuis.size());
     for (SuiCuiTui cui : cuis) {
-      concepts.add(cui.toConcept(label, confidence));
+      conceptLabeler.add(cui.toConcept(label, confidence));
     }
-
-    termLabeler.add(new DictionaryTerm(label, concepts));
+    termLabeler.add(new DictionaryTerm(label));
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@NotNull Document document) {
     LOGGER.debug("Finding concepts in document.");
 
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+    LabelIndex<Sentence> sentences = document.labelIndex(Sentence.class);
+    normIndexes = document.labelIndex(NormForm.class);
+    termLabeler = document.labeler(DictionaryTerm.class);
+    conceptLabeler = document.labeler(DictionaryConcept.class);
+    posTags = document.labelIndex(PosTag.class);
+    LabelIndex<TermToken> termTokenLabelIndex = document.labelIndex(TermToken.class);
+    LabelIndex<Acronym> acronymLabelIndex = document.labelIndex(Acronym.class);
 
-    LabelIndex<Sentence> sentences = systemView.labelIndex(Sentence.class);
-    normIndexes = systemView.labelIndex(NormForm.class);
-    termLabeler = systemView.labeler(DictionaryTerm.class);
-    posTags = systemView.labelIndex(PosTag.class);
-    LabelIndex<TermToken> termTokenLabelIndex = systemView.labelIndex(TermToken.class);
-    LabelIndex<Acronym> acronymLabelIndex = systemView.labelIndex(Acronym.class);
-
-    String documentText = systemView.getText();
+    String documentText = document.getText();
     for (Sentence sentence : sentences) {
       LOGGER.trace("Identifying concepts in a sentence");
 

@@ -16,19 +16,17 @@
 
 package edu.umn.biomedicus.utilities;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.Labeler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class attaches parse data from MiPACQ .parse files to their source documents.
@@ -39,17 +37,15 @@ import java.util.Optional;
 public class MipacqParseTagger implements DocumentProcessor {
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
+  public void process(@NotNull Document document) {
     String sourcePath = document.getMetadata().get("path");
 
     if (sourcePath == null) {
-      throw new BiomedicusException("Path not stored on document");
+      throw new RuntimeException("Path not stored on document");
     }
 
-    String text = systemView.getText();
-    Labeler<Sentence> sentenceLabeler = systemView.labeler(Sentence.class);
+    String text = document.getText();
+    Labeler<Sentence> sentenceLabeler = document.labeler(Sentence.class);
 
     Path path = Paths.get(sourcePath.replaceFirst(".source$", ".parse"));
     try {
@@ -80,7 +76,7 @@ public class MipacqParseTagger implements DocumentProcessor {
         }
       }
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

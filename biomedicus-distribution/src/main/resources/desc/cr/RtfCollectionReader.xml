@@ -18,7 +18,7 @@
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <implementationName>
-    edu.umn.biomedicus.uima.adapter.DocumentSourceUimaAdapter
+    edu.umn.biomedicus.uima.adapter.ArtifactSourceUimaAdapter
   </implementationName>
   <processingResourceMetaData>
     <name>Text Files Document Source Collection Reader</name>
@@ -39,11 +39,11 @@
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
+        <name>documentName</name>
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -67,15 +67,15 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>viewName</name>
+        <name>documentName</name>
         <value>
           <string>OriginalDocument</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>documentSource</name>
+        <name>sourceClass</name>
         <value>
-          <string>edu.umn.biomedicus.io.TextFilesDocumentSource</string>
+          <string>edu.umn.biomedicus.io.TextFilesArtifactSource</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

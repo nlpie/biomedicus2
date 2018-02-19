@@ -18,25 +18,23 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Part of speech tagger implementation for the TnT algorithm.
@@ -93,19 +91,17 @@ public class TntPosTagger implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
-    Labeler<PosTag> partOfSpeechLabeler = systemView.labeler(PosTag.class);
+  public void process(@NotNull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    Labeler<PosTag> partOfSpeechLabeler = document.labeler(PosTag.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
       Collection<ParseToken> tokens = parseTokenLabelIndex.insideSpan(sentence);
       ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel,
           Ngram.create(BBS, BOS), Ngram::create);
 
-      String docText = systemView.getText();
+      String docText = document.getText();
       for (ParseToken token : tokens) {
         CharSequence text = token.coveredText(docText);
         boolean isCapitalized = Character.isUpperCase(text.charAt(0));

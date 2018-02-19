@@ -22,8 +22,11 @@
     <delegateAnalysisEngine key="sentence">
       <import location="annotator/SentenceDetector.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="section">
+    <delegateAnalysisEngine key="sectionHeaders">
       <import location="annotator/RuleBasedSectionDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="sections">
+      <import location="annotator/SectionLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
       <import location="annotator/PennLikeTokenizer.xml"/>
@@ -60,10 +63,42 @@
     <name>Default BioMedICUS Pipeline</name>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>sentence/documentName</parameter>
+          <parameter>sectionHeaders/documentName</parameter>
+          <parameter>sections/documentName</parameter>
+          <parameter>parseTokens/documentName</parameter>
+          <parameter>measuresPipeline/documentName</parameter>
+          <parameter>words/documentName</parameter>
+          <parameter>posAnnotator/documentName</parameter>
+          <parameter>normalizer/documentName</parameter>
+          <parameter>termTokens/documentName</parameter>
+          <parameter>timePipeline/documentName</parameter>
+          <parameter>acronyms/documentName</parameter>
+          <parameter>dictionaryMapper/documentName</parameter>
+          <parameter>modification/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
         <node>sentence</node>
-        <node>section</node>
+        <node>sectionHeaders</node>
+        <node>sections</node>
         <node>parseTokens</node>
         <node>measuresPipeline</node>
         <node>words</node>

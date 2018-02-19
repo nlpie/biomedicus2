@@ -17,9 +17,10 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.framework.SearchExpr.TypeMatch.PropertyMatch;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Span;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.TextRange;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -49,7 +50,7 @@ public class SearchExpr {
   static final Node ACCEPT = new Node() {
     @Nullable
     @Override
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return null;
     }
 
@@ -71,7 +72,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return null;
     }
 
@@ -119,22 +120,22 @@ public class SearchExpr {
   /**
    * Uses the expression to search an entire text view.
    *
-   * @param labeledText the document text view to search
+   * @param document the document to search
    * @return a {@link Searcher} object of this expression on the entire text view.
    */
-  public Searcher createSearcher(LabeledText labeledText) {
-    return new DefaultSearcher(labeledText, labeledText.getDocumentSpan());
+  public Searcher createSearcher(Document document) {
+    return new DefaultSearcher(document, document);
   }
 
   /**
    * Uses the expression to search a portion of a text view.
    *
-   * @param labeledText the text view to search
+   * @param document the document to search
    * @param span the portion of the text view to search
    * @return a {@link Searcher} object of this expression on the portion of the text view
    */
-  public Searcher createSearcher(LabeledText labeledText, Span span) {
-    return new DefaultSearcher(labeledText, span);
+  public Searcher createSearcher(Document document, TextRange span) {
+    return new DefaultSearcher(document, span);
   }
 
   /**
@@ -182,7 +183,7 @@ public class SearchExpr {
       LoadBegin end = new LoadBegin(localsCount++);
       end.next = FINAL_ACCEPT;
       Node root = alts(end);
-      Class<? extends TextRange> aClass = root.firstType();
+      Class<? extends Label> aClass = root.firstType();
 
       Node searchRoot;
       if (aClass == null) {
@@ -605,10 +606,10 @@ public class SearchExpr {
       } else {
         type = first;
       }
-      Class<? extends TextRange> aClass = labelAliases.getLabelable(type);
+      Class<? extends Label> aClass = labelAliases.getLabelable(type);
       if (aClass == null) {
         try {
-          aClass = Class.forName(type).asSubclass(TextRange.class);
+          aClass = Class.forName(type).asSubclass(Label.class);
         } catch (ClassNotFoundException e) {
           throw error("Couldn't find a type with alias or name " + type);
         }
@@ -913,7 +914,7 @@ public class SearchExpr {
     }
 
     @Nullable
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return next.firstType();
     }
 
@@ -1258,7 +1259,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return body.firstType();
     }
   }
@@ -1500,7 +1501,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return recursiveLoop.firstType();
     }
   }
@@ -1568,7 +1569,7 @@ public class SearchExpr {
    */
   static class TypeMatch extends Node {
 
-    final Class<? extends TextRange> labelType;
+    final Class<? extends Label> labelType;
     final List<PropertyMatch> requiredProperties = new ArrayList<>();
     final boolean seek;
     final boolean anonymous;
@@ -1576,7 +1577,7 @@ public class SearchExpr {
     final boolean contains;
 
     TypeMatch(
-        Class<? extends TextRange> labelType,
+        Class<? extends Label> labelType,
         boolean seek,
         boolean anonymous,
         boolean contains,
@@ -1652,7 +1653,7 @@ public class SearchExpr {
 
     @Nullable
     @Override
-    Class<? extends TextRange> firstType() {
+    Class<? extends Label> firstType() {
       return labelType;
     }
 
@@ -1978,7 +1979,7 @@ public class SearchExpr {
    */
   class DefaultSearcher implements Searcher {
 
-    final LabeledText document;
+    final Document document;
     final TextRange[] labels;
     final int[] groups;
     final int[] locals;
@@ -1987,7 +1988,7 @@ public class SearchExpr {
     int from, to;
     State result = State.miss();
 
-    DefaultSearcher(LabeledText document, Span span) {
+    DefaultSearcher(Document document, TextRange span) {
       this.document = document;
       labels = new TextRange[numberGroups];
       groups = new int[numberGroups * 2];

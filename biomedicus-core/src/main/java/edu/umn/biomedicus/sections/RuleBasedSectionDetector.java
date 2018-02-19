@@ -17,19 +17,15 @@
 package edu.umn.biomedicus.sections;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.formatting.Bold;
 import edu.umn.biomedicus.formatting.Underlined;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
-import java.util.Iterator;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Section detector based off rules for clinical notes.
@@ -42,15 +38,6 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
 
   private final Pattern headers;
 
-  @Nullable
-  private Labeler<Section> sectionLabeler;
-
-  @Nullable
-  private Labeler<SectionTitle> sectionTitleLabeler;
-
-  @Nullable
-  private Labeler<SectionContent> sectionContentLabeler;
-
   /**
    * Injectable constructor.
    *
@@ -62,62 +49,22 @@ public class RuleBasedSectionDetector implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
+  public void process(@NotNull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<Bold> boldLabelIndex = document.labelIndex(Bold.class);
+    LabelIndex<Underlined> underlinedLabelIndex = document.labelIndex(Underlined.class);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.labelIndex(Sentence.class);
-    LabelIndex<Bold> boldLabelIndex = systemView.labelIndex(Bold.class);
-    LabelIndex<Underlined> underlinedLabelIndex = systemView.labelIndex(Underlined.class);
+    Labeler<SectionHeader> headerLabeler = document.labeler(SectionHeader.class);
 
-    sectionLabeler = systemView.labeler(Section.class);
-    sectionTitleLabeler = systemView.labeler(SectionTitle.class);
-    sectionContentLabeler = systemView.labeler(SectionContent.class);
+    String text = document.getText();
 
-    String text = systemView.getText();
-
-    Iterator<Sentence> sentenceLabelIterator = sentenceLabelIndex
-        .iterator();
-    Sentence header = null;
-    Sentence firstSentence = null;
-    Sentence lastSentence = null;
-
-    while (sentenceLabelIterator.hasNext()) {
-      Sentence sentenceLabel = sentenceLabelIterator.next();
+    for (Sentence sentenceLabel : sentenceLabelIndex) {
       CharSequence sentenceText = sentenceLabel.coveredText(text);
-      if (headers.matcher(sentenceText).matches() ||
+      if (headers.matcher(sentenceText).find() ||
           !boldLabelIndex.atLocation(sentenceLabel).isEmpty() ||
           !underlinedLabelIndex.atLocation(sentenceLabel).isEmpty()) {
-        makeSection(header, firstSentence, lastSentence);
-        header = sentenceLabel;
-        firstSentence = null;
-        continue;
+        headerLabeler.add(new SectionHeader(sentenceLabel));
       }
-      if (firstSentence == null) {
-        firstSentence = sentenceLabel;
-      }
-      lastSentence = sentenceLabel;
     }
-
-    makeSection(header, firstSentence, lastSentence);
-  }
-
-  private void makeSection(
-      @Nullable Sentence header,
-      @Nullable Sentence firstSentence,
-      @Nullable Sentence lastSentence
-  ) {
-    if (header == null || firstSentence == null || lastSentence == null) {
-      return;
-    }
-
-    assert sectionLabeler != null : "impossible non-null section labeler";
-    assert sectionTitleLabeler != null : "impossible non-null section title labeler";
-    assert sectionContentLabeler != null : "impossible non-null section content labeler";
-
-    sectionLabeler.add(new Section(header.getStartIndex(), lastSentence.getEndIndex(), null));
-    sectionTitleLabeler.add(new SectionTitle(header));
-    sectionContentLabeler.add(
-        new SectionContent(firstSentence.getStartIndex(), lastSentence.getEndIndex())
-    );
   }
 }

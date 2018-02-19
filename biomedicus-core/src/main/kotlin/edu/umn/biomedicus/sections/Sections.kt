@@ -16,18 +16,73 @@
 
 package edu.umn.biomedicus.sections
 
-import edu.umn.nlpengine.TextRange
+import edu.umn.biomedicus.sentences.Sentence
+import edu.umn.nlpengine.*
 
+class SectionsModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<Section>()
+        addLabelClass<SectionHeader>()
+        addLabelClass<SectionContent>()
+    }
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Section(
         override val startIndex: Int,
         override val endIndex: Int,
         val kind: String?
-): TextRange {
-    constructor(textRange: TextRange, kind: String?): this(textRange.startIndex, textRange.endIndex, kind)
+) : Label() {
+    constructor(textRange: TextRange, kind: String?) : this(textRange.startIndex, textRange.endIndex, kind)
 }
 
-data class SectionTitle(override val startIndex: Int, override val endIndex: Int): TextRange {
-    constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class SectionHeader(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-data class SectionContent(override val startIndex: Int, override val endIndex: Int): TextRange
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class SectionContent(override val startIndex: Int, override val endIndex: Int) : Label()
+
+class SectionContentLabeler : DocumentProcessor {
+    override fun process(document: Document) {
+        val sectionHeaders = document.labelIndex<SectionHeader>()
+        val sentences = document.labelIndex<Sentence>()
+
+        val sectionLabeler = document.labeler<Section>()
+        val contentLabeler = document.labeler<SectionContent>()
+
+        var prev: SectionHeader? = null
+        for (sectionHeader in sectionHeaders) {
+            if (prev != null) {
+                val sectionSentences = sentences.insideSpan(prev.endIndex, sectionHeader.startIndex)
+                createSectionFromSentences(sectionSentences, prev, contentLabeler, sectionLabeler)
+            }
+            prev = sectionHeader
+        }
+
+        if (prev != null) {
+            val endSentences = sentences.insideSpan(prev.endIndex, document.endIndex)
+            createSectionFromSentences(endSentences, prev, contentLabeler, sectionLabeler)
+        }
+    }
+
+    private fun createSectionFromSentences(
+            sectionSentences: LabelIndex<Sentence>,
+            prev: SectionHeader,
+            contentLabeler: Labeler<SectionContent>,
+            sectionLabeler: Labeler<Section>) {
+        if (!sectionSentences.isEmpty()) {
+            val first = sectionSentences.first()
+                    ?: throw IllegalStateException("Non-empty without first")
+
+            val last = sectionSentences.last()
+                    ?: throw IllegalStateException("Non-empty without last")
+
+            SectionContent(first.startIndex, last.endIndex).addTo(contentLabeler)
+
+            Section(prev.startIndex, last.endIndex, null).addTo(sectionLabeler)
+        }
+    }
+
+}

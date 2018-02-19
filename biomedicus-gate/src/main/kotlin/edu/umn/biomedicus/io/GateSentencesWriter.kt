@@ -17,10 +17,9 @@
 package edu.umn.biomedicus.io
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.biomedicus.common.TextIdentifiers
-import edu.umn.biomedicus.framework.DocumentProcessor
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.nlpengine.Document
+import edu.umn.nlpengine.DocumentProcessor
 import gate.Factory
 import gate.Gate
 import java.nio.charset.StandardCharsets
@@ -30,12 +29,11 @@ import javax.inject.Inject
 
 class GateSentencesWriter @Inject internal constructor(
         @ProcessorSetting("outputDirectory") private val outputDirectory: Path
-): DocumentProcessor {
+) : DocumentProcessor {
     override fun process(document: Document) {
-        val documentId = document.documentId
-        val systemView = TextIdentifiers.getSystemLabeledText(document)
+        val documentId = document.artifactID
 
-        val text = systemView.text
+        val text = document.text
         val textPath = outputDirectory.resolve("txt").resolve("" + documentId[0])
                 .resolve(documentId + ".txt")
         Files.createDirectories(textPath.parent)
@@ -52,7 +50,7 @@ class GateSentencesWriter @Inject internal constructor(
 
         val annotationSet = gateDocument.getAnnotations()
 
-        for (sentenceLabel in systemView.labelIndex(Sentence::class.java)) {
+        for (sentenceLabel in document.labelIndex(Sentence::class.java)) {
             annotationSet.add(
                     sentenceLabel.startIndex.toLong(),
                     sentenceLabel.endIndex.toLong(),

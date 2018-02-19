@@ -21,7 +21,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ class SettingsLoader {
   @Nullable
   private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
   private Map<String, Object> settings;
+  private List<String> systemClasses = new ArrayList<>();
 
   private SettingsLoader(Path settingsFilePath, Yaml yaml) {
     this.settingsFilePath = settingsFilePath;
@@ -55,6 +58,17 @@ class SettingsLoader {
       settingsFileYaml = (Map<String, Object>) yaml.load(bufferedReader);
     } catch (IOException e) {
       throw new BiomedicusException(e);
+    }
+
+
+    Object systems = settingsFileYaml.get("systems");
+    if (systems != null && systems instanceof List) {
+      List systemsList = (List) systems;
+      for (Object o : systemsList) {
+        if (o instanceof String) {
+          systemClasses.add(((String) o));
+        }
+      }
     }
 
     Map<String, String> settingInterfacesYaml = (Map<String, String>) settingsFileYaml
@@ -108,5 +122,9 @@ class SettingsLoader {
       settingsBinder.addInterfaceImplementations(interfaceImplementations);
     }
     settingsBinder.addSettings(settings);
+  }
+
+  List<String> getSystemClasses() {
+    return systemClasses;
   }
 }

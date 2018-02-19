@@ -21,22 +21,20 @@ import edu.umn.biomedicus.acronyms.OtherAcronymSense;
 import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.Token;
-import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
+import edu.umn.nlpengine.TextRange;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.slf4j.Logger;
@@ -84,6 +82,7 @@ class AcronymProcessor implements DocumentProcessor {
   private Labeler<Acronym> acronymLabeler;
 
   private List<TermToken> termTokens;
+
   private Labeler<OtherAcronymSense> otherSenseLabeler;
 
   /**
@@ -106,16 +105,14 @@ class AcronymProcessor implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@Nonnull Document document) {
     LOGGER.debug("Detecting acronyms in a document.");
 
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<TermToken> termTokenLabels = systemView.labelIndex(TermToken.class);
-    LabelIndex<PosTag> partOfSpeechLabels = systemView.labelIndex(PosTag.class);
-    LabelIndex<ParseToken> parseTokenLabels = systemView.labelIndex(ParseToken.class);
-    acronymLabeler = systemView.labeler(Acronym.class);
-    otherSenseLabeler = systemView.labeler(OtherAcronymSense.class);
+    LabelIndex<TermToken> termTokenLabels = document.labelIndex(TermToken.class);
+    LabelIndex<PosTag> partOfSpeechLabels = document.labelIndex(PosTag.class);
+    LabelIndex<ParseToken> parseTokenLabels = document.labelIndex(ParseToken.class);
+    acronymLabeler = document.labeler(Acronym.class);
+    otherSenseLabeler = document.labeler(OtherAcronymSense.class);
 
     List<TermToken> termTokenLabelList = termTokenLabels.asList();
     termTokens = termTokenLabels.asList();
@@ -141,8 +138,7 @@ class AcronymProcessor implements DocumentProcessor {
     }
   }
 
-  private <T extends Token& TextRange> boolean checkAndLabel(int i, T token)
-      throws BiomedicusException {
+  private <T extends Token& TextRange> boolean checkAndLabel(int i, T token) {
     boolean found = false;
     if (model.hasAcronym(token)
         || (orthographicModel != null && orthographicModel.seemsLikeAbbreviation(token))) {

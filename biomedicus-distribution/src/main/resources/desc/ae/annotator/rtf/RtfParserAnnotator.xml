@@ -27,13 +27,13 @@
     <vendor>${project.organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>originalDocumentViewName</name>
-        <description>The name of the original document view.</description>
+        <name>rtfDocumentName</name>
+        <description>The of the document that the original rtf is stored in.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>targetViewName</name>
+        <name>documentName</name>
         <description>
           The name of the target view. Note: this also needs to be set in the cas mappings
           descriptor.
@@ -68,15 +68,15 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>originalDocumentViewName</name>
+        <name>rtfDocumentName</name>
         <value>
           <string>OriginalDocument</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>targetViewName</name>
+        <name>documentName</name>
         <value>
-          <string>System</string>
+          <string>Analysis</string>
         </value>
       </nameValuePair>
       <nameValuePair>

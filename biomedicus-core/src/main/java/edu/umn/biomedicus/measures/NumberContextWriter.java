@@ -18,13 +18,10 @@ package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -51,29 +48,29 @@ public class NumberContextWriter implements DocumentProcessor {
   private final int contextSize;
 
   @Inject
-  public NumberContextWriter(@ProcessorSetting("outputDirectory") Path outputDirectory,
-      @ProcessorSetting("contextSize") Integer contextSize) {
+  public NumberContextWriter(
+      @ProcessorSetting("outputDirectory") Path outputDirectory,
+      @ProcessorSetting("contextSize") Integer contextSize
+  ) {
     this.outputDirectory = outputDirectory;
     this.contextSize = contextSize;
   }
 
   @Override
-  public void process(@Nonnull Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<Number> numbersIndex = systemView.labelIndex(Number.class);
-    LabelIndex<Sentence> sentencesIndex = systemView.labelIndex(Sentence.class);
-    LabelIndex<ParseToken> tokensIndex = systemView.labelIndex(ParseToken.class);
+  public void process(@Nonnull Document document) {
+    LabelIndex<Number> numbersIndex = document.labelIndex(Number.class);
+    LabelIndex<Sentence> sentencesIndex = document.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> tokensIndex = document.labelIndex(ParseToken.class);
 
     try (BufferedWriter bufferedWriter = Files
-        .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),
+        .newBufferedWriter(outputDirectory.resolve(document.getArtifactID() + ".txt"),
             StandardOpenOption.CREATE_NEW)) {
 
       for (Number number : numbersIndex) {
         LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(number);
         Sentence sentence = sentenceContainingIndex.first();
         if (sentence == null) {
-          throw new BiomedicusException("No sentence");
+          throw new RuntimeException("No sentence");
         }
         LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentence);
 
@@ -106,7 +103,7 @@ public class NumberContextWriter implements DocumentProcessor {
         bufferedWriter.newLine();
       }
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

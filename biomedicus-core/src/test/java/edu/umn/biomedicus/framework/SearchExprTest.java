@@ -20,11 +20,12 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import edu.umn.nlpengine.AbstractTextRange;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.LabelMetadata;
 import edu.umn.nlpengine.Span;
 import edu.umn.nlpengine.StandardLabelIndex;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.nlpengine.TextRange;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +41,7 @@ import org.testng.annotations.Test;
 public class SearchExprTest {
 
   @Mocked
-  LabeledText document;
+  Document document;
 
   @Mocked
   LabelAliases labelAliases;
@@ -63,7 +64,8 @@ public class SearchExprTest {
   @Test
   public void testMatchType() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
@@ -80,7 +82,8 @@ public class SearchExprTest {
   @Test
   public void testNoMatchType() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); result = null;
       labelAliases.getLabelable("Blah"); result = Blah.class;
@@ -97,7 +100,8 @@ public class SearchExprTest {
   @Test
   public void testNoTextBeforeMatch() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
       document.getText(); result = "this is text.";
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
@@ -116,7 +120,8 @@ public class SearchExprTest {
   @Test
   public void testNoTextBeforeNoMatch() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
       document.getText(); result = "this is text.";
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(
@@ -135,7 +140,8 @@ public class SearchExprTest {
   @Test
   public void testMatchPin() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(label, label1, label2);
       labelAliases.getLabelable("Blah"); result = Blah.class;
@@ -152,7 +158,8 @@ public class SearchExprTest {
   @Test
   public void testNoMatchPin() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(Blah.class); result = labelIndex;
       labelIndex.first(); returns(label, null);
       labelAliases.getLabelable("Blah"); result = Blah.class;
@@ -172,7 +179,8 @@ public class SearchExprTest {
     foo.setValue("bar");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -193,7 +201,8 @@ public class SearchExprTest {
     foo.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -215,7 +224,8 @@ public class SearchExprTest {
     foo2.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -241,7 +251,8 @@ public class SearchExprTest {
     foo.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -260,7 +271,8 @@ public class SearchExprTest {
     foo.setValue("aaa");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -281,7 +293,8 @@ public class SearchExprTest {
     foo.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -303,7 +316,8 @@ public class SearchExprTest {
     foo2.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -329,7 +343,8 @@ public class SearchExprTest {
     foo.setValue("BAZ");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -350,7 +365,8 @@ public class SearchExprTest {
     foo.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -372,7 +388,8 @@ public class SearchExprTest {
     foo2.setValue("BAZ");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -401,7 +418,8 @@ public class SearchExprTest {
     foo2.setValue("baz");
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -429,7 +447,8 @@ public class SearchExprTest {
     foo.setBaz(5);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -450,7 +469,8 @@ public class SearchExprTest {
     foo.setBaz(-5);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -471,7 +491,8 @@ public class SearchExprTest {
     foo.setBaz(3);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -493,7 +514,8 @@ public class SearchExprTest {
     foo2.setBaz(4);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(foo, foo2);
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -519,7 +541,8 @@ public class SearchExprTest {
     foo.setBaz(5);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -537,15 +560,31 @@ public class SearchExprTest {
     BAR
   }
 
-  static class HasEnum extends AbstractTextRange {
+  @LabelMetadata(versionId = "test")
+  static class HasEnum extends Label {
+
+    private final int startIndex;
+    private final int endIndex;
+
     BAZ baz;
 
     public HasEnum(int startIndex, int endIndex) {
-      super(startIndex, endIndex);
+      this.startIndex = startIndex;
+      this.endIndex = endIndex;
     }
 
     public BAZ getBaz() {
       return baz;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return startIndex;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return endIndex;
     }
   }
 
@@ -554,12 +593,14 @@ public class SearchExprTest {
     HasEnum hasEnum = new HasEnum(0, 5);
     hasEnum.baz = BAZ.FOO;
 
-    LabelIndex<HasEnum> index = StandardLabelIndex.create(hasEnum);
+    LabelIndex<HasEnum> index = StandardLabelIndex.create(HasEnum.class, hasEnum);
 
     new Expectations() {{
       labelAliases.getLabelable("HasEnum"); result = HasEnum.class;
 
-      document.getDocumentSpan(); result = new Span(0, 10);
+
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(HasEnum.class); result = index;
     }};
 
@@ -577,12 +618,14 @@ public class SearchExprTest {
     HasEnum hasEnum = new HasEnum(0, 5);
     hasEnum.baz = BAZ.BAR;
 
-    LabelIndex<HasEnum> index = StandardLabelIndex.create(hasEnum);
+    LabelIndex<HasEnum> index = StandardLabelIndex.create(HasEnum.class, hasEnum);
 
     new Expectations() {{
       labelAliases.getLabelable("HasEnum"); result = HasEnum.class;
 
-      document.getDocumentSpan(); result = new Span(0, 10);
+
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       document.labelIndex(HasEnum.class); result = index;
     }};
 
@@ -598,7 +641,8 @@ public class SearchExprTest {
     Foo foo = new Foo(0, 5);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -618,7 +662,8 @@ public class SearchExprTest {
     foo.setBaz(42);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = foo;
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
@@ -638,7 +683,8 @@ public class SearchExprTest {
     Blah label = new Blah(0, 5);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(null, label);
       labelAliases.getLabelable("Foo"); result = Foo.class;
       labelAliases.getLabelable("Blah"); result = Blah.class;
@@ -657,7 +703,8 @@ public class SearchExprTest {
   @Test
   public void testEmpty() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
     }};
 
     SearchExpr blah = SearchExpr.parse(labelAliases, "");
@@ -674,7 +721,8 @@ public class SearchExprTest {
   @Test
   public void testLabelVariable() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -694,7 +742,8 @@ public class SearchExprTest {
     Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(label, null, fooLabel);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -722,7 +771,8 @@ public class SearchExprTest {
     Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(label, null, fooLabel);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -748,7 +798,8 @@ public class SearchExprTest {
   @Test
   public void testLabelGroup() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = label;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -766,7 +817,8 @@ public class SearchExprTest {
   @Test
   public void testOptionMissing() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = null;
       labelAliases.getLabelable("Blah"); result = Blah.class;
     }};
@@ -782,7 +834,8 @@ public class SearchExprTest {
   @Test
   public void testPositiveLookaheadPass() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(new Blah(0, 5), new Foo(6, 8));
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -800,7 +853,8 @@ public class SearchExprTest {
   @Test
   public void testPositiveLookaheadFail() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); result = new Blah(0, 5);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -818,7 +872,8 @@ public class SearchExprTest {
   @Test
   public void testNegativeLookaheadPass() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
       labelIndex.first(); returns(new Blah(0, 5), null);
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -836,7 +891,8 @@ public class SearchExprTest {
   @Test
   public void testNegativeLookaheadFail() {
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 10);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 10;
 
       labelIndex.first(); returns(new Blah(0, 5), new Foo(6, 8));
 
@@ -872,7 +928,8 @@ public class SearchExprTest {
     arr.add(fourteenFoo);
 
     new Expectations() {{
-      document.getDocumentSpan(); result = new Span(0, 30);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 30;
 
       labelIndex.first(); returns(foo1, foo2, foo3, fourteenFoo);
 
@@ -895,7 +952,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), null);
     }};
@@ -917,7 +975,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(0, 5), (Object) null);
     }};
@@ -935,7 +994,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), null, new Blah(0, 5), null);
     }};
@@ -957,7 +1017,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -975,7 +1036,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -997,7 +1059,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1019,7 +1082,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1037,7 +1101,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1057,7 +1122,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1077,7 +1143,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1097,7 +1164,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1117,7 +1185,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), null);
     }};
@@ -1135,7 +1204,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), null);
     }};
@@ -1153,7 +1223,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), (Object) null);
     }};
@@ -1173,7 +1244,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1191,7 +1263,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1211,7 +1284,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1231,7 +1305,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1251,7 +1326,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1271,7 +1347,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1291,7 +1368,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 100);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 100;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1311,7 +1389,8 @@ public class SearchExprTest {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
 
       labelIndex.first(); returns(new Blah(0, 5), new Blah(6, 10), new Blah(11, 13), null);
     }};
@@ -1334,7 +1413,8 @@ public class SearchExprTest {
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
 
       labelIndex.first(); result = new Blah(2, 5);
 
@@ -1358,7 +1438,8 @@ public class SearchExprTest {
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
 
       labelIndex.first(); result = new Blah(2, 5);
 
@@ -1378,7 +1459,8 @@ public class SearchExprTest {
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 13);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 13;
 
       labelIndex.first(); returns(new Foo(3, 4), new Blah(6, 7), new Foo(8, 9), new Blah(6, 7),
           new Foo(8, 9));
@@ -1400,14 +1482,15 @@ public class SearchExprTest {
 
   @Test
   public void testGreedyLoopPreemption() throws Exception {
-    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
-    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 25);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 25;
 
       document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
       document.labelIndex(Blah.class); result = blahs; minTimes = 1;
@@ -1430,14 +1513,15 @@ public class SearchExprTest {
 
   @Test
   public void testPossessiveLoopPreemption() throws Exception {
-    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
-    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 25);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 25;
 
       document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
       document.labelIndex(Blah.class); result = blahs; minTimes = 1;
@@ -1460,14 +1544,15 @@ public class SearchExprTest {
 
   @Test
   public void testAlternationsProperOrdering() throws Exception {
-    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(new Foo(0, 5), new Foo(20, 25));
-    LabelIndex<Blah> blahs = StandardLabelIndex.create(new Blah(10, 14), new Blah(15, 20));
+    LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
+    LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
 
-      document.getDocumentSpan(); result = new Span(0, 25);
+      document.getStartIndex(); result = 0;
+      document.getEndIndex(); result = 25;
 
       document.labelIndex(Foo.class); result = fooLabelIndex; minTimes = 1;
       document.labelIndex(Blah.class); result = blahs; minTimes = 1;
@@ -1498,28 +1583,49 @@ public class SearchExprTest {
 
 
 
-  static class Blah extends AbstractTextRange {
+  @LabelMetadata(versionId = "2_0")
+  static class Blah extends Label {
+
+    private int startIndex;
+    private int endIndex;
 
     public Blah(int startIndex, int endIndex) {
-      super(startIndex, endIndex);
+      this.startIndex = startIndex;
+      this.endIndex = endIndex;
     }
 
     public Blah(TextRange label) {
-      super(label);
+      startIndex = label.getStartIndex();
+      endIndex = label.getEndIndex();
+    }
+
+    @Override
+    public int getStartIndex() {
+      return startIndex;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return endIndex;
     }
   }
 
-  public static class Foo extends AbstractTextRange {
+  @LabelMetadata(versionId = "2_0")
+  public static class Foo extends Label {
 
     private String value;
     private int baz;
+    private int startIndex;
+    private int endIndex;
 
     public Foo(int startIndex, int endIndex) {
-      super(startIndex, endIndex);
+      this.startIndex = startIndex;
+      this.endIndex = endIndex;
     }
 
     public Foo(TextRange label) {
-      super(label);
+      startIndex = label.getStartIndex();
+      endIndex = label.getEndIndex();
     }
 
     public String getValue() {
@@ -1536,6 +1642,16 @@ public class SearchExprTest {
 
     public void setBaz(int baz) {
       this.baz = baz;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return startIndex;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return endIndex;
     }
   }
 }

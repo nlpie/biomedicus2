@@ -23,14 +23,20 @@ import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.cas.text.AnnotationIndex
 
 
-class UimaLabelIndex<T : TextRange> @Inject constructor(
+class UimaLabelIndex<T : Label> @Inject constructor(
         cas: CAS,
         private val labelAdapter: LabelAdapter<T>
 ) : AbstractLabelIndex<T>() {
+    override val labelClass: Class<T>
+        get() = labelAdapter.labelClass
+
     private val index: AnnotationIndex<AnnotationFS> = cas.getAnnotationIndex(labelAdapter.type)
 
     private val inflated: LabelIndex<T> by lazy {
-        if (labelAdapter.isDistinct) DistinctLabelIndex(this) else StandardLabelIndex(this)
+        if (labelAdapter.distinct)
+            DistinctLabelIndex(labelClass, this)
+        else
+            StandardLabelIndex(labelClass, this)
     }
 
     override val size: Int by lazy {
@@ -82,6 +88,12 @@ class UimaLabelIndex<T : TextRange> @Inject constructor(
         } else it.next()
     }
 
+    override fun last(): T? {
+        val it = index.iterator()
+        it.moveToLast()
+        return if (it.isValid) labelAdapter.annotationToLabel(it.get()) else null
+    }
+
     override fun atLocation(textRange: TextRange): Collection<T> {
         return inflated.atLocation(textRange)
     }
@@ -107,7 +119,7 @@ class UimaLabelIndex<T : TextRange> @Inject constructor(
 
             @Suppress("UNCHECKED_CAST")
             override fun next(): T {
-                return labelAdapter.annotationToLabel(iterator.next()) as T
+                return labelAdapter.annotationToLabel(iterator.next())
             }
         }
     }

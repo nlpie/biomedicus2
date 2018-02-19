@@ -16,14 +16,39 @@
 
 package edu.umn.biomedicus.measures
 
+import edu.umn.biomedicus.numbers.NumberType
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
+
+class MeasuresModule: SystemModule() {
+    override fun setup() {
+        addLabelClass<CandidateUnitOfMeasure>()
+
+        addLabelClass<Number>()
+        addLabelClass<NumberRange>()
+
+        addEnumClass<NumberType>()
+
+        addLabelClass<IndefiniteQuantifierCue>()
+        addLabelClass<FuzzyValue>()
+        addLabelClass<StandaloneQuantifier>()
+        addLabelClass<Quantifier>()
+
+        addLabelClass<TimeUnit>()
+        addLabelClass<TimeFrequencyUnit>()
+    }
+
+}
 
 /**
  * A candidate unit of measure.
  */
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class CandidateUnitOfMeasure(
         override val startIndex: Int,
         override val endIndex: Int
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

@@ -19,7 +19,7 @@ package edu.umn.biomedicus.uima.migration;
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.concepts.CUI;
-import edu.umn.biomedicus.uima.adapter.CASDocument;
+import edu.umn.biomedicus.uima.adapter.CASArtifact;
 import edu.umn.biomedicus.uima.util.FsAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -315,8 +315,8 @@ public class MtsamplesTo1_7_0 implements TypeSystemMigration {
 
     assert documentId != null : "should not be null at this point";
 
-    CASDocument casDocument = CASDocument.initialize(null, newCAS, documentId);
-    Map<String, String> metadata = casDocument.getMetadata();
+    CASArtifact casArtifact = CASArtifact.initialize(null, newCAS, documentId);
+    Map<String, String> metadata = casArtifact.getMetadata();
 
     FSIterator<FeatureStructure> allSDI = oldCAS.getIndexRepository().getAllIndexedFS(sdiType);
     if (allSDI.hasNext()) {

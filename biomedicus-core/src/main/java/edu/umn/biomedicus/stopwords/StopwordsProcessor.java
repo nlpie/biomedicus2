@@ -17,14 +17,12 @@
 package edu.umn.biomedicus.stopwords;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
+import org.jetbrains.annotations.NotNull;
 
 public class StopwordsProcessor implements DocumentProcessor {
 
@@ -36,11 +34,9 @@ public class StopwordsProcessor implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.labelIndex(ParseToken.class);
-    Labeler<StopWord> stopWordsLabeler = systemView.labeler(StopWord.class);
+  public void process(@NotNull Document document) {
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    Labeler<StopWord> stopWordsLabeler = document.labeler(StopWord.class);
 
     for (ParseToken parseTokenLabel : parseTokenLabelIndex) {
       if (stopwords.isStopWord(parseTokenLabel)) {

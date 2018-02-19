@@ -16,22 +16,22 @@
 
 package edu.umn.biomedicus.measures
 
-import edu.umn.biomedicus.common.TextIdentifiers
+import edu.umn.biomedicus.common.DocumentIdentifiers
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.StandardDocument
+import edu.umn.nlpengine.StandardArtifact
+import edu.umn.nlpengine.addTo
 import org.testng.Assert.assertTrue
 import org.testng.annotations.Test
 import java.math.BigInteger
 
 class QuantifierDetectorTest {
 
-    val document: Document = StandardDocument("doc")
+
 
     val labelAliases = LabelAliases()
 
@@ -54,21 +54,20 @@ class QuantifierDetectorTest {
 
     @Test
     fun testIndefiniteQuantifierNumber() {
-        val view = document.attachText(TextIdentifiers.SYSTEM, "Beer: Around 25 bottles a week.")
+        val document = StandardArtifact("doc")
+                .addDocument(DocumentIdentifiers.ANALYSIS, "Beer: Around 25 bottles a week.")
 
-        view.labeler(Number::class)
-                .add(Number(13, 15, BigInteger.valueOf(25).toString(),
-                        BigInteger.ONE.toString(), NumberType.CARDINAL))
+        Number(13, 15, BigInteger.valueOf(25).toString(),
+                BigInteger.ONE.toString(), NumberType.CARDINAL).addTo(document)
 
-        view.labeler(IndefiniteQuantifierCue::class)
-                .add(IndefiniteQuantifierCue(6, 12,
-                        IndefiniteQuantifierType.LOCAL))
+        IndefiniteQuantifierCue(6, 12, IndefiniteQuantifierType.LOCAL)
+                .addTo(document)
 
-        view.labeler(Sentence::class).add(Sentence(0, 24))
+        Sentence(0, 24).addTo(document)
 
         quantifierDetector.process(document)
 
-        val quantifiers = view.labelIndex(Quantifier::class.java)
+        val quantifiers = document.labelIndex(Quantifier::class.java)
 
         assertTrue(quantifiers.atLocation(6, 15).size == 1)
     }

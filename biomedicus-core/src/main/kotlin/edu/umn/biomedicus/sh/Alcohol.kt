@@ -16,8 +16,11 @@
 
 package edu.umn.biomedicus.sh
 
-import edu.umn.nlpengine.TextRange
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
 
-data class AlcoholCandidate(override val startIndex: Int, override val endIndex: Int): TextRange
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class AlcoholCandidate(override val startIndex: Int, override val endIndex: Int): Label()
 
-data class AlcoholCue(override val startIndex: Int, override val endIndex: Int): TextRange
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class AlcoholCue(override val startIndex: Int, override val endIndex: Int): Label()

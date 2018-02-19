@@ -16,14 +16,24 @@
 
 package edu.umn.biomedicus.concepts
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
+
+class ConceptModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<DictionaryConcept>()
+        addLabelClass<DictionaryTerm>()
+    }
+}
 
 interface Concept {
     val identifier: String
 
     val source: String
 
-    val type: String
+    val semanticType: String
 
     val confidence: Double
 }
@@ -31,26 +41,31 @@ interface Concept {
 /**
  * A dictionary concept - a standardized code for the idea the text represents.
  */
+@LabelMetadata(versionId = "2_0", distinct = false)
 data class DictionaryConcept(
         override val startIndex: Int,
         override val endIndex: Int,
         override val identifier: String,
         override val source: String,
-        override val type: String,
+        override val semanticType: String,
         override val confidence: Double
-) : TextRange, Concept {
-    constructor(textRange: TextRange, identifier: String, source: String, type: String, confidence: Double):
-            this(textRange.startIndex, textRange.endIndex, identifier, source, type, confidence)
+) : Label(), Concept {
+    constructor(
+            textRange: TextRange,
+            identifier: String,
+            source: String,
+            type: String,
+            confidence: Double
+    ): this(textRange.startIndex, textRange.endIndex, identifier, source, type, confidence)
 }
 
 /**
  * A dictionary term - a span of text that has one or more dictionary concepts associated with it.
  */
+@LabelMetadata(versionId = "2_0", distinct = false)
 data class DictionaryTerm(
         override val startIndex: Int,
-        override val endIndex: Int,
-        val concepts: List<DictionaryConcept>
-) : TextRange {
-    constructor(textRange: TextRange, concepts: List<DictionaryConcept>) :
-            this(textRange.startIndex, textRange.endIndex, concepts)
+        override val endIndex: Int
+) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

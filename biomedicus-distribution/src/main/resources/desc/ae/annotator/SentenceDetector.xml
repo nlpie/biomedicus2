@@ -20,7 +20,7 @@
   <primitive>true</primitive>
   <!-- Do not change this -->
   <annotatorImplementationName>
-    edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+    edu.umn.biomedicus.uima.adapter.ProcessorUimaAdapter
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using the DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
@@ -30,16 +30,17 @@
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>documentProcessor</name>
-        <description>The document processor class to instantiate.
-        </description>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
-        <description>The name of the UIMA view to use.</description>
+        <name>processorClass</name>
+        <description>The document processor class to instantiate.
+        </description>
         <type>String</type>
+        <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>eagerLoad</name>
@@ -66,17 +67,17 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>documentProcessor</name>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>processorClass</name>
         <value>
           <string>
             edu.umn.biomedicus.sentence.ONLPSentenceDetector
           </string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>viewName</name>
-        <value>
-          <string>System</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

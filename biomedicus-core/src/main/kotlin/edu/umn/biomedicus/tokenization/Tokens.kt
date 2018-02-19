@@ -17,19 +17,33 @@
 package edu.umn.biomedicus.tokenization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
+
+class TokenizationModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<TermToken>()
+        addLabelClass<ParseToken>()
+        addLabelClass<TokenCandidate>()
+        addLabelClass<WordIndex>()
+    }
+
+}
 
 interface Token : TextRange {
     val text: String
     val hasSpaceAfter: Boolean
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class TermToken(
         override val startIndex: Int,
         override val endIndex: Int,
         override val text: String,
         override val hasSpaceAfter: Boolean
-) : Token {
+) : Label(), Token {
     constructor(
             textRange: TextRange,
             text: String,
@@ -37,12 +51,13 @@ data class TermToken(
     ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class ParseToken(
         override val startIndex: Int,
         override val endIndex: Int,
         override val text: String,
         override val hasSpaceAfter: Boolean
-) : Token {
+) : Label(), Token {
     constructor(
             textRange: TextRange,
             text: String,
@@ -50,21 +65,31 @@ data class ParseToken(
     ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class TokenCandidate(
         override val startIndex: Int,
         override val endIndex: Int,
         val isLast: Boolean
-) : TextRange {
+) : Label() {
     constructor(textRange: TextRange, isLast: Boolean) : this(textRange.startIndex, textRange.endIndex, isLast)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class WordIndex(
         override val startIndex: Int,
         override val endIndex: Int,
-        val stringIdentifier: StringIdentifier
-) : TextRange {
+        val stringIdentifierIndex: Int
+) : Label() {
+    constructor(
+            startIndex: Int,
+            endIndex: Int,
+            stringIdentifier: StringIdentifier
+    ) : this(startIndex, endIndex, stringIdentifier.value())
+
     constructor(
             textRange: TextRange,
             stringIdentifier: StringIdentifier
-    ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier)
+    ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier.value())
+
+    val stringIdentifier: StringIdentifier get() = StringIdentifier(stringIdentifierIndex)
 }

@@ -18,7 +18,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.DocumentProcessorUimaAdapter
+  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.ProcessorUimaAdapter
   </annotatorImplementationName>
   <analysisEngineMetaData>
     <name>Word Labeler</name>
@@ -27,13 +27,19 @@
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>documentProcessor</name>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>processorClass</name>
         <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>viewName</name>
+        <name>documentName</name>
         <description>The name of the UIMA view to use.</description>
         <type>String</type>
       </configurationParameter>
@@ -61,13 +67,19 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>documentProcessor</name>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>processorClass</name>
         <value>
           <string>edu.umn.biomedicus.vocabulary.WordLabeler</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>viewName</name>
+        <name>documentName</name>
         <value>
           <string>System</string>
         </value>

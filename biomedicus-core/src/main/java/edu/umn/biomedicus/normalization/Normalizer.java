@@ -17,20 +17,18 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,15 +57,13 @@ final public class Normalizer implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@Nonnull Document document) {
     LOGGER.debug("Normalizing tokens in a document.");
-    LabeledText labeledText = TextIdentifiers.getSystemLabeledText(document);
+    LabelIndex<WordIndex> wordIndexLabelIndex = document.labelIndex(WordIndex.class);
+    LabelIndex<PosTag> posTagIndex = document.labelIndex(PosTag.class);
+    Labeler<NormForm> normFormLabeler = document.labeler(NormForm.class);
 
-    LabelIndex<WordIndex> wordIndexLabelIndex = labeledText.labelIndex(WordIndex.class);
-    LabelIndex<PosTag> posTagIndex = labeledText.labelIndex(PosTag.class);
-    Labeler<NormForm> normFormLabeler = labeledText.labeler(NormForm.class);
-
-    LabelIndex<ParseToken> parseTokenLabelIndex = labeledText.labelIndex(ParseToken.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
 
     for (WordIndex wordIndex : wordIndexLabelIndex) {
       PartOfSpeech partOfSpeech = posTagIndex

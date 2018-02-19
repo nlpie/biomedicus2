@@ -16,10 +16,49 @@
 
 package edu.umn.nlpengine
 
-import java.io.Reader
-import java.io.StringReader
 import java.util.*
-import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
+
+interface Metadata {
+    /**
+     * Returns the unique artifact identifier. Generally sourced from the relative path to the
+     * source file, a primary key/integer unique identifier, or an UUID. It should be a valid
+     * relative file path in order for writers to properly function.
+     *
+     * @return string document identifier
+     */
+    val artifactID: String
+
+    /**
+     * Returns a map of all the metadata for an artifact.
+     *
+     * @return unmodifiable map of all the metadata for the artifact.
+     */
+    val metadata: MutableMap<String, String>
+}
+
+interface Artifact : Metadata {
+    /**
+     * [LabeledText] objects that are attached to this document.
+     */
+    val documents: Map<String, Document>
+
+    /**
+     * Creates a new [LabeledText] attached to this document
+     */
+    fun addDocument(name: String, text: String): Document
+
+    fun copyDocuments(other: Artifact) {
+        other.documents.values.forEach(this::copyDocument)
+    }
+
+    fun copyDocument(document: Document) {
+        val newDocument = addDocument(document.name, document.text)
+        newDocument.copyIndices(document)
+    }
+}
+
+abstract class AbstractArtifact : Artifact
 
 /**
  * A single processing artifact and all the data that it contains. Contains individual text views
@@ -28,62 +67,13 @@ import kotlin.reflect.KClass
  *
  * @since 1.6.0
  */
-interface Document {
+abstract class Document(
+        val name: String,
+        val text: String
+) : TextRange, Metadata {
+    override val startIndex get() = 0
 
-    /**
-     * Returns the unique document identifier. Generally sourced from the relative path to the
-     * source file, a primary key/integer unique identifier, or an UUID. It should be a valid
-     * relative file path in order for writers to properly function.
-     *
-     * @return string document identifier
-     */
-    val documentId: String
-
-    /**
-     * Returns a map of all the metadata for this document.
-     *
-     * @return unmodifiable map of all the metadata for this document.
-     */
-    val metadata: MutableMap<String, String>
-
-    /**
-     * [LabeledText] objects that are attached to this document.
-     */
-    val labeledTexts: Map<String, LabeledText>
-
-    /**
-     * Creates a new [LabeledText] attached to this document
-     */
-    fun attachText(id: String, text: String): LabeledText
-}
-
-/**
- * A biomedicus basic unit for document text and its associated labels.
- *
- * @since 1.6.0
- */
-abstract class LabeledText {
-
-    /**
-     * Returns a reader for the document text
-     *
-     * @return a java reader for the document text
-     */
-    abstract val reader: Reader
-
-    /**
-     * Gets the entire text of the document
-     *
-     * @return document text
-     */
-    abstract val text: String
-
-    /**
-     * Returns the [Span] of the entire document.
-     *
-     * @return the Span of the entire document.
-     */
-    abstract val documentSpan: Span
+    override val endIndex get() = text.length
 
     /**
      * Returns the label index for the specific label class.
@@ -92,13 +82,9 @@ abstract class LabeledText {
      * @param <T> the type of the labelable class
      * @return label index for the labelable type
      */
-    abstract fun <T : TextRange> labelIndex(labelClass: Class<T>): LabelIndex<T>
+    abstract fun <T : Label> labelIndex(labelClass: Class<T>): LabelIndex<T>
 
-    fun <T : TextRange> labelIndex(clazz: KClass<T>): LabelIndex<T> = labelIndex(clazz.java)
-
-    inline fun <reified T : TextRange> labelIndex() : LabelIndex<T> {
-        return labelIndex(T::class)
-    }
+    inline fun <reified T : Label> labelIndex(): LabelIndex<T> = labelIndex(T::class.java)
 
     /**
      * Returns a labeler for the specific label class.
@@ -107,100 +93,108 @@ abstract class LabeledText {
      * @param <T> the type of the labelable class
      * @return labeler for the labelable type
      */
-    abstract fun <T : TextRange> labeler(labelClass: Class<T>): Labeler<T>
+    abstract fun <T : Label> labeler(labelClass: Class<T>): Labeler<T>
 
-    fun <T : TextRange> labeler(clazz: KClass<T>): Labeler<T> = labeler(clazz.java)
+    inline fun <reified T : Label> labeler(): Labeler<T> = labeler(T::class.java)
 
-    inline fun <reified T : TextRange> labeler() : Labeler<T> {
-        return labeler(T::class)
+    abstract fun labelIndexes(): Collection<LabelIndex<*>>
+
+    fun <T : Label> copyIndex(labelIndex: LabelIndex<T>) {
+        labeler(labelIndex.labelClass).addAll(labelIndex)
     }
 
-    /**
-     * A builder for a new text view.
-     */
-    interface Builder {
-        /**
-         * Sets the text of the text view.
-         *
-         * @param text the text of the text view
-         * @return this builder
-         */
-        fun withText(text: String): Builder
-
-        /**
-         * Sets the name of the text view.
-         *
-         * @param name the name identifier of the text view.
-         * @return this builder
-         */
-        fun withName(name: String): Builder
-
-        /**
-         * Finalizes and builds the new text view.
-         *
-         * @return the finished text view.
-         */
-        fun build(): LabeledText
-    }
-}
-
-inline fun <reified T : TextRange> T.addTo(labeledText: LabeledText) {
-    labeledText.labeler(T::class).add(this)
-}
-
-class StandardDocument(
-        override val documentId: String
-): Document {
-    override val metadata = HashMap<String, String>()
-
-    override val labeledTexts = HashMap<String, StandardLabeledText>()
-
-    override fun attachText(id: String, text: String): LabeledText {
-        return StandardLabeledText(text).also { labeledTexts[id] = it }
-    }
-}
-
-class StandardLabeledText(override val text: String) : LabeledText() {
-    private val indices = HashMap<Class<*>, StandardLabeler<*>>()
-
-    override val reader: Reader
-        get() = StringReader(text)
-    override val documentSpan: Span
-        get() = Span(0, text.length)
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : TextRange> labelIndex(labelClass: Class<T>): LabelIndex<T> {
-        return indices[labelClass]?.index as? LabelIndex<T> ?: StandardLabelIndex()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : TextRange> labeler(labelClass: Class<T>): Labeler<T> {
-        synchronized(this) {
-            var labeler = indices[labelClass] as StandardLabeler<T>?
-
-            if (labeler == null) {
-                labeler = StandardLabeler()
-
-                if (indices.put(labelClass, labeler) != null) {
-                    throw IllegalStateException("type already been/being labeled: " + labelClass)
-                }
-            }
-            return labeler
+    fun copyIndices(document: Document) {
+        document.labelIndexes().forEach {
+            copyIndex(it)
         }
     }
 }
 
-internal class StandardLabeler<T : TextRange> : Labeler<T> {
+inline fun <reified T : Label> T.addTo(document: Document) {
+    document.labeler(T::class.java).add(this)
+}
+
+fun <T : Label> T.addTo(labeler: Labeler<T>): T {
+    return apply { labeler.add(this) }
+}
+
+class StandardArtifact(
+        override val artifactID: String
+) : Artifact {
+    override val metadata = HashMap<String, String>()
+
+    private val _documents = ArrayList<Document>()
+    override val documents get() = _documents.associateBy { it.name }
+
+    override fun addDocument(name: String, text: String): Document {
+        return StandardDocument(name, text, this).also { _documents.add(it) }
+    }
+}
+
+internal class StandardDocument(
+        name: String,
+        text: String,
+        private val artifact: StandardArtifact
+) : Document(name, text), Metadata by artifact {
+    private val indices = ArrayList<StandardLabeler<*>>()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Label> labelIndex(labelClass: Class<T>): LabelIndex<T> {
+        return indices.firstOrNull { labelClass == it.labelClass }
+                ?.index as? LabelIndex<T> ?: StandardLabelIndex(labelClass)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Label> labeler(labelClass: Class<T>): Labeler<T> {
+        synchronized(this) {
+            var labeler = indices.firstOrNull { it.labelClass == labelClass }
+                    ?.let { it as StandardLabeler<T> }
+
+            if (labeler == null) {
+                labeler = StandardLabeler(labelClass)
+
+                indices.add(labeler)
+            }
+            return labeler
+        }
+    }
+
+    private fun <T : Label> createLabelIndex(labelClass: Class<T>): LabelIndex<T> {
+        return if (labelClass.kotlin.findAnnotation<LabelMetadata>()?.distinct
+                        ?: throw IllegalStateException("Label without @LabelMetadata annotation")) {
+            DistinctLabelIndex(labelClass)
+        } else {
+            StandardLabelIndex(labelClass)
+        }
+    }
+
+    override fun labelIndexes(): Collection<LabelIndex<*>> {
+        return indices.map { it.index }
+    }
+}
+
+class StandardLabeler<T : Label>(
+        val labelClass: Class<T>,
+        private val document: Document?
+) : Labeler<T> {
+    constructor(labelClass: Class<T>) : this(labelClass, null)
+
     private var unsorted: ArrayList<T>? = ArrayList()
 
     val index: LabelIndex<T> by lazy {
-        StandardLabelIndex(unsorted!!).also { unsorted = null }
+        if (labelClass.kotlin.findAnnotation<LabelMetadata>()?.distinct
+                        ?: throw IllegalStateException("Label without @LabelMetadata annotation")) {
+            DistinctLabelIndex(labelClass, unsorted!!)
+        } else {
+            StandardLabelIndex(labelClass, unsorted!!)
+        }.also { unsorted = null }
     }
 
     override fun add(label: T) {
         val unsorted = unsorted
                 ?: throw IllegalStateException("Index has been accessed and finalized already")
+        label.internalLabeledOnDocument = document
+        label.internalLabelIdentifier = unsorted.size
         unsorted.add(label)
     }
 }
-

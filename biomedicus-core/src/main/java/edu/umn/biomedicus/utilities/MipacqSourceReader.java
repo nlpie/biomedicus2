@@ -18,57 +18,39 @@ package edu.umn.biomedicus.utilities;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.TextIdentifiers;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentBuilder;
-import edu.umn.biomedicus.framework.DocumentSource;
-import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.Artifact;
+import edu.umn.nlpengine.ArtifactSource;
+import edu.umn.nlpengine.StandardArtifact;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.function.Predicate;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
  */
-public class MipacqSourceReader implements DocumentSource {
+public class MipacqSourceReader implements ArtifactSource {
 
   private final long total;
 
-  private final Iterator<Path> iterator;
+  private final Spliterator<Path> iterator;
+
+  private final String documentName;
 
   @Inject
-  public MipacqSourceReader(@ProcessorSetting("inputDirectory") Path inputDirectory)
-      throws IOException {
+  public MipacqSourceReader(
+      @ProcessorSetting("inputDirectory") Path inputDirectory,
+      @ProcessorSetting("documentName") String documentName
+  ) throws IOException {
+    this.documentName = documentName;
     Predicate<Path> endsWithSource = f -> f.toString().endsWith(".source");
     total = Files.walk(inputDirectory).filter(endsWithSource).count();
-    iterator = Files.walk(inputDirectory).filter(endsWithSource).iterator();
-  }
-
-  @Override
-  public boolean hasNext() {
-    return iterator.hasNext();
-  }
-
-  @Override
-  public Document next(DocumentBuilder factory) throws BiomedicusException {
-    try {
-      Path next = iterator.next();
-      StringBuilder sb = new StringBuilder();
-      Files.lines(next, StandardCharsets.UTF_8).forEach(line -> {
-        if (!line.startsWith("[")) {
-          sb.append(line).append("\n");
-        }
-      });
-      Document document = factory.create(next.getFileName().toString());
-      document.getMetadata().put("path", next.toString());
-      document.attachText(TextIdentifiers.SYSTEM, sb.toString());
-      return document;
-    } catch (IOException e) {
-      throw new BiomedicusException(e);
-    }
+    iterator = Files.walk(inputDirectory).filter(endsWithSource).spliterator();
   }
 
   @Override
@@ -77,7 +59,27 @@ public class MipacqSourceReader implements DocumentSource {
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() {
 
+  }
+
+  @Override
+  public boolean tryAdvance(@NotNull Function1<? super Artifact, Unit> consumer) {
+    return iterator.tryAdvance((next) -> {
+      StringBuilder sb = new StringBuilder();
+      try {
+        Files.lines(next, StandardCharsets.UTF_8).forEach(line -> {
+          if (!line.startsWith("[")) {
+            sb.append(line).append("\n");
+          }
+        });
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      Artifact artifact = new StandardArtifact(next.getFileName().toString());
+      artifact.getMetadata().put("path", next.toString());
+      artifact.addDocument(documentName, sb.toString());
+      consumer.invoke(artifact);
+    });
   }
 }

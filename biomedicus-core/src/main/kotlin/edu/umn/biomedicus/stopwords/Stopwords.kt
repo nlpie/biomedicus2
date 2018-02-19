@@ -16,8 +16,19 @@
 
 package edu.umn.biomedicus.stopwords
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
-data class StopWord(override val startIndex: Int, override val endIndex: Int) : TextRange {
+class StopwordsModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<StopWord>()
+    }
+
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class StopWord(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

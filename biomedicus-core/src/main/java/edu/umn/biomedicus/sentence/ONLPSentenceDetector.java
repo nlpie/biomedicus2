@@ -16,22 +16,20 @@
 
 package edu.umn.biomedicus.sentence;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
 import edu.umn.biomedicus.common.utilities.Patterns;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.LabeledText;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.sentences.TextSegment;
-import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import javax.inject.Inject;
 import opennlp.tools.sentdetect.SentenceDetectorME;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +45,10 @@ public class ONLPSentenceDetector implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    LabeledText systemView = TextIdentifiers.getSystemLabeledText(document);
-    String text = systemView.getText();
-    Labeler<Sentence> sentenceLabeler = systemView.labeler(Sentence.class);
-    LabelIndex<TextSegment> textSegmentLabelIndex = systemView.labelIndex(TextSegment.class);
+  public void process(@NotNull Document document) {
+    String text = document.getText();
+    Labeler<Sentence> sentenceLabeler = document.labeler(Sentence.class);
+    LabelIndex<TextSegment> textSegmentLabelIndex = document.labelIndex(TextSegment.class);
 
     Iterable<TextSegment> segments;
     if (textSegmentLabelIndex.isEmpty()) {

@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.common.TextIdentifiers;
+import edu.umn.biomedicus.common.DocumentIdentifiers;
 import edu.umn.biomedicus.rtf.beans.keywords.ControlKeywordsDescription;
 import edu.umn.biomedicus.rtf.beans.properties.PropertiesDescription;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
@@ -134,7 +134,7 @@ class RtfParserFactory {
         cas
     );
 
-    CAS originalDocumentView = cas.getView(TextIdentifiers.ORIGINAL_DOCUMENT);
+    CAS originalDocumentView = cas.getView(DocumentIdentifiers.ORIGINAL_DOCUMENT);
     IndexListener indexListener = new CasIndexListener(originalDocumentView);
 
     State initialState = State.createState(outputDestinationFactory, initialProperties,

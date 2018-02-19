@@ -16,36 +16,55 @@
 
 package edu.umn.biomedicus.modification
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
-import edu.umn.nlpengine.Span
 
-interface DictionaryTermModifier : TextRange {
-    val cueTerms: List<Span>
+class ModifiersModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<ModificationCue>()
+        addLabelClass<Historical>()
+        addLabelClass<Negated>()
+        addLabelClass<Probable>()
+    }
 }
 
+interface DictionaryTermModifier : TextRange {
+    val cueTerms: List<ModificationCue>
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class ModificationCue(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Historical(
         override val startIndex: Int,
         override val endIndex: Int,
-        override val cueTerms: List<Span>
-) : DictionaryTermModifier {
-    constructor(textRange: TextRange, cueTerms: List<Span>):
+        override val cueTerms: List<ModificationCue>
+) : Label(), DictionaryTermModifier {
+    constructor(textRange: TextRange, cueTerms: List<ModificationCue>):
             this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Negated(
         override val startIndex: Int,
         override val endIndex: Int,
-        override val cueTerms: List<Span>
-) : DictionaryTermModifier {
-    constructor(textRange: TextRange, cueTerms: List<Span>):
+        override val cueTerms: List<ModificationCue>
+) : Label(), DictionaryTermModifier {
+    constructor(textRange: TextRange, cueTerms: List<ModificationCue>):
             this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class Probable(
         override val startIndex: Int,
         override val endIndex: Int,
-        override val cueTerms: List<Span>
-) : DictionaryTermModifier {
-    constructor(textRange: TextRange, cueTerms: List<Span>):
+        override val cueTerms: List<ModificationCue>
+) : Label(), DictionaryTermModifier {
+    constructor(textRange: TextRange, cueTerms: List<ModificationCue>):
             this(textRange.startIndex, textRange.endIndex, cueTerms)
 }

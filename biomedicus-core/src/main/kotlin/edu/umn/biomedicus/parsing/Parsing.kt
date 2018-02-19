@@ -16,20 +16,32 @@
 
 package edu.umn.biomedicus.parsing
 
+import edu.umn.nlpengine.Label
+import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
 
+class ParsingModule : SystemModule() {
+    override fun setup() {
+        addLabelClass<DependencyParse>()
+        addLabelClass<ConstituencyParse>()
+    }
+}
+
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class DependencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
         val parseTree: String
-): TextRange {
+): Label() {
     constructor(textRange: TextRange, parseTree: String): this(textRange.startIndex, textRange.endIndex, parseTree)
 }
 
+@LabelMetadata(versionId = "2_0", distinct = true)
 data class ConstituencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
         val parseTree: String
-): TextRange {
+): Label() {
     constructor(textRange: TextRange, parseTree: String): this(textRange.startIndex, textRange.endIndex, parseTree)
 }

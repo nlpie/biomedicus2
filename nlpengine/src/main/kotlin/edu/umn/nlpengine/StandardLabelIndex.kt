@@ -19,28 +19,69 @@ package edu.umn.nlpengine
 import java.util.*
 import java.util.Collections.unmodifiableCollection
 
+inline fun <reified T: Label> StandardLabelIndex(vararg labels: T): StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, *labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        comparator: Comparator<T>,
+        vararg labels: T
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, comparator, *labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        labels: Iterable<T>
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, labels)
+}
+
+inline fun <reified T: Label> StandardLabelIndex(
+        comparator: Comparator<T>,
+        labels: Iterable<T>
+) : StandardLabelIndex<T> {
+    return StandardLabelIndex(T::class.java, comparator, labels)
+}
+
 /**
  * A label index backed by a immutable sorted array of [TextRange] values.
  */
-class StandardLabelIndex<out T : TextRange> internal constructor(
+class StandardLabelIndex<T : Label> internal constructor(
+        override val labelClass: Class<T>,
         private val values: List<T>
 ) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
 
-    constructor(vararg labels: T) : this(labels.sortedWith(Comparator { o1, o2 ->
+
+    constructor(
+            labelClass: Class<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareLocation(o2)
     }))
 
-    constructor(comparator: Comparator<T>, vararg labels: T): this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            vararg labels: T
+    ) : this(labelClass, labels.sortedWith(comparator))
 
-    constructor(labels: Iterable<T>) : this(labels.sortedWith(Comparator { o1, o2 ->
+    constructor(
+            labelClass: Class<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(Comparator { o1, o2 ->
         o1.compareLocation(o2)
     }))
 
-    constructor(comparator: Comparator<T>, labels: Iterable<T>): this(labels.sortedWith(comparator))
+    constructor(
+            labelClass: Class<T>,
+            comparator: Comparator<T>,
+            labels: Iterable<T>
+    ) : this(labelClass, labels.sortedWith(comparator))
 
     companion object Factory {
-        @JvmStatic fun <T : TextRange> create(vararg labels: T): StandardLabelIndex<T> {
-            return StandardLabelIndex(*labels)
+        @JvmStatic
+        fun <T : Label> create(labelClass: Class<T>, vararg labels: T): StandardLabelIndex<T> {
+            return StandardLabelIndex(labelClass, *labels)
         }
     }
 
@@ -70,7 +111,9 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
     override fun toTheRightOf(index: Int): LabelIndex<T> =
             AscendingView(minBegin = index, minEnd = index)
 
-    override fun first() = if (values.isNotEmpty()) values[0] else null
+    override fun first() = values.firstOrNull()
+
+    override fun last()  = values.lastOrNull()
 
     override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
@@ -296,6 +339,8 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             left: Int,
             right: Int
     ) : LabelIndex<T> {
+        override val labelClass get() = this@StandardLabelIndex.labelClass
+
         val left: Int
 
         val right: Int
@@ -311,6 +356,8 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
         }
 
         abstract val firstIndex: Int
+
+        abstract val lastIndex: Int
 
         abstract fun updateBounds(
                 newMinBegin: Int = minBegin,
@@ -336,8 +383,15 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
         }
 
         override fun first(): T? {
-            if (firstIndex in 0 until values.size && firstIndex <= right) {
+            if (firstIndex in 0 until values.size && firstIndex <= right && firstIndex >= left) {
                 return values[firstIndex]
+            }
+            return null
+        }
+
+        override fun last(): T? {
+            if (lastIndex in 0 until values.size && lastIndex <= right && lastIndex >= left) {
+                return values[lastIndex]
             }
             return null
         }
@@ -590,6 +644,7 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextIndex(left - 1) }
+        override val lastIndex by lazy { prevIndex(right + 1) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -652,6 +707,7 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextIndex(right + 1) }
+        override val lastIndex by lazy { prevIndex(left - 1) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -712,6 +768,7 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextBreakAscending(left) }
+        override val lastIndex by lazy { nextBreakDescending(right) }
 
         override fun updateBounds(
                 newMinBegin: Int,
@@ -772,6 +829,7 @@ class StandardLabelIndex<out T : TextRange> internal constructor(
             right: Int = floorBeginAndEnd(maxBegin, maxEnd)
     ) : View(minBegin, maxBegin, minEnd, maxEnd, left, right) {
         override val firstIndex by lazy { nextBreakDescending(right) }
+        override val lastIndex by lazy { nextBreakAscending(left) }
 
         override fun updateBounds(
                 newMinBegin: Int,
