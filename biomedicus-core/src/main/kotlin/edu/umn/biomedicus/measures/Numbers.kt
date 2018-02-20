@@ -65,7 +65,7 @@ class NumberRangesPattern @Inject constructor(
      searchExprFactory: SearchExprFactory
 ) {
     val expr = searchExprFactory.parse(
-            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | ParseToken<getText=i\"between\"> [?lower:Number] ParseToken<getText=\"and\"> -> upper:Number)"
+            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | [?ParseToken<getText=i\"between\">] -> lower:Number ParseToken<getText=\"and\"> -> upper:Number)"
     )
 }
 

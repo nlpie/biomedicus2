@@ -224,7 +224,7 @@ class YearNumberDetector : DocumentProcessor {
 
 @Singleton
 class YearRangePattern @Inject constructor(searchExprFactory: SearchExprFactory) {
-    val expr = searchExprFactory.parse("[NumberRange YearNumber (Number<getNumberType=eCARDINAL> | YearNumber)]")
+    val expr = searchExprFactory.parse("[?NumberRange YearNumber (Number<getNumberType=eCARDINAL> | YearNumber)]")
 }
 
 class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : DocumentProcessor {
@@ -313,7 +313,7 @@ class TemporalPhrasePattern @Inject constructor(
   [?ParseToken<getText="present"|"presently"|"current"|"currently"|"recently"|"recent">] |
   [?ParseToken<getText="age">] ParseToken<getText="of"> -> Number |
   ([?ParseToken<getText="last"|"previous"|"next">] ->)? [?SeasonWord] |
-  ([?Number] | [?TextTime]) [?PosTag<getPartOfSpeech=eIN>] PosTag<getPartOfSpeech=eDT> -> TimeOfDayWord |
+  ([?Number] | [?TextTime]) PosTag<getPartOfSpeech=eIN> PosTag<getPartOfSpeech=eDT> -> TimeOfDayWord |
   [?TextTime] |
   [?YearRange] |
   [?TimeOfDayWord]

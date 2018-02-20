@@ -39,11 +39,6 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>documentName</name>
-        <description>The name of the UIMA view to use.</description>
-        <type>String</type>
-      </configurationParameter>
-      <configurationParameter>
         <name>eagerLoad</name>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -61,12 +56,6 @@
         <name>processorClass</name>
         <value>
           <string>edu.umn.biomedicus.normalization.Normalizer</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>documentName</name>
-        <value>
-          <string>System</string>
         </value>
       </nameValuePair>
       <nameValuePair>

@@ -41,11 +41,6 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>documentName</name>
-        <description>The name of the UIMA view to use.</description>
-        <type>String</type>
-      </configurationParameter>
-      <configurationParameter>
         <name>eagerLoad</name>
         <description>
           The name of any classes that need to be eagerly loaded by the Guice injector. Classes
@@ -78,12 +73,6 @@
         <name>processorClass</name>
         <value>
           <string>edu.umn.biomedicus.tokenization.PennLikeTokenizer</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>documentName</name>
-        <value>
-          <string>System</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

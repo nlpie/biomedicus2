@@ -183,25 +183,7 @@ public class SearchExpr {
       LoadBegin end = new LoadBegin(localsCount++);
       end.next = FINAL_ACCEPT;
       Node root = alts(end);
-      Class<? extends Label> aClass = root.firstType();
-
-      Node searchRoot;
-      if (aClass == null) {
-        searchRoot = new CharacterStepping();
-        searchRoot.swapNext(root);
-      } else {
-        Node join = new Noop();
-        join.swapNext(new SaveBegin(end.local));
-        join.next.swapNext(root);
-        Branch branch = new Branch();
-        TypeMatch typeMatch = new TypeMatch(aClass, true, true, false, -1);
-        typeMatch.swapNext(join);
-        branch.add(join);
-        branch.add(typeMatch);
-        searchRoot = branch;
-      }
-
-      return new SearchExpr(root, searchRoot, groupIndex, localsCount, groupNames);
+      return new SearchExpr(root, root, groupIndex, localsCount, groupNames);
     }
 
     private Node alts(Node end) {

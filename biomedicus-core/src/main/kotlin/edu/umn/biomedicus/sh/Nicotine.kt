@@ -176,7 +176,7 @@ class NicotineUnitDetector @Inject constructor(
 class NicotineAmountPattern @Inject constructor(
         searchExprFactory: SearchExprFactory
 ) {
-    val expr = searchExprFactory.parse("(([?Quantifier] | [?ParseToken<getText=i\"half\">]) ParseToken<getText=\"of\">? ParseToken<getText=\"a\">? -> NicotineUnit | StandaloneQuantifier)")
+    val expr = searchExprFactory.parse("(([?Quantifier] | [?ParseToken<getText=i\"half\">]) ParseToken<getText=\"of\">? ParseToken<getText=\"a\">? -> NicotineUnit | [?StandaloneQuantifier])")
 }
 
 class NicotineAmountDetector @Inject constructor(

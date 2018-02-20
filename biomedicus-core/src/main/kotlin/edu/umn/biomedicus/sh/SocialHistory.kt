@@ -157,8 +157,8 @@ data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
     @Inject constructor(searchExprFactory: SearchExprFactory) : this(
             searchExprFactory.parse(
                     """
-[?Quantifier] ParseToken<getText="times"|i"x"> ((ParseToken<getText="a"|"per"|"/"> ->)? TimeUnit | TimeFrequencyUnit) |
-([?Quantifier] -> TimeUnit)? ParseToken<getText="per"|"/"> -> TimeUnit |
+[?Quantifier] ParseToken<getText="times"|i"x"> ((ParseToken<getText="a"|"per"|"/"> ->)? TimeUnit | -> TimeFrequencyUnit) |
+([?Quantifier] -> TimeUnit ->)? [?ParseToken<getText="per"|"/">] -> TimeUnit |
 [?ParseToken<getText="per"|"every">] (-> Quantifier)? -> TimeUnit |
 [?ParseToken<getText="a">] -> TimeUnit |
 [?UsageFrequencyPhrase] |

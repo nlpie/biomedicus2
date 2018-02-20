@@ -27,7 +27,6 @@ import edu.umn.nlpengine.LabelMetadata;
 import edu.umn.nlpengine.Span;
 import edu.umn.nlpengine.StandardLabelIndex;
 import edu.umn.nlpengine.TextRange;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -921,24 +920,19 @@ public class SearchExprTest {
     Foo fourteenFoo = new Foo(14, 18);
     fourteenFoo.setBaz(14);
 
-    List<Foo> arr = new ArrayList<>();
-    arr.add(foo1);
-    arr.add(foo2);
-    arr.add(foo3);
-    arr.add(fourteenFoo);
+    StandardLabelIndex<Foo> foos = new StandardLabelIndex<>(Foo.class, foo1, foo2, foo3,
+        fourteenFoo);
 
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 30;
 
-      labelIndex.first(); returns(foo1, foo2, foo3, fourteenFoo);
-
-      labelIndex.iterator(); result = arr.iterator();
+      document.labelIndex(Foo.class); result = foos; minTimes = 1;
 
       labelAliases.getLabelable("Foo"); result = Foo.class;
     }};
 
-    SearchExpr blah = SearchExpr.parse(labelAliases, "Foo<getBaz=10> Foo<getBaz=14>");
+    SearchExpr blah = SearchExpr.parse(labelAliases, "[?Foo<getBaz=10>] Foo<getBaz=14>");
     Searcher searcher = blah.createSearcher(document);
     boolean search = searcher.search();
 

@@ -190,7 +190,7 @@ class StandaloneQuantifierDetector @Inject constructor(
 @Singleton
 class QuantifierExpression @Inject constructor(searchExprFactory: SearchExprFactory) {
     val expr = searchExprFactory.parse(
-            "([?indef:IndefiniteQuantifierCue] ->)? (NumberRange | Number | fuzz:FuzzyValue | [PosTag<getPartOfSpeech=eDT> ParseToken<getText=\"a\">])"
+            "([?indef:IndefiniteQuantifierCue] ->)? ([?NumberRange] | [?Number] | [?fuzz:FuzzyValue] | [?PosTag<getPartOfSpeech=eDT> ParseToken<getText=\"a\">])"
     )
 }
 
