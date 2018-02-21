@@ -253,28 +253,30 @@ interface LabelIndex<T : Label> : Collection<T> {
      *
      * @see toTheRightOf
      */
-    fun forwardFrom(index: Int): LabelIndex<T> = toTheLeftOf(index).descendingStartIndex()
+    fun forwardFrom(index: Int): LabelIndex<T> =
+            toTheRightOf(index).ascendingStartIndex().ascendingEndIndex()
 
     /**
      * A label index that goes through labels working forward from [textRange]
      *
      * @see toTheRightOf
      */
-    fun forwardFrom(textRange: TextRange): LabelIndex<T> = forwardFrom(textRange.startIndex)
+    fun forwardFrom(textRange: TextRange): LabelIndex<T> = forwardFrom(textRange.endIndex)
 
     /**
      * A label index that goes through labels working backwards from [index]
      *
      * @see toTheLeftOf
      */
-    fun backwardFrom(index: Int): LabelIndex<T> = toTheRightOf(index)
+    fun backwardFrom(index: Int): LabelIndex<T> =
+            toTheLeftOf(index).descendingStartIndex().descendingEndIndex()
 
     /**
      * A label index that goes through labels working backwards from [textRange]
      *
      * @see toTheLeftOf
      */
-    fun backwardFrom(textRange: TextRange): LabelIndex<T> = backwardFrom(textRange.endIndex)
+    fun backwardFrom(textRange: TextRange): LabelIndex<T> = backwardFrom(textRange.startIndex)
 
     /**
      * Returns the first label in this label index or null if it is empty.

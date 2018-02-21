@@ -49,6 +49,7 @@ public class ModificationDetector implements DocumentProcessor {
       .addLeftPhrase(HISTORICAL, "Histories")
       .addLeftPhrase(HISTORICAL, "histories")
       .addLeftPhrase(HISTORICAL, "Status", "Post")
+      .addLeftPhrase(HISTORICAL, "Status", "post")
       .addLeftPhrase(HISTORICAL, "status", "post")
       .addLeftPhrase(HISTORICAL, "S/P")
       .addLeftPhrase(HISTORICAL, "s/p")
@@ -152,8 +153,7 @@ public class ModificationDetector implements DocumentProcessor {
 
       List<TermToken> contextList = sentenceTokenLabels.backwardFrom(termLabel).asList();
 
-      Pair<ModificationType, List<Span>> result = CUES.searchLeft(contextList,
-          partOfSpeechLabelIndex);
+      Pair<ModificationType, List<Span>> result = CUES.searchLeft(contextList, partOfSpeechLabelIndex);
 
       if (result != null) {
         List<ModificationCue> cues = result.second().stream().map(span -> {
