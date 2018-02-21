@@ -53,9 +53,9 @@ public final class PennLikePhraseTokenizer {
 
 
 
-  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9.xX]++(?<suffix>[\\p{Alpha}]++)$");
+  private static final Pattern NUMBER_WORD = Pattern.compile(".*?[0-9.xX]*[0-9]++(?<suffix>[\\p{Alpha}]++)$");
 
-  private static final Pattern NUMBER_X = Pattern.compile(".*?[0-9.]++([xX][0-9.]++)+$");
+  private static final Pattern NUMBER_X = Pattern.compile(".*?[0-9.]*[0-9]++([xX][0-9.]*[0-9]++)+$");
 
   private static final Pattern X = Pattern.compile("[xX]");
 

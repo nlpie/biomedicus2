@@ -19,6 +19,7 @@ package edu.umn.biomedicus.tokenization;
 import static org.testng.Assert.assertEquals;
 
 import edu.umn.nlpengine.Span;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.Test;
@@ -222,5 +223,13 @@ public class PennLikePhraseTokenizerTest {
     assertEquals(list.get(2), Span.create(2, 3));
     assertEquals(list.get(3), Span.create(3, 4));
     assertEquals(list.get(4), Span.create(4, 5));
+  }
+
+  @Test
+  public void testDontSplitEndOfSentenceAM() throws Exception {
+    List<Span> list = PennLikePhraseTokenizer.tokenizeSentence("a.m.")
+        .collect(Collectors.toList());
+
+    assertEquals(list, Arrays.asList(Span.create(0, 3), Span.create(3, 4)));
   }
 }
