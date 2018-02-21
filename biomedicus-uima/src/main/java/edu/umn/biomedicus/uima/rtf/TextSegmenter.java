@@ -18,7 +18,6 @@ package edu.umn.biomedicus.uima.rtf;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -48,23 +47,23 @@ public class TextSegmenter extends CasAnnotator_ImplBase {
   }
 
   @Override
-  public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.debug("Segmenting rtf text.");
+  public void process(CAS aCAS) {
+    LOGGER.trace("Segmenting rtf text.");
     CAS systemView = aCAS.getView(documentName);
     TextSegmentsBuilder textSegmentsBuilder = new TextSegmentsBuilder(systemView);
 
     TypeSystem typeSystem = systemView.getTypeSystem();
 
     textSegmentsBuilder.addAnnotations(typeSystem
-        .getType("edu.umn.biomedicus.type.ParagraphAnnotation"));
+        .getType("edu.umn.nlpengine.generated2_0.Paragraph"));
     textSegmentsBuilder.addAnnotations(typeSystem
-        .getType("edu.umn.biomedicus.type.RowAnnotation"));
+        .getType("edu.umn.nlpengine.generated2_0.Row"));
     textSegmentsBuilder.addAnnotations(typeSystem
-        .getType("edu.umn.biomedicus.type.CellAnnotation"));
+        .getType("edu.umn.nlpengine.generated2_0.Cell"));
     textSegmentsBuilder.addAnnotations(typeSystem
-        .getType("edu.umn.biomedicus.type.NestedRowAnnotation"));
+        .getType("edu.umn.nlpengine.generated2_0.NestedRow"));
     textSegmentsBuilder.addAnnotations(typeSystem
-        .getType("edu.umn.biomedicus.type.NestedCellAnnotation"));
+        .getType("edu.umn.nlpengine.generated2_0.NestedCell"));
 
     textSegmentsBuilder.buildInView();
   }

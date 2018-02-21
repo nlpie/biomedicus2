@@ -112,7 +112,7 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
     Objects.requireNonNull(originalDocumentViewName);
     Objects.requireNonNull(targetViewName);
 
-    LOGGER.debug("Parsing an rtf document from {} into CAS", originalDocumentViewName);
+    LOGGER.trace("Parsing an rtf document from {} into CAS", originalDocumentViewName);
 
     CAS originalDocument = aCAS.getView(originalDocumentViewName);
 

@@ -56,7 +56,7 @@ class TextSegmentsBuilder {
     splits.add(cas.getDocumentText().length());
     this.cas = cas;
     textSegmentAnnotation = cas.getTypeSystem()
-        .getType("edu.umn.biomedicus.type.TextSegmentAnnotation");
+        .getType("edu.umn.nlpengine.generated2_0.TextSegment");
   }
 
   /**

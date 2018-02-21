@@ -23,13 +23,14 @@ import edu.umn.nlpengine.*
 import java.io.Closeable
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
 class RunnerFactory @Inject constructor(
         private val injector: Injector,
         @Named("globalSettings") private val globalSettings: Map<String, Any>,
-        private val settingsTransformer: SettingsTransformer
+        private val settingsTransformerProvider: Provider<SettingsTransformer>
 ) {
     fun getRunner(
             processorSettings: Map<String, *>,
@@ -87,10 +88,11 @@ class RunnerFactory @Inject constructor(
             processorSettings: Map<String, *>,
             processorScopedObjects: Map<Key<*>, Any>
     ): Pair<Injector, BiomedicusScopes.Context> {
+        val settingsTransformer = settingsTransformerProvider.get()
         settingsTransformer.setAnnotationFunction { ProcessorSettingImpl(it) }
 
-        settingsTransformer.addAll(processorSettings)
         settingsTransformer.addAll(globalSettings)
+        settingsTransformer.addAll(processorSettings)
 
         val settingsSeededObjects = settingsTransformer.settings
         val keys = settingsSeededObjects.keys

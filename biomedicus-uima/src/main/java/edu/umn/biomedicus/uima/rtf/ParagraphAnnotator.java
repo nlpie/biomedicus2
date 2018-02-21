@@ -51,14 +51,14 @@ public class ParagraphAnnotator extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.debug("Annotating rtf paragraphs.");
+    LOGGER.trace("Annotating rtf paragraphs.");
     CAS systemView = aCAS.getView(documentName);
 
     Type newParagraphType = systemView.getTypeSystem()
         .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
 
     Type paragraphType = systemView.getTypeSystem()
-        .getType("edu.umn.biomedicus.type.ParagraphAnnotation");
+        .getType("edu.umn.nlpengine.generated2_0.Paragraph");
 
     AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
         .getAnnotationIndex(newParagraphType);

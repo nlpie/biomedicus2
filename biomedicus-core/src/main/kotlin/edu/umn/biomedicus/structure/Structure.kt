@@ -23,6 +23,7 @@ import edu.umn.nlpengine.TextRange
 
 class StructureModule : SystemModule() {
     override fun setup() {
+        addLabelClass<Paragraph>()
         addLabelClass<Row>()
         addLabelClass<Cell>()
         addLabelClass<NestedRow>()
@@ -30,6 +31,9 @@ class StructureModule : SystemModule() {
     }
 
 }
+
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class Paragraph(override val startIndex: Int, override val endIndex: Int) : Label()
 
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class Row(override val startIndex: Int, override val endIndex: Int) : Label() {

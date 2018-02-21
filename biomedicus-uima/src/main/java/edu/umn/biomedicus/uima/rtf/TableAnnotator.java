@@ -54,7 +54,7 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.debug("Annotating rtf tables.");
+    LOGGER.trace("Annotating rtf tables.");
     CAS systemView = aCAS.getView(documentName);
 
     TypeSystem typeSystem = aCAS.getTypeSystem();
@@ -63,7 +63,7 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
     Type rowEndType = typeSystem
         .getType("edu.umn.biomedicus.rtfuima.type.RowEnd");
     Type rowType = typeSystem
-        .getType("edu.umn.biomedicus.type.RowAnnotation");
+        .getType("edu.umn.nlpengine.generated2_0.Row");
 
     ArrayList<Integer> intblBegins = new ArrayList<>();
     AnnotationIndex<AnnotationFS> intblIndex = systemView.getAnnotationIndex(intblType);
@@ -96,16 +96,16 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
     }
 
     Type cellEndType = typeSystem.getType("edu.umn.biomedicus.rtfuima.type.CellEnd");
-    Type cellType = typeSystem.getType("edu.umn.biomedicus.type.CellAnnotation");
+    Type cellType = typeSystem.getType("edu.umn.nlpengine.generated2_0.Cell");
 
     Type nestRowEndType = typeSystem
         .getType("edu.umn.biomedicus.rtfuima.type.NestRowEnd");
     Type nestedRowType = typeSystem
-        .getType("edu.umn.biomedicus.type.NestedRowAnnotation");
+        .getType("edu.umn.nlpengine.generated2_0.NestedRow");
     Type nestedCellEndType = typeSystem
         .getType("edu.umn.biomedicus.rtfuima.type.NestCellEnd");
     Type nestedCellType = typeSystem
-        .getType("edu.umn.biomedicus.type.NestedCellAnnotation");
+        .getType("edu.umn.nlpengine.generated2_0.NestedCell");
 
     TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(systemView);
     tableAnnotationDivider.using(cellEndType)
