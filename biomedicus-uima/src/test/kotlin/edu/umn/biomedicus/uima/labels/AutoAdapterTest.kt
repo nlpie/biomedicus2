@@ -24,6 +24,7 @@ import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.resource.metadata.impl.TypeSystemDescription_impl
 import org.apache.uima.util.CasCreationUtils
 import org.testng.Assert.*
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.math.BigDecimal
 
@@ -313,7 +314,10 @@ class AutoAdapterTest {
 
     val labelAdapters: LabelAdapters
 
-    val cas: CAS
+    val ts = TypeSystemDescription_impl()
+
+    var _cas: CAS? = null
+    val cas: CAS get() = _cas ?: throw IllegalStateException("Cas not set")
 
     init {
         val autoAdapters = AutoAdapters(LabelAdapters(null), null)
@@ -364,12 +368,14 @@ class AutoAdapterTest {
         autoAdapters.addLabelClass(HasDoubleList::class.java)
         autoAdapters.addLabelClass(HasStringList::class.java)
 
-        val ts = TypeSystemDescription_impl()
         autoAdapters.addToTypeSystem(ts)
 
         labelAdapters = autoAdapters.labelAdapters
+    }
 
-        cas = CasCreationUtils.createCas(ts, null, null)
+    @BeforeMethod
+    fun setUp() {
+        _cas = CasCreationUtils.createCas(ts, null, null)
     }
 
     @Test
@@ -2115,5 +2121,54 @@ class AutoAdapterTest {
         val arrayFS = annotation.getFeatureValue(feature) as StringArrayFS?
 
         assertNull(arrayFS)
+    }
+
+    @Test
+    fun testLabelFeatureUsesExisting() {
+        val hasBooleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
+        val hasLabelAdapter = labelAdapters.getLabelAdapterFactory(HasLabel::class.java).create(cas)
+
+        val hasBoolean = HasBoolean(0, 5, true)
+        hasBooleanAdapter.labelToAnnotation(hasBoolean)
+
+        val hasLabel = HasLabel(0, 10, hasBoolean)
+        hasLabelAdapter.labelToAnnotation(hasLabel)
+
+        assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 1)
+        assertNotNull(cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBoolean")))
+    }
+
+    @Test
+    fun testLabelArrayUsesExisting() {
+        val hasBooleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
+        val hasLabelAdapter = labelAdapters.getLabelAdapterFactory(HasLabelArray::class.java).create(cas)
+
+        val hasBoolean = HasBoolean(0, 5, true)
+        hasBooleanAdapter.labelToAnnotation(hasBoolean)
+        val hasBoolean2 = HasBoolean(0, 20, false)
+        hasBooleanAdapter.labelToAnnotation(hasBoolean2)
+
+        val hasLabelList = HasLabelArray(0, 2, arrayOf(hasBoolean, hasBoolean2))
+        hasLabelAdapter.labelToAnnotation(hasLabelList)
+
+        assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 2)
+        assertEquals((cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBooleans")) as ArrayFS).size(), 2)
+    }
+
+    @Test
+    fun testLabelListUsesExisting() {
+        val hasBooleanAdapter = labelAdapters.getLabelAdapterFactory(HasBoolean::class.java).create(cas)
+        val hasLabelAdapter = labelAdapters.getLabelAdapterFactory(HasLabelList::class.java).create(cas)
+
+        val hasBoolean = HasBoolean(0, 5, true)
+        hasBooleanAdapter.labelToAnnotation(hasBoolean)
+        val hasBoolean2 = HasBoolean(0, 20, false)
+        hasBooleanAdapter.labelToAnnotation(hasBoolean2)
+
+        val hasLabelList = HasLabelList(0, 2, listOf(hasBoolean, hasBoolean2))
+        hasLabelAdapter.labelToAnnotation(hasLabelList)
+
+        assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 2)
+        assertEquals((cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBooleans")) as ArrayFS).size(), 2)
     }
 }

@@ -164,6 +164,7 @@ class AutoAdapter<T : Label>(
                 propertyMappings.forEach { it.copyToAnnotation(label, cas, annotation) }
 
                 cas.addFsToIndexes(annotation)
+                label.internalLabelIdentifier = cas.lowLevelCAS.ll_getFSRef(annotation)
                 return annotation
             }
         }
@@ -1136,8 +1137,13 @@ class AutoAdapter<T : Label>(
 
         override fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS) {
             value ?: return
-            val adapter = factory.create(annotationFS.cas)
-            annotationFS.setFeatureValue(feat, adapter.labelToAnnotation(value))
+            val ref = value.internalLabelIdentifier
+            if (ref != null) {
+                annotationFS.setFeatureValue(feat, cas.lowLevelCAS.ll_getFSForRef(ref))
+            } else {
+                val adapter = factory.create(annotationFS.cas)
+                annotationFS.setFeatureValue(feat, adapter.labelToAnnotation(value))
+            }
         }
     }
 
@@ -1183,7 +1189,14 @@ class AutoAdapter<T : Label>(
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
             val adapter = factory.create(cas)
-            value.forEachIndexed { index, r -> arrayFS[index] = adapter.labelToAnnotation(r) }
+            value.forEachIndexed { index, r ->
+                val ref = r.internalLabelIdentifier
+                if (ref != null) {
+                    arrayFS[index] = cas.lowLevelCAS.ll_getFSForRef(ref)
+                } else {
+                    arrayFS[index] = adapter.labelToAnnotation(r)
+                }
+            }
             cas.addFsToIndexes(arrayFS)
             annotationFS.setFeatureValue(feat, arrayFS)
         }
@@ -1228,7 +1241,14 @@ class AutoAdapter<T : Label>(
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
             val adapter = factory.create(cas)
-            value.forEachIndexed { index, r -> arrayFS[index] = adapter.labelToAnnotation(r) }
+            value.forEachIndexed { index, r ->
+                val ref = r.internalLabelIdentifier
+                if (ref != null) {
+                    arrayFS[index] = cas.lowLevelCAS.ll_getFSForRef(ref)
+                } else {
+                    arrayFS[index] = adapter.labelToAnnotation(r)
+                }
+            }
             cas.addFsToIndexes(arrayFS)
             annotationFS.setFeatureValue(feat, arrayFS)
         }
