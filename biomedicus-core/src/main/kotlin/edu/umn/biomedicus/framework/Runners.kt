@@ -20,12 +20,17 @@ import com.google.inject.Injector
 import com.google.inject.Key
 import com.google.inject.name.Named
 import edu.umn.nlpengine.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
+/**
+ * Creates and initializes runners for the different processor types.
+ */
 @Singleton
 class RunnerFactory @Inject constructor(
         private val injector: Injector,
@@ -125,46 +130,81 @@ class RunnerFactory @Inject constructor(
     }
 }
 
-
+/**
+ * Runs [ArtifactProcessor] instances.
+ */
 class ArtifactProcessorRunner(
         private val processorClass: Class<out ArtifactProcessor>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector
 ) : Runner {
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(ArtifactProcessorRunner::class.java)
+    }
+
     override fun processArtifact(artifact: Artifact): Unit = processorContext.call {
         val processor = settingsInjector.getInstance(processorClass)
-        processor.process(artifact)
+        try {
+            processor.process(artifact)
+        } catch (e: Exception) {
+            log.error("Processing failed on artifact: ${artifact.artifactID}")
+            throw e
+        }
     }
 }
 
+/**
+ * Runs [DocumentProcessor] instances.
+ */
 class DocumentProcessorRunner(
         private val processorClass: Class<out DocumentProcessor>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector,
         processorSettings: Map<String, *>
 ) : Runner {
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(DocumentProcessorRunner::class.java)
+    }
+
     private val documentName = processorSettings.getSetting<String>("documentName")
 
     override fun processArtifact(artifact: Artifact): Unit = artifact.documents[documentName]
             ?.let {
                 processorContext.call {
-                    settingsInjector.getInstance(processorClass).process(it)
+                    try {
+                        settingsInjector.getInstance(processorClass).process(it)
+                    } catch (e: Exception) {
+                        log.error("Processing failed on artifact: ${artifact.artifactID}")
+                        throw e
+                    }
                 }
             } ?: throw IllegalArgumentException("No document with name: $documentName")
 
 }
 
+/**
+ * Runs [Aggregator] instances.
+ */
 class AggregatorRunner(
         processorClass: Class<out Aggregator>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector
 ) : Runner {
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(AggregatorRunner::class.java)
+    }
+
     private val aggregator = processorContext.call {
         settingsInjector.getInstance(processorClass)
     }
 
     override fun processArtifact(artifact: Artifact): Unit = processorContext.call {
-        aggregator.process(artifact)
+        try {
+            aggregator.process(artifact)
+        } catch (e: Exception) {
+            log.error("Processing failed on artifact: ${artifact.artifactID}")
+            throw e
+        }
     }
 
     override fun done(): Unit = processorContext.call {
@@ -172,6 +212,9 @@ class AggregatorRunner(
     }
 }
 
+/**
+ * Runs [ArtifactSource] instances.
+ */
 class ArtifactSourceRunner(
         sourceClass: Class<out ArtifactSource>,
         private val processorContext: BiomedicusScopes.Context,

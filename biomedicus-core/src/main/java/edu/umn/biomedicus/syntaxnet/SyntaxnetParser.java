@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ben Knoll
  * @since 1.5.0
+ * @deprecated doesn't actually label anything right now
  */
 public final class SyntaxnetParser implements DocumentProcessor {
 
@@ -162,7 +163,6 @@ public final class SyntaxnetParser implements DocumentProcessor {
               .isEmpty()) {
             sentenceParse.append(line).append("\n");
           }
-          dependencyParseLabeler.add(new DependencyParse(sentence, sentenceParse.toString()));
         }
       }
 

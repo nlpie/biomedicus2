@@ -36,6 +36,7 @@ class SocialHistoryModule : SystemModule() {
         addLabelClass<DrugCandidate>()
 
         addLabelClass<NicotineCandidate>()
+        addLabelClass<NicotineVerb>()
         addLabelClass<NicotineCue>()
         addLabelClass<NicotineUnit>()
         addLabelClass<NicotineAmount>()
@@ -69,7 +70,9 @@ data class UsageFrequencyPhrase(
 ) : Label()
 
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : Label()
+data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
 
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class UsageStatus(override val startIndex: Int, override val endIndex: Int) : Label()

@@ -27,13 +27,6 @@ annotation class LabelMetadata(val versionId: String, val distinct: Boolean = fa
  *
  * By default is sorted ascending start indexes then ascending end indexes.
  *
- * ### Implementation specification
- * Labels should be immutable after construction, [equals] should be consistent with
- * [locationEquals] (returning true iff [locationEquals] returns true), [Comparable] should be
- * consistent with [compareLocation] (returning 0 iff compareLocation returns 0, and having
- * ordering first determined by [compareLocation] then by any other factors). Kotlin data classes
- * are an excellent choice for implementations of label.
- *
  * @property startIndex the index of the first character
  * @property endIndex the index after any characters included in this label
  */
@@ -110,9 +103,34 @@ interface TextRange {
             Span(startIndex + textRange.startIndex, endIndex + textRange.startIndex)
 }
 
+/**
+ * A labeled element in text.
+ *
+ * ### Implementation specification
+ * Labels should be immutable after construction, [equals] should be consistent with
+ * [locationEquals] (returning true iff [locationEquals] returns true), [Comparable] should be
+ * consistent with [compareLocation] (returning 0 iff compareLocation returns 0, and having
+ * ordering first determined by [compareLocation] then by any other factors). Kotlin data classes
+ * are an excellent choice for implementations of label.
+ */
 abstract class Label : TextRange {
-    var internalLabeledOnDocument: Document? = null
-    var internalLabelIdentifier: Int? = null
+    /**
+     * The document that this document is labeled on, or null if this label has not been added to a
+     * document.
+     */
+    var document: Document? = null
+
+    /**
+     * Uniquely identifies this label against all other labels on the document of the same type,
+     * or null if this label has not been added to a document.
+     */
+    var labelId: Int? = null
+
+    /**
+     * The text that the element covers, only available once the element has been added to a
+     * document.
+     */
+    val coveredText: CharSequence? get() = document?.let { coveredText(it.text) }
 }
 
 /**
@@ -137,7 +155,7 @@ data class Span(
         override val endIndex: Int
 ) : TextRange, Comparable<TextRange> {
     /**
-     * Convience constructor that copies the location of another label
+     * Convenience constructor that copies the location of another label
      */
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 
@@ -342,6 +360,7 @@ abstract class AbstractLabelIndex<T : Label> : LabelIndex<T>
  *
  * @param T the type of label that can be added using this labeler
  */
+@Suppress("AddVarianceModifier") // implementations require invariance
 interface Labeler<T : Label> {
     /**
      * Adds [label] to the document
@@ -352,4 +371,49 @@ interface Labeler<T : Label> {
      * Adds all the labels in the [Iterable] [elements] to the document.
      */
     fun addAll(elements: Iterable<T>) = elements.forEach { this.add(it) }
+}
+
+/**
+ * An empty label index.
+ */
+fun <T : Label> emptyLabelIndex(clazz: Class<T>): LabelIndex<T> = object : LabelIndex<T> {
+    override val labelClass: Class<T>
+        get() = clazz
+
+    override val size: Int
+        get() = 0
+
+    override fun containing(startIndex: Int, endIndex: Int) = this
+
+    override fun insideSpan(startIndex: Int, endIndex: Int) = this
+
+    override fun ascendingStartIndex() = this
+
+    override fun descendingStartIndex() = this
+
+    override fun ascendingEndIndex() = this
+
+    override fun descendingEndIndex() = this
+
+    override fun toTheLeftOf(index: Int) = this
+
+    override fun toTheRightOf(index: Int) = this
+
+    override fun first(): T? = null
+
+    override fun last(): T? = null
+
+    override fun atLocation(textRange: TextRange): Collection<T> = emptyList()
+
+    override fun asList(): List<T> = emptyList()
+
+    override fun containsSpan(textRange: TextRange) = false
+
+    override fun contains(element: T) = false
+
+    override fun containsAll(elements: Collection<T>) = elements.isEmpty()
+
+    override fun isEmpty() = true
+
+    override fun iterator(): Iterator<T> = emptyList<T>().iterator()
 }

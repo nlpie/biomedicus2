@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.tokenization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
+import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.nlpengine.Label
 import edu.umn.nlpengine.LabelMetadata
 import edu.umn.nlpengine.SystemModule
@@ -63,6 +64,10 @@ data class ParseToken(
             text: String,
             hasSpaceAfter: Boolean
     ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
+
+    val partOfSpeech
+        get() = document?.labelIndex<PosTag>()?.firstAtLocation(this)?.partOfSpeech
+                ?: throw IllegalStateException("ParseToken not added to document or doesn't have a part of speech yet: $this")
 }
 
 @LabelMetadata(versionId = "2_0", distinct = true)

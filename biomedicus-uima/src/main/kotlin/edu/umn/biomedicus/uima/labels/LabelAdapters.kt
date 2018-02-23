@@ -19,6 +19,7 @@ package edu.umn.biomedicus.uima.labels
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.framework.LabelAliases
+import edu.umn.nlpengine.Document
 import edu.umn.nlpengine.Label
 import org.apache.uima.cas.CAS
 import org.apache.uima.cas.Type
@@ -57,7 +58,7 @@ interface LabelAdapterFactory<T : Label> {
 
     val typeName: String
 
-    fun create(cas: CAS): LabelAdapter<T>
+    fun create(cas: CAS, document: Document?): LabelAdapter<T>
 }
 
 interface LabelAdapter<T : Label> {

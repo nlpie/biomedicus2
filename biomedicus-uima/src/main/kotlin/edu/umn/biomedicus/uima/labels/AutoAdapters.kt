@@ -16,10 +16,7 @@
 
 package edu.umn.biomedicus.uima.labels
 
-import edu.umn.nlpengine.Label
-import edu.umn.nlpengine.LabelMetadata
-import edu.umn.nlpengine.Span
-import edu.umn.nlpengine.Systems
+import edu.umn.nlpengine.*
 import org.apache.uima.cas.*
 import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.resource.metadata.FeatureDescription
@@ -123,7 +120,7 @@ class AutoAdapter<T : Label>(
         }
     }
 
-    override fun create(cas: CAS): LabelAdapter<T> {
+    override fun create(cas: CAS, document: Document?): LabelAdapter<T> {
         synchronized(this) {
             if (!isInitialized) {
                 propertyMappings.forEach { it.initFeat(cas) }
@@ -140,7 +137,7 @@ class AutoAdapter<T : Label>(
             override fun annotationToLabel(annotationFS: AnnotationFS): T {
                 val parameters = HashMap<KParameter, Any?>()
                 for (propertyMapping in propertyMappings) {
-                    val value = propertyMapping.copyFromAnnotation(annotationFS)
+                    val value = propertyMapping.copyFromAnnotation(annotationFS, document)
 
                     val parameter = primaryConstructor
                             .findParameterByName(propertyMapping.property.name)
@@ -154,17 +151,21 @@ class AutoAdapter<T : Label>(
                 parameters[primaryConstructor.findParameterByName("endIndex")!!] =
                         annotationFS.end
 
-                return primaryConstructor.callBy(parameters)
+                val label = primaryConstructor.callBy(parameters)
+                label.document = document
+                label.labelId = cas.lowLevelCAS.ll_getFSRef(annotationFS)
+                return label
             }
 
             override fun labelToAnnotation(label: T): AnnotationFS {
                 val annotation = cas
                         .createAnnotation<AnnotationFS>(type, label.startIndex, label.endIndex)
 
-                propertyMappings.forEach { it.copyToAnnotation(label, cas, annotation) }
+                propertyMappings.forEach { it.copyToAnnotation(label, cas, annotation, document) }
 
                 cas.addFsToIndexes(annotation)
-                label.internalLabelIdentifier = cas.lowLevelCAS.ll_getFSRef(annotation)
+                label.document = document
+                label.labelId = cas.lowLevelCAS.ll_getFSRef(annotation)
                 return annotation
             }
         }
@@ -407,15 +408,15 @@ class AutoAdapter<T : Label>(
                     ) ?: throw IllegalStateException("typeDescription was null")
         }
 
-        open fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
-            copyValueToAnnotation(property.get(label), cas, annotationFS)
+        open fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
+            copyValueToAnnotation(property.get(label), cas, annotationFS, document)
         }
 
-        open fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS) {
+        open fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             throw UnsupportedOperationException("Not implemented")
         }
 
-        abstract fun copyFromAnnotation(annotationFS: AnnotationFS): R?
+        abstract fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): R?
     }
 
     inner class BooleanPropertyMapping(
@@ -424,11 +425,11 @@ class AutoAdapter<T : Label>(
     ) : PropertyMapping<Boolean>(property, parameter) {
         override val uimaType: String = CAS.TYPE_NAME_BOOLEAN
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setBooleanValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Boolean? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Boolean? {
             return annotationFS.getBooleanValue(feat)
         }
     }
@@ -438,11 +439,11 @@ class AutoAdapter<T : Label>(
     ) : PropertyMapping<Byte>(property, parameter) {
         override val uimaType: String = CAS.TYPE_NAME_BYTE
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setByteValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Byte? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Byte? {
             return annotationFS.getByteValue(feat)
         }
     }
@@ -453,11 +454,11 @@ class AutoAdapter<T : Label>(
     ) : PropertyMapping<Short>(property, parameter) {
         override val uimaType: String = CAS.TYPE_NAME_SHORT
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setShortValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Short? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Short? {
             return annotationFS.getShortValue(feat)
         }
     }
@@ -468,11 +469,11 @@ class AutoAdapter<T : Label>(
     ) : PropertyMapping<Int>(property, parameter) {
         override val uimaType: String = CAS.TYPE_NAME_INTEGER
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setIntValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Int {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Int {
             return annotationFS.getIntValue(feat)
         }
     }
@@ -483,11 +484,11 @@ class AutoAdapter<T : Label>(
     ) : PropertyMapping<Long>(property, parameter) {
         override val uimaType: String = CAS.TYPE_NAME_LONG
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setLongValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Long {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Long {
             return annotationFS.getLongValue(feat)
         }
     }
@@ -499,11 +500,11 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_FLOAT
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setFloatValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Float {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Float {
             return annotationFS.getFloatValue(feat)
         }
     }
@@ -515,11 +516,11 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_DOUBLE
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             annotationFS.setDoubleValue(feat, property.get(label))
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Double {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Double {
             return annotationFS.getDoubleValue(feat)
         }
     }
@@ -531,12 +532,12 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_STRING
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val get = property.get(label) ?: return
             annotationFS.setStringValue(feat, get)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): String? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): String? {
             return annotationFS.getStringValue(feat)
         }
     }
@@ -548,7 +549,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_BOOLEAN_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
 
             val to = cas.createBooleanArrayFS(from.size)
@@ -557,7 +558,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): BooleanArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): BooleanArray? {
             return (annotationFS.getFeatureValue(feat) as BooleanArrayFS?)
                     ?.run { BooleanArray(size()) { get(it) } }
         }
@@ -573,7 +574,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Boolean>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
 
@@ -584,7 +586,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, booleanArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Boolean>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Boolean>? {
             return (annotationFS.getFeatureValue(feat) as BooleanArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -597,7 +599,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_BYTE_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
 
             val to = cas.createByteArrayFS(from.size)
@@ -609,7 +611,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): ByteArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): ByteArray? {
             return (annotationFS.getFeatureValue(feat) as ByteArrayFS?)
                     ?.run { ByteArray(size()) { get(it) } }
         }
@@ -622,7 +624,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_BYTE_ARRAY
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Byte>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Byte>? {
             return (annotationFS.getFeatureValue(feat) as ByteArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -630,7 +632,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Byte>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val arrayFS = cas.createByteArrayFS(value.size)
@@ -647,7 +650,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_SHORT_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createShortArrayFS(from.size)
             to.copyFromArray(from, 0, 0, from.size)
@@ -655,7 +658,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): ShortArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): ShortArray? {
             return (annotationFS.getFeatureValue(feat) as ShortArrayFS?)
                     ?.run { ShortArray(size()) { get(it) } }
         }
@@ -671,7 +674,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Short>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val shortArrayFS = cas.createShortArrayFS(value.size)
@@ -680,7 +684,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, shortArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Short>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Short>? {
             return (annotationFS.getFeatureValue(feat) as ShortArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -693,7 +697,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_INTEGER_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createIntArrayFS(from.size)
             to.copyFromArray(from, 0, 0, from.size)
@@ -701,7 +705,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): IntArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): IntArray? {
             return (annotationFS.getFeatureValue(feat) as IntArrayFS?)
                     ?.run { IntArray(size()) { get(it) } }
         }
@@ -717,7 +721,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Int>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val intArrayFS = cas.createIntArrayFS(value.size)
@@ -726,7 +731,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, intArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Int>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Int>? {
             return (annotationFS.getFeatureValue(feat) as IntArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -739,7 +744,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_LONG_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createLongArrayFS(from.size)
             from.forEachIndexed { index, l -> to[index] = l }
@@ -747,7 +752,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): LongArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): LongArray? {
             return (annotationFS.getFeatureValue(feat) as LongArrayFS?)
                     ?.run { LongArray(size()) { get(it) } }
         }
@@ -763,7 +768,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Long>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val longArrayFS = cas.createLongArrayFS(value.size)
@@ -772,7 +778,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, longArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Long>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Long>? {
             return (annotationFS.getFeatureValue(feat) as LongArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -785,7 +791,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_FLOAT_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createFloatArrayFS(from.size)
             to.copyFromArray(from, 0, 0, from.size)
@@ -793,7 +799,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): FloatArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): FloatArray? {
             return (annotationFS.getFeatureValue(feat) as FloatArrayFS?)
                     ?.run { FloatArray(size()) { get(it) } }
         }
@@ -809,7 +815,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Float>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val floatArrayFS = cas.createFloatArrayFS(value.size)
@@ -818,7 +825,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, floatArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Float>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Float>? {
             return (annotationFS.getFeatureValue(feat) as FloatArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -831,7 +838,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_DOUBLE_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createDoubleArrayFS(from.size)
             to.copyFromArray(from, 0, 0, from.size)
@@ -839,7 +846,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): DoubleArray? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): DoubleArray? {
             return (annotationFS.getFeatureValue(feat) as DoubleArrayFS?)
                     ?.run { DoubleArray(size()) { get(it) } }
         }
@@ -855,7 +862,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<Double>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val doubleArrayFS = cas.createDoubleArrayFS(value.size)
@@ -864,7 +872,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, doubleArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Double>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Double>? {
             return (annotationFS.getFeatureValue(feat) as DoubleArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -877,7 +885,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_STRING_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createStringArrayFS(from.size)
             to.copyFromArray(from, 0, 0, from.size)
@@ -885,7 +893,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<String>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Array<String>? {
             return (annotationFS.getFeatureValue(feat) as StringArrayFS?)
                     ?.run { Array(size()) { get(it) } }
         }
@@ -901,7 +909,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<String>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             if (value == null) return
             val stringArrayFS = cas.createStringArrayFS(value.size)
@@ -910,7 +919,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, stringArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<String>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<String>? {
             return (annotationFS.getFeatureValue(feat) as StringArrayFS?)
                     ?.run { List(size()) { get(it) } }
         }
@@ -923,12 +932,12 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = createEnumTypeName(returnType.java)
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val enumVal = property.get(label) as Enum<*>? ?: return
             annotationFS.setStringValue(feat, enumVal.name)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Any? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Any? {
             val value = annotationFS.getStringValue(feat)
             return returnType.java.enumConstants
                     .map { it as Enum<*> }
@@ -944,7 +953,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_STRING_ARRAY
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val from = property.get(label) ?: return
             val to = cas.createStringArrayFS(from.size)
             for (i in 0 until from.size) {
@@ -954,7 +963,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, to)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<*>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Array<*>? {
             val from = annotationFS.getFeatureValue(feat) as StringArrayFS? ?: return null
             @Suppress("UNCHECKED_CAST")
             val array = java.lang.reflect.Array.newInstance(componentClass, from.size()) as Array<Enum<*>>
@@ -976,7 +985,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_STRING_ARRAY
 
-        override fun copyValueToAnnotation(value: List<Any>?, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyValueToAnnotation(value: List<Any>?, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             if (value == null) return
             val stringArrayFS = cas.createStringArrayFS(value.size)
             value.forEachIndexed { index, enum -> stringArrayFS[index] = (enum as Enum<*>).name }
@@ -984,7 +993,7 @@ class AutoAdapter<T : Label>(
             annotationFS.setFeatureValue(feat, stringArrayFS)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Any>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Any>? {
             val from = annotationFS.getFeatureValue(feat) as StringArrayFS? ?: return null
             return List(from.size()) { index ->
                 componentClass.enumConstants
@@ -1002,12 +1011,12 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_STRING
 
-        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyToAnnotation(label: T, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             val bigDecimal = property.get(label) ?: return
             annotationFS.setStringValue(feat, bigDecimal.toString())
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): BigDecimal? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): BigDecimal? {
             return annotationFS.getStringValue(feat)?.let { BigDecimal(it) }
         }
     }
@@ -1019,13 +1028,13 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_ANNOTATION
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Span? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Span? {
             return (annotationFS.getFeatureValue(feat) as AnnotationFS?)
                     ?.run { Span(begin, end) }
 
         }
 
-        override fun copyValueToAnnotation(value: Span?, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyValueToAnnotation(value: Span?, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             value ?: return
             val spannotation = cas.createAnnotation<AnnotationFS>(
                     cas.annotationType,
@@ -1047,7 +1056,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_FS_ARRAY
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<Span>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Array<Span>? {
             return (annotationFS.getFeatureValue(feat) as ArrayFS?)?.run {
                 Array(size()) {
                     val annotation = get(it) as AnnotationFS
@@ -1059,7 +1068,8 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: Array<Span>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
@@ -1084,7 +1094,7 @@ class AutoAdapter<T : Label>(
         override val uimaType: String
             get() = CAS.TYPE_NAME_FS_ARRAY
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<Span>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<Span>? {
             return (annotationFS.getFeatureValue(feat) as ArrayFS?)?.run {
                 List(size()) {
                     val annotation = get(it) as AnnotationFS
@@ -1093,7 +1103,7 @@ class AutoAdapter<T : Label>(
             }
         }
 
-        override fun copyValueToAnnotation(value: List<Span>?, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyValueToAnnotation(value: List<Span>?, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
             value.forEachIndexed { index, span ->
@@ -1129,19 +1139,19 @@ class AutoAdapter<T : Label>(
             _factory = labelAdapters.getLabelAdapterFactory(returnType.java as Class<out Label>) as LabelAdapterFactory<R>
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): R? {
-            val adapter = factory.create(annotationFS.cas)
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): R? {
+            val adapter = factory.create(annotationFS.cas, document)
             val from = annotationFS.getFeatureValue(feat) as AnnotationFS? ?: return null
             return adapter.annotationToLabel(from)
         }
 
-        override fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS) {
+        override fun copyValueToAnnotation(value: R?, cas: CAS, annotationFS: AnnotationFS, document: Document?) {
             value ?: return
-            val ref = value.internalLabelIdentifier
+            val ref = value.labelId
             if (ref != null) {
                 annotationFS.setFeatureValue(feat, cas.lowLevelCAS.ll_getFSForRef(ref))
             } else {
-                val adapter = factory.create(annotationFS.cas)
+                val adapter = factory.create(annotationFS.cas, document)
                 annotationFS.setFeatureValue(feat, adapter.labelToAnnotation(value))
             }
         }
@@ -1171,9 +1181,9 @@ class AutoAdapter<T : Label>(
         }
 
         @Suppress("UNCHECKED_CAST")
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): Array<R>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): Array<R>? {
             val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null
-            val adapter = factory.create(annotationFS.cas)
+            val adapter = factory.create(annotationFS.cas, document)
             val array = java.lang.reflect.Array.newInstance(componentClass, arrayFS.size()) as Array<R>
             for (i in 0 until arrayFS.size()) {
                 array[i] = adapter.annotationToLabel(arrayFS[i] as AnnotationFS)
@@ -1184,13 +1194,14 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: Array<R>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
-            val adapter = factory.create(cas)
+            val adapter = factory.create(cas, document)
             value.forEachIndexed { index, r ->
-                val ref = r.internalLabelIdentifier
+                val ref = r.labelId
                 if (ref != null) {
                     arrayFS[index] = cas.lowLevelCAS.ll_getFSForRef(ref)
                 } else {
@@ -1225,9 +1236,9 @@ class AutoAdapter<T : Label>(
             _factory = labelAdapters.getLabelAdapterFactory(componentClass)
         }
 
-        override fun copyFromAnnotation(annotationFS: AnnotationFS): List<R>? {
+        override fun copyFromAnnotation(annotationFS: AnnotationFS, document: Document?): List<R>? {
             val arrayFS = annotationFS.getFeatureValue(feat) as ArrayFS? ?: return null
-            val adapter = factory.create(annotationFS.cas)
+            val adapter = factory.create(annotationFS.cas, document)
             return List(arrayFS.size()) {
                 adapter.annotationToLabel(arrayFS[it] as AnnotationFS)
             }
@@ -1236,13 +1247,14 @@ class AutoAdapter<T : Label>(
         override fun copyValueToAnnotation(
                 value: List<R>?,
                 cas: CAS,
-                annotationFS: AnnotationFS
+                annotationFS: AnnotationFS,
+                document: Document?
         ) {
             value ?: return
             val arrayFS = cas.createArrayFS(value.size)
-            val adapter = factory.create(cas)
+            val adapter = factory.create(cas, document)
             value.forEachIndexed { index, r ->
-                val ref = r.internalLabelIdentifier
+                val ref = r.labelId
                 if (ref != null) {
                     arrayFS[index] = cas.lowLevelCAS.ll_getFSForRef(ref)
                 } else {

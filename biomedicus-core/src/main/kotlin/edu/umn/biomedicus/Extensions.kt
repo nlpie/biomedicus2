@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus
 
+import edu.umn.biomedicus.parsing.Dependency
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
@@ -36,3 +37,8 @@ fun Document.tokens(): LabelIndex<ParseToken> = labelIndex()
  * Returns the label index of all the pos tags in the document.
  */
 fun Document.posTags(): LabelIndex<PosTag> = labelIndex()
+
+/**
+ * Returns the label index of all the dependencies in the document.
+ */
+fun Document.dependencies(): LabelIndex<Dependency> = labelIndex()

@@ -19,12 +19,13 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
   <!-- Do not change this -->
-  <annotatorImplementationName>edu.umn.biomedicus.uima.adapter.ProcessorUimaAdapter
+  <annotatorImplementationName>
+    edu.umn.biomedicus.uima.adapter.ProcessorUimaAdapter
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>Syntaxnet parser</name>
-    <description>All sentences Syntaxnet dependency parser.</description>
+    <name>Nicotine Verb Labeler</name>
+    <description>Labels nicotine social history usage verbs</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
@@ -43,9 +44,10 @@
       <configurationParameter>
         <name>eagerLoad</name>
         <description>
-          The name of any classes that need to be eagerly loaded by the Guice injector. Classes
-          which are
-          instances of LoadableDataModel will have the loadData method called.
+          The name of any classes that need to be eagerly loaded by
+          the Guice injector. Classes which are
+          instances of LoadableDataModel will have the loadData method
+          called.
         </description>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -54,8 +56,8 @@
       <configurationParameter>
         <name>postProcessors</name>
         <description>
-          The class names of any post processors that should be run after all documents have been
-          processed.
+          The class names of any post processors that should be run
+          after all documents have been processed.
         </description>
         <type>String</type>
         <multiValued>true</multiValued>
@@ -72,7 +74,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.syntaxnet.SyntaxnetParser</string>
+          <string>edu.umn.biomedicus.sh.NicotineVerbLabeler</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -111,7 +113,9 @@
         <name>guiceInjector</name>
         <description>The guice resource.</description>
         <customResourceSpecifier>
-          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+          <resourceClassName>
+            edu.umn.biomedicus.uima.adapter.GuiceInjector
+          </resourceClassName>
         </customResourceSpecifier>
       </externalResource>
     </externalResources>

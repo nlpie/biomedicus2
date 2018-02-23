@@ -16,22 +16,30 @@
 
 package edu.umn.biomedicus.sentences
 
-import edu.umn.nlpengine.Label
-import edu.umn.nlpengine.LabelMetadata
-import edu.umn.nlpengine.SystemModule
-import edu.umn.nlpengine.TextRange
+import edu.umn.biomedicus.tokenization.ParseToken
+import edu.umn.nlpengine.*
 
 class SentencesModule : SystemModule() {
     override fun setup() {
         addLabelClass<Sentence>()
         addLabelClass<TextSegment>()
     }
-
 }
 
+/**
+ * A unit of language of multiple words making up a complete thought.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class Sentence(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+
+    /**
+     * Retrieves a label index of all the [ParseToken] labels inside of this sentence.
+     */
+    fun tokens() : LabelIndex<ParseToken> {
+        return document?.labelIndex<ParseToken>()?.insideSpan(this)
+                ?: throw IllegalStateException("This sentence has not been added to a document.")
+    }
 }
 
 @LabelMetadata(versionId = "2_0", distinct = true)

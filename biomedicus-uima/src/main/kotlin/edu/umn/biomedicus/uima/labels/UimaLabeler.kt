@@ -28,8 +28,8 @@ class UimaLabeler<T : Label>(
 
     override fun add(label: T) {
         val annotationFS = labelAdapter.labelToAnnotation(label)
-        label.internalLabeledOnDocument = document
-        label.internalLabelIdentifier = (annotationFS as? AnnotationImpl)?.address ?: throw IllegalStateException("Unable to get cas address to use as identifier.")
+        label.document = document
+        label.labelId = (annotationFS as? AnnotationImpl)?.address ?: throw IllegalStateException("Unable to get cas address to use as identifier.")
     }
 
     override fun addAll(elements: Iterable<T>) {

@@ -25,6 +25,12 @@
     <delegateAnalysisEngine key="nicotineCandidates">
       <import location="annotator/sh/NicotineCandidateDetector.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineVerbs">
+      <import location="annotator/sh/NicotineVerbLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="parser">
+      <import location="annotator/SHParser.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="usageFrequencyPhrases">
       <import location="annotator/sh/UsageFrequencyPhraseDetector.xml"/>
     </delegateAnalysisEngine>
@@ -72,6 +78,8 @@
         <overrides>
           <parameter>sectionHeaders/documentName</parameter>
           <parameter>nicotineCandidates/documentName</parameter>
+          <parameter>parser/documentName</parameter>
+          <parameter>nicotineVerbs/documentName</parameter>
           <parameter>usageFrequencyPhrases/documentName</parameter>
           <parameter>usageFrequencies/documentName</parameter>
           <parameter>usageStatuses/documentName</parameter>
@@ -98,6 +106,8 @@
       <fixedFlow>
         <node>sectionHeaders</node>
         <node>nicotineCandidates</node>
+        <node>parser</node>
+        <node>nicotineVerbs</node>
         <node>usageFrequencyPhrases</node>
         <node>usageFrequencies</node>
         <node>usageStatuses</node>

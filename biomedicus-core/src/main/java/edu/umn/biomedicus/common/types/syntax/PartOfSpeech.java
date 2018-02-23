@@ -333,4 +333,8 @@ public enum PartOfSpeech {
   public String toString() {
     return pos;
   }
+
+  public boolean isVerb() {
+    return this == VB || this == VBZ || this == VBD || this == VBN || this == VBP || this == VBZ;
+  }
 }

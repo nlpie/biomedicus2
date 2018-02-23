@@ -346,7 +346,8 @@ public final class CASArtifact extends AbstractArtifact {
       Preconditions.checkNotNull(labelAdapters);
       LabelIndex<T> labelIndex = (LabelIndex<T>) labelIndices.get(labelClass);
       if (labelIndex == null) {
-        LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view);
+        LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass)
+            .create(view, this);
         labelIndices.put(labelClass, labelIndex = new UimaLabelIndex<>(view, labelAdapter));
       }
       return labelIndex;
@@ -357,7 +358,8 @@ public final class CASArtifact extends AbstractArtifact {
     public <T extends Label> Labeler<T> labeler(Class<T> labelClass) {
       Preconditions.checkNotNull(labelAdapters);
 
-      LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view);
+      LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view,
+          this);
       return new UimaLabeler<>(labelAdapter, this);
     }
 
@@ -414,7 +416,7 @@ public final class CASArtifact extends AbstractArtifact {
               LabelAdapterFactory<?> factory = labelAdapters.getLabelAdapterFactory(type);
               if (factory != null) {
                 hasNext = true;
-                next = new UimaLabelIndex<>(cas, factory.create(cas));
+                next = new UimaLabelIndex<>(cas, factory.create(cas, CASDocument.this));
               } else {
                 hasNext = false;
               }
