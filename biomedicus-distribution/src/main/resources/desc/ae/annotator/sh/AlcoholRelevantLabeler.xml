@@ -24,8 +24,8 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>Social History Section Header Detector</name>
-    <description>Detects section headers that indicate a social history section</description>
+    <name>Alcohol Relevant Labeler</name>
+    <description>Label dependencies that are likely related to alcohol usage</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
@@ -37,8 +37,7 @@
       </configurationParameter>
       <configurationParameter>
         <name>processorClass</name>
-        <description>The document processor class to instantiate.
-        </description>
+        <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -75,7 +74,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.sh.SocialHistorySectionHeaderDetector</string>
+          <string>edu.umn.biomedicus.sh.AlcoholRelevantLabeler</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

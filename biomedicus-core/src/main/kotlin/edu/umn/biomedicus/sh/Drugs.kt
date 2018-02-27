@@ -16,8 +16,23 @@
 
 package edu.umn.biomedicus.sh
 
-import edu.umn.nlpengine.Label
-import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.*
 
+/**
+ * A verb whose dependants are related to illicit drug usage.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class DrugCandidate(override val startIndex: Int, override val endIndex: Int) : Label()
+data class DrugRelevant(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * Detects [DrugRelevant] labels from [DrugCue] labels in text.
+ */
+class DrugRelevantLabeler : DocumentProcessor {
+    override fun process(document: Document) {
+        val relevants = document.findRelevantAncestors(document.labelIndex<DrugCue>())
+                .map { DrugRelevant(it) }
+        document.labelAll(relevants)
+    }
+}

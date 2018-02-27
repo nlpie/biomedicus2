@@ -24,8 +24,8 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>Nicotine Candidate Detector</name>
-    <description>Detects potential candidate nicotine social history sentences</description>
+    <name>Nicotine Relevant Labeler</name>
+    <description>Labels dependencies likely related to nicotine usage.</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
@@ -37,8 +37,7 @@
       </configurationParameter>
       <configurationParameter>
         <name>processorClass</name>
-        <description>The document processor class to instantiate.
-        </description>
+        <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -75,16 +74,8 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.sh.NicotineCandidateDetector</string>
+          <string>edu.umn.biomedicus.sh.NicotineRelevantLabeler</string>
         </value>
-      </nameValuePair>
-      <nameValuePair>
-          <name>eagerLoad</name>
-          <value>
-              <array>
-                  <string>edu.umn.biomedicus.sh.NicotineCues</string>
-              </array>
-          </value>
       </nameValuePair>
     </configurationParameterSettings>
     <typeSystemDescription>

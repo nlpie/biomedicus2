@@ -16,11 +16,23 @@
 
 package edu.umn.biomedicus.sh
 
-import edu.umn.nlpengine.Label
-import edu.umn.nlpengine.LabelMetadata
+import edu.umn.nlpengine.*
 
+/**
+ * A verb indicating dependants are related to alcohol usage.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class AlcoholCandidate(override val startIndex: Int, override val endIndex: Int): Label()
+data class AlcoholRelevant(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
 
-@LabelMetadata(versionId = "2_0", distinct = true)
-data class AlcoholCue(override val startIndex: Int, override val endIndex: Int): Label()
+/**
+ * Detects [AlcoholRelevant] labels from [AlcoholCue] labels in text.
+ */
+class AlcoholRelevantLabeler : DocumentProcessor {
+    override fun process(document: Document) {
+        val relevants = document.findRelevantAncestors(document.labelIndex<AlcoholCue>())
+                .map { AlcoholRelevant(it) }
+        document.labelAll(relevants)
+    }
+}

@@ -21,45 +21,19 @@ import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
 import edu.umn.biomedicus.dependencies
-import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.biomedicus.family.Relative
 import edu.umn.biomedicus.framework.SearchExprFactory
-import edu.umn.biomedicus.parsing.UDRelation
 import edu.umn.biomedicus.parsing.findHead
-import edu.umn.biomedicus.sections.Section
-import edu.umn.biomedicus.sections.SectionContent
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.time.TemporalPhrase
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
 import edu.umn.nlpengine.*
-import java.util.*
-
-/**
- * A social history candidate for smoking status.
- */
-@LabelMetadata(versionId = "2_0", distinct = true)
-data class NicotineCandidate(
-        override val startIndex: Int,
-        override val endIndex: Int
-) : Label() {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
-
-/**
- * A word that indicates a sentence is a nicotine social history candidate.
- */
-@LabelMetadata(versionId = "2_0", distinct = true)
-data class NicotineCue(
-        override val startIndex: Int,
-        override val endIndex: Int
-) : Label()
 
 /**
  * The verb that is a head for nicotine social history information.
  */
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class NicotineVerb(
+data class NicotineRelevant(
         override val startIndex: Int,
         override val endIndex: Int
 ) : Label() {
@@ -119,94 +93,31 @@ data class NicotineMethod(override val startIndex: Int, override val endIndex: I
 }
 
 /**
- * The model for nicotine cue words.
+ * Detects [NicotineRelevant] labels from [NicotineCue] labels in text.
  */
-@Singleton
-class NicotineCues @Inject constructor(
-        @Setting("sh.nicotine.candidateCuesPath") path: String
-) {
-    val detector = SequenceDetector.loadFromFile(path) { a, b: Token -> b.text.startsWith(a, true) }
-}
-
-/**
- * Detects nicotine use social history candidate sentences.
- *
- * @property cues the nicotine cues model
- */
-class NicotineCandidateDetector @Inject constructor(
-        val cues: NicotineCues
-) : DocumentProcessor {
+class NicotineRelevantLabeler : DocumentProcessor {
     override fun process(document: Document) {
-        val shHeaders = document.labelIndex<SocialHistorySectionHeader>()
-
-        val sections = document.labelIndex<Section>()
-        val sectionContents = document.labelIndex<SectionContent>()
-
-        val sentences = document.labelIndex<Sentence>()
-        val tokens = document.labelIndex<ParseToken>()
-
-        val relatives = document.labelIndex<Relative>()
-
-        val labeler = document.labeler<NicotineCandidate>()
-        val cueLabeler = document.labeler<NicotineCue>()
-
-        for (header in shHeaders) {
-            val section = sections.containing(header).first()
-                    ?: continue
-            val contents = sectionContents.insideSpan(section).first()
-                    ?: throw BiomedicusException("No contents for section: $section")
-
-            sentences.insideSpan(contents)
-                    .filter { document.text[it.endIndex - 1] != ':' }
-                    .filter { relatives.insideSpan(it).isEmpty() }
-                    .forEach { sentence ->
-                        val sentenceTokens = tokens.insideSpan(sentence).asList()
-                        val matcher = cues.detector.createMatcher()
-                        val matches = matcher.detectAll(sentenceTokens)
-                        if (matches.isNotEmpty()) {
-                            labeler.add(NicotineCandidate(sentence))
-                            for (match in matches) {
-                                cueLabeler.add(NicotineCue(sentenceTokens[match.first].startIndex,
-                                        sentenceTokens[match.last].endIndex))
-                            }
-                        }
-                    }
-        }
+        val relevants = document.findRelevantAncestors(document.labelIndex<NicotineCue>())
+                .map { NicotineRelevant(it) }
+        document.labelAll(relevants)
     }
 }
 
 /**
- * Detects [NicotineVerb] labels from [NicotineCue] labels in text.
- */
-class NicotineVerbLabeler : DocumentProcessor {
-    override fun process(document: Document) {
-        val cues = document.labelIndex<NicotineCue>()
-        val dependencies = document.dependencies()
-
-        val nicotineVerbs = HashSet<NicotineVerb>()
-        for (cue in cues) {
-            val dependency = findHead(dependencies.insideSpan(cue))
-
-            dependency.selfAndParentIterator().asSequence().first {
-                it.dep.partOfSpeech.isVerb || it.relation == UDRelation.ROOT
-            }.let { nicotineVerbs.add(NicotineVerb(it)) }
-        }
-        document.labelAll(nicotineVerbs)
-    }
-}
-
-/**
- * Detects if a phrase is a nicotine dependant phrase by seeing if it is, or has a [NicotineVerb]
+ * Detects if a phrase is a nicotine dependant phrase by seeing if it is, or has a [NicotineRelevant]
  * ancestor
  */
 internal fun Document.isNicotineDep(textRange: TextRange): Boolean {
     val insideSpan = dependencies().insideSpan(textRange)
-    val verbs = labelIndex<NicotineVerb>()
-    if (insideSpan.any { verbs.containsSpan(it) }) return true
+    val nicotineRelevants = labelIndex<NicotineRelevant>()
+    val alcoholRelevants = labelIndex<AlcoholRelevant>()
+    val drugRelevants = labelIndex<DrugRelevant>()
     val phraseRoot = findHead(insideSpan)
-    return phraseRoot.selfAndParentIterator().asSequence().any {
-        verbs.containsSpan(it)
+    phraseRoot.selfAndParentIterator().asSequence().forEach {
+        if (nicotineRelevants.containsSpan(it)) return true
+        if (alcoholRelevants.containsSpan(it) || drugRelevants.containsSpan(it)) return false
     }
+    return false
 }
 
 /**

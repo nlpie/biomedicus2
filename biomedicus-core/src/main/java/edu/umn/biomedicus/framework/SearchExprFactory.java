@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.framework;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -41,7 +42,8 @@ public class SearchExprFactory {
    * @param expr the string expression
    * @return the search expression graph object that can be used to search documents
    */
-  public SearchExpr parse(String expr) {
+  @Nonnull
+  public SearchExpr parse(@Nonnull String expr) {
     return SearchExpr.parse(labelAliases, expr);
   }
 }

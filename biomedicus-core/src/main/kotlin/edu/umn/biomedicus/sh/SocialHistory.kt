@@ -16,28 +16,42 @@
 
 package edu.umn.biomedicus.sh
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
+import edu.umn.biomedicus.dependencies
+import edu.umn.biomedicus.exc.BiomedicusException
+import edu.umn.biomedicus.family.Relative
 import edu.umn.biomedicus.framework.SearchExpr
 import edu.umn.biomedicus.framework.SearchExprFactory
+import edu.umn.biomedicus.parsing.Dependency
+import edu.umn.biomedicus.parsing.UDRelation
+import edu.umn.biomedicus.parsing.findHead
+import edu.umn.biomedicus.sections.Section
+import edu.umn.biomedicus.sections.SectionContent
 import edu.umn.biomedicus.sections.SectionHeader
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
 import edu.umn.nlpengine.*
+import org.slf4j.LoggerFactory
+import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 class SocialHistoryModule : SystemModule() {
     override fun setup() {
         addLabelClass<AlcoholCandidate>()
         addLabelClass<AlcoholCue>()
-
         addLabelClass<DrugCandidate>()
-
+        addLabelClass<DrugCue>()
         addLabelClass<NicotineCandidate>()
-        addLabelClass<NicotineVerb>()
         addLabelClass<NicotineCue>()
+
+        addLabelClass<AlcoholRelevant>()
+
+        addLabelClass<DrugRelevant>()
+
+        addLabelClass<NicotineRelevant>()
         addLabelClass<NicotineUnit>()
         addLabelClass<NicotineAmount>()
         addLabelClass<NicotineFrequency>()
@@ -46,7 +60,6 @@ class SocialHistoryModule : SystemModule() {
         addLabelClass<NicotineStatus>()
         addLabelClass<NicotineMethod>()
 
-        addLabelClass<SocialHistorySectionHeader>()
         addLabelClass<UsageFrequencyPhrase>()
         addLabelClass<UsageFrequency>()
         addLabelClass<UsageStatus>()
@@ -55,31 +68,83 @@ class SocialHistoryModule : SystemModule() {
 
 }
 
+/**
+ * A social history candidate for alcohol usage.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class SocialHistorySectionHeader(
+data class AlcoholCandidate(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * A word that indicates a sentence is an alcohol social history candidate.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class AlcoholCue(override val startIndex: Int, override val endIndex: Int) : Label()
+
+/**
+ * A social history candidate for drug usage.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class DrugCandidate(override val startIndex: Int, override val endIndex: Int) : Label() {
+    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * A word that indicates a sentence is a drug social history candidate.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class DrugCue(override val startIndex: Int, override val endIndex: Int) : Label()
+
+/**
+ * A social history candidate for nicotine usage.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineCandidate(
         override val startIndex: Int,
         override val endIndex: Int
 ) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
+/**
+ * A word that indicates a sentence is a nicotine social history candidate.
+ */
+@LabelMetadata(versionId = "2_0", distinct = true)
+data class NicotineCue(
+        override val startIndex: Int,
+        override val endIndex: Int
+) : Label()
+
+/**
+ * A general known usage frequency phrase that could potentially apply to any social history usage
+ * type.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class UsageFrequencyPhrase(
         override val startIndex: Int,
         override val endIndex: Int
 ) : Label()
 
+/**
+ * A general usage frequency that could potentially apply to any social history usage type.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
+/**
+ * A general usage status that could potentially apply to any social history type.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class UsageStatus(override val startIndex: Int, override val endIndex: Int) : Label()
 
+/**
+ * A general method phrase that could potentially apply to any social history method.
+ */
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class GenericMethodPhrase(override val startIndex: Int, override val endIndex: Int) : Label()
-
 
 internal val headers = SequenceDetector(
         listOf("risk", "factor"),
@@ -99,23 +164,163 @@ internal val headersExact = SequenceDetector(
         listOf("SHX")
 ) { a: String, b: Token -> b.text.contentEquals(a) }
 
+private val tokenStartsWith: (String, Token) -> Boolean = { a, b: Token ->
+    b.text.startsWith(a, true)
+}
 
-class SocialHistorySectionHeaderDetector : DocumentProcessor {
-    override fun process(document: Document) {
-        val sectionHeaders = document.labelIndex(SectionHeader::class.java)
-        val tokens = document.labelIndex(ParseToken::class.java)
+private val tokenTextEquals: (String, Token) -> Boolean = { a, b: Token ->
+    b.text.compareTo(a, true) == 0
+}
 
-        val labeler = document.labeler(SocialHistorySectionHeader::class.java)
+/**
+ * The models for the candidate detectors and general social history tasks.
+ */
+@Singleton
+class CandidateDetectionRules @Inject constructor(
+        @Setting("sh.alcohol.candidateCuesPath") alcoholCuePath: String,
+        @Setting("sh.alcohol.cueIgnorePath") alcoholIgnorePath: String,
+        @Setting("sh.alcohol.nonalcoholicDrinksPath") nonalcoholicDrinksPath: String,
+        @Setting("sh.drugs.candidateCuesPath") drugCuePath: String,
+        @Setting("sh.nicotine.candidateCuesPath") nicotineCuePath: String
+) {
+    val alcoholCueDetector: SequenceDetector<String, Token>
 
-        for (sectionHeader in sectionHeaders) {
-            val headerTokens = tokens.insideSpan(sectionHeader).asList()
-            if (headers.matches(headerTokens) != null || headersExact.matches(headerTokens) != null)
-                labeler.add(SocialHistorySectionHeader(sectionHeader))
-        }
+    val nonalcoholicDrinksDetector: SequenceDetector<String, Token>
+
+    val alcoholIgnoreDetector: SequenceDetector<String, Token>
+
+    val drugCueDetector: SequenceDetector<String, Token>
+
+    val nicotineCueDetector: SequenceDetector<String, Token>
+
+    init {
+        log.info("Loading social history candidate detection rule set.")
+
+        alcoholCueDetector = SequenceDetector.loadFromFile(alcoholCuePath, tokenStartsWith)
+        alcoholIgnoreDetector = SequenceDetector.loadFromFile(alcoholIgnorePath, tokenStartsWith)
+        nonalcoholicDrinksDetector = SequenceDetector.loadFromFile(nonalcoholicDrinksPath, tokenStartsWith)
+
+        drugCueDetector = SequenceDetector.loadFromFile(drugCuePath, tokenStartsWith)
+
+        nicotineCueDetector = SequenceDetector.loadFromFile(nicotineCuePath, tokenStartsWith)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(CandidateDetectionRules::class.java)
     }
 }
 
+/**
+ * Detects candidate sentences which may have usage for alcohol, drugs, and nicotine.
+ */
+class SocialHistoryCandidateDetector(
+        private val alcoholDetector: SequenceDetector<String, Token>,
+        private val nonalcoholicDetector: SequenceDetector<String, Token>,
+        private val alcoholIgnoreDetector: SequenceDetector<String, Token>,
+        private val drugDetector: SequenceDetector<String, Token>,
+        private val nicotineDetector: SequenceDetector<String, Token>
+) : DocumentProcessor {
 
+    @Inject constructor(
+            candidateDetectionRules: CandidateDetectionRules
+    ) : this(
+            alcoholDetector = candidateDetectionRules.alcoholCueDetector,
+            nonalcoholicDetector = candidateDetectionRules.nonalcoholicDrinksDetector,
+            alcoholIgnoreDetector = candidateDetectionRules.alcoholIgnoreDetector,
+            drugDetector = candidateDetectionRules.drugCueDetector,
+            nicotineDetector = candidateDetectionRules.nicotineCueDetector
+    )
+
+    override fun process(document: Document) {
+        val sections = document.labelIndex<Section>()
+        val sectionContents = document.labelIndex<SectionContent>()
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<ParseToken>()
+        val relatives = document.labelIndex<Relative>()
+
+        val alcoholCandidateLabeler = document.labeler<AlcoholCandidate>()
+        val alcoholCueLabeler = document.labeler<AlcoholCue>()
+
+        val drugCandidateLabeler = document.labeler<DrugCandidate>()
+        val drugCueLabeler = document.labeler<DrugCue>()
+
+        val nicotineCandidateLabeler = document.labeler<NicotineCandidate>()
+        val nicotineCueLabeler = document.labeler<NicotineCue>()
+
+        document.labelIndex<SectionHeader>()
+                .asSequence()
+                .filter {
+                    val headerTokens = tokens.insideSpan(it).asList()
+                    headers.matches(headerTokens) != null ||
+                            headersExact.matches(headerTokens) != null
+                }
+                .forEach {
+                    val section = sections.containing(it).first() ?: return@forEach
+
+                    val contents = sectionContents.insideSpan(section).first()
+                            ?: throw BiomedicusException("No contents for section: $section")
+
+                    sentences.insideSpan(contents)
+                            .filter { document.text[it.endIndex - 1] != ':' }
+                            .filter { relatives.insideSpan(it).isEmpty() }
+                            .forEach { sentence ->
+                                val sentenceTokens = tokens.insideSpan(sentence).asList()
+
+                                alcoholDetector.detectAll(sentenceTokens)
+                                        .takeIf { it.isNotEmpty() }
+                                        ?.let { alcoholMatches ->
+                                            val nonalcoholicMatches =
+                                                    nonalcoholicDetector.detectAll(sentenceTokens)
+                                            if (nonalcoholicMatches.isNotEmpty()) return@let
+
+                                            val alcoholIgnores =
+                                                    alcoholIgnoreDetector.detectAll(sentenceTokens)
+                                            if (alcoholIgnores.isNotEmpty()) return@let
+
+                                            alcoholCandidateLabeler.add(AlcoholCandidate(sentence))
+                                            for (match in alcoholMatches) {
+                                                alcoholCueLabeler.add(
+                                                        AlcoholCue(
+                                                                sentenceTokens[match.first].startIndex,
+                                                                sentenceTokens[match.last].endIndex
+                                                        )
+                                                )
+                                            }
+                                        }
+
+                                val drugMatches = drugDetector.detectAll(sentenceTokens)
+                                if (drugMatches.isNotEmpty()) {
+                                    drugCandidateLabeler.add(DrugCandidate(sentence))
+                                    for (match in drugMatches) {
+                                        drugCueLabeler.add(
+                                                DrugCue(
+                                                        sentenceTokens[match.first].startIndex,
+                                                        sentenceTokens[match.last].endIndex
+                                                )
+                                        )
+                                    }
+                                }
+
+                                val matches = nicotineDetector.detectAll(sentenceTokens)
+                                if (matches.isNotEmpty()) {
+                                    nicotineCandidateLabeler.add(NicotineCandidate(sentence))
+                                    for (match in matches) {
+                                        nicotineCueLabeler.add(
+                                                NicotineCue(
+                                                        sentenceTokens[match.first].startIndex,
+                                                        sentenceTokens[match.last].endIndex
+                                                )
+                                        )
+                                    }
+                                }
+                            }
+                }
+    }
+}
+
+/**
+ * Generic usage frequency phrases model.
+ */
 @Singleton
 class UsageFrequencyPhrases @Inject constructor(
         @Setting("sh.usageFrequencyPhrasesPath") path: String
@@ -125,6 +330,10 @@ class UsageFrequencyPhrases @Inject constructor(
     }
 }
 
+/**
+ * Detects certain concrete usage frequency phrases from a dictionary of known phrases to be used in
+ * the labeling of generic usage frequencies.
+ */
 class UsageFrequencyPhraseDetector @Inject constructor(
         usageFrequencyPhrases: UsageFrequencyPhrases
 ) : DocumentProcessor {
@@ -155,6 +364,9 @@ class UsageFrequencyPhraseDetector @Inject constructor(
     }
 }
 
+/**
+ * The usage frequency tagex pattern.
+ */
 @Singleton
 data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
     @Inject constructor(searchExprFactory: SearchExprFactory) : this(
@@ -171,6 +383,10 @@ data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
     )
 }
 
+/**
+ * Detects [UsageFrequency], generic usage frequency phrases that could apply to any social history
+ * type.
+ */
 data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
     @Inject constructor(usageFrequencyPattern: UsageFrequencyPattern)
             : this(usageFrequencyPattern.searchExpr)
@@ -198,6 +414,9 @@ data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
     }
 }
 
+/**
+ * The model for generic usage status phrases.
+ */
 @Singleton
 data class UsageStatusPhrases(val detector: SequenceDetector<String, ParseToken>) {
     @Inject constructor(@Setting("sh.statusPhrasesPath") path: String)
@@ -206,6 +425,9 @@ data class UsageStatusPhrases(val detector: SequenceDetector<String, ParseToken>
     })
 }
 
+/**
+ * Detects [UsageStatus], usage status phrases that could apply to any social history usage type.
+ */
 data class UsageStatusDetector(
         private val detector: SequenceDetector<String, ParseToken>
 ) : DocumentProcessor {
@@ -236,6 +458,9 @@ data class UsageStatusDetector(
     }
 }
 
+/**
+ * The model for generic method phrases.
+ */
 @Singleton
 data class GenericMethodPhrases(val detector: SequenceDetector<String, ParseToken>) {
     @Inject constructor(@Setting("sh.genericMethodPhrasesPath") path: String)
@@ -244,6 +469,9 @@ data class GenericMethodPhrases(val detector: SequenceDetector<String, ParseToke
     })
 }
 
+/**
+ * Detects method phrases that could apply to any social history usage type.
+ */
 data class GenericMethodPhraseDetector(
         val detector: SequenceDetector<String, ParseToken>
 ) : DocumentProcessor {
@@ -272,4 +500,28 @@ data class GenericMethodPhraseDetector(
                     }
                 }
     }
+}
+
+internal fun Document.findRelevantAncestors(labels: LabelIndex<*>): Collection<Dependency> {
+    val relevants = HashSet<Dependency>()
+
+    val dependencies = dependencies()
+
+    labels
+            .asSequence()
+            .map {
+                val cueDependencies = dependencies.insideSpan(it)
+                cueDependencies.mapTo(relevants) { it }
+                findHead(cueDependencies)
+            }
+            .forEach { dependency ->
+                for (dep in dependency.selfAndParentIterator()) {
+                    relevants.add(dep)
+                    if (dep.dep.partOfSpeech.isVerb || dep.relation == UDRelation.ROOT) {
+                        break
+                    }
+                }
+            }
+
+    return relevants
 }

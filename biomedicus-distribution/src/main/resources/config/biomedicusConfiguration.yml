@@ -96,6 +96,12 @@ settings:
     usageFrequencyPatternsPath: sh/usageFrequencyPatterns.txt
     statusPhrasesPath: sh/genericStatusPhrases.txt
     genericMethodPhrasesPath: sh/genericMethodPhrases.txt
+    alcohol:
+      candidateCuesPath: sh/alcohol/candidateCues.txt
+      cueIgnorePath: sh/alcohol/alcoholIgnore.txt
+      nonalcoholicDrinksPath: sh/alcohol/nonalcoholicDrinks.txt
+    drugs:
+      candidateCuesPath: sh/drugs/candidateCues.txt
     nicotine:
       candidateCuesPath: sh/nicotine/candidateCues.txt
       typesPath: sh/nicotine/types.txt

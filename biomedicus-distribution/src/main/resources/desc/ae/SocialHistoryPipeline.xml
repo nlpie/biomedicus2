@@ -19,17 +19,20 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="sectionHeaders">
-      <import location="annotator/sh/SocialHistorySectionHeaderDetector.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="nicotineCandidates">
-      <import location="annotator/sh/NicotineCandidateDetector.xml"/>
-    </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="nicotineVerbs">
-      <import location="annotator/sh/NicotineVerbLabeler.xml"/>
+    <delegateAnalysisEngine key="candidates">
+      <import location="annotator/sh/SocialHistoryCandidateDetector.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parser">
       <import location="annotator/SHParser.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholRelevants">
+      <import location="annotator/sh/AlcoholRelevantLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugRelevants">
+      <import location="annotator/sh/DrugRelevantLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineRelevants">
+      <import location="annotator/sh/NicotineRelevantLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="usageFrequencyPhrases">
       <import location="annotator/sh/UsageFrequencyPhraseDetector.xml"/>
@@ -76,10 +79,11 @@
         <type>String</type>
         <mandatory>true</mandatory>
         <overrides>
-          <parameter>sectionHeaders/documentName</parameter>
-          <parameter>nicotineCandidates/documentName</parameter>
+          <parameter>candidates/documentName</parameter>
           <parameter>parser/documentName</parameter>
-          <parameter>nicotineVerbs/documentName</parameter>
+          <parameter>alcoholRelevants/documentName</parameter>
+          <parameter>drugRelevants/documentName</parameter>
+          <parameter>nicotineRelevants/documentName</parameter>
           <parameter>usageFrequencyPhrases/documentName</parameter>
           <parameter>usageFrequencies/documentName</parameter>
           <parameter>usageStatuses/documentName</parameter>
@@ -104,10 +108,11 @@
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
-        <node>sectionHeaders</node>
-        <node>nicotineCandidates</node>
+        <node>candidates</node>
         <node>parser</node>
-        <node>nicotineVerbs</node>
+        <node>alcoholRelevants</node>
+        <node>drugRelevants</node>
+        <node>nicotineRelevants</node>
         <node>usageFrequencyPhrases</node>
         <node>usageFrequencies</node>
         <node>usageStatuses</node>
