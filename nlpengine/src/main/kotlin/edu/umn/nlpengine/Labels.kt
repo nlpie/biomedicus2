@@ -137,15 +137,7 @@ abstract class Label : TextRange {
  * Used to implement [TextRange] in Java since default method implementations on Kotlin interfaces are
  * not pulled through
  */
-abstract class AbstractTextRange(
-        override val startIndex: Int,
-        override val endIndex: Int
-) : TextRange {
-    /**
-     * Constructor which copies the bounds of another label
-     */
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
-}
+abstract class AbstractTextRange : TextRange
 
 /**
  * A location in text without any other associated data.

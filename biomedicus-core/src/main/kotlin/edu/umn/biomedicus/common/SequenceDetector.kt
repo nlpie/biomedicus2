@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.common
 
+import edu.umn.nlpengine.Span
+import edu.umn.nlpengine.TextRange
 import java.io.File
 import java.util.*
 
@@ -65,6 +67,14 @@ class SequenceDetector<T, U>(
         }
     }
 }
+
+
+fun <U : TextRange> SequenceDetector<*, U>.detectAllSpans(sequence: List<U>): List<Span> {
+    return createMatcher().detectAll(sequence)
+            .map { Span(sequence[it.first].startIndex, sequence[it.last].endIndex) }
+}
+
+
 
 
 /**

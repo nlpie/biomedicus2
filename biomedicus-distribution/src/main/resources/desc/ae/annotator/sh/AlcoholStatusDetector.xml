@@ -24,12 +24,11 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name><!-- TODO: name --></name>
-    <description><!-- TODO: description --></description>
+    <name>Alcohol Status Detector</name>
+    <description>Detects the status of alcohol usage in text.</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
-      <!-- TODO: Add any configuration parameters -->
       <configurationParameter>
         <name>documentName</name>
         <description>The name of the document to run this processor on.</description>
@@ -66,7 +65,6 @@
       </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
-      <!-- TODO: Add any name/value pairs for configuration parameters -->
       <nameValuePair>
         <name>documentName</name>
         <value>
@@ -76,14 +74,14 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string><!-- TODO: document processor class name goes here --></string>
+          <string>edu.umn.biomedicus.sh.AlcoholStatusDetector</string>
         </value>
       </nameValuePair>
       <nameValuePair>
           <name>eagerLoad</name>
           <value>
               <array>
-                  <!-- TODO: Any eager loaded classes go here -->
+                  <string>edu.umn.biomedicus.sh.AlcoholStatusPhrases</string>
               </array>
           </value>
       </nameValuePair>

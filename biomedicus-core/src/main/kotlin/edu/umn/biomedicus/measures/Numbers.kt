@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.measures
 
-import edu.umn.biomedicus.exc.BiomedicusException
-import edu.umn.biomedicus.framework.SearchExprFactory
+import edu.umn.biomedicus.framework.TagExFactory
+import edu.umn.biomedicus.framework.get
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.nlpengine.Document
 import edu.umn.nlpengine.DocumentProcessor
@@ -62,9 +62,9 @@ data class NumberRange(
  */
 @Singleton
 class NumberRangesPattern @Inject constructor(
-     searchExprFactory: SearchExprFactory
+     tagExFactory: TagExFactory
 ) {
-    val expr = searchExprFactory.parse(
+    val expr = tagExFactory.parse(
             "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | [?ParseToken<getText=i\"between\">] -> lower:Number ParseToken<getText=\"and\"> -> upper:Number)"
     )
 }
@@ -80,24 +80,15 @@ class NumberRangesLabeler @Inject internal constructor(
     override fun process(document: Document) {
         val labeler = document.labeler(NumberRange::class.java)
 
-        val searcher = expr.createSearcher(document)
+        for (tagExResult in expr.findAll(document)) {
+            val lower : Number = tagExResult.namedLabels["lower"] ?: error("lower should always have value")
 
-        while (searcher.search()) {
-            @Suppress("UNCHECKED_CAST")
-            val lower = searcher.getLabel("lower").orElseThrow {
-                BiomedicusException("No lower")
-            } as Number
-
-            @Suppress("UNCHECKED_CAST")
-            val upper = searcher.getLabel("upper").orElseThrow {
-                BiomedicusException("No upper")
-            } as Number
-
+            val upper : Number = tagExResult.namedLabels["upper"] ?: error("upper should always have value")
 
             val lowerValue = lower.value()
             val upperValue = upper.value()
             if (upperValue > lowerValue) {
-                val (startIndex, endIndex) = searcher.getSpan("range").get()
+                val (startIndex, endIndex) = tagExResult.namedSpans["range"] ?: error("range should always have value")
                 labeler.add(NumberRange(startIndex, endIndex, lowerValue, upperValue))
             }
         }

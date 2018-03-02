@@ -22,8 +22,8 @@ import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.Span;
-import edu.umn.nlpengine.TextRange;
 import javax.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,13 +57,13 @@ public class SearcherPrinter implements DocumentProcessor {
       for (String group : searcher.getGroupNames()) {
         System.out.println("\tGroup Name: " + group);
 
-        if (searcher.getSpan(group).isPresent()) {
-          Span span = searcher.getSpan(group).get();
+        Span span = searcher.getSpan(group);
+        if (span != null) {
           System.out.println("\t\tCovered Text: " + span.coveredString(document.getText()));
         }
 
-        if (searcher.getLabel(group).isPresent()) {
-          TextRange label = searcher.getLabel(group).get();
+        Label label = searcher.getLabel(group);
+        if (label != null) {
           System.out.println("\t\tStored Label: " + label.toString());
         }
       }

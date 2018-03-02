@@ -731,9 +731,9 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<TextRange> opt = searcher.getLabel("instance");
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), label);
+    Label opt = searcher.getLabel("instance");
+    assertTrue(opt != null);
+    assertEquals(opt, label);
   }
 
   @Test
@@ -753,16 +753,16 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<TextRange> opt = searcher.getLabel("instance");
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), label);
+    TextRange opt = searcher.getLabel("instance");
+    assertTrue(opt != null);
+    assertEquals(opt, label);
 
     searcher = blah.createSearcher(document);
     searcher.search();
 
     opt = searcher.getLabel("instance");
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), fooLabel);
+    assertTrue(opt != null);
+    assertEquals(opt, fooLabel);
   }
 
   @Test
@@ -782,16 +782,16 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Span> instance = searcher.getSpan("instance");
-    assertTrue(instance.isPresent());
-    assertTrue(instance.get().locationEquals(label));
+    Span instance = searcher.getSpan("instance");
+    assertTrue(instance != null);
+    assertTrue(instance.locationEquals(label));
 
     searcher = blah.createSearcher(document);
     searcher.search();
 
     instance = searcher.getSpan("instance");
-    assertTrue(instance.isPresent());
-    assertTrue(instance.get().locationEquals(fooLabel));
+    assertTrue(instance != null);
+    assertTrue(instance.locationEquals(fooLabel));
   }
 
   @Test
@@ -808,9 +808,9 @@ public class SearchExprTest {
     Searcher searcher = blah.createSearcher(document);
     searcher.search();
 
-    Optional<Span> opt = searcher.getSpan("instance");
-    assertTrue(opt.isPresent());
-    assertEquals(opt.get(), label.toSpan());
+    Span opt = searcher.getSpan("instance");
+    assertTrue(opt != null);
+    assertEquals(opt, label.toSpan());
   }
 
   @Test
@@ -960,8 +960,8 @@ public class SearchExprTest {
     assertTrue(found);
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 5);
-    Optional<Span> span = searcher.getSpan("opt");
-    assertFalse(span.isPresent());
+    Span span = searcher.getSpan("opt");
+    assertFalse(span != null);
   }
 
   @Test
@@ -1002,8 +1002,8 @@ public class SearchExprTest {
     assertTrue(found);
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 5);
-    Optional<Span> span = searcher.getSpan("opt");
-    assertFalse(span.isPresent());
+    Span span = searcher.getSpan("opt");
+    assertFalse(span != null);
   }
 
   @Test
@@ -1044,8 +1044,8 @@ public class SearchExprTest {
     assertTrue(found);
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 10);
-    Optional<Span> span = searcher.getSpan("opt");
-    assertFalse(span.isPresent());
+    Span span = searcher.getSpan("opt");
+    assertFalse(span != null);
   }
 
   @Test
@@ -1067,8 +1067,8 @@ public class SearchExprTest {
     assertTrue(found);
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 10);
-    Optional<Span> span = searcher.getSpan("opt");
-    assertFalse(span.isPresent());
+    Span span = searcher.getSpan("opt");
+    assertFalse(span != null);
   }
 
   @Test

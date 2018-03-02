@@ -48,6 +48,13 @@ class SocialHistoryModule : SystemModule() {
         addLabelClass<NicotineCue>()
 
         addLabelClass<AlcoholRelevant>()
+        addLabelClass<AlcoholUnit>()
+        addLabelClass<AlcoholAmount>()
+        addLabelClass<AlcoholFrequency>()
+        addLabelClass<AlcoholTemporal>()
+        addLabelClass<AlcoholType>()
+        addLabelClass<AlcoholStatus>()
+        addLabelClass<AlcoholMethod>()
 
         addLabelClass<DrugRelevant>()
 
@@ -164,11 +171,11 @@ internal val headersExact = SequenceDetector(
         listOf("SHX")
 ) { a: String, b: Token -> b.text.contentEquals(a) }
 
-private val tokenStartsWith: (String, Token) -> Boolean = { a, b: Token ->
+internal val tokenStartsWith: (String, Token) -> Boolean = { a, b: Token ->
     b.text.startsWith(a, true)
 }
 
-private val tokenTextEquals: (String, Token) -> Boolean = { a, b: Token ->
+internal val tokenTextEquals: (String, Token) -> Boolean = { a, b: Token ->
     b.text.compareTo(a, true) == 0
 }
 
@@ -387,9 +394,10 @@ data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
  * Detects [UsageFrequency], generic usage frequency phrases that could apply to any social history
  * type.
  */
-data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
-    @Inject constructor(usageFrequencyPattern: UsageFrequencyPattern)
-            : this(usageFrequencyPattern.searchExpr)
+class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentProcessor {
+    @Inject internal constructor(
+            usageFrequencyPattern: UsageFrequencyPattern
+    ) : this(usageFrequencyPattern.searchExpr)
 
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()
@@ -418,20 +426,19 @@ data class UsageFrequencyDetector(val expr: SearchExpr) : DocumentProcessor {
  * The model for generic usage status phrases.
  */
 @Singleton
-data class UsageStatusPhrases(val detector: SequenceDetector<String, ParseToken>) {
-    @Inject constructor(@Setting("sh.statusPhrasesPath") path: String)
-            : this(SequenceDetector.loadFromFile(path) { string, token: ParseToken ->
-        token.text.compareTo(string, true) == 0
-    })
+class UsageStatusPhrases(val detector: SequenceDetector<String, Token>) {
+    @Inject constructor(
+            @Setting("sh.statusPhrasesPath") path: String
+    ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
 /**
  * Detects [UsageStatus], usage status phrases that could apply to any social history usage type.
  */
-data class UsageStatusDetector(
-        private val detector: SequenceDetector<String, ParseToken>
+class UsageStatusDetector(
+        private val detector: SequenceDetector<String, Token>
 ) : DocumentProcessor {
-    @Inject constructor(phrases: UsageStatusPhrases) : this(phrases.detector)
+    @Inject internal constructor(phrases: UsageStatusPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()
@@ -462,20 +469,19 @@ data class UsageStatusDetector(
  * The model for generic method phrases.
  */
 @Singleton
-data class GenericMethodPhrases(val detector: SequenceDetector<String, ParseToken>) {
-    @Inject constructor(@Setting("sh.genericMethodPhrasesPath") path: String)
-            : this(SequenceDetector.loadFromFile(path) { string, token: ParseToken ->
-        token.text.compareTo(string, true) == 0
-    })
+class GenericMethodPhrases(val detector: SequenceDetector<String, Token>) {
+    @Inject internal constructor(
+            @Setting("sh.genericMethodPhrasesPath") path: String
+    ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
 /**
  * Detects method phrases that could apply to any social history usage type.
  */
-data class GenericMethodPhraseDetector(
-        val detector: SequenceDetector<String, ParseToken>
+class GenericMethodPhraseDetector(
+        val detector: SequenceDetector<String, Token>
 ) : DocumentProcessor {
-    @Inject constructor(phrases: GenericMethodPhrases) : this(phrases.detector)
+    @Inject internal constructor(phrases: GenericMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()

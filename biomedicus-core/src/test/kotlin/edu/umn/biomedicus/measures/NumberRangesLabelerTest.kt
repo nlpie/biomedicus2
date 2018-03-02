@@ -19,6 +19,7 @@ package edu.umn.biomedicus.measures
 import edu.umn.biomedicus.common.DocumentIdentifiers
 import edu.umn.biomedicus.framework.LabelAliases
 import edu.umn.biomedicus.framework.SearchExprFactory
+import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
@@ -31,7 +32,7 @@ class NumberRangesLabelerTest {
         addAlias("ParseToken", ParseToken::class.java)
     }
 
-    val searchExprFactory = SearchExprFactory(labelAliases)
+    val searchExprFactory = TagExFactory(SearchExprFactory(labelAliases))
 
     val pattern = NumberRangesPattern(searchExprFactory)
 

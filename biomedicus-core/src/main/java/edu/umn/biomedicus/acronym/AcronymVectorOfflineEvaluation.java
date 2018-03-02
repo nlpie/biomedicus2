@@ -206,7 +206,6 @@ public class AcronymVectorOfflineEvaluation {
     final String text;
 
     SimpleToken(String text) {
-      super(0, 0);
       this.text = text;
     }
 
@@ -218,6 +217,16 @@ public class AcronymVectorOfflineEvaluation {
     @Override
     public boolean getHasSpaceAfter() {
       return true;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return 0;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return 0;
     }
   }
 }

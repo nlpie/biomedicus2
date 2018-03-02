@@ -384,7 +384,6 @@ public class AcronymVectorOfflineTrainer {
     private String text;
 
     DummyToken(String text) {
-      super(0, 0);
       this.text = text;
     }
 
@@ -396,6 +395,16 @@ public class AcronymVectorOfflineTrainer {
     @Override
     public boolean getHasSpaceAfter() {
       return true;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return 0;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return 0;
     }
   }
 

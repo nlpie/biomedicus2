@@ -17,6 +17,7 @@
 package edu.umn.biomedicus.framework;
 
 import edu.umn.biomedicus.framework.SearchExpr.TypeMatch.PropertyMatch;
+import edu.umn.nlpengine.AbstractTextRange;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.LabelIndex;
@@ -1579,7 +1580,7 @@ public class SearchExpr {
           : search.document.labelIndex(labelType).insideSpan(state.getUncovered());
 
       if (!seek) {
-        TextRange label = labelIndex.first();
+        Label label = labelIndex.first();
         if (label == null) {
           return State.miss();
         }
@@ -1607,7 +1608,7 @@ public class SearchExpr {
 
         return result;
       }
-      for (TextRange label : labelIndex) {
+      for (Label label : labelIndex) {
         if (!propertiesMatch(search, label)) {
           continue;
         }
@@ -1824,12 +1825,10 @@ public class SearchExpr {
 
       @Override
       boolean doesMatch(DefaultSearcher search, TextRange label) {
-        TextRange groupLabel = search.getLabel(group)
-            .orElseThrow(
-                () -> new IllegalStateException("Not set"));
+        TextRange groupLabel = search.getLabel(group);
         try {
-          Object value = backrefMethod.invoke(groupLabel);
-          return value.equals(readMethod.invoke(label));
+          return groupLabel != null
+              && backrefMethod.invoke(groupLabel).equals(readMethod.invoke(label));
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new IllegalStateException("");
         }
@@ -1847,9 +1846,9 @@ public class SearchExpr {
 
       @Override
       boolean doesMatch(DefaultSearcher search, TextRange label) {
-        Span span = search.getSpan(group).orElseThrow(() -> new IllegalStateException("Not set"));
+        Span span = search.getSpan(group);
         try {
-          return span.equals(readMethod.invoke(label));
+          return span != null && span.equals(readMethod.invoke(label));
         } catch (IllegalAccessException | InvocationTargetException e) {
           throw new IllegalStateException("");
         }
@@ -1959,10 +1958,10 @@ public class SearchExpr {
   /**
    * The default implementation of the {@link Searcher} interface used to perform searches.
    */
-  class DefaultSearcher implements Searcher {
+  class DefaultSearcher extends AbstractTextRange implements Searcher, SearchResult {
 
     final Document document;
-    final TextRange[] labels;
+    final Label[] labels;
     final int[] groups;
     final int[] locals;
     boolean anchored;
@@ -1970,37 +1969,47 @@ public class SearchExpr {
     int from, to;
     State result = State.miss();
 
+    DefaultSearcher(DefaultSearcher defaultSearcher) {
+      document = null;
+      labels = defaultSearcher.labels.clone();
+      groups = defaultSearcher.groups.clone();
+      locals = null;
+      found = defaultSearcher.found;
+      result = defaultSearcher.result;
+    }
+
     DefaultSearcher(Document document, TextRange span) {
       this.document = document;
-      labels = new TextRange[numberGroups];
+      labels = new Label[numberGroups];
       groups = new int[numberGroups * 2];
       locals = new int[numberLocals];
       from = span.getStartIndex();
       to = span.getEndIndex();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Optional<TextRange> getLabel(String name) {
+    @Nullable
+    public Label getLabel(@Nonnull String name) {
       Integer integer = groupNames.get(name);
       if (integer == null || !result.validGroups.contains(integer)) {
-        return Optional.empty();
+        return null;
       }
-      return Optional.ofNullable(labels[integer]);
+      return labels[integer];
     }
 
     @Override
-    public Optional<Span> getSpan(String name) {
+    @Nullable
+    public Span getSpan(@Nonnull String name) {
       Integer integer = groupNames.get(name);
       if (integer == null || !result.validGroups.contains(integer)) {
-        return Optional.empty();
+        return null;
       }
       int begin = groups[integer];
       int end = groups[integer + 1];
       if (begin > end || end < 0) {
-        return Optional.empty();
+        return null;
       }
-      return Optional.of(new Span(begin, end));
+      return new Span(begin, end);
     }
 
     @Override
@@ -2073,6 +2082,21 @@ public class SearchExpr {
 
     @Override
     public int getEnd() {
+      return result.end;
+    }
+
+    @Override
+    public SearchResult toSearchResult() {
+      return found ? new DefaultSearcher(this) : null;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return result.begin;
+    }
+
+    @Override
+    public int getEndIndex() {
       return result.end;
     }
   }

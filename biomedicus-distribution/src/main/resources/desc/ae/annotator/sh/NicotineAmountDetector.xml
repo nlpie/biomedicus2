@@ -82,7 +82,7 @@
           <name>eagerLoad</name>
           <value>
               <array>
-                  <string>edu.umn.biomedicus.sh.NicotineAmountPattern</string>
+                  <string>edu.umn.biomedicus.sh.NicotineAmountSearchExpr</string>
               </array>
           </value>
       </nameValuePair>

@@ -16,6 +16,10 @@
 
 package edu.umn.biomedicus.framework;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,5 +49,36 @@ public class SearchExprFactory {
   @Nonnull
   public SearchExpr parse(@Nonnull String expr) {
     return SearchExpr.parse(labelAliases, expr);
+  }
+
+  /**
+   * Reads the file at the specified path and parses it into a Search Expression.
+   *
+   * @param path the path of the file to read
+   * @param charset the charset to use
+   * @return SearchExpr from the file
+   * @throws IOException if there is an error reading the file.
+   */
+  @Nonnull
+  public SearchExpr readAndParse(
+      @Nonnull String path,
+      @Nonnull Charset charset
+  ) throws IOException {
+    return SearchExpr.parse(labelAliases, new String(Files.readAllBytes(Paths.get(path)), charset));
+  }
+
+  /**
+   * Reads the file at the specified path and parses it into a search expression using the default
+   * charset.
+   *
+   * @param path the path of the file to read
+   * @return SearchExpr from the file
+   * @throws IOException if there is an error finding or reading the file.
+   */
+  @Nonnull
+  public SearchExpr readAndParse(
+      @Nonnull String path
+  ) throws IOException {
+    return readAndParse(path, Charset.defaultCharset());
   }
 }

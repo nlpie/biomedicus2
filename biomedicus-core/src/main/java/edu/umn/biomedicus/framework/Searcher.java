@@ -16,17 +16,20 @@
 
 package edu.umn.biomedicus.framework;
 
+import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.TextRange;
 import edu.umn.nlpengine.Span;
 import java.util.Collection;
 import java.util.Optional;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Search results from TagEx.
  *
  * @since 1.6.0
  */
-public interface Searcher {
+public interface Searcher extends TextRange {
 
   /**
    * Returns the named label if it matched against anything.
@@ -34,7 +37,8 @@ public interface Searcher {
    * @param name the variable name assigned to the named label.
    * @return an optional containing the label matched against, or else empty if nothing matched.
    */
-  Optional<TextRange> getLabel(String name);
+  @Nullable
+  Label getLabel(@Nonnull String name);
 
   /**
    * Gets the span of any named group or label.
@@ -43,7 +47,8 @@ public interface Searcher {
    * @return an optional containing either the name group or label's span, or else empty if the
    * named group or label did not match anything
    */
-  Optional<Span> getSpan(String name);
+  @Nullable
+  Span getSpan(@Nonnull String name);
 
   /**
    * True after a search or match if the pattern was matched or found, false otherwise.
@@ -144,4 +149,11 @@ public interface Searcher {
    * The end index of the span matched by the entire pattern.
    */
   int getEnd();
+
+  /**
+   * Converts this searcher into a {@link SearchResult}
+   * @return search result object, or null if this is not a match
+   */
+  @Nullable
+  SearchResult toSearchResult();
 }

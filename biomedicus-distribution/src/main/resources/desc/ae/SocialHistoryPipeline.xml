@@ -46,6 +46,27 @@
     <delegateAnalysisEngine key="genericMethodPhrases">
       <import location="annotator/sh/GenericMethodPhraseDetector.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholAmountUnits">
+      <import location="annotator/sh/AlcoholUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholAmounts">
+      <import location="annotator/sh/AlcoholAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholFrequencies">
+      <import location="annotator/sh/AlcoholFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholTemporals">
+      <import location="annotator/sh/AlcoholTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholTypes">
+      <import location="annotator/sh/AlcoholTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholStatuses">
+      <import location="annotator/sh/AlcoholStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholMethods">
+      <import location="annotator/sh/AlcoholMethodDetector.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="nicotineAmountUnits">
       <import location="annotator/sh/NicotineUnitDetector.xml"/>
     </delegateAnalysisEngine>
@@ -88,6 +109,13 @@
           <parameter>usageFrequencies/documentName</parameter>
           <parameter>usageStatuses/documentName</parameter>
           <parameter>genericMethodPhrases/documentName</parameter>
+          <parameter>alcoholAmountUnits/documentName</parameter>
+          <parameter>alcoholAmounts/documentName</parameter>
+          <parameter>alcoholFrequencies/documentName</parameter>
+          <parameter>alcoholTemporals/documentName</parameter>
+          <parameter>alcoholTypes/documentName</parameter>
+          <parameter>alcoholStatuses/documentName</parameter>
+          <parameter>alcoholMethods/documentName</parameter>
           <parameter>nicotineAmountUnits/documentName</parameter>
           <parameter>nicotineAmounts/documentName</parameter>
           <parameter>nicotineFrequencies/documentName</parameter>
@@ -117,6 +145,13 @@
         <node>usageFrequencies</node>
         <node>usageStatuses</node>
         <node>genericMethodPhrases</node>
+        <node>alcoholAmountUnits</node>
+        <node>alcoholAmounts</node>
+        <node>alcoholFrequencies</node>
+        <node>alcoholTemporals</node>
+        <node>alcoholTypes</node>
+        <node>alcoholStatuses</node>
+        <node>alcoholMethods</node>
         <node>nicotineAmountUnits</node>
         <node>nicotineAmounts</node>
         <node>nicotineFrequencies</node>

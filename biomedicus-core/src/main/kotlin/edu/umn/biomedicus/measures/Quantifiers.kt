@@ -20,7 +20,8 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
-import edu.umn.biomedicus.framework.SearchExprFactory
+import edu.umn.biomedicus.framework.TagEx
+import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
@@ -61,13 +62,13 @@ data class IndefiniteQuantifierCue(
     constructor(
             textRange: TextRange,
             type: String
-    ): this(textRange.startIndex, textRange.endIndex, type)
+    ) : this(textRange.startIndex, textRange.endIndex, type)
 
     constructor(
             startIndex: Int,
             endIndex: Int,
             indefiniteQuantifierType: IndefiniteQuantifierType
-    ): this(startIndex, endIndex, indefiniteQuantifierType.toString())
+    ) : this(startIndex, endIndex, indefiniteQuantifierType.toString())
 }
 
 /**
@@ -84,7 +85,7 @@ data class FuzzyValue(override val startIndex: Int, override val endIndex: Int) 
 data class StandaloneQuantifier(
         override val startIndex: Int,
         override val endIndex: Int
-): Label()
+) : Label()
 
 /**
  * An amount of something. Modifies a unit
@@ -96,7 +97,7 @@ data class Quantifier(
         val isExact: Boolean
 ) : Label() {
 
-    constructor(range: TextRange, isExact: Boolean): this(range.startIndex, range.endIndex, isExact)
+    constructor(range: TextRange, isExact: Boolean) : this(range.startIndex, range.endIndex, isExact)
 }
 
 private val test: (String, Token) -> Boolean = { word, token: Token ->
@@ -187,28 +188,34 @@ class StandaloneQuantifierDetector @Inject constructor(
     }
 }
 
+/**
+ * The TagEx expression for detecting quantifiers.
+ */
 @Singleton
-class QuantifierExpression @Inject constructor(searchExprFactory: SearchExprFactory) {
-    val expr = searchExprFactory.parse(
-            "([?indef:IndefiniteQuantifierCue] ->)? ([?NumberRange] | [?Number] | [?fuzz:FuzzyValue] | [?PosTag<getPartOfSpeech=eDT> ParseToken<getText=\"a\">])"
+class QuantifierExpression(val expr: TagEx) {
+    @Inject constructor(factory: TagExFactory) : this(
+            factory.parse("""([?indef:IndefiniteQuantifierCue] ->)?
+                                   ([?NumberRange] | [?Number] | [?fuzz:FuzzyValue]
+                                     | [?PosTag<getPartOfSpeech=eDT> ParseToken<getText="a">])"""
+            )
     )
 }
 
-class QuantifierDetector @Inject constructor(
-        expr: QuantifierExpression
-) : DocumentProcessor {
-    val expr = expr.expr
+/**
+ * Detects quantifier phrases in text.
+ */
+class QuantifierDetector(private val expr: TagEx) : DocumentProcessor {
+    @Inject constructor(expression: QuantifierExpression) : this(expression.expr)
 
     override fun process(document: Document) {
-        val searcher = expr.createSearcher(document)
-
         val labeler = document.labeler<Quantifier>()
 
-        while (searcher.search()) {
-            val isExact = !searcher.getLabel("indef").isPresent
-                    && !searcher.getLabel("fuzz").isPresent
+        for (result in expr.findAll(document)) {
+            val isExact = !result.namedLabels.containsLabel("indef")
+                    && !result.namedLabels.containsLabel("fuzz")
 
-            labeler.add(Quantifier(searcher.begin, searcher.end, isExact))
+            labeler.add(Quantifier(result, isExact))
         }
     }
 }
+

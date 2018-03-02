@@ -97,17 +97,23 @@ settings:
     statusPhrasesPath: sh/genericStatusPhrases.txt
     genericMethodPhrasesPath: sh/genericMethodPhrases.txt
     alcohol:
+      amountExprPath: sh/alcohol/amountSearchExpr.txt
+      amountUnitsPath: sh/alcohol/amountUnits.txt
       candidateCuesPath: sh/alcohol/candidateCues.txt
       cueIgnorePath: sh/alcohol/alcoholIgnore.txt
+      methodPhrasesPath: sh/alcohol/methodPhrases.txt
       nonalcoholicDrinksPath: sh/alcohol/nonalcoholicDrinks.txt
+      statusPhrasesPath: sh/alcohol/statusPhrases.txt
+      typesPath: sh/alcohol/types.txt
     drugs:
       candidateCuesPath: sh/drugs/candidateCues.txt
     nicotine:
-      candidateCuesPath: sh/nicotine/candidateCues.txt
-      typesPath: sh/nicotine/types.txt
+      amountExprPath: sh/nicotine/amountSearchExpr.txt
       amountUnitsPath: sh/nicotine/amountUnits.txt
-      statusPhrasesPath: sh/nicotine/statusPhrases.txt
+      candidateCuesPath: sh/nicotine/candidateCues.txt
       methodPhrasesPath: sh/nicotine/methodPhrases.txt
+      statusPhrasesPath: sh/nicotine/statusPhrases.txt
+      typesPath: sh/nicotine/types.txt
 # these indicate settings keys which are bound against a certain class
 settingInterfaces:
   acronym.model: edu.umn.biomedicus.acronym.AcronymModel
