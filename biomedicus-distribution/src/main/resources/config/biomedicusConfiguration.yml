@@ -106,7 +106,11 @@ settings:
       statusPhrasesPath: sh/alcohol/statusPhrases.txt
       typesPath: sh/alcohol/types.txt
     drugs:
+      amountExprPath: sh/drugs/amountSearchExpr.txt
+      amountUnitsPath: sh/drugs/amountUnits.txt
       candidateCuesPath: sh/drugs/candidateCues.txt
+      methodPhrasesPath: sh/drugs/methodPhrases.txt
+      typesPath: sh/drugs/types.txt
     nicotine:
       amountExprPath: sh/nicotine/amountSearchExpr.txt
       amountUnitsPath: sh/nicotine/amountUnits.txt

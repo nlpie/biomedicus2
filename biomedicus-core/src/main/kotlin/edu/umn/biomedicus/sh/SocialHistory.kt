@@ -57,6 +57,13 @@ class SocialHistoryModule : SystemModule() {
         addLabelClass<AlcoholMethod>()
 
         addLabelClass<DrugRelevant>()
+        addLabelClass<DrugUnit>()
+        addLabelClass<DrugAmount>()
+        addLabelClass<DrugFrequency>()
+        addLabelClass<DrugTemporal>()
+        addLabelClass<DrugType>()
+        addLabelClass<DrugStatus>()
+        addLabelClass<DrugMethod>()
 
         addLabelClass<NicotineRelevant>()
         addLabelClass<NicotineUnit>()

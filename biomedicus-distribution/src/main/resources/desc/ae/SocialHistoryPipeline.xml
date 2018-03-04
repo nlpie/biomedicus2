@@ -67,6 +67,27 @@
     <delegateAnalysisEngine key="alcoholMethods">
       <import location="annotator/sh/AlcoholMethodDetector.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugAmountUnits">
+      <import location="annotator/sh/DrugUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugAmounts">
+      <import location="annotator/sh/DrugAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugFrequencies">
+      <import location="annotator/sh/DrugFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugTemporals">
+      <import location="annotator/sh/DrugTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugTypes">
+      <import location="annotator/sh/DrugTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugStatuses">
+      <import location="annotator/sh/DrugStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugMethods">
+      <import location="annotator/sh/DrugMethodDetector.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="nicotineAmountUnits">
       <import location="annotator/sh/NicotineUnitDetector.xml"/>
     </delegateAnalysisEngine>
@@ -116,6 +137,13 @@
           <parameter>alcoholTypes/documentName</parameter>
           <parameter>alcoholStatuses/documentName</parameter>
           <parameter>alcoholMethods/documentName</parameter>
+          <parameter>drugAmountUnits/documentName</parameter>
+          <parameter>drugAmounts/documentName</parameter>
+          <parameter>drugFrequencies/documentName</parameter>
+          <parameter>drugTemporals/documentName</parameter>
+          <parameter>drugTypes/documentName</parameter>
+          <parameter>drugStatuses/documentName</parameter>
+          <parameter>drugMethods/documentName</parameter>
           <parameter>nicotineAmountUnits/documentName</parameter>
           <parameter>nicotineAmounts/documentName</parameter>
           <parameter>nicotineFrequencies/documentName</parameter>
@@ -152,6 +180,13 @@
         <node>alcoholTypes</node>
         <node>alcoholStatuses</node>
         <node>alcoholMethods</node>
+        <node>drugAmountUnits</node>
+        <node>drugAmounts</node>
+        <node>drugFrequencies</node>
+        <node>drugTemporals</node>
+        <node>drugTypes</node>
+        <node>drugStatuses</node>
+        <node>drugMethods</node>
         <node>nicotineAmountUnits</node>
         <node>nicotineAmounts</node>
         <node>nicotineFrequencies</node>
