@@ -19,6 +19,9 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="tokenCandidates">
+      <import location="annotator/TokenCandidateDetector.xml"/>
+    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="sentence">
       <import location="annotator/SentenceDetector.xml"/>
     </delegateAnalysisEngine>
@@ -29,7 +32,7 @@
       <import location="annotator/SectionLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
-      <import location="annotator/PennLikeTokenizer.xml"/>
+      <import location="annotator/ParseTokenLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="measuresPipeline">
       <import location="MeasuresPipeline.xml"/>
@@ -70,6 +73,7 @@
         <type>String</type>
         <mandatory>true</mandatory>
         <overrides>
+          <parameter>tokenCandidates/documentName</parameter>
           <parameter>sentence/documentName</parameter>
           <parameter>sectionHeaders/documentName</parameter>
           <parameter>sections/documentName</parameter>
@@ -96,6 +100,7 @@
     </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
+        <node>tokenCandidates</node>
         <node>sentence</node>
         <node>sectionHeaders</node>
         <node>sections</node>

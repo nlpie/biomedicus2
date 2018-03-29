@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Spliterator;
-import java.util.regex.Pattern;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +43,8 @@ public class TextFilesArtifactSource implements ArtifactSource {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TextFilesArtifactSource.class);
 
+  public static final String SOURCE_PATH = "sourcePath";
+
   private final Charset charset;
 
   private final long total;
@@ -52,10 +53,7 @@ public class TextFilesArtifactSource implements ArtifactSource {
 
   private final String documentName;
 
-  private final String extension;
-
   private final Path inputDirectory;
-  private Artifact artifact;
 
   @Inject
   TextFilesArtifactSource(
@@ -65,11 +63,10 @@ public class TextFilesArtifactSource implements ArtifactSource {
       @ProcessorSetting("documentName") String documentName
   ) throws IOException {
     charset = Charset.forName(charsetName);
-    this.extension = extension;
     inputDirectory = Paths.get(directoryPath);
     total = Files.walk(inputDirectory).filter(f -> f.toString().endsWith(extension)).count();
-    iterator = Files.walk(inputDirectory)
-        .filter(f -> f.toString().endsWith(extension)).spliterator();
+    iterator = Files.walk(inputDirectory).filter(f -> f.toString().endsWith(extension))
+        .spliterator();
     this.documentName = documentName;
   }
 
@@ -91,13 +88,11 @@ public class TextFilesArtifactSource implements ArtifactSource {
       }
       try {
         String s = new String(Files.readAllBytes(next), charset);
-        String documentId = next.getFileName().toString()
-            .replaceFirst("\\.?" + Pattern.quote(extension) + "$", "");
-        artifact = new StandardArtifact(documentId);
+        String documentId = inputDirectory.relativize(next).toString();
+        Artifact artifact = new StandardArtifact(documentId);
         artifact.addDocument(documentName, s);
 
-        artifact.getMetadata().put("relativePath", inputDirectory.relativize(next).toString());
-
+        artifact.getMetadata().put(SOURCE_PATH, next.toString());
         consumer.invoke(artifact);
       } catch (IOException e) {
         LOGGER.error("Failed on document: " + next.toString());

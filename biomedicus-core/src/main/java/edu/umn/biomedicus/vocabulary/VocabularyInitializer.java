@@ -20,9 +20,10 @@ import com.google.inject.Inject;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.tokenization.ParseToken;
-import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.TermTokenMerger;
+import edu.umn.biomedicus.tokenization.TokenResult;
+import edu.umn.biomedicus.tokenization.Tokenizer;
 import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,21 +90,21 @@ public class VocabularyInitializer {
   }
 
   void addPhrase(String phrase) throws BiomedicusException {
-    Iterator<Span> tokensIterator = PennLikePhraseTokenizer
-        .tokenizePhrase(phrase).iterator();
+    Iterator<TokenResult> tokensIterator = Tokenizer.tokenize(phrase).iterator();
     List<ParseToken> parseTokens = new ArrayList<>();
-    Span prev = null;
+    TokenResult prev = null;
     while (tokensIterator.hasNext() || prev != null) {
-      Span span = null;
+      TokenResult span = null;
       if (tokensIterator.hasNext()) {
         span = tokensIterator.next();
       }
       if (prev != null) {
-        String term = prev.coveredString(phrase);
+        String term = phrase.substring(prev.getStartIndex(), prev.getEndIndex());
         wordsIndexBuilder.addTerm(term);
         boolean hasSpaceAfter = span != null && prev.getStartIndex() != span
             .getEndIndex();
-        ParseToken parseToken = new ParseToken(prev, term, hasSpaceAfter);
+        ParseToken parseToken = new ParseToken(prev.getStartIndex(), prev.getEndIndex(), term,
+            hasSpaceAfter);
         parseTokens.add(parseToken);
       }
       prev = span;
@@ -117,13 +118,9 @@ public class VocabularyInitializer {
   }
 
   void addNormPhrase(String normPhrase) throws BiomedicusException {
-    Iterator<Span> normsIt = PennLikePhraseTokenizer
-        .tokenizePhrase(normPhrase)
-        .iterator();
-
-    while (normsIt.hasNext()) {
-      Span span = normsIt.next();
-      CharSequence norm = span.coveredString(normPhrase);
+    for (TokenResult span : Tokenizer.tokenize(normPhrase)) {
+      CharSequence norm = new Span(span.getStartIndex(), span.getEndIndex())
+          .coveredString(normPhrase);
       normsIndexBuilder.addTerm(norm.toString());
     }
   }

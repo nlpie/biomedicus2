@@ -28,8 +28,8 @@ import javax.inject.Inject
  * Writes the contents of a view to a directory.
  */
 class PlainTextWriter @Inject constructor(
-        @ProcessorSetting("outputDirectory") val outputDirectory: Path,
-        @ProcessorSetting("charset") val charsetName: String
+        @ProcessorSetting("outputDirectory") private val outputDirectory: Path,
+        @ProcessorSetting("charset") private val charsetName: String
 ) : DocumentProcessor {
     override fun process(document: Document) {
         outputDirectory.resolve("${document.artifactID}.txt")

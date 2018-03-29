@@ -29,11 +29,17 @@ annotation class LabelMetadata(val versionId: String, val distinct: Boolean = fa
  *
  * @property startIndex the index of the first character
  * @property endIndex the index after any characters included in this label
+ * @property length computed property how long the text range is
  */
 interface TextRange {
     val startIndex: Int
 
     val endIndex: Int
+
+    val length: Int
+        get() = endIndex - startIndex
+
+    fun length(): Int = length
 
     /**
      * Checks if the location in text of this label equals the location in text of the label [other]
@@ -50,7 +56,6 @@ interface TextRange {
     /**
      * The number of characters covered by this label
      */
-    fun length(): Int = endIndex - startIndex
 
     /**
      * Gets the sub sequence of covered text from [charSequence]
@@ -62,6 +67,24 @@ interface TextRange {
      * Gets a substring of the covered string from [string]
      */
     fun coveredString(string: String): String = string.substring(startIndex, endIndex)
+
+    /**
+     * Returns a new [Span] which trims all the whitespace from this [TextRange].
+     */
+    fun trim(charSequence: CharSequence): Span {
+        requireBounds(charSequence)
+        val newEnd = endIndex.let {
+            var index = it
+            while (index > startIndex && Character.isWhitespace(charSequence[index])) index--
+            index
+        }
+        val newStart = startIndex.let {
+            var index = it
+            while (index < newEnd && Character.isWhitespace(charSequence[index])) index++
+            index
+        }
+        return Span(newStart, newEnd)
+    }
 
     /**
      * Compares the location of two labels, first comparing [startIndex], then comparing [endIndex]
@@ -84,23 +107,45 @@ interface TextRange {
      */
     fun toSpan(): Span = Span(startIndex, endIndex)
 
-    fun relativize(startIndex: Int, endIndex: Int): Span =
-            Span(startIndex - this.startIndex, endIndex - this.startIndex)
-
     /**
-     * Takes the argument [textRange], which is relative to this label, and changes it to have the same
-     * 0-basis as this label.
+     * Creates a new span by shifting the [TextRange] by [value] characters.
      */
-    fun normalize(textRange: TextRange): Span =
-            Span(textRange.startIndex + startIndex, textRange.endIndex + startIndex)
-
-    fun normalize(startIndex: Int, endIndex: Int): Span =
-            Span(startIndex + this.startIndex, endIndex + this.startIndex)
-
     fun offset(value: Int): Span = Span(startIndex + value, endIndex + value)
 
-    fun offsetByStartIndex(textRange: TextRange): Span =
+    /**
+     * Creates a new span by shifting this text range's indexes by [startIndex] of [textRange]
+     * characters. If this object is relative to [textRange] has the effect of normalizing it to the
+     * same 0-basis.
+     */
+    fun offsetRightByStartIndex(textRange: TextRange): Span =
             Span(startIndex + textRange.startIndex, endIndex + textRange.startIndex)
+
+    /**
+     * Performs a sanity check to make sure the indexes make sense, that [startIndex] is greater
+     * than or equal to 0, and that [endIndex] is greater than or equal to [startIndex].
+     *
+     * @throws IllegalStateException if it fails one of the conditions for index validity
+     */
+    fun checkIndexes() {
+        check(startIndex >= 0) { "startIndex: $startIndex less than 0" }
+        check(endIndex >= startIndex) {
+            "endIndex: $endIndex less than startIndex: $startIndex"
+        }
+    }
+
+    /**
+     * Converts to an [IntRange]
+     */
+    fun toIntRange(): IntRange = IntRange(startIndex, endIndex - 1)
+
+    fun requireBounds(charSequence: CharSequence) {
+        require(startIndex <= charSequence.length) {
+            "startIndex: $startIndex outside char sequence"
+        }
+        require(endIndex <= charSequence.length) {
+            "endIndex: $endIndex outside charSequence"
+        }
+    }
 }
 
 /**
@@ -151,7 +196,7 @@ data class Span(
      */
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 
-    constructor(matcher: Matcher): this(matcher.start(), matcher.end())
+    constructor(matcher: Matcher) : this(matcher.start(), matcher.end())
 
     /**
      * Compares by comparing locations

@@ -84,7 +84,7 @@ public class ONLPSentenceDetector implements DocumentProcessor {
 
       LOGGER.trace("Detecting sentences: {}", segmentText);
       for (opennlp.tools.util.Span onlpSpan : sentenceDetector.sentPosDetect(segmentText)) {
-        Span span = new Span(onlpSpan.getStart(), onlpSpan.getEnd()).offsetByStartIndex(segment);
+        Span span = new Span(onlpSpan.getStart(), onlpSpan.getEnd()).offsetRightByStartIndex(segment);
         if (Patterns.NON_WHITESPACE.matcher(span.coveredString(text)).find()) {
           sentenceLabeler.add(new Sentence(span));
         }

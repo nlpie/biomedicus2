@@ -24,10 +24,8 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>Plain text writer</name>
-    <description>
-      Writes the text of a view to a directory using either document ID or relative path.
-    </description>
+    <name>Parse Token Labeler</name>
+    <description>Labels parse tokens by splitting the trailing periods off sentences.</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
@@ -38,21 +36,8 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>outputDirectory</name>
-        <description>The directory to write documents to.</description>
-        <type>String</type>
-        <mandatory>true</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>charset</name>
-        <description>The charset identifier to use when writing.</description>
-        <type>String</type>
-        <mandatory>true</mandatory>
-      </configurationParameter>
-      <configurationParameter>
         <name>processorClass</name>
-        <description>The document processor class to instantiate.
-        </description>
+        <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -81,12 +66,6 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>charset</name>
-        <value>
-          <string>UTF-8</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
         <name>documentName</name>
         <value>
           <string>Analysis</string>
@@ -95,7 +74,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.io.PlainTextWriter</string>
+          <string>edu.umn.biomedicus.tokenization.ParseTokenLabeler</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -116,6 +95,7 @@
     </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
+      <!-- TODO: change to false if multithreading not supported -->
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>
