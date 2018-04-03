@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -51,7 +52,7 @@ public class ONLPSentenceTrainer implements Aggregator {
 
   private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
 
-  private static final char[] EOS_CHARS = ".!?:\n\t".toCharArray();
+  private static final char[] EOS_CHARS = " \n\t".toCharArray();
   private static final String POISON = ">poison<";
   private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();
   private final Dictionary abbrevs;
@@ -163,9 +164,16 @@ public class ONLPSentenceTrainer implements Aggregator {
 
     String text = document.getText();
 
-    for (Sentence sentence : document.labelIndex(Sentence.class)) {
-      CharSequence sample = sentence.coveredString(text);
-      samplesQueue.add(sample.toString());
+    Iterator<Sentence> sentenceIt = document.labelIndex(Sentence.class).iterator();
+    if (!sentenceIt.hasNext()) {
+      return;
     }
+
+    Sentence prev = sentenceIt.next();
+    while (sentenceIt.hasNext()) {
+      Sentence sentence = sentenceIt.next();
+      samplesQueue.add(text.substring(prev.getStartIndex(), sentence.getStartIndex()));
+    }
+
   }
 }

@@ -25,7 +25,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>biomedicus-rtf</artifactId>
+  <artifactId>BioMedICUS RTF</artifactId>
+  <description>A RTF parser.</description>
 
   <dependencies>
     <dependency>

@@ -73,10 +73,10 @@ interface TextRange {
      */
     fun trim(charSequence: CharSequence): Span {
         requireBounds(charSequence)
-        val newEnd = endIndex.let {
+        val newEnd = (endIndex - 1).let {
             var index = it
             while (index > startIndex && Character.isWhitespace(charSequence[index])) index--
-            index
+            index + 1
         }
         val newStart = startIndex.let {
             var index = it

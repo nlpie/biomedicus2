@@ -27,6 +27,9 @@
 
   <artifactId>biomedicus-uima</artifactId>
 
+  <name>BioMedICUS UIMA</name>
+  <description>Code for running BioMedICUS using the UIMA framework.</description>
+
   <properties>
     <uima.version>2.10.2</uima.version>
   </properties>

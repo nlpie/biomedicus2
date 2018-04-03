@@ -27,6 +27,8 @@
 
   <artifactId>nlpengine</artifactId>
 
+  <name>NLP Engine</name>
+  <description>Framework for NLP processing components and their artifacts.</description>
 
   <dependencies>
     <dependency>

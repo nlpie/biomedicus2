@@ -30,8 +30,19 @@ class SentencesModule : SystemModule() {
  * A unit of language of multiple words making up a complete thought.
  */
 @LabelMetadata(versionId = "2_0", distinct = true)
-data class Sentence(override val startIndex: Int, override val endIndex: Int) : Label() {
-    constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+data class Sentence(
+        override val startIndex: Int,
+        override val endIndex: Int,
+        val sentenceClass: Int
+) : Label() {
+    constructor(
+            textRange: TextRange,
+            sentenceClass: Int
+    ) : this(textRange.startIndex, textRange.endIndex, sentenceClass)
+
+    constructor(startIndex: Int, endIndex: Int): this(startIndex, endIndex, 1)
+
+    constructor(textRange: TextRange): this(textRange, 1)
 
     /**
      * Retrieves a label index of all the [ParseToken] labels inside of this sentence.

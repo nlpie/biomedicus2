@@ -268,7 +268,6 @@ class DrugTypeDetector(
  */
 class DrugStatusDetector : DocumentProcessor {
     override fun process(document: Document) {
-        val tokens = document.tokens()
         val usageStatuses = document.labelIndex<UsageStatus>()
         val labeler = document.labeler<DrugStatus>()
 

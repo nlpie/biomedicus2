@@ -20,32 +20,31 @@
   <primitive>true</primitive>
   <!-- Do not change this -->
   <annotatorImplementationName>
-    edu.umn.biomedicus.uima.adapter.AggregatorUimaAdapter
+    edu.umn.biomedicus.uima.adapter.ProcessorUimaAdapter
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>TnT Model Trainer</name>
-    <description>Trains the TnT part of speech model</description>
+    <name>Brat Sentences Reader</name>
+    <description>
+      Reads in sentences labeled in the brat rapid annotation tool.
+    </description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>tnt.train.viewName</name>
-        <description>The view to read the part of speeches from.</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
+        <name>labelUnsure</name>
+        <type>Boolean</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>tnt.train.outputDir</name>
-        <description>Where to output the part of speeches.</description>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
         <type>String</type>
-        <multiValued>false</multiValued>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>aggregator</name>
-        <description>The Aggregator to instantiate.</description>
+        <name>processorClass</name>
+        <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -61,18 +60,34 @@
         <multiValued>true</multiValued>
         <mandatory>false</mandatory>
       </configurationParameter>
+      <configurationParameter>
+        <name>postProcessors</name>
+        <description>
+          The class names of any post processors that should be run
+          after all documents have been processed.
+        </description>
+        <type>String</type>
+        <multiValued>true</multiValued>
+        <mandatory>false</mandatory>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>tnt.train.viewName</name>
+        <name>labelUnsure</name>
+        <value>
+          <string>false</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>documentName</name>
         <value>
           <string>Analysis</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>aggregator</name>
+        <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.tnt.TntModelTrainerAggregator</string>
+          <string>edu.umn.biomedicus.sentences.BratSentencesReader</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -92,7 +107,7 @@
       </imports>
     </fsIndexCollection>
     <operationalProperties>
-      <modifiesCas>false</modifiesCas>
+      <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>

@@ -27,6 +27,11 @@
 
   <artifactId>biomedicus-gate</artifactId>
 
+  <name>BioMedICUS GATE</name>
+  <description>
+    Extensions for BioMedICUS for interacting with the GATE annotation system.
+  </description>
+
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>

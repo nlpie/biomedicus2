@@ -28,6 +28,9 @@
 
   <artifactId>biomedicus-distribution</artifactId>
 
+  <name>BioMedICUS Distribution</name>
+  <description>Packages BioMedICUS artifacts for direct distribution.</description>
+
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
@@ -101,6 +104,19 @@
                 <descriptor>src/assembly/descriptor.xml</descriptor>
               </descriptors>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>none</phase>
           </execution>
         </executions>
       </plugin>

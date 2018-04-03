@@ -33,7 +33,7 @@
     <module>nlpengine</module>
   </modules>
 
-  <name>biomedicus</name>
+  <name>BioMedICUS</name>
   <description>BioMedICUS Annotation System</description>
 
   <properties>
@@ -50,7 +50,7 @@
         <groupId>org.jetbrains.kotlin</groupId>
         <version>${kotlin.version}</version>
         <configuration>
-          <apiVersion>1.1</apiVersion>
+          <apiVersion>1.2</apiVersion>
           <jvmTarget>1.8</jvmTarget>
         </configuration>
         <executions>

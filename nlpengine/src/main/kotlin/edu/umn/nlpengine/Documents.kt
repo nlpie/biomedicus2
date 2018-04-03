@@ -66,6 +66,14 @@ interface Artifact : Metadata {
         val newDocument = addDocument(document.name, document.text)
         newDocument.copyIndices(document)
     }
+
+    /**
+     * Copies [document] to this artifact with the specified name.
+     */
+    fun copyDocument(document: Document, name: String) {
+        val newDocument = addDocument(name, document.text)
+        newDocument.copyIndices(newDocument)
+    }
 }
 
 abstract class AbstractArtifact : Artifact
