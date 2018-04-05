@@ -95,10 +95,16 @@ public class XmiWriter extends CasAnnotator_ImplBase {
     Path path = outputDir.resolve(fileName);
     LOGGER.debug("Writing XMI CAS to location: {}", path.toString());
 
-    try (OutputStream out = new FileOutputStream(path.toFile())) {
+    try {
+      Files.createDirectories(path.getParent());
+    } catch (IOException e) {
+      LOGGER.error("Failed to create directories for document: {}", path);
+      throw new AnalysisEngineProcessException(e);
+    }
+    try (OutputStream out = Files.newOutputStream(path)) {
       XmiCasSerializer.serialize(cas, out);
     } catch (IOException | SAXException e) {
-      LOGGER.error("Failed on document: {}");
+      LOGGER.error("Failed on document: {}", path);
       throw new AnalysisEngineProcessException(e);
     }
   }

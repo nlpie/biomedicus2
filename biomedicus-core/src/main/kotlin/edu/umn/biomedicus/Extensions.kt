@@ -22,6 +22,7 @@ import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.Document
 import edu.umn.nlpengine.LabelIndex
+import edu.umn.nlpengine.labelIndex
 
 /**
  * Returns the label index of all the sentences in the document.

@@ -95,10 +95,11 @@ abstract class AbstractArtifact : Artifact
  * @property text The text of the document
  * @constructor Creates a Document with no labels added.
  */
-abstract class Document(
-        val name: String,
-        val text: String
-) : TextRange, Metadata {
+interface Document : TextRange, Metadata {
+    val name: String
+
+    val text: String
+
     override val startIndex get() = 0
 
     override val endIndex get() = text.length
@@ -110,12 +111,7 @@ abstract class Document(
      * @param <T> the type of the labelable class
      * @return label index for the labelable type
      */
-    abstract fun <T : Label> labelIndex(labelClass: Class<T>): LabelIndex<T>
-
-    /**
-     * Returns the label index of the class specified in the type parameter [T]
-     */
-    inline fun <reified T : Label> labelIndex(): LabelIndex<T> = labelIndex(T::class.java)
+    fun <T : Label> labelIndex(labelClass: Class<T>): LabelIndex<T>
 
     /**
      * Returns a labeler for the specific label class.
@@ -124,22 +120,12 @@ abstract class Document(
      * @param <T> the type of the labelable class
      * @return labeler for the labelable type
      */
-    abstract fun <T : Label> labeler(labelClass: Class<T>): Labeler<T>
-
-    /**
-     * Returns the labeler for the class specified in the type parameter [T]
-     */
-    inline fun <reified T : Label> labeler(): Labeler<T> = labeler(T::class.java)
-
-    /**
-     * Adds everything in the collection [labels] to this document.
-     */
-    inline fun <reified T: Label> labelAll(labels: Iterable<T>) = labeler(T::class.java).addAll(labels)
+    fun <T : Label> labeler(labelClass: Class<T>): Labeler<T>
 
     /**
      * Returns all the label indices in this document.
      */
-    abstract fun labelIndexes(): Collection<LabelIndex<*>>
+    fun labelIndexes(): Collection<LabelIndex<*>>
 
     /**
      * Copies [labelIndex] to this document.
@@ -158,6 +144,26 @@ abstract class Document(
     }
 }
 
+abstract class AbstractDocument(
+        override val name: String,
+        override val text: String
+) : Document
+
+/**
+ * Returns the label index of the class specified in the type parameter [T]
+ */
+inline fun <reified T : Label> Document.labelIndex(): LabelIndex<T> = labelIndex(T::class.java)
+
+/**
+ * Returns the labeler for the class specified in the type parameter [T]
+ */
+inline fun <reified T : Label> Document.labeler(): Labeler<T> = labeler(T::class.java)
+
+/**
+ * Adds everything in the collection [labels] to this document.
+ */
+inline fun <reified T: Label> Document.labelAll(labels: Iterable<T>) = labeler(T::class.java).addAll(labels)
+
 /**
  * Adds the label to the [document] by first retrieving the appropriate labeler.
  */
@@ -175,7 +181,7 @@ fun <T : Label> T.addTo(labeler: Labeler<T>): T {
 /**
  * A standard implementation of [Artifact].
  */
-class StandardArtifact(
+data class StandardArtifact(
         override val artifactID: String
 ) : Artifact {
     override val metadata = HashMap<String, String>()
@@ -184,15 +190,16 @@ class StandardArtifact(
     override val documents get() = _documents.associateBy { it.name }
 
     override fun addDocument(name: String, text: String): Document {
+        if (_documents.any { it.name == name }) error("Existing document with name: $name")
         return StandardDocument(name, text, this).also { _documents.add(it) }
     }
 }
 
-internal class StandardDocument(
-        name: String,
-        text: String,
+internal data class StandardDocument(
+        override val name: String,
+        override val text: String,
         private val artifact: StandardArtifact
-) : Document(name, text), Metadata by artifact {
+) : Document, Metadata by artifact {
     private val indices = ArrayList<StandardLabeler<*>>()
 
     @Suppress("UNCHECKED_CAST")

@@ -23,6 +23,7 @@ import edu.umn.biomedicus.uima.labels.LabelAdapters;
 import edu.umn.biomedicus.uima.labels.UimaLabelIndex;
 import edu.umn.biomedicus.uima.labels.UimaLabeler;
 import edu.umn.nlpengine.AbstractArtifact;
+import edu.umn.nlpengine.AbstractDocument;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.Label;
@@ -37,6 +38,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIndex;
@@ -326,7 +328,7 @@ public final class CASArtifact extends AbstractArtifact {
     }
   }
 
-  private class CASDocument extends Document {
+  private class CASDocument extends AbstractDocument {
     private final CAS view;
 
     @Nullable
@@ -342,7 +344,8 @@ public final class CASArtifact extends AbstractArtifact {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Label> LabelIndex<T> labelIndex(Class<T> labelClass) {
+    @Nonnull
+    public <T extends Label> LabelIndex<T> labelIndex(@Nonnull Class<T> labelClass) {
       Preconditions.checkNotNull(labelAdapters);
       LabelIndex<T> labelIndex = (LabelIndex<T>) labelIndices.get(labelClass);
       if (labelIndex == null) {
@@ -355,7 +358,8 @@ public final class CASArtifact extends AbstractArtifact {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Label> Labeler<T> labeler(Class<T> labelClass) {
+    @Nonnull
+    public <T extends Label> Labeler<T> labeler(@Nonnull Class<T> labelClass) {
       Preconditions.checkNotNull(labelAdapters);
 
       LabelAdapter<T> labelAdapter = labelAdapters.getLabelAdapterFactory(labelClass).create(view,

@@ -68,7 +68,7 @@ internal class SentencesEvaluationWriter(private val outputFile: File) {
 
     fun write(text: String) {
         synchronized(lock) {
-            outputFile.writeText(text)
+            outputFile.appendText(text)
         }
     }
 }

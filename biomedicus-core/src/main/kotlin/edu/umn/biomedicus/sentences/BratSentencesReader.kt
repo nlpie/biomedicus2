@@ -21,6 +21,7 @@ import edu.umn.biomedicus.io.TextFilesArtifactSource
 import edu.umn.nlpengine.Document
 import edu.umn.nlpengine.DocumentProcessor
 import edu.umn.nlpengine.Span
+import edu.umn.nlpengine.labeler
 import java.io.File
 import javax.inject.Inject
 

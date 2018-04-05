@@ -23,6 +23,8 @@ import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
+import edu.umn.nlpengine.labelIndex
+import edu.umn.nlpengine.labeler
 import kotlin.test.*
 
 class NumberRangesLabelerTest {

@@ -24,21 +24,20 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>Brat Sentences Reader</name>
-    <description>
-      Reads in sentences labeled in the brat rapid annotation tool.
-    </description>
+    <name>Copy Text From Document</name>
+    <description>Copies the text of one document to another document.</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>labelUnsure</name>
-        <type>Boolean</type>
+        <name>sourceDocumentName</name>
+        <description>The name of the document to copy text from.</description>
+        <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>documentName</name>
-        <description>The name of the document to run this processor on.</description>
+        <name>targetDocumentName</name>
+        <description>The name of the document to copy text to.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -73,21 +72,9 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
-        <name>labelUnsure</name>
-        <value>
-          <boolean>false</boolean>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>documentName</name>
-        <value>
-          <string>Analysis</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.sentences.BratSentencesReader</string>
+          <string>edu.umn.biomedicus.util.CopyTextFromDocument</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

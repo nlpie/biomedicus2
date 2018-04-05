@@ -24,6 +24,7 @@ import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
+import edu.umn.nlpengine.labelIndex
 import kotlin.test.*
 
 class DateDetectorTest {
