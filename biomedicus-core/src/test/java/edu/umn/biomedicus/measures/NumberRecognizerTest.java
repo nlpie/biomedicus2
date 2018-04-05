@@ -37,7 +37,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.VerificationsInOrder;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class NumberRecognizerTest {
 
@@ -71,7 +71,7 @@ public class NumberRecognizerTest {
   Labeler<Number> numberLabeler;
 
   @Test
-  public void testUnconsumedNumber() throws Exception {
+  public void testUnconsumedNumber() {
     Sentence sentenceLabel = new Sentence(0, 4);
 
     List<ParseToken> parseTokenLabels = Arrays.asList(

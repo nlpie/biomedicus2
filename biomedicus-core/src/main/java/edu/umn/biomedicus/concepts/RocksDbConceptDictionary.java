@@ -83,7 +83,7 @@ class RocksDbConceptDictionary implements ConceptDictionary, LifecycleManaged {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
+  public void doShutdown() {
 
   }
 

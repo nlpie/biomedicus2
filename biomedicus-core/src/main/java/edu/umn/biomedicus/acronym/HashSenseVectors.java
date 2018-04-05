@@ -68,7 +68,7 @@ public class HashSenseVectors implements SenseVectors {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 }

@@ -55,7 +55,7 @@ class SettingsLoader {
   void loadSettings() throws BiomedicusException {
     Map<String, Object> settingsFileYaml;
     try (BufferedReader bufferedReader = Files.newBufferedReader(settingsFilePath)) {
-      settingsFileYaml = (Map<String, Object>) yaml.load(bufferedReader);
+      settingsFileYaml = yaml.load(bufferedReader);
     } catch (IOException e) {
       throw new BiomedicusException(e);
     }

@@ -48,7 +48,7 @@ class GateSentencesWriter @Inject internal constructor(
                 params
         ) as gate.Document
 
-        val annotationSet = gateDocument.getAnnotations()
+        val annotationSet = gateDocument.annotations
 
         for (sentenceLabel in document.labelIndex(Sentence::class.java)) {
             annotationSet.add(

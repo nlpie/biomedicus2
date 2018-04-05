@@ -25,11 +25,10 @@ import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import kotlin.test.*
 
 class UsageFrequencyDetectorTest {
-    val labelAliases = LabelAliases()
+    private val labelAliases = LabelAliases()
             .apply {
                 addAlias("Quantifier", Quantifier::class.java)
                 addAlias("ParseToken", ParseToken::class.java)
@@ -38,11 +37,11 @@ class UsageFrequencyDetectorTest {
                 addAlias("UsageFrequencyPhrase", UsageFrequencyPhrase::class.java)
             }
 
-    val searchExprFactory = SearchExprFactory(labelAliases)
+    private val searchExprFactory = SearchExprFactory(labelAliases)
 
-    val usageFrequencyPattern = UsageFrequencyPattern(searchExprFactory)
+    private val usageFrequencyPattern = UsageFrequencyPattern(searchExprFactory)
 
-    val usageFrequencyDetector = UsageFrequencyDetector(usageFrequencyPattern)
+    private val usageFrequencyDetector = UsageFrequencyDetector(usageFrequencyPattern)
 
     @Test
     fun testATimeUnit() {

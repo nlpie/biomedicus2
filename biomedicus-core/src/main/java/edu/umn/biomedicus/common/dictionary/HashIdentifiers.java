@@ -90,7 +90,7 @@ public final class HashIdentifiers extends AbstractIdentifiers {
       }
 
       @Override
-      public void close() throws IOException {
+      public void close() {
 
       }
     };
@@ -102,7 +102,7 @@ public final class HashIdentifiers extends AbstractIdentifiers {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 }

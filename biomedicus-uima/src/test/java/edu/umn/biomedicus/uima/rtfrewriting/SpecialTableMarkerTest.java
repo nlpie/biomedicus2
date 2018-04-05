@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link SpecialTableMarker}.

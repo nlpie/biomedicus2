@@ -16,34 +16,36 @@
 
 package edu.umn.biomedicus.rtf.beans.properties;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Integration test for {@link PropertiesDescription}.
  */
-public class PropertiesDescriptionIT {
+class PropertiesDescriptionIT {
 
   @Test
-  public void testLoadProperties() throws Exception {
+  void testLoadProperties() {
     PropertiesDescription propertiesDescription = PropertiesDescription
         .loadFromFile("edu/umn/biomedicus/rtf/PropertiesDescription.xml");
     List<PropertyGroupDescription> propertyGroupDescriptions = propertiesDescription
         .getPropertyGroupDescriptions();
-    Assert.assertTrue(propertyGroupDescriptions.size() > 0);
+    assertTrue(propertyGroupDescriptions.size() > 0);
     PropertyGroupDescription firstPropertyGroup = propertyGroupDescriptions.get(0);
-    Assert.assertTrue(firstPropertyGroup.getPropertyDescriptions().size() > 0);
+    assertTrue(firstPropertyGroup.getPropertyDescriptions().size() > 0);
   }
 
   @Test
-  public void testCreateDescription() throws Exception {
+  void testCreateDescription() {
     PropertiesDescription propertiesDescription = PropertiesDescription
         .loadFromFile("edu/umn/biomedicus/rtf/PropertiesDescription.xml");
     Map<String, Map<String, Integer>> properties = propertiesDescription.createProperties();
     Map<String, Integer> characterFormatting = properties.get("CharacterFormatting");
-    Assert.assertNotNull(characterFormatting);
-    Assert.assertNotNull(characterFormatting.get("Bold"));
+    assertNotNull(characterFormatting);
+    assertNotNull(characterFormatting.get("Bold"));
   }
 }

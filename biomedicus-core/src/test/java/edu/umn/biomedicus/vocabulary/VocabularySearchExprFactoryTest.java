@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import static org.testng.Assert.*;
 
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.framework.SearchExprFactory;
@@ -25,9 +24,9 @@ import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-public class VocabularySearchExprFactoryTest {
+class VocabularySearchExprFactoryTest {
 
   @Tested
   VocabularySearchExprFactory factory;
@@ -42,7 +41,7 @@ public class VocabularySearchExprFactoryTest {
   BidirectionalDictionary dictionary;
 
   @Test
-  public void testNoReplace() throws Exception {
+  public void testNoReplace() {
     String expr = "someExpr";
 
     factory.parseExpression(expr);
@@ -53,7 +52,7 @@ public class VocabularySearchExprFactoryTest {
   }
 
   @Test
-  public void testReplace() throws Exception {
+  public void testReplace() {
     String expr = "abc$words\"blah\"123$norms\"foo\"xyz$terms\"aTerm\"";
 
     new Expectations(){{

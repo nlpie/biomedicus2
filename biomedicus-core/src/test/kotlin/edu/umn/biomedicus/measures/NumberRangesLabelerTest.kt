@@ -23,20 +23,19 @@ import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import kotlin.test.*
 
 class NumberRangesLabelerTest {
-    val labelAliases = LabelAliases().apply {
+    private val labelAliases = LabelAliases().apply {
         addAlias("Number", Number::class.java)
         addAlias("ParseToken", ParseToken::class.java)
     }
 
-    val searchExprFactory = TagExFactory(SearchExprFactory(labelAliases))
+    private val searchExprFactory = TagExFactory(SearchExprFactory(labelAliases))
 
-    val pattern = NumberRangesPattern(searchExprFactory)
+    private val pattern = NumberRangesPattern(searchExprFactory)
 
-    val numberRanges = NumberRangesLabeler(pattern)
+    private val numberRanges = NumberRangesLabeler(pattern)
 
     @Test
     fun testBetween() {

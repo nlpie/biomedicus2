@@ -58,7 +58,7 @@ public class RocksDBNormalizerModel implements NormalizerModel {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
+  public void doShutdown() {
     db.close();
   }
 

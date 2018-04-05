@@ -74,8 +74,7 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
   }
 
   @Override
-  public OutputDestination create(String destinationName)
-      throws RtfReaderException {
+  public OutputDestination create(String destinationName) {
     DestinationCasMapping matchingCasMapping = null;
     for (DestinationCasMapping destMapping : destinationCasMappings) {
       if (destinationName.equals(destMapping.getDestinationName())) {

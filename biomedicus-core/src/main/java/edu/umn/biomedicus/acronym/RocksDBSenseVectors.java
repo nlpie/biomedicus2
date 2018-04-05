@@ -120,7 +120,7 @@ public class RocksDBSenseVectors implements SenseVectors {
           }
 
           @Override
-          protected void finalize() throws Throwable {
+          protected void finalize() {
             if (!closed) {
               rocksIterator.close();
             }
@@ -170,7 +170,7 @@ public class RocksDBSenseVectors implements SenseVectors {
           }
 
           @Override
-          protected void finalize() throws Throwable {
+          protected void finalize() {
             if (!closed) {
               rocksIterator.close();
             }
@@ -239,7 +239,7 @@ public class RocksDBSenseVectors implements SenseVectors {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     rocksDB.close();
   }
 

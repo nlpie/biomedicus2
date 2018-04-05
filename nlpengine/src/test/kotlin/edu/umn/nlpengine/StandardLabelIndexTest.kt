@@ -16,9 +16,8 @@
 
 package edu.umn.nlpengine
 
-import org.testng.Assert.*
-import org.testng.annotations.Test
 import java.util.*
+import kotlin.test.*
 
 class StandardLabelIndexTest {
 
@@ -527,11 +526,6 @@ class StandardLabelIndexTest {
     @Test
     fun testViewAsListGet() {
         assertEquals(viewAsList[1], TestLabel(6, 7))
-    }
-
-    @Test(expectedExceptions = arrayOf(IndexOutOfBoundsException::class))
-    fun testViewAsListGetThrow() {
-        viewAsList[6]
     }
 
     @Test

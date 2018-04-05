@@ -172,7 +172,7 @@ public class ViewMigratorJCasMultiplier extends JCasMultiplier_ImplBase {
    * <p>It will be true iff we haven't returned the new view we create.</p>
    */
   @Override
-  public boolean hasNext() throws AnalysisEngineProcessException {
+  public boolean hasNext() {
     return !returned;
   }
 
@@ -181,7 +181,7 @@ public class ViewMigratorJCasMultiplier extends JCasMultiplier_ImplBase {
    * <p>Only returns the one new view created.</p>
    */
   @Override
-  public AbstractCas next() throws AnalysisEngineProcessException {
+  public AbstractCas next() {
     returned = true;
     return newJCas;
   }

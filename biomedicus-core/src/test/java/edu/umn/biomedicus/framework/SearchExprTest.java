@@ -16,9 +16,11 @@
 
 package edu.umn.biomedicus.framework;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.Label;
@@ -32,12 +34,12 @@ import java.util.List;
 import java.util.Optional;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class SearchExprTest {
+class SearchExprTest {
 
   @Mocked
   Document document;
@@ -48,20 +50,20 @@ public class SearchExprTest {
   @Mocked
   LabelIndex labelIndex;
 
-  Span span = new Span(5, 10);
+  private Span span = new Span(5, 10);
 
-  Span span1 = new Span(5, 7);
+  private Span span1 = new Span(5, 7);
 
-  Span span2 = new Span(7, 10);
+  private Span span2 = new Span(7, 10);
 
-  Blah label = new Blah(span);
+  private Blah label = new Blah(span);
 
-  Blah label1 = new Blah(span1);
+  private Blah label1 = new Blah(span1);
 
-  Blah label2 = new Blah(span2);
+  private Blah label2 = new Blah(span2);
 
   @Test
-  public void testMatchType() {
+  void testMatchType() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -79,7 +81,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoMatchType() {
+  void testNoMatchType() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -97,7 +99,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoTextBeforeMatch() {
+  void testNoTextBeforeMatch() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 13;
@@ -117,7 +119,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoTextBeforeNoMatch() {
+  void testNoTextBeforeNoMatch() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 13;
@@ -137,7 +139,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testMatchPin() {
+  void testMatchPin() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -155,7 +157,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNoMatchPin() {
+  void testNoMatchPin() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -173,7 +175,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyMatch() {
+  void testStringPropertyMatch() {
     Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
@@ -195,7 +197,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyNoMatch() {
+  void testStringPropertyNoMatch() {
     Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
@@ -215,7 +217,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyAlternation() {
+  void testStringPropertyAlternation() {
     Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
@@ -245,7 +247,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testStringPropertyAlternationMiss() {
+  void testStringPropertyAlternationMiss() {
     Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
@@ -265,7 +267,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexPropertyMatch() {
+  void testRegexPropertyMatch() {
     Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
@@ -287,7 +289,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexPropertyMiss() {
+  void testRegexPropertyMiss() {
     Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
@@ -307,7 +309,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testRegexAlternations() {
+  void testRegexAlternations() {
     Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
@@ -337,7 +339,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveMatch() {
+  void testCaseInsensitiveMatch() {
     Foo foo = new Foo(0, 5);
     foo.setValue("BAZ");
 
@@ -359,7 +361,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveNoMatch() {
+  void testCaseInsensitiveNoMatch() {
     Foo foo = new Foo(0, 5);
     foo.setValue("baz");
 
@@ -379,7 +381,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveAlternationsFirst() {
+  void testCaseInsensitiveAlternationsFirst() {
     Foo foo = new Foo(0, 5);
     foo.setValue("aaa");
 
@@ -409,7 +411,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testCaseInsensitiveAlternationsOther() {
+  void testCaseInsensitiveAlternationsOther() {
     Foo foo = new Foo(0, 5);
     foo.setValue("bar");
 
@@ -441,7 +443,7 @@ public class SearchExprTest {
 
 
   @Test
-  public void testNumberPropertyMatch() {
+  void testNumberPropertyMatch() {
     Foo foo = new Foo(0, 5);
     foo.setBaz(5);
 
@@ -463,7 +465,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyNegative() {
+  void testNumberPropertyNegative() {
     Foo foo = new Foo(0, 5);
     foo.setBaz(-5);
 
@@ -485,7 +487,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyNoMatch() {
+  void testNumberPropertyNoMatch() {
     Foo foo = new Foo(0, 5);
     foo.setBaz(3);
 
@@ -505,7 +507,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyAlternation() {
+  void testNumberPropertyAlternation() {
     Foo foo = new Foo(0, 5);
     foo.setBaz(3);
 
@@ -535,7 +537,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNumberPropertyAlternationMiss() {
+  void testNumberPropertyAlternationMiss() {
     Foo foo = new Foo(0, 5);
     foo.setBaz(5);
 
@@ -567,7 +569,7 @@ public class SearchExprTest {
 
     BAZ baz;
 
-    public HasEnum(int startIndex, int endIndex) {
+    HasEnum(int startIndex, int endIndex) {
       this.startIndex = startIndex;
       this.endIndex = endIndex;
     }
@@ -588,7 +590,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testEnumPropertyMatch() throws Exception {
+  void testEnumPropertyMatch() {
     HasEnum hasEnum = new HasEnum(0, 5);
     hasEnum.baz = BAZ.FOO;
 
@@ -613,7 +615,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testEnumPropertyMiss() throws Exception {
+  void testEnumPropertyMiss() {
     HasEnum hasEnum = new HasEnum(0, 5);
     hasEnum.baz = BAZ.BAR;
 
@@ -636,7 +638,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPropertyMatchNull() {
+  void testPropertyMatchNull() {
     Foo foo = new Foo(0, 5);
 
     new Expectations() {{
@@ -655,7 +657,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testMultiProperties() {
+  void testMultiProperties() {
     Foo foo = new Foo(0, 5);
     foo.setValue("baz");
     foo.setBaz(42);
@@ -678,7 +680,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAlternations() {
+  void testAlternations() {
     Blah label = new Blah(0, 5);
 
     new Expectations() {{
@@ -700,7 +702,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testEmpty() {
+  void testEmpty() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -718,7 +720,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testLabelVariable() {
+  void testLabelVariable() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -732,12 +734,12 @@ public class SearchExprTest {
     searcher.search();
 
     Label opt = searcher.getLabel("instance");
-    assertTrue(opt != null);
+    assertNotNull(opt);
     assertEquals(opt, label);
   }
 
   @Test
-  public void testRepeatLabelVariable() {
+  void testRepeatLabelVariable() {
     Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
@@ -754,19 +756,19 @@ public class SearchExprTest {
     searcher.search();
 
     TextRange opt = searcher.getLabel("instance");
-    assertTrue(opt != null);
+    assertNotNull(opt);
     assertEquals(opt, label);
 
     searcher = blah.createSearcher(document);
     searcher.search();
 
     opt = searcher.getLabel("instance");
-    assertTrue(opt != null);
+    assertNotNull(opt);
     assertEquals(opt, fooLabel);
   }
 
   @Test
-  public void testRepeatingGroupName() {
+  void testRepeatingGroupName() {
     Foo fooLabel = new Foo(0, 3);
 
     new Expectations() {{
@@ -783,19 +785,19 @@ public class SearchExprTest {
     searcher.search();
 
     Span instance = searcher.getSpan("instance");
-    assertTrue(instance != null);
+    assertNotNull(instance);
     assertTrue(instance.locationEquals(label));
 
     searcher = blah.createSearcher(document);
     searcher.search();
 
     instance = searcher.getSpan("instance");
-    assertTrue(instance != null);
+    assertNotNull(instance);
     assertTrue(instance.locationEquals(fooLabel));
   }
 
   @Test
-  public void testLabelGroup() {
+  void testLabelGroup() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -809,12 +811,12 @@ public class SearchExprTest {
     searcher.search();
 
     Span opt = searcher.getSpan("instance");
-    assertTrue(opt != null);
+    assertNotNull(opt);
     assertEquals(opt, label.toSpan());
   }
 
   @Test
-  public void testOptionMissing() {
+  void testOptionMissing() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -831,7 +833,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPositiveLookaheadPass() {
+  void testPositiveLookaheadPass() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -850,7 +852,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPositiveLookaheadFail() {
+  void testPositiveLookaheadFail() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -869,7 +871,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNegativeLookaheadPass() {
+  void testNegativeLookaheadPass() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -888,7 +890,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testNegativeLookaheadFail() {
+  void testNegativeLookaheadFail() {
     new Expectations() {{
       document.getStartIndex(); result = 0;
       document.getEndIndex(); result = 10;
@@ -907,7 +909,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testFallback() {
+  void testFallback() {
     Foo foo1 = new Foo(0, 5);
     foo1.setBaz(10);
 
@@ -942,7 +944,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyOptional() {
+  void testAtomicLazyOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -961,11 +963,11 @@ public class SearchExprTest {
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 5);
     Span span = searcher.getSpan("opt");
-    assertFalse(span != null);
+    assertNull(span);
   }
 
   @Test
-  public void testAtomicPossessiveOptional() {
+  void testAtomicPossessiveOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -984,7 +986,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyOptional() {
+  void testAtomicGreedyOptional() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1003,11 +1005,11 @@ public class SearchExprTest {
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 5);
     Span span = searcher.getSpan("opt");
-    assertFalse(span != null);
+    assertNull(span);
   }
 
   @Test
-  public void testAtomicPossessiveKleene() {
+  void testAtomicPossessiveKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1026,7 +1028,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyKleene() {
+  void testAtomicLazyKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1045,11 +1047,11 @@ public class SearchExprTest {
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 10);
     Span span = searcher.getSpan("opt");
-    assertFalse(span != null);
+    assertNull(span);
   }
 
   @Test
-  public void testAtomicGreedyKleene() {
+  void testAtomicGreedyKleene() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1068,11 +1070,11 @@ public class SearchExprTest {
     assertEquals(searcher.getBegin(), 0);
     assertEquals(searcher.getEnd(), 10);
     Span span = searcher.getSpan("opt");
-    assertFalse(span != null);
+    assertNull(span);
   }
 
   @Test
-  public void testAtomicPossessiveOnePlusFail() {
+  void testAtomicPossessiveOnePlusFail() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1091,7 +1093,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveOnePlusMatch() {
+  void testAtomicPossessiveOnePlusMatch() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1112,7 +1114,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyOnePlus() {
+  void testAtomicLazyOnePlus() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1133,7 +1135,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurly() {
+  void testAtomicPossessiveCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1154,7 +1156,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyNoMaxPass() {
+  void testAtomicPossessiveCurlyNoMaxPass() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1175,7 +1177,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyNoMaxFail() {
+  void testAtomicPossessiveCurlyNoMaxFail() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1194,7 +1196,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExactBelow() {
+  void testAtomicPossessiveCurlyExactBelow() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1213,7 +1215,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExact() {
+  void testAtomicPossessiveCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1234,7 +1236,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicPossessiveCurlyExactAbove() {
+  void testAtomicPossessiveCurlyExactAbove() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1253,7 +1255,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurly() {
+  void testAtomicLazyCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1274,7 +1276,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurlyNoMax() {
+  void testAtomicLazyCurlyNoMax() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1295,7 +1297,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicLazyCurlyExact() {
+  void testAtomicLazyCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1316,7 +1318,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurly() {
+  void testAtomicGreedyCurly() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1337,7 +1339,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurlyNoMax() {
+  void testAtomicGreedyCurlyNoMax() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1358,7 +1360,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAtomicGreedyCurlyExact() {
+  void testAtomicGreedyCurlyExact() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1379,7 +1381,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testReluctanceAndMatch() {
+  void testReluctanceAndMatch() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
 
@@ -1400,7 +1402,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testContainsTrue() throws Exception {
+  void testContainsTrue() {
     List<Foo> foos = Collections.singletonList(new Foo(0, 6));
 
     new Expectations() {{
@@ -1425,7 +1427,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testContainsFalse() throws Exception {
+  void testContainsFalse() {
     List<Foo> foos = Collections.emptyList();
 
     new Expectations() {{
@@ -1448,7 +1450,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testOptionalFindsFirst() throws Exception {
+  void testOptionalFindsFirst() {
     new Expectations() {{
       labelAliases.getLabelable("Blah"); result = Blah.class;
       labelAliases.getLabelable("Foo"); result = Foo.class;
@@ -1475,7 +1477,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testGreedyLoopPreemption() throws Exception {
+  void testGreedyLoopPreemption() {
     LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
     LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
@@ -1506,7 +1508,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testPossessiveLoopPreemption() throws Exception {
+  void testPossessiveLoopPreemption() {
     LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
     LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
@@ -1537,7 +1539,7 @@ public class SearchExprTest {
   }
 
   @Test
-  public void testAlternationsProperOrdering() throws Exception {
+  void testAlternationsProperOrdering() {
     LabelIndex<Foo> fooLabelIndex = StandardLabelIndex.create(Foo.class, new Foo(0, 5), new Foo(20, 25));
     LabelIndex<Blah> blahs = StandardLabelIndex.create(Blah.class, new Blah(10, 14), new Blah(15, 20));
 
@@ -1583,12 +1585,12 @@ public class SearchExprTest {
     private int startIndex;
     private int endIndex;
 
-    public Blah(int startIndex, int endIndex) {
+    Blah(int startIndex, int endIndex) {
       this.startIndex = startIndex;
       this.endIndex = endIndex;
     }
 
-    public Blah(TextRange label) {
+    Blah(TextRange label) {
       startIndex = label.getStartIndex();
       endIndex = label.getEndIndex();
     }
@@ -1612,7 +1614,7 @@ public class SearchExprTest {
     private int startIndex;
     private int endIndex;
 
-    public Foo(int startIndex, int endIndex) {
+    Foo(int startIndex, int endIndex) {
       this.startIndex = startIndex;
       this.endIndex = endIndex;
     }
@@ -1626,7 +1628,7 @@ public class SearchExprTest {
       return value;
     }
 
-    public void setValue(String value) {
+    void setValue(String value) {
       this.value = value;
     }
 
@@ -1634,7 +1636,7 @@ public class SearchExprTest {
       return baz;
     }
 
-    public void setBaz(int baz) {
+    void setBaz(int baz) {
       this.baz = baz;
     }
 

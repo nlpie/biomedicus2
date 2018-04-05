@@ -56,7 +56,7 @@ public final class ArrayStrings extends AbstractStrings {
       }
 
       @Override
-      public void close() throws IOException {
+      public void close() {
 
       }
     };
@@ -68,7 +68,7 @@ public final class ArrayStrings extends AbstractStrings {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 }

@@ -24,11 +24,10 @@ import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import kotlin.test.*
 
 class DateDetectorTest {
-    val labelAliases = LabelAliases().apply {
+    private val labelAliases = LabelAliases().apply {
         addAlias("Sentence", Sentence::class.java)
         addAlias("ParseToken", ParseToken::class.java)
         addAlias("Number", Number::class.java)
@@ -37,11 +36,11 @@ class DateDetectorTest {
         addAlias("YearNumber", YearNumber::class.java)
     }
 
-    val searchExprFactory = SearchExprFactory(labelAliases)
+    private val searchExprFactory = SearchExprFactory(labelAliases)
 
-    val datePattern = DatePattern(searchExprFactory)
+    private val datePattern = DatePattern(searchExprFactory)
 
-    val detector = DateDetector(datePattern)
+    private val detector = DateDetector(datePattern)
 
     @Test
     fun testMonthDay() {

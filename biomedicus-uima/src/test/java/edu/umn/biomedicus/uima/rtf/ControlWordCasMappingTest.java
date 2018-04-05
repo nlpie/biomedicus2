@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import mockit.Deencapsulation;
 import mockit.Tested;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link ControlWordCasMapping}.
@@ -31,28 +31,28 @@ public class ControlWordCasMappingTest {
   ControlWordCasMapping controlWordCasMapping;
 
   @Test
-  public void testGetAnnotationName() throws Exception {
+  public void testGetAnnotationName() {
     Deencapsulation.setField(controlWordCasMapping, "annotationName", "anno");
 
     assertEquals(controlWordCasMapping.getAnnotationName(), "anno");
   }
 
   @Test
-  public void testSetAnnotationName() throws Exception {
+  public void testSetAnnotationName() {
     controlWordCasMapping.setAnnotationName("annot");
 
     assertEquals(Deencapsulation.getField(controlWordCasMapping, "annotationName"), "annot");
   }
 
   @Test
-  public void testGetControlWord() throws Exception {
+  public void testGetControlWord() {
     Deencapsulation.setField(controlWordCasMapping, "controlWord", "cw");
 
     assertEquals(controlWordCasMapping.getControlWord(), "cw");
   }
 
   @Test
-  public void testSetControlWord() throws Exception {
+  public void testSetControlWord() {
     controlWordCasMapping.setControlWord("cw2");
 
     assertEquals(Deencapsulation.getField(controlWordCasMapping, "controlWord"), "cw2");

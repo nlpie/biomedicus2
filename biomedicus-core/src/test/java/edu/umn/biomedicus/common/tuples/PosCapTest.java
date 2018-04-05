@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link PosCap}.
@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 public class PosCapTest {
 
   @Test
-  public void testGetCapitalized() throws Exception {
+  public void testGetCapitalized() {
     PosCap posCap = PosCap.getCapitalized(PartOfSpeech.BOS);
 
     assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
@@ -37,7 +37,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testGetNotCapitalized() throws Exception {
+  public void testGetNotCapitalized() {
     PosCap posCap = PosCap.getNotCapitalized(PartOfSpeech.BOS);
 
     assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
@@ -45,7 +45,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testCreate() throws Exception {
+  public void testCreate() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
     assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
@@ -53,21 +53,21 @@ public class PosCapTest {
   }
 
   @Test
-  public void testGetPartOfSpeech() throws Exception {
+  public void testGetPartOfSpeech() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
     assertEquals(posCap.getPartOfSpeech(), PartOfSpeech.BOS);
   }
 
   @Test
-  public void testIsCapitalized() throws Exception {
+  public void testIsCapitalized() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
     assertEquals(posCap.isCapitalized(), true);
   }
 
   @Test
-  public void testOrdinal() throws Exception {
+  public void testOrdinal() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     int ordinal = posCap.ordinal();
     PosCap fromOrdinal = PosCap.createFromOrdinal(ordinal);
@@ -75,13 +75,13 @@ public class PosCapTest {
   }
 
   @Test
-  public void testEqualsSameObject() throws Exception {
+  public void testEqualsSameObject() {
     PosCap posCap = PosCap.create(PartOfSpeech.CD, true);
     assertTrue(posCap.equals(posCap));
   }
 
   @Test
-  public void testEquals() throws Exception {
+  public void testEquals() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
 
@@ -89,21 +89,21 @@ public class PosCapTest {
   }
 
   @Test
-  public void testEqualsNull() throws Exception {
+  public void testEqualsNull() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
     assertFalse(posCap.equals(null));
   }
 
   @Test
-  public void testEqualsNotObject() throws Exception {
+  public void testEqualsNotObject() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
 
     assertFalse(posCap.equals("string"));
   }
 
   @Test
-  public void testEqualsFalse() throws Exception {
+  public void testEqualsFalse() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
@@ -111,7 +111,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testEqualsFalseCapitalization() throws Exception {
+  public void testEqualsFalseCapitalization() {
 
     PosCap posCap = PosCap.create(PartOfSpeech.BBS, false);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
@@ -120,7 +120,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testHashCodeEqual() throws Exception {
+  public void testHashCodeEqual() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
 
@@ -128,7 +128,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testHashCodeUnequal() throws Exception {
+  public void testHashCodeUnequal() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
@@ -136,7 +136,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testCompareTo() throws Exception {
+  public void testCompareTo() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, true);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BBS);
 
@@ -144,7 +144,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testCompareToCapitalization() throws Exception {
+  public void testCompareToCapitalization() {
 
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
     PosCap second = PosCap.getCapitalized(PartOfSpeech.BOS);
@@ -153,7 +153,7 @@ public class PosCapTest {
   }
 
   @Test
-  public void testToString() throws Exception {
+  public void testToString() {
     PosCap posCap = PosCap.create(PartOfSpeech.BOS, false);
 
     assertEquals(posCap.toString(), "PosCap{partOfSpeech=BOS, capitalized=false}");

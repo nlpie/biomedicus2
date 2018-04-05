@@ -16,43 +16,44 @@
 
 package edu.umn.biomedicus.common.viterbi;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.NoSuchElementException;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link HistoryChain}.
  */
-public class HistoryChainTest {
+class HistoryChainTest {
 
   @Test
-  public void testGetPayload() throws Exception {
+  void testGetPayload() {
     HistoryChain<String> historyChain = new HistoryChain<>(null, "payload");
     assertEquals("payload", historyChain.getState());
   }
 
   @Test
-  public void testGetNonnullPayloadSkips() throws Exception {
+  void testGetNonnullPayloadSkips() {
     HistoryChain<String> historyChain = new HistoryChain<>(null, "payload").skip()
         .append("payload2");
     assertEquals("payload", historyChain.getNonnullPayload(1));
   }
 
   @Test
-  public void testGetNonnullPayload() throws Exception {
+  void testGetNonnullPayload() {
     HistoryChain<String> historyChain = new HistoryChain<>(null, "payload1").append("payload2");
     assertEquals("payload1", historyChain.getNonnullPayload(1));
   }
 
-  @Test(expectedExceptions = NoSuchElementException.class)
-  public void testGetNonnullPayloadExc() throws Exception {
+  @Test
+  void testGetNonnullPayloadExc() {
     HistoryChain<String> historyChain = new HistoryChain<>(null, "payload1").append("payload2");
-    assertEquals("payload1", historyChain.getNonnullPayload(2));
+    assertThrows(NoSuchElementException.class, () -> historyChain.getNonnullPayload(2));
   }
 
   @Test
-  public void testGetPrevious() throws Exception {
+  void testGetPrevious() {
     HistoryChain<String> prev = new HistoryChain<>(null, "payload1");
     HistoryChain<String> historyChain = prev.append("payload2");
     assertEquals(prev, historyChain.getPrevious());

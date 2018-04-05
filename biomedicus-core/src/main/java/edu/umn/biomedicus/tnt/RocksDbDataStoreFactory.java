@@ -161,7 +161,7 @@ class RocksDbDataStoreFactory implements DataStoreFactory, LifecycleManaged {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
+  public void doShutdown() {
     for (RocksDB rocksDB : rocksDBS) {
       rocksDB.close();
     }

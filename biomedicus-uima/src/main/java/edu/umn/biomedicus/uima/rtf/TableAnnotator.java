@@ -53,7 +53,7 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
   }
 
   @Override
-  public void process(CAS aCAS) throws AnalysisEngineProcessException {
+  public void process(CAS aCAS) {
     LOGGER.trace("Annotating rtf tables.");
     CAS systemView = aCAS.getView(documentName);
 

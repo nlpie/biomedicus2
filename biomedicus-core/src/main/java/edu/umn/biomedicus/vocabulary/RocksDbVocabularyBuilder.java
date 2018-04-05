@@ -86,21 +86,9 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
-    BiomedicusException exception = null;
+  public void doShutdown() {
     for (RocksDbTermIndexBuilder builder : Arrays.asList(words, terms, norms)) {
-      try {
-        builder.close();
-      } catch (IOException e) {
-        if (exception == null) {
-          exception = new BiomedicusException("Unable to close one or more builders.");
-        }
-        exception.addSuppressed(e);
-      }
-    }
-
-    if (exception != null) {
-      throw exception;
+      builder.close();
     }
   }
 
@@ -115,7 +103,7 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
     }
 
     @Override
-    public void addTerm(String term) throws BiomedicusException {
+    public void addTerm(String term) {
       if (MORE_THAN_TWO_NUMBERS_IN_A_ROW.matcher(term).find()) {
         return;
       }
@@ -142,7 +130,7 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
       terms.close();
       indices.close();
     }

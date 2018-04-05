@@ -16,16 +16,16 @@
 
 package edu.umn.biomedicus.concepts;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class SuiCuiTuiTest {
 
 
 
   @Test
-  public void testBytes() throws Exception {
+  public void testBytes() {
     SuiCuiTui suiCuiTui = new SuiCuiTui(new SUI(25), new CUI(21),
         new TUI(20));
 

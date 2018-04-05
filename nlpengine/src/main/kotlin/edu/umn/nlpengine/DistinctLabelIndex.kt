@@ -19,6 +19,7 @@ package edu.umn.nlpengine
 import java.util.*
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableCollection
+import kotlin.collections.AbstractList
 
 inline fun <reified T: Label> DistinctLabelIndex(vararg labels: T): DistinctLabelIndex<T> {
     return DistinctLabelIndex(T::class.java, *labels)
@@ -113,6 +114,18 @@ class DistinctLabelIndex<T : Label> internal constructor(
         override fun lastIndexOf(element: @UnsafeVariance T) = internalIndexOf(element)
 
         override fun contains(element: @UnsafeVariance T) = internalIndexOf(element) != -1
+
+        override fun equals(other: Any?): Boolean {
+            return values == other as? List<*>
+        }
+
+        override fun hashCode(): Int {
+            return values.hashCode()
+        }
+
+        override fun toString(): String {
+            return values.toString()
+        }
     }
 
     internal fun containingIndex(
@@ -327,7 +340,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
 
         override fun iterator() = AscendingListIterator(0)
 
-        override fun asList(): List<T> = object: List<T> {
+        override fun asList(): List<T> = object: AbstractList<T>() {
             override val size = this@AscendingView.size
 
             override fun isEmpty() = size == 0

@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.uima.copying;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Deque;
 import java.util.Map;
 import mockit.Expectations;
@@ -24,16 +26,15 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.Verifications;
 import org.apache.uima.cas.FeatureStructure;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for {@link FeatureStructureCopyingQueue}.
  */
-public class FeatureStructureUimaCopyingQueueTest {
+class FeatureStructureUimaCopyingQueueTest {
 
   @Tested
-  FeatureStructureCopyingQueue featureStructureCopyingQueue;
+  private FeatureStructureCopyingQueue featureStructureCopyingQueue;
 
   @Injectable
   FsCopiers fsCopiers;
@@ -54,8 +55,7 @@ public class FeatureStructureUimaCopyingQueueTest {
   FeatureStructure mockFs;
 
   @Test
-  public void testEnqueueShouldReturnExisting(@Injectable FeatureStructure featureStructure)
-      throws Exception {
+  void testEnqueueShouldReturnExisting(@Injectable FeatureStructure featureStructure) {
     new Expectations() {{
       fsMap.containsKey(featureStructure);
       result = true;
@@ -63,7 +63,7 @@ public class FeatureStructureUimaCopyingQueueTest {
       result = retFs;
     }};
 
-    Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
+    assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
 
     new Verifications() {{
       fsConstructors.createNewInstanceOfSameType(featureStructure);
@@ -72,8 +72,7 @@ public class FeatureStructureUimaCopyingQueueTest {
   }
 
   @Test
-  public void testEnqueueShouldCreateNew(@Injectable FeatureStructure featureStructure)
-      throws Exception {
+  void testEnqueueShouldCreateNew(@Injectable FeatureStructure featureStructure) {
     new Expectations() {{
       fsMap.containsKey(featureStructure);
       result = false;
@@ -81,7 +80,7 @@ public class FeatureStructureUimaCopyingQueueTest {
       result = retFs;
     }};
 
-    Assert.assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
+    assertEquals(retFs, featureStructureCopyingQueue.enqueue(featureStructure));
 
     new Verifications() {{
       fsQueue.add(featureStructure);
@@ -90,7 +89,7 @@ public class FeatureStructureUimaCopyingQueueTest {
   }
 
   @Test
-  public void testRun() throws Exception {
+  void testRun() {
     new Expectations() {{
       fsQueue.isEmpty();
       result = new boolean[]{false, false, false, true};

@@ -18,6 +18,7 @@ package edu.umn.nlpengine
 
 import java.util.*
 import java.util.Collections.unmodifiableCollection
+import kotlin.collections.AbstractList
 
 inline fun <reified T: Label> StandardLabelIndex(vararg labels: T): StandardLabelIndex<T> {
     return StandardLabelIndex(T::class.java, *labels)
@@ -121,12 +122,24 @@ class StandardLabelIndex<T : Label> internal constructor(
 
     override fun containsSpan(textRange: TextRange) = internalContainsLocation(textRange)
 
-    override fun asList() = object : List<T> by Collections.unmodifiableList(values) {
+    override fun asList() = object : List<T> by values {
         override fun indexOf(element: @UnsafeVariance T) = internalIndexOf(element)
 
         override fun lastIndexOf(element: @UnsafeVariance T) = internalLastIndexOf(element)
 
         override fun contains(element: @UnsafeVariance T) = internalIndexOf(element) != -1
+
+        override fun equals(other: Any?): Boolean {
+            return values == other as? List<*>
+        }
+
+        override fun hashCode(): Int {
+            return values.hashCode()
+        }
+
+        override fun toString(): String {
+            return values.toString()
+        }
     }
 
     internal fun internalAtLocation(
@@ -529,7 +542,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             return result
         }
 
-        inner class ViewList : List<T> {
+        inner class ViewList : AbstractList<T>() {
             override val size: Int by lazy { this@View.size }
 
             override fun get(index: Int): T {
@@ -585,6 +598,20 @@ class StandardLabelIndex<T : Label> internal constructor(
                 }
 
                 return updateEnds(left = globalFromIndex, right = globalToIndex).asList()
+            }
+
+            override fun toString(): String {
+                val sb = StringBuilder("[")
+
+                val it = iterator()
+                if (it.hasNext()) {
+                    sb.append(it.next().toString())
+                }
+                while (it.hasNext()) {
+                    sb.append(", ").append(it.next().toString())
+                }
+
+                return sb.append(']').toString()
             }
         }
 

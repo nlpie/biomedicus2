@@ -16,6 +16,8 @@
 
 package edu.umn.biomedicus.uima.copying;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.InputStream;
 import java.nio.file.Paths;
 import org.apache.uima.UIMAFramework;
@@ -24,21 +26,21 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.apache.uima.util.CasCreationUtils;
 import org.apache.uima.util.XMLInputSource;
-import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Integration test for {@link FeatureCopiers}.
  */
-public class FeatureCopiersTestIT {
+class FeatureCopiersTestIT {
 
   private JCas oldView;
 
   private JCas newView;
 
-  @BeforeTest
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     InputStream resourceAsStream = Thread.currentThread().getContextClassLoader()
         .getResourceAsStream("edu/umn/biomedicus/types/TypeSystem.xml");
     XMLInputSource tsInput = new XMLInputSource(resourceAsStream, Paths.get("").toFile());
@@ -50,7 +52,7 @@ public class FeatureCopiersTestIT {
   }
 
   @Test
-  public void testCopyAnnotationBeginFeature() throws Exception {
+  void testCopyAnnotationBeginFeature() {
     oldView.setDocumentText("blah");
     newView.setDocumentText("blah");
 
@@ -61,12 +63,10 @@ public class FeatureCopiersTestIT {
 
     Annotation newAnnotation = new Annotation(newView);
 
-    FeatureCopiers featureCopiers = new FeatureCopiers((fs) -> {
-      return new Annotation(newView);
-    });
-    featureCopiers.copyFeature(oldAnnotation.getType().getFeatureByBaseName("begin"), oldAnnotation,
-        newAnnotation);
+    FeatureCopiers featureCopiers = new FeatureCopiers((fs) -> new Annotation(newView));
+    featureCopiers.copyFeature(oldAnnotation.getType().getFeatureByBaseName("begin"),
+        oldAnnotation, newAnnotation);
 
-    Assert.assertEquals(newAnnotation.getBegin(), oldAnnotation.getBegin());
+    assertEquals(newAnnotation.getBegin(), oldAnnotation.getBegin());
   }
 }

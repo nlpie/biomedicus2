@@ -106,13 +106,13 @@ public class ONLPSentenceTrainer implements Aggregator {
               }
 
               @Override
-              public void reset() throws IOException,
+              public void reset() throws
                   UnsupportedOperationException {
                 throw new UnsupportedOperationException();
               }
 
               @Override
-              public void close() throws IOException {
+              public void close() {
 
               }
             });

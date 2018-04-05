@@ -66,7 +66,7 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     indices.close();
   }
 
@@ -87,7 +87,7 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     RocksIterator rocksIterator = indices.newIterator();
     return new MappingIterator() {
       @Override
-      public void close() throws IOException {
+      public void close() {
         rocksIterator.close();
       }
 
@@ -132,7 +132,7 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     return (_size = size);
   }
 
-  public Identifiers inMemory(boolean inMemory) throws IOException {
+  public Identifiers inMemory(boolean inMemory) {
     if (inMemory) {
       HashIdentifiers hashIdentifiers = new HashIdentifiers();
       try (RocksIterator rocksIterator = indices.newIterator()) {

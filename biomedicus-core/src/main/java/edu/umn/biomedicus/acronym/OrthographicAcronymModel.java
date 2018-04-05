@@ -211,7 +211,7 @@ public class OrthographicAcronymModel implements Serializable {
       Yaml yaml = new Yaml();
       try {
         @SuppressWarnings("unchecked")
-        Map<String, Object> serObj = (Map<String, Object>) yaml
+        Map<String, Object> serObj = yaml
             .load(Files.newBufferedReader(orthographicModel));
         boolean caseSensitive = (Boolean) serObj.get("caseSensitive");
         symbols = caseSensitive ? CASE_SENS_SYMBOLS : CASE_INSENS_SYMBOLS;

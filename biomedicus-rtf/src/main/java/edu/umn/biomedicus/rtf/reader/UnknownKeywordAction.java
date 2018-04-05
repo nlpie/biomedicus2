@@ -35,7 +35,7 @@ public class UnknownKeywordAction implements KeywordAction {
   private Integer parameter = null;
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
   }
 
   @Override

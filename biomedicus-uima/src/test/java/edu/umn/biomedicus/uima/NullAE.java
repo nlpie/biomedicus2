@@ -26,7 +26,7 @@ import org.apache.uima.jcas.JCas;
 public class NullAE extends JCasAnnotator_ImplBase {
 
   @Override
-  public void process(JCas jCas) throws AnalysisEngineProcessException {
+  public void process(JCas jCas) {
 
   }
 }

@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link WordPosCap}.
@@ -29,28 +29,28 @@ import org.testng.annotations.Test;
 public class WordPosCapTest {
 
   @Test
-  public void testGetWord() throws Exception {
+  public void testGetWord() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertEquals(wordPosCap.getWord(), "aWord");
   }
 
   @Test
-  public void testGetPartOfSpeech() throws Exception {
+  public void testGetPartOfSpeech() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertEquals(wordPosCap.getPartOfSpeech(), PartOfSpeech.NN);
   }
 
   @Test
-  public void testIsCapitalized() throws Exception {
+  public void testIsCapitalized() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertEquals(wordPosCap.isCapitalized(), false);
   }
 
   @Test
-  public void testToPosCap() throws Exception {
+  public void testToPosCap() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
     PosCap posCap = PosCap.create(PartOfSpeech.NN, false);
 
@@ -58,28 +58,28 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testEqualsSameObject() throws Exception {
+  public void testEqualsSameObject() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertTrue(wordPosCap.equals(wordPosCap));
   }
 
   @Test
-  public void testEqualsNull() throws Exception {
+  public void testEqualsNull() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertFalse(wordPosCap.equals(null));
   }
 
   @Test
-  public void testEqualsDifferentType() throws Exception {
+  public void testEqualsDifferentType() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertFalse(wordPosCap.equals("string"));
   }
 
   @Test
-  public void testEqualsDifferentWord() throws Exception {
+  public void testEqualsDifferentWord() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NN, false);
 
@@ -87,7 +87,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testEqualsDifferentPos() throws Exception {
+  public void testEqualsDifferentPos() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NNS, false);
 
@@ -95,7 +95,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testEqualsDifferentCapitalization() throws Exception {
+  public void testEqualsDifferentCapitalization() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NN, true);
 
@@ -103,7 +103,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testEquals() throws Exception {
+  public void testEquals() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
@@ -111,7 +111,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testHashCodeDifferentWord() throws Exception {
+  public void testHashCodeDifferentWord() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NN, false);
 
@@ -119,7 +119,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testHashCodeDifferentPos() throws Exception {
+  public void testHashCodeDifferentPos() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NNS, false);
 
@@ -127,7 +127,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testHashCodeDifferentCapitalization() throws Exception {
+  public void testHashCodeDifferentCapitalization() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NN, true);
 
@@ -135,7 +135,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testHashCodeEqual() throws Exception {
+  public void testHashCodeEqual() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
@@ -143,7 +143,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testCompareToDifferentWord() throws Exception {
+  public void testCompareToDifferentWord() {
     WordPosCap first = new WordPosCap("aWord", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NN, false);
 
@@ -151,7 +151,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testCompareToDifferentPos() throws Exception {
+  public void testCompareToDifferentPos() {
     WordPosCap first = new WordPosCap("word", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NNS, false);
 
@@ -159,7 +159,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testCompareToDifferentCapitalization() throws Exception {
+  public void testCompareToDifferentCapitalization() {
     WordPosCap first = new WordPosCap("word", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NN, true);
 
@@ -167,7 +167,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testCompareTo() throws Exception {
+  public void testCompareTo() {
     WordPosCap first = new WordPosCap("word", PartOfSpeech.NN, false);
     WordPosCap second = new WordPosCap("word", PartOfSpeech.NN, false);
 
@@ -175,7 +175,7 @@ public class WordPosCapTest {
   }
 
   @Test
-  public void testToString() throws Exception {
+  public void testToString() {
     WordPosCap wordPosCap = new WordPosCap("aWord", PartOfSpeech.NN, false);
 
     assertEquals(wordPosCap.toString(),

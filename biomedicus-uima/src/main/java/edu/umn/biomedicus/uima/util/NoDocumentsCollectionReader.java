@@ -32,12 +32,12 @@ import org.apache.uima.util.Progress;
 public class NoDocumentsCollectionReader extends CollectionReader_ImplBase {
 
   @Override
-  public void getNext(CAS cas) throws IOException, CollectionException {
+  public void getNext(CAS cas) {
     throw new NoSuchElementException();
   }
 
   @Override
-  public boolean hasNext() throws IOException, CollectionException {
+  public boolean hasNext() {
     return false;
   }
 
@@ -47,7 +47,7 @@ public class NoDocumentsCollectionReader extends CollectionReader_ImplBase {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 }

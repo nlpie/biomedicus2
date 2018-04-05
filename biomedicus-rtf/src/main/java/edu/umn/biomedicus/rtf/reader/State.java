@@ -237,10 +237,8 @@ public class State {
    *
    * @param ch character to write.
    * @param originalDocumentTextLocation the span of the character in the original document.
-   * @throws RtfReaderException if there is some kind of failure writing to output destination.
    */
-  public void directWriteCharacter(char ch, TextRange originalDocumentTextLocation)
-      throws RtfReaderException {
+  public void directWriteCharacter(char ch, TextRange originalDocumentTextLocation) {
     if (ignoreNextChars > 0) {
       ignoreNextChars--;
       return;

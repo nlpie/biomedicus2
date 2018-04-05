@@ -78,7 +78,7 @@ abstract class SystemModule {
 
     val enumClasses: List<Class<*>> = object : List<Class<*>> by _enumClasses {}
 
-    abstract fun setup();
+    abstract fun setup()
 
     protected fun addLabelClass(labelClass: Class<out Label>) = _labelClasses.add(labelClass)
 

@@ -43,7 +43,7 @@ public class OutputKeywordAction extends AbstractKeywordAction {
   }
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
     char c = outputString.charAt(0);
     state.directWriteCharacter(c, Span.create(getBegin(), getEnd()));
   }

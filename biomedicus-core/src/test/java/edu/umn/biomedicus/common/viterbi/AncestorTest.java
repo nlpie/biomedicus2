@@ -17,9 +17,10 @@
 package edu.umn.biomedicus.common.viterbi;
 
 import static mockit.Deencapsulation.getField;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
@@ -27,15 +28,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import mockit.Verifications;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for {@link Ancestor}.
  */
-public class AncestorTest {
+class AncestorTest {
 
   @Test
-  public void testCreateInitialIterable() throws Exception {
+  void testCreateInitialIterable() {
     List<String> initialStates = new ArrayList<>();
     initialStates.add("1");
     initialStates.add("2");
@@ -56,7 +57,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testCreateInitialVarargs() throws Exception {
+  void testCreateInitialVarargs() {
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3");
 
     new Verifications() {{
@@ -71,17 +72,15 @@ public class AncestorTest {
     }};
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testCreateInitialFailure() throws Exception {
+  @Test
+  void testCreateInitialFailure() {
     List<String> initialStates = new ArrayList<>();
 
-    Ancestor.createInitial(initialStates, Ngram::create);
-
-    fail();
+    assertThrows(IllegalArgumentException.class, () -> Ancestor.createInitial(initialStates, Ngram::create));
   }
 
   @Test
-  public void testGetHistory() throws Exception {
+  void testGetHistory() {
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
 
     List<String> history = ancestor.getHistory("4");
@@ -90,7 +89,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testCreateDescendant() throws Exception {
+  void testCreateDescendant() {
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
 
     Ancestor<String> descendant = ancestor.createDescendant(-3.22, "5");
@@ -99,7 +98,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testSkip() throws Exception {
+  void testSkip() {
 
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
 
@@ -109,7 +108,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testGetBigram() throws Exception {
+  void testGetBigram() {
 
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
 
@@ -120,7 +119,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testMostRecent() throws Exception {
+  void testMostRecent() {
 
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
 
@@ -129,7 +128,7 @@ public class AncestorTest {
   }
 
   @Test
-  public void testMoreProbable() throws Exception {
+  void testMoreProbable() {
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3", null);
     Ancestor<String> first = ancestor.createDescendant(-0.5, "a");
     Ancestor<String> second = ancestor.createDescendant(-1.0, "b");

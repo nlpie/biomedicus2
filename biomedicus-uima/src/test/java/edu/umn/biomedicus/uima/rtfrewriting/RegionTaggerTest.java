@@ -19,7 +19,7 @@ package edu.umn.biomedicus.uima.rtfrewriting;
 import mockit.Expectations;
 import mockit.FullVerificationsInOrder;
 import mockit.Mocked;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class RegionTaggerTest {
 
@@ -30,7 +30,7 @@ public class RegionTaggerTest {
   RtfRewriterCursor rtfRewriterCursor;
 
   @Test
-  public void testOutsideDestination() throws Exception {
+  public void testOutsideDestination() {
     new Expectations() {{
       symbolIndexedDocument.symbolIndex(12, "dest");
       result = 3;

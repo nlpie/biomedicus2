@@ -164,7 +164,7 @@ public final class Bootstrapper {
     try (BufferedReader bufferedReader = Files
         .newBufferedReader(configurationFilePath)) {
       @SuppressWarnings("unchecked")
-      Map<String, Object> configuration = (Map<String, Object>) yaml
+      Map<String, Object> configuration = yaml
           .load(bufferedReader);
       biomedicusConfiguration = configuration;
     } catch (IOException e) {

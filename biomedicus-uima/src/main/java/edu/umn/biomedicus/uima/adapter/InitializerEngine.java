@@ -44,12 +44,6 @@ public class InitializerEngine extends AnalysisEngineImplBase {
 
     TypeSystemDescription typeSystem = aeMetaData.getTypeSystem();
 
-
-
-    if (!super.initialize(aSpecifier, aAdditionalParams)) {
-      return false;
-    }
-
-    return true;
+    return super.initialize(aSpecifier, aAdditionalParams);
   }
 }

@@ -16,11 +16,11 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link WordCap}.
@@ -28,42 +28,42 @@ import org.testng.annotations.Test;
 public class WordCapTest {
 
   @Test
-  public void testGetWord() throws Exception {
+  public void testGetWord() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertEquals(wordCap.getWord(), "aWord");
   }
 
   @Test
-  public void testIsCapitalized() throws Exception {
+  public void testIsCapitalized() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertEquals(wordCap.isCapitalized(), false);
   }
 
   @Test
-  public void testEqualsSameObject() throws Exception {
+  public void testEqualsSameObject() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertTrue(wordCap.equals(wordCap));
   }
 
   @Test
-  public void testEqualsNull() throws Exception {
+  public void testEqualsNull() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertFalse(wordCap.equals(null));
   }
 
   @Test
-  public void testEqualsDifferentType() throws Exception {
+  public void testEqualsDifferentType() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertFalse(wordCap.equals("aString"));
   }
 
   @Test
-  public void testEqualsDifferentWord() throws Exception {
+  public void testEqualsDifferentWord() {
     WordCap first = new WordCap("first", false);
     WordCap second = new WordCap("second", false);
 
@@ -71,7 +71,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testEqualsDifferentCap() throws Exception {
+  public void testEqualsDifferentCap() {
     WordCap first = new WordCap("aWord", true);
     WordCap second = new WordCap("aWord", false);
 
@@ -79,7 +79,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testEquals() throws Exception {
+  public void testEquals() {
     WordCap first = new WordCap("aWord", true);
     WordCap second = new WordCap("aWord", true);
 
@@ -87,7 +87,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testHashCode() throws Exception {
+  public void testHashCode() {
     WordCap first = new WordCap("aWord", true);
     WordCap second = new WordCap("aWord", true);
 
@@ -95,7 +95,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testHashCodeNonEqual() throws Exception {
+  public void testHashCodeNonEqual() {
     WordCap first = new WordCap("aWord", true);
     WordCap second = new WordCap("aWord", false);
 
@@ -103,7 +103,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testCompareToWord() throws Exception {
+  public void testCompareToWord() {
     WordCap first = new WordCap("first", false);
     WordCap second = new WordCap("second", false);
 
@@ -111,7 +111,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testCompareToCapitalization() throws Exception {
+  public void testCompareToCapitalization() {
     WordCap first = new WordCap("aWord", true);
     WordCap second = new WordCap("aWord", false);
 
@@ -119,7 +119,7 @@ public class WordCapTest {
   }
 
   @Test
-  public void testToString() throws Exception {
+  public void testToString() {
     WordCap wordCap = new WordCap("aWord", false);
 
     assertEquals(wordCap.toString(), "WordCap{word='aWord', isCapitalized=false}");

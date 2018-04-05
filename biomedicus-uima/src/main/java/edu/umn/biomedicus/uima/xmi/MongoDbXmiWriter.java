@@ -16,13 +16,12 @@
 
 package edu.umn.biomedicus.uima.xmi;
 
-import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSInputFile;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.UnknownHostException;
 import java.util.UUID;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
@@ -39,41 +38,25 @@ import org.xml.sax.SAXException;
  */
 public class MongoDbXmiWriter extends CasAnnotator_ImplBase {
 
-  /**
-   * The mongo server to connect to.
-   */
-  public static final String PARAM_MONGO_SERVER = "mongoServer";
-
-  /**
-   * The mongo port to connect to.
-   */
-  public static final String PARAM_MONGO_PORT = "mongoPort";
-
-  /**
-   * The mongo db to use on the server.
-   */
-  public static final String PARAM_MONGO_DB_NAME = "mongoDbName";
-
   private MongoClient mongoClient;
-  private GridFS gridFS;
+
+  private GridFSBucket gridFS;
 
   @Override
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
     super.initialize(aContext);
 
-    String mongoServer = (String) aContext.getConfigParameterValue(PARAM_MONGO_SERVER);
-    int mongoPort = (Integer) aContext.getConfigParameterValue(PARAM_MONGO_PORT);
-    String mongoDbName = (String) aContext.getConfigParameterValue(PARAM_MONGO_DB_NAME);
+    String mongoServer = (String) aContext.getConfigParameterValue("mongoServer");
+    int mongoPort = (Integer) aContext.getConfigParameterValue("mongoPort");
+    String mongoDbName = (String) aContext.getConfigParameterValue("mongoDbName");
 
-    try {
-      mongoClient = new MongoClient(mongoServer, mongoPort);
-    } catch (UnknownHostException e) {
-      throw new ResourceInitializationException(e);
-    }
+    mongoClient = new MongoClient(mongoServer, mongoPort);
 
-    DB db = mongoClient.getDB(mongoDbName);
+    MongoDatabase db = mongoClient.getDatabase(mongoDbName);
 
-    gridFS = new GridFS(db);
+
+
+    gridFS = GridFSBuckets.create(db);
   }
 
   @Override
@@ -98,9 +81,7 @@ public class MongoDbXmiWriter extends CasAnnotator_ImplBase {
       documentId = UUID.randomUUID().toString();
     }
 
-    GridFSInputFile file = gridFS.createFile(documentId + ".xmi");
-
-    try (OutputStream outputStream = file.getOutputStream()) {
+    try (OutputStream outputStream = gridFS.openUploadStream(documentId + ".xmi")) {
       XmiCasSerializer.serialize(aCAS, outputStream);
     } catch (IOException | SAXException e) {
       throw new AnalysisEngineProcessException(e);

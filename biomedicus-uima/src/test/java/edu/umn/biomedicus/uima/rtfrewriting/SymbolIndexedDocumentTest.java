@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 import mockit.Tested;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link SymbolIndexedDocument}.
@@ -48,7 +48,7 @@ public class SymbolIndexedDocumentTest {
 
 
   @Test
-  public void testGetOriginalDocumentIndex() throws Exception {
+  public void testGetOriginalDocumentIndex() {
     new Expectations() {{
       symbolLocation.getIndex();
       result = 4;

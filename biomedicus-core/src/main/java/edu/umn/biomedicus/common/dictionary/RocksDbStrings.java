@@ -87,7 +87,7 @@ public final class RocksDbStrings extends AbstractStrings {
       }
 
       @Override
-      public void close() throws IOException {
+      public void close() {
         rocksIterator.close();
       }
     };
@@ -132,7 +132,7 @@ public final class RocksDbStrings extends AbstractStrings {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     terms.close();
   }
 }

@@ -25,7 +25,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.JCas;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link ViewCopier}.
@@ -57,7 +57,7 @@ public class ViewCopierTest {
   JCas newView;
 
   @Test
-  public void testMigrate() throws Exception {
+  public void testMigrate() {
     new Expectations() {{
       oldView.getDocumentText();
       result = "docText";

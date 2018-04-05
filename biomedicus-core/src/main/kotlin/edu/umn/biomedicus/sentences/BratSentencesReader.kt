@@ -27,7 +27,7 @@ import javax.inject.Inject
 /**
  * Reads in sentences from the brat ann files and adds them as sentences.
  */
-class BratSentencesReader internal @Inject constructor(
+class BratSentencesReader @Inject internal constructor(
         @ProcessorSetting("labelUnsure") private val labelUnsure: Boolean
 ): DocumentProcessor {
     override fun process(document: Document) {

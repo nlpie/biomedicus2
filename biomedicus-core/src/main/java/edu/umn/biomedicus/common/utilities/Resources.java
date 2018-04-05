@@ -39,7 +39,7 @@ public final class Resources {
    * @param resourceName the qualified classpath name of the resource.
    * @return String with the contents of the resource.
    */
-  public static String toString(String resourceName) throws IOException {
+  public static String toString(String resourceName) {
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     try (Scanner scanner = new Scanner(classLoader.getResourceAsStream(resourceName), "UTF_8")

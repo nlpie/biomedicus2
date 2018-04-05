@@ -23,10 +23,8 @@ import org.apache.uima.cas.*
 import org.apache.uima.cas.text.AnnotationFS
 import org.apache.uima.resource.metadata.impl.TypeSystemDescription_impl
 import org.apache.uima.util.CasCreationUtils
-import org.testng.Assert.*
-import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
 import java.math.BigDecimal
+import kotlin.test.*
 
 
 enum class Foo {
@@ -373,7 +371,7 @@ class AutoAdapterTest {
         labelAdapters = autoAdapters.labelAdapters
     }
 
-    @BeforeMethod
+    @BeforeTest
     fun setUp() {
         _cas = CasCreationUtils.createCas(ts, null, null)
     }
@@ -456,7 +454,7 @@ class AutoAdapterTest {
 
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.enums, arrayOf(Foo.BAR, Foo.BAZ, Foo.BAR))
+        assertTrue(assertNotNull(label.enums) contentEquals arrayOf(Foo.BAR, Foo.BAZ, Foo.BAR))
     }
 
     @Test
@@ -489,7 +487,7 @@ class AutoAdapterTest {
 
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.enums, arrayOf(Foo.BAR, Foo.BAZ, Foo.BAR))
+        assertTrue(assertNotNull(label.enums) contentEquals arrayOf(Foo.BAR, Foo.BAZ, Foo.BAR))
     }
 
     @Test
@@ -771,8 +769,8 @@ class AutoAdapterTest {
         annotation.setFeatureValue(annotation.type.getFeatureByBaseName("spans"), arrayFS)
 
         val label = adapter.annotationToLabel(annotation)
-        val spans = label.spans
-        assertEquals(spans, arrayOf(Span(10, 15), Span(15, 20)))
+        val spans = assertNotNull(label.spans)
+        assertTrue(spans contentEquals arrayOf(Span(10, 15), Span(15, 20)))
     }
 
     @Test
@@ -809,8 +807,8 @@ class AutoAdapterTest {
         annotation.setFeatureValue(annotation.type.getFeatureByBaseName("spans"), arrayFS)
 
         val label = adapter.annotationToLabel(annotation)
-        val spans = label.spans
-        assertEquals(spans, arrayOf(Span(10, 15), Span(15, 20)))
+        val spans = assertNotNull(label.spans)
+        assertTrue(spans contentEquals arrayOf(Span(10, 15), Span(15, 20)))
     }
 
     @Test
@@ -1301,7 +1299,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(annotation.type.getFeatureByBaseName("booleanArray"), arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.booleanArray, booleanArrayOf(true, false, true))
+        assertTrue(assertNotNull(label.booleanArray) contentEquals booleanArrayOf(true, false, true))
     }
 
     @Test
@@ -1353,7 +1351,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(annotation.type.getFeatureByBaseName("byteArray"), arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.byteArray, byteArrayOf(1, 0, 2))
+        assertTrue(label.byteArray?.contentEquals(byteArrayOf(1, 0, 2)) ?: false)
     }
 
     @Test
@@ -1406,7 +1404,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.shortArray, shortArrayOf(32, 64, 128))
+        assertTrue(shortArrayOf(32, 64, 128) contentEquals (label.shortArray ?: fail()))
     }
 
     @Test
@@ -1459,7 +1457,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.intArray, intArrayOf(32, 64, 128))
+        assertTrue(assertNotNull(label.intArray) contentEquals intArrayOf(32, 64, 128))
     }
 
     @Test
@@ -1512,7 +1510,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.longArray, longArrayOf(32, 64, 128))
+        assertTrue(longArrayOf(32, 64, 128) contentEquals assertNotNull(label.longArray))
     }
 
     @Test
@@ -1565,7 +1563,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.floatArray, floatArrayOf(32f, 64f, 128f))
+        assertTrue(assertNotNull(label.floatArray) contentEquals floatArrayOf(32f, 64f, 128f))
     }
 
     @Test
@@ -1618,7 +1616,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.doubleArray, doubleArrayOf(32.0, 64.0, 128.0))
+        assertTrue(assertNotNull(label.doubleArray) contentEquals doubleArrayOf(32.0, 64.0, 128.0))
     }
 
     @Test
@@ -1671,7 +1669,7 @@ class AutoAdapterTest {
         annotation.setFeatureValue(feature, arrayFS)
         val label = adapter.annotationToLabel(annotation)
 
-        assertEquals(label.stringArray, arrayOf("a", "b", "c"))
+        assertTrue(arrayOf("a", "b", "c") contentEquals (label.stringArray ?: fail()))
     }
 
     @Test

@@ -65,18 +65,18 @@ public class MigratorEngine extends CasMultiplier_ImplBase {
   }
 
   @Override
-  public boolean hasNext() throws AnalysisEngineProcessException {
+  public boolean hasNext() {
     return !casReturned;
   }
 
   @Override
-  public AbstractCas next() throws AnalysisEngineProcessException {
+  public AbstractCas next() {
     casReturned = true;
     return newCas;
   }
 
   @Override
-  public void process(CAS aCAS) throws AnalysisEngineProcessException {
+  public void process(CAS aCAS) {
     assert migration != null : "migration should never be null at this point";
 
     TypeSystem typeSystem = aCAS.getTypeSystem();

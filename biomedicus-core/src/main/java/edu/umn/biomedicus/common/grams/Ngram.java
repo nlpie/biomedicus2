@@ -213,7 +213,7 @@ public class Ngram<T extends Comparable<T> & Serializable> implements Bigram<T>,
       return false;
     }
     for (int i = 0; i < length; i++) {
-      if (atIndex(i) != ngram.atIndex(i)) {
+      if (!atIndex(i).equals(ngram.atIndex(i))) {
         return false;
       }
     }
@@ -253,4 +253,17 @@ public class Ngram<T extends Comparable<T> & Serializable> implements Bigram<T>,
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("[");
+
+    if (length > 0) {
+      sb.append(atIndex(0).toString());
+    }
+    for (int i = 1; i < length; i++) {
+      sb.append(", ").append(atIndex(i).toString());
+    }
+
+    return sb.append("]").toString();
+  }
 }

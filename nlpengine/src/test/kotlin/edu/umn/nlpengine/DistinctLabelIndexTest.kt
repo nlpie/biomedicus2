@@ -16,10 +16,8 @@
 
 package edu.umn.nlpengine
 
-import org.testng.Assert
-import org.testng.Assert.*
-import org.testng.annotations.Test
 import java.util.*
+import kotlin.test.*
 
 class DistinctLabelIndexTest {
     data class TestLabel(override val startIndex: Int, override val endIndex: Int): Label()
@@ -150,7 +148,7 @@ class DistinctLabelIndexTest {
     fun testAscendingBegin() {
         val ascendingBegin = tested.ascendingStartIndex()
 
-        Assert.assertTrue(ascendingBegin === tested)
+        assertTrue(ascendingBegin === tested)
     }
 
     @Test
@@ -173,14 +171,14 @@ class DistinctLabelIndexTest {
     fun testAscendingEnd() {
         val ascendingEnd = tested.ascendingEndIndex()
 
-        Assert.assertTrue(ascendingEnd === tested)
+        assertTrue(ascendingEnd === tested)
     }
 
     @Test
     fun testDescendingEnd() {
         val descendingEnd = tested.descendingEndIndex()
 
-        Assert.assertTrue(descendingEnd === tested)
+        assertTrue(descendingEnd === tested)
     }
 
     @Test
@@ -214,7 +212,7 @@ class DistinctLabelIndexTest {
     fun testFirstEmpty() {
         val standardLabelIndex = StandardLabelIndex<TestLabel>()
 
-        Assert.assertNull(standardLabelIndex.first())
+        assertNull(standardLabelIndex.first())
     }
 
     @Test
@@ -244,7 +242,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testContainsTrue() {
-        Assert.assertTrue(tested.contains(TestLabel(3, 5)))
+        assertTrue(tested.contains(TestLabel(3, 5)))
     }
 
     @Test
@@ -254,7 +252,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testContainsSpanTrue() {
-        Assert.assertTrue(tested.containsSpan(TestLabel(3, 5)))
+        assertTrue(tested.containsSpan(TestLabel(3, 5)))
     }
 
     @Test
@@ -307,7 +305,7 @@ class DistinctLabelIndexTest {
     fun testAsListContains() {
         val asList = tested.asList()
 
-        Assert.assertTrue(asList.contains(TestLabel(3, 5)))
+        assertTrue(asList.contains(TestLabel(3, 5)))
     }
 
     @Test
@@ -317,9 +315,9 @@ class DistinctLabelIndexTest {
         assertFalse(asList.contains(TestLabel(0, 30)))
     }
 
-    val ascending = tested.insideSpan(0, 20)
-    val insideSpan = ascending.insideSpan(1, 20)
-    val descending = tested.descendingStartIndex()
+    private val ascending = tested.insideSpan(0, 20)
+    private val insideSpan = ascending.insideSpan(1, 20)
+    private val descending = tested.descendingStartIndex()
 
     @Test
     fun testAscendingViewSize() {
@@ -533,7 +531,7 @@ class DistinctLabelIndexTest {
         assertTrue(descendingEnd === descendingEnd)
     }
 
-    val descendingList = descending.asList()
+    private val descendingList = descending.asList()
 
     @Test
     fun testDescendingListIsEmpty() {
@@ -678,8 +676,8 @@ class DistinctLabelIndexTest {
         assertTrue(ascending === descendingEnd)
     }
 
-    val ascendingList = ascending.asList()
-    val insideSpanList = insideSpan.asList()
+    private val ascendingList = ascending.asList()
+    private val insideSpanList = insideSpan.asList()
 
     @Test
     fun testAscendingListIsEmpty() {

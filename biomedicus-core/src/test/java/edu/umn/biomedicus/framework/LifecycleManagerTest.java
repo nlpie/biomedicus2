@@ -16,18 +16,18 @@
 
 package edu.umn.biomedicus.framework;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Tested;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-public class LifecycleManagerTest {
+class LifecycleManagerTest {
 
   @Tested
-  LifecycleManager lifecycleManager;
+  private LifecycleManager lifecycleManager;
 
   @Mocked
   LifecycleManaged lifecycleManaged;
@@ -36,7 +36,7 @@ public class LifecycleManagerTest {
    * All registered managed objects should be shutdown even if previous objects threw exceptions.
    */
   @Test
-  public void testShutdownWithExceptions() throws Exception {
+  void testShutdownWithExceptions() throws Exception {
     new Expectations() {{
       lifecycleManaged.doShutdown(); times = 3; result = new BiomedicusException();
     }};
@@ -45,6 +45,6 @@ public class LifecycleManagerTest {
     lifecycleManager.register(lifecycleManaged);
     lifecycleManager.register(lifecycleManaged);
 
-    assertThrows(() -> lifecycleManager.triggerShutdown());
+    assertThrows(BiomedicusException.class, () -> lifecycleManager.triggerShutdown());
   }
 }

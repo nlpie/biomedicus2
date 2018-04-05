@@ -109,10 +109,6 @@ public class RtfParser {
    */
   public boolean finish() {
     currentState.finishState();
-    if (stateStack.size() != 0) {
-      return false;
-    } else {
-      return true;
-    }
+    return stateStack.size() == 0;
   }
 }

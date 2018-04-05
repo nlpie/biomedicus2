@@ -16,9 +16,7 @@
 
 package edu.umn.biomedicus.common
 
-import org.testng.Assert.assertEquals
-import org.testng.Assert.assertNull
-import org.testng.annotations.Test
+import kotlin.test.*
 
 class SequenceDetectorTest {
     val tested = SequenceDetector(

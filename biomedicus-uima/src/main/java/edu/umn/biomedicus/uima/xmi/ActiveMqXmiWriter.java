@@ -40,8 +40,8 @@ import org.xml.sax.SAXException;
  */
 public class ActiveMqXmiWriter extends JCasAnnotator_ImplBase {
 
-  public static final String PARAM_ACTIVE_MQ_URL = "activeMqUrl";
-  public static final String PARAM_ACTIVE_MQ_QUEUE_NAME = "queueName";
+  private static final String PARAM_ACTIVE_MQ_URL = "activeMqUrl";
+  private static final String PARAM_ACTIVE_MQ_QUEUE_NAME = "queueName";
   private static final Logger LOGGER = LoggerFactory.getLogger(ActiveMqXmiWriter.class);
   private Connection connection;
   private Session session;

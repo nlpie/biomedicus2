@@ -291,7 +291,7 @@ class AcronymVectorModel implements AcronymModel {
       try {
         LOGGER.info("Loading acronym vector space: {}", vectorSpacePath);
         @SuppressWarnings("unchecked")
-        WordVectorSpace wordVectorSpace = (WordVectorSpace) yaml
+        WordVectorSpace wordVectorSpace = yaml
             .load(Files.newBufferedReader(vectorSpacePath));
 
         LOGGER.info("Loading acronym sense map: {}. inMemory = {}", senseMapPath, sensesInMemory);

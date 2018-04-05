@@ -16,80 +16,76 @@
 
 package edu.umn.biomedicus.common.viterbi;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import java.util.Collection;
-import mockit.Deencapsulation;
 import mockit.Mocked;
 import mockit.Verifications;
 import mockit.internal.reflection.ConstructorReflection;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link Viterbi}.
  */
-public class ViterbiTest {
+class ViterbiTest {
 
   @Mocked
   ViterbiProcessorImpl viterbiProcessorImpl;
 
   @Test
-  public void testFirstOrderProcessor(
+  void testFirstOrderProcessor(
       @Mocked EmissionProbabilityModel<String, String> emissionProbabilityModel,
-      @Mocked TransitionProbabilityModel<String, String> transitionProbabilityModel)
-      throws Exception {
+      @Mocked TransitionProbabilityModel<String, String> transitionProbabilityModel) {
     ViterbiProcessor<String, String> viterbiProcessor = Viterbi
         .firstOrder(emissionProbabilityModel, transitionProbabilityModel, "state");
 
-    Assert.assertNotNull(viterbiProcessor);
+    assertNotNull(viterbiProcessor);
 
     new Verifications() {{
       Collection<Ancestor<String>> ancestors;
       new ViterbiProcessorImpl<>(emissionProbabilityModel, transitionProbabilityModel,
           withAny(Ancestor::mostRecent), ancestors = withCapture());
-      Assert.assertEquals(ancestors.size(), 1);
-      Assert.assertEquals(ancestors.iterator().next().mostRecent(), "state");
+      assertEquals(ancestors.size(), 1);
+      assertEquals(ancestors.iterator().next().mostRecent(), "state");
     }};
   }
 
   @Test
-  public void testSecondOrderProcessor(
+  void testSecondOrderProcessor(
       @Mocked EmissionProbabilityModel<String, String> emissionProbabilityModel,
-      @Mocked TransitionProbabilityModel<String, Bigram<String>> transitionProbabilityModel)
-      throws Exception {
+      @Mocked TransitionProbabilityModel<String, Bigram<String>> transitionProbabilityModel) {
     Bigram<String> bigram = Ngram.create("state1", "state2");
     ViterbiProcessor<String, String> viterbiProcessor
         = Viterbi
         .secondOrder(emissionProbabilityModel, transitionProbabilityModel, bigram, Ngram::create);
 
-    Assert.assertNotNull(viterbiProcessor);
+    assertNotNull(viterbiProcessor);
 
     new Verifications() {{
       Collection<Ancestor<String>> ancestors;
       new ViterbiProcessorImpl<>(emissionProbabilityModel, transitionProbabilityModel,
           withAny(Ancestor::getBigram),
           ancestors = withCapture());
-      Assert.assertEquals(ancestors.size(), 1);
-      Assert.assertEquals(ancestors.iterator().next().getBigram(), bigram);
+      assertEquals(ancestors.size(), 1);
+      assertEquals(ancestors.iterator().next().getBigram(), bigram);
     }};
   }
 
   @Test
-  public void testCandidateOf() throws Exception {
+  void testCandidateOf() {
     CandidateProbability<String> candidateProbability = Viterbi.candidateOf("state", -0.322);
 
     assertEquals(candidateProbability.getCandidate(), "state");
     assertEquals(candidateProbability.getEmissionLogProbability(), -0.322);
   }
 
-  @Test(expectedExceptions = UnsupportedOperationException.class)
-  public void testConstructorThrows() throws Exception {
-    ConstructorReflection.newInstance(Viterbi.class);
-
-    fail();
+  @Test
+  void testConstructorThrows() {
+    assertThrows(UnsupportedOperationException.class, () -> ConstructorReflection.newInstance(Viterbi.class));
   }
 }

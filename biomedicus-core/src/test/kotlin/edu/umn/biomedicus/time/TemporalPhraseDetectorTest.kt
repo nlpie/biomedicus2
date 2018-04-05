@@ -28,11 +28,11 @@ import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.StandardArtifact
 import edu.umn.nlpengine.addTo
-import org.testng.Assert.assertEquals
-import org.testng.annotations.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TemporalPhraseDetectorTest {
-    val labelAliases = LabelAliases().apply {
+    private val labelAliases = LabelAliases().apply {
         addAlias("Sentence", Sentence::class.java)
         addAlias("ParseToken", ParseToken::class.java)
         addAlias("PosTag", PosTag::class.java)
@@ -47,11 +47,11 @@ class TemporalPhraseDetectorTest {
         addAlias("Number", Number::class.java)
     }
 
-    val searchExprFactory = SearchExprFactory(labelAliases)
+    private val searchExprFactory = SearchExprFactory(labelAliases)
 
-    val pattern = TemporalPhrasePattern(searchExprFactory)
+    private val pattern = TemporalPhrasePattern(searchExprFactory)
 
-    val detector = TemporalPhraseDetector(pattern)
+    private val detector = TemporalPhraseDetector(pattern)
 
     @Test
     fun testSinceTheAgeOf() {

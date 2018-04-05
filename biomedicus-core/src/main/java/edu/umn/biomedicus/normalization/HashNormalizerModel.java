@@ -41,7 +41,7 @@ final class HashNormalizerModel implements NormalizerModel {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
+  public void doShutdown() {
 
   }
 

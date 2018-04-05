@@ -75,7 +75,7 @@ public class PropertyKeywordAction extends AbstractKeywordAction {
   }
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
     int value = (!alwaysUseDefault && hasParameter()) ? getParameter() : defaultValue;
     state.setPropertyValue(propertyGroup, propertyName, value);
   }

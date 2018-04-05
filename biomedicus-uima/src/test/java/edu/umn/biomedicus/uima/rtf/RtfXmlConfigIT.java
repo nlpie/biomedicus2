@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import static org.testng.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 public class RtfXmlConfigIT {
 
   @Test
-  public void testLoadCasMappings() throws Exception {
+  public void testLoadCasMappings() {
     CasMappings casMappings = CasMappings
         .loadFromFile("edu/umn/biomedicus/config/rtf/CasMappings.xml");
     assertNotNull(casMappings);

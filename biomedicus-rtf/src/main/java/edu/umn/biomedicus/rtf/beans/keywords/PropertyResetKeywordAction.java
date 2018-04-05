@@ -42,7 +42,7 @@ public class PropertyResetKeywordAction extends AbstractKeywordAction {
   }
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
     state.resetPropertyGroup(propertyGroupName);
   }
 

@@ -56,8 +56,8 @@ class JdbcArtifactSource @Inject internal constructor(
     init {
         @Suppress("UNCHECKED_CAST")
         val config: Map<String, Any> = FileInputStream(configFile.toFile()).use {
-            Yaml().load(it)
-        } as Map<String, Any>
+            Yaml().load(it) as Map<String, Any>
+        }
 
         val metadataMap = config["metadataMap"]
         if (metadataMap is Map<*, *>) {

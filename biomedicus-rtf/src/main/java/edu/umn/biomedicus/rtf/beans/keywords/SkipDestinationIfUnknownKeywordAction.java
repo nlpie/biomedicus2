@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 public class SkipDestinationIfUnknownKeywordAction extends AbstractKeywordAction {
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
     state.markSkipDestinationIfUnknown();
   }
 

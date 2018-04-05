@@ -367,7 +367,7 @@ public class MeasuresAnnotationTool {
       }
     }
 
-    private String tryCollect(Scanner scanner) throws IOException {
+    private String tryCollect(Scanner scanner) {
       StringBuilder measureBuilder = new StringBuilder();
 
       System.out.print("Is this a measure? ");

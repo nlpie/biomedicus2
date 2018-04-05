@@ -16,15 +16,15 @@
 
 package edu.umn.biomedicus.common.dictionary;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import edu.umn.biomedicus.common.dictionary.StringsVector.Builder;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class StringsVectorTest {
 
   @Test
-  public void testBytes() throws Exception {
+  public void testBytes() {
     Builder builder = new Builder();
     builder.addTerm(new StringIdentifier(5));
     builder.addTerm(new StringIdentifier(5));

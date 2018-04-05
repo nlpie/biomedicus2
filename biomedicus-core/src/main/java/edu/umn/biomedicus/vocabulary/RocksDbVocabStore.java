@@ -60,7 +60,7 @@ public class RocksDbVocabStore extends VocabularyStore {
   }
 
   @Override
-  void open() throws IOException {
+  void open() {
     LOGGER.info("Loading vocabularies: {}", dbPath);
     
     LOGGER.info("Opening words index. inMemory = {}.", inMemory);
