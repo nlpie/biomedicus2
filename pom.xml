@@ -47,6 +47,7 @@
     <kotlin.version>1.2.31</kotlin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <dokka.version>0.9.16</dokka.version>
   </properties>
 
   <distributionManagement>
@@ -122,6 +123,7 @@
         </configuration>
       </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -206,8 +208,28 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>3.7</version>
         </plugin>
+        <plugin>
+          <groupId>org.jetbrains.dokka</groupId>
+          <artifactId>dokka-maven-plugin</artifactId>
+          <version>${dokka.version}</version>
+          <executions>
+            <execution>
+              <phase>pre-site</phase>
+              <goals>
+                <goal>dokka</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <sourceDirectories>
+              <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+              <sourceDir>${project.basedir}/src/main/java</sourceDir>
+            </sourceDirectories>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
+
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -245,14 +267,17 @@
             </executions>
           </plugin>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.0</version>
+            <groupId>org.jetbrains.dokka</groupId>
+            <artifactId>dokka-maven-plugin</artifactId>
+            <version>${dokka.version}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
+                <phase>prepare-package</phase>
                 <goals>
-                  <goal>jar</goal>
+                  <goal>dokka</goal>
+                  <goal>javadoc</goal>
+                  <goal>javadocJar</goal>
                 </goals>
               </execution>
             </executions>
@@ -333,14 +358,6 @@
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.7</version>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
-        <configuration>
-          <failOnError>false</failOnError>
-        </configuration>
-      </plugin>
     </plugins>
   </reporting>
 
@@ -371,4 +388,12 @@
     <connection>scm:git:https://github.com/nlpie/biomedicus.git</connection>
     <developerConnection>scm:git:https://github.com/nlpie/biomedicus.git</developerConnection>
   </scm>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jcenter</id>
+      <name>JCenter</name>
+      <url>https://jcenter.bintray.com/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

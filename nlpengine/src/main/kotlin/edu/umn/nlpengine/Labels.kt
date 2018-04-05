@@ -27,9 +27,9 @@ annotation class LabelMetadata(val versionId: String, val distinct: Boolean = fa
  *
  * By default is sorted ascending start indexes then ascending end indexes.
  *
- * @property startIndex the index of the first character
- * @property endIndex the index after any characters included in this label
- * @property length computed property how long the text range is
+ * @property startIndex The index of the first character
+ * @property endIndex The index after any characters included in this label
+ * @property length A computed property how long the text range is
  */
 interface TextRange {
     val startIndex: Int
@@ -39,6 +39,9 @@ interface TextRange {
     val length: Int
         get() = endIndex - startIndex
 
+    /**
+     * A function which returns the length of this text range.
+     */
     fun length(): Int = length
 
     /**

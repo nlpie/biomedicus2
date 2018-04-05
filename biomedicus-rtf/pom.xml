@@ -30,6 +30,15 @@
   <name>BioMedICUS RTF</name>
   <description>A RTF parser.</description>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>

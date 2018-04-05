@@ -30,6 +30,15 @@
   <name>NLP Engine</name>
   <description>Framework for NLP processing components and their artifacts.</description>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>com.google.inject</groupId>

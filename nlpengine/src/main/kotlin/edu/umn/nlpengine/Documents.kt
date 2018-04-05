@@ -19,6 +19,10 @@ package edu.umn.nlpengine
 import java.util.*
 import kotlin.reflect.full.findAnnotation
 
+/**
+ * Metadata associated with an [Artifact]. All [Document] objects on the artifact share the same
+ * metadata.
+ */
 interface Metadata {
     /**
      * Returns the unique artifact identifier. Generally sourced from the relative path to the
@@ -38,11 +42,12 @@ interface Metadata {
 }
 
 /**
- * A single processing artifact, containing a
+ * A single processing artifact, containing a number of [documents] of text and their associated
+ * labels.
  */
 interface Artifact : Metadata {
     /**
-     * [Document] objects that are attached to this artifiact.
+     * The [Document] objects that are attached to this artifact.
      */
     val documents: Map<String, Document>
 
@@ -76,17 +81,19 @@ interface Artifact : Metadata {
     }
 }
 
+/**
+ * An abstract subclass of the [Artifact] interface, used for implementing Artifact in java.
+ */
 abstract class AbstractArtifact : Artifact
 
 /**
  * A text document and its associated label indices. Implements [TextRange] as the range of the
  * document. Implements [Metadata] with the artifact metadata.
  *
- * @property name the name of the document, a key that identifies documents of a specific type on
+ * @property name The name of the document, a key that identifies documents of a specific type on
  * the artifact
- * @property text the text of the document
- *
- * @since 1.6.0
+ * @property text The text of the document
+ * @constructor Creates a Document with no labels added.
  */
 abstract class Document(
         val name: String,
@@ -216,15 +223,30 @@ internal class StandardDocument(
 
 /**
  * A standard implementation of [Labeler] which handles the creation of [LabelIndex] instances.
+ *
+ * @property labelClass The [Class] of a [Label] subclass that this will label.
+ * @param document The parent document that this labeler occurs on.
+ * @constructor Creates a labeler which can be used to add labels to a document.
  */
 class StandardLabeler<T : Label>(
         val labelClass: Class<T>,
         private val document: Document?
 ) : Labeler<T> {
+    /**
+     * Creates a labeler which can be used to store labels without a backing document.
+     *
+     * @param labelClass The value to initialize the [StandardLabeler.labelClass] property to.
+     */
     constructor(labelClass: Class<T>) : this(labelClass, null)
 
     private var unsorted: ArrayList<T>? = ArrayList()
 
+    /**
+     * Upon first access creates the label index by turning everything added to this labeler into a
+     * new [LabelIndex]. After this labels can no longer be added to the labeler.
+     *
+     * @return Either returns a new label index or the existing label index created.
+     */
     val index: LabelIndex<T> by lazy {
         if (labelClass.kotlin.findAnnotation<LabelMetadata>()?.distinct
                         ?: throw IllegalStateException("Label without @LabelMetadata annotation")) {

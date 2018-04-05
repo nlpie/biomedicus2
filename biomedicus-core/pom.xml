@@ -35,6 +35,15 @@
     <guice.version>4.2.0</guice.version>
   </properties>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
