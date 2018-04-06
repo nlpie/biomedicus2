@@ -16,31 +16,27 @@
 
 package edu.umn.nlpengine
 
-import java.util.*
-import java.util.Collections.unmodifiableCollection
-import kotlin.collections.AbstractList
-
-inline fun <reified T: Label> StandardLabelIndex(vararg labels: T): StandardLabelIndex<T> {
+inline fun <reified T : Label> StandardLabelIndex(vararg labels: T): StandardLabelIndex<T> {
     return StandardLabelIndex(T::class.java, *labels)
 }
 
-inline fun <reified T: Label> StandardLabelIndex(
+inline fun <reified T : Label> StandardLabelIndex(
         comparator: Comparator<T>,
         vararg labels: T
-) : StandardLabelIndex<T> {
+): StandardLabelIndex<T> {
     return StandardLabelIndex(T::class.java, comparator, *labels)
 }
 
-inline fun <reified T: Label> StandardLabelIndex(
+inline fun <reified T : Label> StandardLabelIndex(
         labels: Iterable<T>
-) : StandardLabelIndex<T> {
+): StandardLabelIndex<T> {
     return StandardLabelIndex(T::class.java, labels)
 }
 
-inline fun <reified T: Label> StandardLabelIndex(
+inline fun <reified T : Label> StandardLabelIndex(
         comparator: Comparator<T>,
         labels: Iterable<T>
-) : StandardLabelIndex<T> {
+): StandardLabelIndex<T> {
     return StandardLabelIndex(T::class.java, comparator, labels)
 }
 
@@ -50,8 +46,7 @@ inline fun <reified T: Label> StandardLabelIndex(
 class StandardLabelIndex<T : Label> internal constructor(
         override val labelClass: Class<T>,
         private val values: List<T>
-) : LabelIndex<T>, Collection<T> by unmodifiableCollection(values) {
-
+) : LabelIndex<T>, Collection<T> by values {
 
     constructor(
             labelClass: Class<T>,
@@ -93,10 +88,13 @@ class StandardLabelIndex<T : Label> internal constructor(
 
     override fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T> = AscendingView(
             minBegin = startIndex,
-            maxBegin = endIndex,
+            maxBegin = endIndex - 1,
             minEnd = startIndex,
             maxEnd = endIndex
     )
+
+    override fun beginsInside(startIndex: Int, endIndex: Int): LabelIndex<T> =
+            AscendingView(minBegin = startIndex, maxBegin = endIndex - 1, minEnd = startIndex)
 
     override fun ascendingStartIndex(): LabelIndex<T> = this
 
@@ -114,7 +112,7 @@ class StandardLabelIndex<T : Label> internal constructor(
 
     override fun first() = values.firstOrNull()
 
-    override fun last()  = values.lastOrNull()
+    override fun last() = values.lastOrNull()
 
     override fun atLocation(textRange: TextRange) = internalAtLocation(textRange)
 
@@ -163,7 +161,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             right++
         }
 
-        return unmodifiableCollection(values.subList(left, right))
+        return values.subList(left, right)
     }
 
     internal fun internalIndexOf(
@@ -429,27 +427,38 @@ class StandardLabelIndex<T : Label> internal constructor(
             return internalContainsLocation(textRange, left, right + 1)
         }
 
-        override fun toTheLeftOf(index: Int) = updateBounds(
-                newMaxBegin = minOf(index, maxBegin),
-                newMaxEnd = minOf(index, maxEnd)
-        )
+        override fun toTheLeftOf(index: Int) =
+                updateBounds(
+                        newMaxBegin = minOf(index, maxBegin),
+                        newMaxEnd = minOf(index, maxEnd)
+                )
 
-        override fun toTheRightOf(index: Int) = updateBounds(
-                newMinBegin = maxOf(index, minBegin),
-                newMinEnd = maxOf(index, minEnd)
-        )
+        override fun toTheRightOf(index: Int) =
+                updateBounds(
+                        newMinBegin = maxOf(index, minBegin),
+                        newMinEnd = maxOf(index, minEnd)
+                )
 
-        override fun insideSpan(startIndex: Int, endIndex: Int) = updateBounds(
-                newMinBegin = maxOf(startIndex, minBegin),
-                newMaxBegin = minOf(endIndex, maxBegin),
-                newMinEnd = maxOf(startIndex, minEnd),
-                newMaxEnd = minOf(endIndex, maxEnd)
-        )
+        override fun insideSpan(startIndex: Int, endIndex: Int) =
+                updateBounds(
+                        newMinBegin = maxOf(startIndex, minBegin),
+                        newMaxBegin = minOf(endIndex - 1, maxBegin),
+                        newMinEnd = maxOf(startIndex, minEnd),
+                        newMaxEnd = minOf(endIndex, maxEnd)
+                )
 
-        override fun containing(startIndex: Int, endIndex: Int) = updateBounds(
-                newMaxBegin = minOf(startIndex, maxBegin),
-                newMinEnd = maxOf(endIndex, minEnd)
-        )
+        override fun beginsInside(startIndex: Int, endIndex: Int) =
+                updateBounds(
+                        newMinBegin = maxOf(startIndex, minBegin),
+                        newMaxBegin = minOf(endIndex - 1, maxBegin),
+                        newMinEnd = maxOf(startIndex, minEnd)
+                )
+
+        override fun containing(startIndex: Int, endIndex: Int) =
+                updateBounds(
+                        newMaxBegin = minOf(startIndex, maxBegin),
+                        newMinEnd = maxOf(endIndex, minEnd)
+                )
 
         override fun asList(): List<T> = ViewList()
 

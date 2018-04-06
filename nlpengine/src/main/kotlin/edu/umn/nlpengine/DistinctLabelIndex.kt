@@ -86,6 +86,12 @@ class DistinctLabelIndex<T : Label> internal constructor(
     override fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T> =
             AscendingView(minTextIndex = startIndex, maxTextIndex = endIndex)
 
+    override fun beginsInside(startIndex: Int, endIndex: Int): LabelIndex<T> =
+            AscendingView(
+                    minTextIndex = startIndex,
+                    right = lowerStart(endIndex)
+            )
+
     override fun ascendingStartIndex() = this
 
     override fun descendingStartIndex(): LabelIndex<T> = DescendingView()
@@ -229,6 +235,27 @@ class DistinctLabelIndex<T : Label> internal constructor(
         return i
     }
 
+    /**
+     * Returns the index of a label that starts before the index or -1 if there is no such index.
+     */
+    internal fun lowerStart(
+            index: Int,
+            fromIndex: Int = 0,
+            toIndex: Int = size
+    ) : Int {
+        var i = values.binarySearchBy(index - 1, fromIndex, toIndex) { it.startIndex }
+
+        if (i < 0) {
+            i = -1 * (i + 1)
+            if (i <= fromIndex) {
+                return -1
+            }
+            i--
+        }
+
+        return i
+    }
+
 
     internal abstract inner class View(
             left: Int,
@@ -280,6 +307,10 @@ class DistinctLabelIndex<T : Label> internal constructor(
                 maxTextIndex = endIndex
         )
 
+        override fun beginsInside(startIndex: Int, endIndex: Int): LabelIndex<T> {
+            return updateEnds(higherIndex(startIndex, left, right + 1), lowerStart(endIndex, left, right + 1))
+        }
+
         override fun first(): T? {
             if (firstIndex in 0 until values.size && firstIndex <= right && firstIndex >= left) {
                 return values[firstIndex]
@@ -306,10 +337,18 @@ class DistinctLabelIndex<T : Label> internal constructor(
                 minTextIndex: Int? = null,
                 maxTextIndex: Int? = null
         ): LabelIndex<T> {
-            val newLeft = if (minTextIndex != null) higherIndex(minTextIndex) else left
-            val newRight = if (maxTextIndex != null) lowerIndex(maxTextIndex) else right
+            val newLeft = if (minTextIndex != null) {
+                higherIndex(minTextIndex, left, right + 1)
+            } else left
+            val newRight = if (maxTextIndex != null) {
+                lowerIndex(maxTextIndex, left, right + 1)
+            } else right
 
-            return updateEnds(newLeft, newRight)
+            if (newLeft == -1) {
+                return updateEnds(0, -1)
+            }
+
+            return updateEnds(maxOf(left, newLeft), minOf(right, newRight))
         }
     }
 
@@ -326,7 +365,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
             if (newLeft == -1) {
                 return AscendingView(0, -1)
             }
-            return AscendingView(left = maxOf(left, newLeft), right = minOf(right, newRight))
+            return AscendingView(left = newLeft, right = newRight)
         }
 
 
@@ -436,7 +475,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
             if (newLeft == -1) {
                 return DescendingView(0, -1)
             }
-            return DescendingView(left = maxOf(left, newLeft), right = minOf(right, newRight))
+            return DescendingView(left = newLeft, right = newRight)
         }
 
         override fun iterator() = DescendingListIterator(0)

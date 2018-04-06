@@ -21,7 +21,7 @@ import kotlin.test.*
 
 class StandardLabelIndexTest {
 
-    data class TestLabel(override val startIndex: Int, override val endIndex: Int): Label()
+    data class TestLabel(override val startIndex: Int, override val endIndex: Int) : Label()
 
     val tested = StandardLabelIndex(
             TestLabel(0, 5),
@@ -99,6 +99,59 @@ class StandardLabelIndexTest {
 
         val it = insideSpan.iterator()
         assertFalse(it.hasNext())
+    }
+
+    @Test
+    fun testBeginsInside() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        )
+
+        val beginsInside = tested.beginsInside(1, 9)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6),
+                        TestLabel(6, 7),
+                        TestLabel(6, 8)
+                ),
+                actual = beginsInside.asList()
+        )
+    }
+
+    @Test
+    fun testBeginsInsideWithOverlap() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        )
+
+        val beginsInside = tested.beginsInside(1, 10)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6),
+                        TestLabel(6, 7),
+                        TestLabel(6, 8),
+                        TestLabel(9, 10),
+                        TestLabel(9, 13),
+                        TestLabel(9, 13)
+                ),
+                actual = beginsInside.asList()
+        )
     }
 
     @Test
@@ -478,6 +531,100 @@ class StandardLabelIndexTest {
 
         val it = insideSpan.iterator()
         assertFalse(it.hasNext())
+    }
+
+    @Test
+    fun `view beginsInside shouldn't return anything before view`() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        ).insideSpan(2, 9)
+
+        val beginsInside = tested.beginsInside(0, 9)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6),
+                        TestLabel(6, 7),
+                        TestLabel(6, 8)
+                ),
+                actual = beginsInside.asList()
+        )
+    }
+
+    @Test
+    fun `view beginsInside shouldn't return anything after view`() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        ).insideSpan(2, 9)
+
+        val beginsInside = tested.beginsInside(0, 10)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6),
+                        TestLabel(6, 7),
+                        TestLabel(6, 8)
+                ),
+                actual = beginsInside.asList()
+        )
+    }
+
+    @Test
+    fun `view beginsInside shouldn't return labels whose beginIndex equals the endIndex parameter`() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        ).insideSpan(2, 9)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6)
+                ),
+                actual = tested.beginsInside(2, 6).asList()
+        )
+    }
+
+    @Test
+    fun `view beginsInside should return labels that overlap with parameter range`() {
+        val tested = StandardLabelIndex(
+                TestLabel(0, 5),
+                TestLabel(0, 7),
+                TestLabel(2, 6),
+                TestLabel(6, 8),
+                TestLabel(6, 7),
+                TestLabel(9, 10),
+                TestLabel(9, 13),
+                TestLabel(9, 13)
+        ).insideSpan(2, 9)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(2, 6),
+                        TestLabel(6, 7),
+                        TestLabel(6, 8)
+                ),
+                actual = tested.beginsInside(2, 7).asList()
+        )
     }
 
     @Test

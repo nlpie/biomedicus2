@@ -20,7 +20,7 @@ import java.util.*
 import kotlin.test.*
 
 class DistinctLabelIndexTest {
-    data class TestLabel(override val startIndex: Int, override val endIndex: Int): Label()
+    data class TestLabel(override val startIndex: Int, override val endIndex: Int) : Label()
 
     val tested = DistinctLabelIndex(
             TestLabel(0, 3),
@@ -142,6 +142,48 @@ class DistinctLabelIndexTest {
 
         val it = insideSpan.iterator()
         assertFalse(it.hasNext())
+    }
+
+    @Test
+    fun testBeginsInsideOverlap() {
+        val tested = DistinctLabelIndex(
+                TestLabel(0, 3),
+                TestLabel(3, 5),
+                TestLabel(6, 10),
+                TestLabel(11, 15),
+                TestLabel(16, 20)
+        )
+
+        val beginsInside = tested.beginsInside(1, 7)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(3, 5),
+                        TestLabel(6, 10)
+                ),
+                actual = beginsInside.asList()
+        )
+    }
+
+    @Test
+    fun testBeginsInsideTouching() {
+        val tested = DistinctLabelIndex(
+                TestLabel(0, 3),
+                TestLabel(3, 5),
+                TestLabel(6, 10),
+                TestLabel(11, 15),
+                TestLabel(16, 20)
+        )
+
+        val beginsInside = tested.beginsInside(0, 6)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(0, 3),
+                        TestLabel(3, 5)
+                ),
+                actual = beginsInside.asList()
+        )
     }
 
     @Test
@@ -455,7 +497,7 @@ class DistinctLabelIndexTest {
     fun testViewInsideSpanBefore() {
         val insideSpan = ascending.insideSpan(0, 1)
 
-        assertEquals(insideSpan.size, 0)
+        assertEquals(0, insideSpan.size)
 
         val it = insideSpan.iterator()
         assertFalse(it.hasNext())
@@ -463,12 +505,56 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewInsideSpanAfter() {
+
         val insideSpan = ascending.insideSpan(21, 24)
 
-        assertEquals(insideSpan.size, 0)
+        assertEquals(0, insideSpan.size)
 
         val it = insideSpan.iterator()
         assertFalse(it.hasNext())
+    }
+
+    @Test
+    fun testViewBeginsInside() {
+        val tested = DistinctLabelIndex(
+                TestLabel(0, 3),
+                TestLabel(3, 5),
+                TestLabel(6, 10),
+                TestLabel(11, 15),
+                TestLabel(16, 20)
+        ).insideSpan(3, 15)
+
+        val beginsInside = tested.beginsInside(0, 17)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(3, 5),
+                        TestLabel(6, 10),
+                        TestLabel(11, 15)
+                ),
+                actual = beginsInside.asList()
+        )
+    }
+
+    @Test
+    fun testViewBeginsInsideBeginInside() {
+        val tested = DistinctLabelIndex(
+                TestLabel(0, 3),
+                TestLabel(3, 5),
+                TestLabel(6, 10),
+                TestLabel(11, 15),
+                TestLabel(16, 20)
+        ).insideSpan(3, 15)
+
+        val beginsInside = tested.beginsInside(4, 17)
+
+        assertEquals(
+                expected = listOf(
+                        TestLabel(6, 10),
+                        TestLabel(11, 15)
+                ),
+                actual = beginsInside.asList()
+        )
     }
 
     @Test
