@@ -18,7 +18,6 @@ package edu.umn.biomedicus.sentences
 
 import edu.umn.biomedicus.annotations.ProcessorScoped
 import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.sentences
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.ArtifactProcessor
@@ -47,6 +46,7 @@ class SentencesEvaluator @Inject internal constructor(
 
         val evaluatedSentences = evaluatedDocument.sentences()
         for (sentence in goldDocument.sentences()) {
+            if (sentence.sentenceClass == 0) continue
             if (evaluatedSentences.contains(sentence)) {
                 hits++
             } else {

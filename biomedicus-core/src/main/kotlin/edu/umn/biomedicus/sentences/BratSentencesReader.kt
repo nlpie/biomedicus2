@@ -26,11 +26,11 @@ import java.io.File
 import javax.inject.Inject
 
 /**
- * Reads in sentences from the brat ann files and adds them as sentences.
+ * Reads in sentences from the brat .ann files and adds them as sentences.
  */
 class BratSentencesReader @Inject internal constructor(
         @ProcessorSetting("labelUnsure") private val labelUnsure: Boolean
-): DocumentProcessor {
+) : DocumentProcessor {
     override fun process(document: Document) {
         val sourceFile = File(document.metadata[TextFilesArtifactSource.SOURCE_PATH]
                 ?: error("Document does not have source path"))
@@ -40,23 +40,29 @@ class BratSentencesReader @Inject internal constructor(
         val labeler = document.labeler<Sentence>()
 
         annFile.useLines {
-            it.map { it.split("\t") }.map { it[1] }.forEach sentenceLoop@{
-                val space = it.indexOf(' ')
-                val type = it.substring(0, space)
-                val segments = it.substring(space + 1).split(";")
-                        .map {
-                            val indexes = it.split(" ").map { it.toInt() }
-                            Span(indexes[0], indexes[1])
+            it.map { it.split("\t") }
+                    .filter { it.size > 1 }
+                    .map { it[1] }
+                    .forEach sentenceLoop@{
+                        val space = it.indexOf(' ')
+                        val type = it.substring(0, space)
+
+                        if (type == "Unsure" && !labelUnsure) {
+                            return@sentenceLoop
                         }
-                val startIndex = segments.map { it.startIndex }.min() ?: error("No min start index")
-                val endIndex = segments.map { it.endIndex }.max() ?: error("No max end index")
 
-                if (type == "Unsure" && !labelUnsure) {
-                    return@sentenceLoop
-                }
+                        val segments = it.substring(space + 1).split(";")
+                                .map {
+                                    val indexes = it.split(" ").map { it.toInt() }
+                                    Span(indexes[0], indexes[1])
+                                }
+                        val startIndex = segments.map { it.startIndex }.min()
+                                ?: error("No min start index")
+                        val endIndex = segments.map { it.endIndex }.max()
+                                ?: error("No max end index")
 
-                labeler.add(Sentence(startIndex, endIndex, if (type == "Sentence") 1 else 0))
-            }
+                        labeler.add(Sentence(startIndex, endIndex, if (type == "Sentence") 1 else 0))
+                    }
         }
     }
 }

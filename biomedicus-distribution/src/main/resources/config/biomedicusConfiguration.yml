@@ -80,7 +80,6 @@ settings:
   opennlp:
     sentence:
       model.path: opennlp/sentence.bin
-      trainerOutputDirectory: opennlp/sentence-out.bin
   syntaxnet:
     installationDir.path: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
     modelDir: syntaxnet/models/parsey_mcparseface

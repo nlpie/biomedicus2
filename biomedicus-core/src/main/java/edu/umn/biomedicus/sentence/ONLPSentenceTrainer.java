@@ -49,16 +49,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ONLPSentenceTrainer implements Aggregator {
-
   private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
-
-  private static final char[] EOS_CHARS = " \n\t".toCharArray();
   private static final String POISON = ">poison<";
   private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();
   private final Dictionary abbrevs;
   private final Path outputPath;
   private final CountDownLatch modelTrained = new CountDownLatch(1);
   private final String documentName;
+  private final Boolean useUnsure;
 
   @Nullable
   private SentenceModel sentenceModel = null;
@@ -69,15 +67,25 @@ public class ONLPSentenceTrainer implements Aggregator {
   @Inject
   ONLPSentenceTrainer(
       AcronymExpansionsModel acronymExpansionsModel,
-      @ProcessorSetting("opennlp.sentence.trainerOutputDirectory") Path outputPath,
-      @ProcessorSetting("documentName") String documentName
+      @ProcessorSetting("outputDirectory") Path outputPath,
+      @ProcessorSetting("documentName") String documentName,
+      @ProcessorSetting("eosChars") String eosChars,
+      @ProcessorSetting("useTokenEnd") Boolean useTokenEnd,
+      @ProcessorSetting("useNewlineAsEos") Boolean useNewlineAsEos,
+      @ProcessorSetting("useTabAsEos") Boolean useTabAsEos,
+      @ProcessorSetting("useUnsure") Boolean useUnsure
   ) {
     this.outputPath = outputPath;
     this.documentName = documentName;
+
+    this.useUnsure = useUnsure;
+
     abbrevs = new Dictionary(true);
     for (String s : acronymExpansionsModel.getAcronyms()) {
       abbrevs.put(new StringList(s));
     }
+    char[] eos = (eosChars + (useNewlineAsEos != null && useNewlineAsEos ? "\n" : "")
+        + (useTabAsEos != null && useTabAsEos ? "\t" : "")).toCharArray();
 
     Thread thread = new Thread(() -> {
       try {
@@ -117,7 +125,7 @@ public class ONLPSentenceTrainer implements Aggregator {
               }
             });
         SentenceDetectorFactory sentenceDetectorFactory = new SentenceDetectorFactory("en",
-            false, abbrevs, EOS_CHARS);
+            useTokenEnd != null && useTokenEnd, abbrevs, eos);
         TrainingParameters params = TrainingParameters.defaultParams();
         logger.info("Training sentence model.");
         sentenceModel = SentenceDetectorME.train("en", samples, sentenceDetectorFactory, params);
@@ -169,11 +177,14 @@ public class ONLPSentenceTrainer implements Aggregator {
       return;
     }
 
-    Sentence prev = sentenceIt.next();
+    int prev = 0;
     while (sentenceIt.hasNext()) {
       Sentence sentence = sentenceIt.next();
-      samplesQueue.add(text.substring(prev.getStartIndex(), sentence.getStartIndex()));
+      int endIndex = sentence.getEndIndex();
+      if (sentence.getSentenceClass() == 1 || (useUnsure != null && useUnsure)) {
+        samplesQueue.add(text.substring(prev, endIndex));
+      }
+      prev = endIndex;
     }
-
   }
 }

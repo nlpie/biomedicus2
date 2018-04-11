@@ -30,8 +30,46 @@
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>opennlp.sentence.trainerOutputDirectory</name>
+        <name>outputDirectory</name>
+        <description>Where to write the sentence model.</description>
         <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>useTokenEnd</name>
+        <description>
+          Whether the ONLP sentence detector will use the ends or beginnings of tokens.
+        </description>
+        <type>Boolean</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>eosChars</name>
+        <description>
+          The characters to use to decide whether tokens are sentence split candidates.
+        </description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>useNewlineAsEos</name>
+        <description>Whether to use newlines to detect EOS candidates.</description>
+        <type>Boolean</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>useTabAsEos</name>
+        <description>Whether to use tabs to detect EOS candidates.</description>
+        <type>Boolean</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+      <configurationParameter>
+        <name>useUnsure</name>
+        <description>
+          Whether the sentence model should be trained using the sentences labeled as "Unsure".
+        </description>
+        <type>Boolean</type>
+        <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>documentName</name>
@@ -73,6 +111,36 @@
         <name>documentName</name>
         <value>
           <string>Analysis</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>useTokenEnd</name>
+        <value>
+          <boolean>false</boolean>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>useNewlineAsEos</name>
+        <value>
+          <boolean>true</boolean>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>useTabAsEos</name>
+        <value>
+          <boolean>true</boolean>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>eosChars</name>
+        <value>
+          <string>.?:]")!</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>useUnsure</name>
+        <value>
+          <boolean>false</boolean>
         </value>
       </nameValuePair>
       <nameValuePair>
