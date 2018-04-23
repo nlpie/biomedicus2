@@ -21,7 +21,6 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.nlpengine.Aggregator;
 import edu.umn.nlpengine.Artifact;

@@ -97,7 +97,7 @@ public class TntPosTagger implements DocumentProcessor {
     Labeler<PosTag> partOfSpeechLabeler = document.labeler(PosTag.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
-      Collection<ParseToken> tokens = parseTokenLabelIndex.insideSpan(sentence);
+      Collection<ParseToken> tokens = parseTokenLabelIndex.inside(sentence);
       ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel,
           Ngram.create(BBS, BOS), Ngram::create);
 

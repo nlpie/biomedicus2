@@ -72,7 +72,7 @@ public class NumberContextWriter implements DocumentProcessor {
         if (sentence == null) {
           throw new RuntimeException("No sentence");
         }
-        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentence);
+        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.inside(sentence);
 
         Iterator<ParseToken> it = sentenceTokensIndex.backwardFrom(number).iterator();
         List<ParseToken> leftTokens = new ArrayList<>();
@@ -87,7 +87,7 @@ public class NumberContextWriter implements DocumentProcessor {
         }
         bufferedWriter.newLine();
 
-        for (ParseToken numberToken : tokensIndex.insideSpan(number)) {
+        for (ParseToken numberToken : tokensIndex.inside(number)) {
           bufferedWriter.write(numberToken.getText() + " ");
         }
         bufferedWriter.newLine();

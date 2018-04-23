@@ -108,7 +108,7 @@ class DrugRelevantLabeler : DocumentProcessor {
 }
 
 internal fun Document.isDrugDep(textRange: TextRange): Boolean {
-    val insideSpan = dependencies().insideSpan(textRange)
+    val insideSpan = dependencies().inside(textRange)
     val alcoholRelevants = labelIndex<AlcoholRelevant>()
     val drugRelevants = labelIndex<DrugRelevant>()
     val nicotineRelevants = labelIndex<NicotineRelevant>()
@@ -151,7 +151,7 @@ class DrugUnitDetector(
         val labeler = document.labeler<DrugUnit>()
 
         document.labelIndex<DrugCandidate>()
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isDrugDep(it) }
                 .forEach { labeler.add(DrugUnit(it)) }
@@ -202,7 +202,7 @@ class DrugFrequencyDetector : DocumentProcessor {
         val labeler = document.labeler<DrugFrequency>()
 
         document.labelIndex<DrugCandidate>()
-                .flatMap { usageFrequencies.insideSpan(it) }
+                .flatMap { usageFrequencies.inside(it) }
                 .filter { amounts.containing(it).isEmpty() }
                 .filter { document.isDrugDep(it) }
                 .map { DrugFrequency(it) }
@@ -224,7 +224,7 @@ class DrugTemporalDetector : DocumentProcessor {
         val temporalLabeler = document.labeler<DrugTemporal>()
 
         document.labelIndex<DrugCandidate>()
-                .flatMap { temporalPhrases.insideSpan(it) }
+                .flatMap { temporalPhrases.inside(it) }
                 .filter { amounts.containing(it).isEmpty() }
                 .filter { frequencies.containing(it).isEmpty() }
                 .filter { document.isDrugDep(it) }
@@ -255,7 +255,7 @@ class DrugTypeDetector(
         val tokens = document.tokens()
         val labeler = document.labeler<DrugType>()
         document.labelIndex<DrugCandidate>()
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isDrugDep(it) }
                 .forEach { labeler.add(DrugType(it)) }
@@ -272,7 +272,7 @@ class DrugStatusDetector : DocumentProcessor {
         val labeler = document.labeler<DrugStatus>()
 
         document.labelIndex<DrugCandidate>()
-                .flatMap { usageStatuses.insideSpan(it) }
+                .flatMap { usageStatuses.inside(it) }
                 .filter { document.isDrugDep(it) }
                 .forEach { labeler.add(DrugStatus(it)) }
     }
@@ -304,11 +304,11 @@ class DrugMethodDetector(
 
         document.labelIndex<DrugCandidate>()
                 .onEach {
-                    genericMethods.insideSpan(it)
+                    genericMethods.inside(it)
                             .filter { document.isDrugDep(it) }
                             .forEach { labeler.add(DrugMethod(it)) }
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isDrugDep(it) }
                 .forEach { labeler.add(DrugMethod(it)) }

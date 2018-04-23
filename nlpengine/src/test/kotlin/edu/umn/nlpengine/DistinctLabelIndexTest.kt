@@ -113,7 +113,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testInsideSpan() {
-        val insideSpan = tested.insideSpan(1, 16)
+        val insideSpan = tested.inside(1, 16)
 
         assertEquals(insideSpan.size, 3)
 
@@ -126,7 +126,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testInsideSpanBefore() {
-        val insideSpan = tested.insideSpan(0, 2)
+        val insideSpan = tested.inside(0, 2)
 
         assertEquals(insideSpan.size, 0)
 
@@ -136,7 +136,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testInsideSpanAfter() {
-        val insideSpan = tested.insideSpan(21, 25)
+        val insideSpan = tested.inside(21, 25)
 
         assertEquals(insideSpan.size, 0)
 
@@ -357,8 +357,8 @@ class DistinctLabelIndexTest {
         assertFalse(asList.contains(TestLabel(0, 30)))
     }
 
-    private val ascending = tested.insideSpan(0, 20)
-    private val insideSpan = ascending.insideSpan(1, 20)
+    private val ascending = tested.inside(0, 20)
+    private val insideSpan = ascending.inside(1, 20)
     private val descending = tested.descendingStartIndex()
 
     @Test
@@ -420,7 +420,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewIsEmpty() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertTrue(nothing.isEmpty())
     }
 
@@ -436,7 +436,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewNotContains() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertFalse(nothing.contains(TestLabel(3, 5)))
     }
 
@@ -452,7 +452,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewContainsSpanOutsideView() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertFalse(nothing.containsSpan(3, 5))
     }
 
@@ -495,7 +495,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testViewInsideSpanBefore() {
-        val insideSpan = ascending.insideSpan(0, 1)
+        val insideSpan = ascending.inside(0, 1)
 
         assertEquals(0, insideSpan.size)
 
@@ -506,7 +506,7 @@ class DistinctLabelIndexTest {
     @Test
     fun testViewInsideSpanAfter() {
 
-        val insideSpan = ascending.insideSpan(21, 24)
+        val insideSpan = ascending.inside(21, 24)
 
         assertEquals(0, insideSpan.size)
 
@@ -522,7 +522,7 @@ class DistinctLabelIndexTest {
                 TestLabel(6, 10),
                 TestLabel(11, 15),
                 TestLabel(16, 20)
-        ).insideSpan(3, 15)
+        ).inside(3, 15)
 
         val beginsInside = tested.beginsInside(0, 17)
 
@@ -544,7 +544,7 @@ class DistinctLabelIndexTest {
                 TestLabel(6, 10),
                 TestLabel(11, 15),
                 TestLabel(16, 20)
-        ).insideSpan(3, 15)
+        ).inside(3, 15)
 
         val beginsInside = tested.beginsInside(4, 17)
 
@@ -570,7 +570,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testDescendingUpdateBounds() {
-        val descendingInsideSpan = descending.insideSpan(3, 17)
+        val descendingInsideSpan = descending.inside(3, 17)
 
         assertEquals(descendingInsideSpan.size, 3)
 
@@ -715,7 +715,7 @@ class DistinctLabelIndexTest {
 
     @Test
     fun testAscendingUpdateBounds() {
-        val ascendingInsideSpan = ascending.insideSpan(3, 17)
+        val ascendingInsideSpan = ascending.inside(3, 17)
 
         assertEquals(ascendingInsideSpan.size, 3)
 

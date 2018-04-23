@@ -73,7 +73,7 @@ class ContextCues {
     int size = parseTokenLabels.size();
     for (int i = 0; i < size; i++) {
       TermToken firstParseToken = parseTokenLabels.get(i);
-      for (PosTag posTag : partOfSpeeches.insideSpan(firstParseToken)) {
+      for (PosTag posTag : partOfSpeeches.inside(firstParseToken)) {
         if (scopeDelimitersPos.contains(posTag.getPartOfSpeech())) {
           return null;
         }

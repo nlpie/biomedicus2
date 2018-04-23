@@ -32,7 +32,7 @@ annotation class LabelMetadata(val versionId: String, val distinct: Boolean = fa
  * @property length A computed property how long the text range is, number of characters covered by
  * this label.
  */
-interface TextRange {
+interface TextRange : Comparable<TextRange> {
     val startIndex: Int
 
     val endIndex: Int
@@ -148,6 +148,10 @@ interface TextRange {
         require(endIndex <= charSequence.length) {
             "endIndex: $endIndex outside charSequence"
         }
+    }
+
+    override operator fun compareTo(other: TextRange): Int {
+        return compareLocation(other)
     }
 }
 

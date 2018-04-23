@@ -86,8 +86,8 @@ public class TntModelTrainerAggregator implements Aggregator {
     LabelIndex<PosTag> partsOfSpeech = view.labelIndex(PosTag.class);
 
     for (Sentence sentence : sentences) {
-      List<ParseToken> sentenceTokens = tokens.insideSpan(sentence).asList();
-      List<PosTag> sentencesPos = partsOfSpeech.insideSpan(sentence).asList();
+      List<ParseToken> sentenceTokens = tokens.inside(sentence).asList();
+      List<PosTag> sentencesPos = partsOfSpeech.inside(sentence).asList();
 
       tntModelTrainer.addSentence(sentenceTokens, sentencesPos);
     }

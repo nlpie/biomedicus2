@@ -53,8 +53,8 @@ class UimaLabelIndex<T : Label> @Inject constructor(
         return inflated.containing(startIndex, endIndex)
     }
 
-    override fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T> {
-        return inflated.insideSpan(startIndex, endIndex)
+    override fun inside(startIndex: Int, endIndex: Int): LabelIndex<T> {
+        return inflated.inside(startIndex, endIndex)
     }
 
     override fun beginsInside(startIndex: Int, endIndex: Int): LabelIndex<T> {

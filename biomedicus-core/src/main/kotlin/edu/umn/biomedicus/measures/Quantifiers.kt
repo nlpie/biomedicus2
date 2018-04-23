@@ -132,7 +132,7 @@ class IndefiniteQuantifierDetector @Inject internal constructor(
         val fuzzyLabeler = document.labeler<FuzzyValue>()
 
         for (sentence in sentences) {
-            val sentenceTokens = tokens.insideSpan(sentence).asList()
+            val sentenceTokens = tokens.inside(sentence).asList()
 
             cues.left.detectAll(sentenceTokens).forEach {
                 cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
@@ -178,7 +178,7 @@ class StandaloneQuantifierDetector @Inject constructor(
         val labeler = document.labeler<StandaloneQuantifier>()
 
         sentences
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens).forEach {
                         labeler.add(StandaloneQuantifier(sentenceTokens[it.first].startIndex,

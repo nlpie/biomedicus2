@@ -149,7 +149,7 @@ public class ModificationDetector implements DocumentProcessor {
         throw new RuntimeException("Term outside of a sentence.");
       }
 
-      LabelIndex<TermToken> sentenceTokenLabels = tokenLabelIndex.insideSpan(sentenceLabel);
+      LabelIndex<TermToken> sentenceTokenLabels = tokenLabelIndex.inside(sentenceLabel);
 
       List<TermToken> contextList = sentenceTokenLabels.backwardFrom(termLabel).asList();
 

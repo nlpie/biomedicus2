@@ -112,7 +112,7 @@ class NicotineRelevantLabeler : DocumentProcessor {
  * [NicotineRelevant] ancestor
  */
 internal fun Document.isNicotineDep(textRange: TextRange): Boolean {
-    val insideSpan = dependencies().insideSpan(textRange)
+    val insideSpan = dependencies().inside(textRange)
     val nicotineRelevants = labelIndex<NicotineRelevant>()
     val alcoholRelevants = labelIndex<AlcoholRelevant>()
     val drugRelevants = labelIndex<DrugRelevant>()
@@ -155,9 +155,9 @@ class NicotineUnitDetector(
         val labeler = document.labeler<NicotineUnit>()
 
         candidates
-                .map { sentences.insideSpan(it) }
+                .map { sentences.inside(it) }
                 .forEach {
-                    it.map { tokens.insideSpan(it).asList() }
+                    it.map { tokens.inside(it).asList() }
                             .forEach { sentenceTokens ->
                                 detector.detectAll(sentenceTokens).forEach {
                                     val unit = NicotineUnit(
@@ -221,7 +221,7 @@ class NicotineFrequencyDetector : DocumentProcessor {
 
         for (nicotineCandidate in nicotineCandidates) {
             usageFrequencies
-                    .insideSpan(nicotineCandidate)
+                    .inside(nicotineCandidate)
                     .asSequence()
                     .filter { amounts.containing(it).isEmpty() }
                     .filter { document.isNicotineDep(it) }
@@ -245,7 +245,7 @@ class NicotineTemporalDetector : DocumentProcessor {
         val temporalLabeler = document.labeler<NicotineTemporal>()
 
         for (nicotineCandidate in nicotineCandidates) {
-            temporalPhrases.insideSpan(nicotineCandidate)
+            temporalPhrases.inside(nicotineCandidate)
                     .asSequence()
                     .filter { amounts.containing(it).isEmpty() }
                     .filter { frequencies.containing(it).isEmpty() }
@@ -280,7 +280,7 @@ class NicotineTypeDetector(
         val labeler = document.labeler<NicotineType>()
 
         candidates
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { candidateTokens ->
                     detector.detectAll(candidateTokens)
                             .forEach {
@@ -326,13 +326,13 @@ class NicotineStatusDetector(
 
         document.labelIndex<NicotineCandidate>()
                 .onEach {
-                    usageStatuses.insideSpan(it)
+                    usageStatuses.inside(it)
                             .filter { document.isNicotineDep(it) }
                             .forEach {
                                 labeler.add(NicotineStatus(it))
                             }
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens).forEach {
                         val status = NicotineStatus(sentenceTokens[it.first].startIndex,
@@ -375,13 +375,13 @@ class NicotineMethodDetector(
         candidates
                 .onEach {
                     genericMethods
-                            .insideSpan(it)
+                            .inside(it)
                             .filter { document.isNicotineDep(it) }
                             .forEach {
                                 labeler.add(NicotineMethod(it))
                             }
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens)
                             .map {

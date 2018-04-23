@@ -55,14 +55,14 @@ class SectionContentLabeler : DocumentProcessor {
         var prev: SectionHeader? = null
         for (sectionHeader in sectionHeaders) {
             if (prev != null) {
-                val sectionSentences = sentences.insideSpan(prev.endIndex, sectionHeader.startIndex)
+                val sectionSentences = sentences.inside(prev.endIndex, sectionHeader.startIndex)
                 createSectionFromSentences(sectionSentences, prev, contentLabeler, sectionLabeler)
             }
             prev = sectionHeader
         }
 
         if (prev != null) {
-            val endSentences = sentences.insideSpan(prev.endIndex, document.endIndex)
+            val endSentences = sentences.inside(prev.endIndex, document.endIndex)
             createSectionFromSentences(endSentences, prev, contentLabeler, sectionLabeler)
         }
     }

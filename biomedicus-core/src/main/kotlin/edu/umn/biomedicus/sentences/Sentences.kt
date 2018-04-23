@@ -48,8 +48,13 @@ data class Sentence(
      * Retrieves a label index of all the [ParseToken] labels inside of this sentence.
      */
     fun tokens() : LabelIndex<ParseToken> {
-        return document?.labelIndex<ParseToken>()?.insideSpan(this)
+        return document?.labelIndex<ParseToken>()?.inside(this)
                 ?: throw IllegalStateException("This sentence has not been added to a document.")
+    }
+
+    companion object Classes {
+        const val unknown = 0
+        const val sentence = 1
     }
 }
 

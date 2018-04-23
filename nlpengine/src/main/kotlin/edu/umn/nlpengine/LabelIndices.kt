@@ -39,13 +39,13 @@ interface LabelIndex<T : Label> : Collection<T> {
     /**
      * The collection of labels inside the span of text from [startIndex] to [endIndex]
      */
-    fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T>
+    fun inside(startIndex: Int, endIndex: Int): LabelIndex<T>
 
     /**
      * The collection of labels inside [textRange]
      */
-    fun insideSpan(textRange: TextRange): LabelIndex<T> =
-            insideSpan(textRange.startIndex, textRange.endIndex)
+    infix fun inside(textRange: TextRange): LabelIndex<T> =
+            inside(textRange.startIndex, textRange.endIndex)
 
     /**
      * A label index of all labels that begin inside the span of [startIndex] until [endIndex].
@@ -235,7 +235,7 @@ fun <T : Label> emptyLabelIndex(clazz: Class<T>): LabelIndex<T> = object : Label
 
     override fun containing(startIndex: Int, endIndex: Int) = this
 
-    override fun insideSpan(startIndex: Int, endIndex: Int) = this
+    override fun inside(startIndex: Int, endIndex: Int) = this
 
     override fun beginsInside(startIndex: Int, endIndex: Int) = this
 

@@ -95,7 +95,7 @@ public class NumberRecognizerTest {
       document.labeler(Number.class); result = numberLabeler;
       sentenceLabelIndex.iterator(); result = Collections.singletonList(sentenceLabel).iterator();
       document.labelIndex(ParseToken.class); result = parseTokenLabelIndex;
-      parseTokenLabelIndex.insideSpan(sentenceLabel); result = parseTokenLabelIndex;
+      parseTokenLabelIndex.inside(sentenceLabel); result = parseTokenLabelIndex;
       parseTokenLabelIndex.iterator(); result = parseTokenLabels.iterator();
 
       combinedNumberDetector.tryToken("25", 0, 2); result = Collections.emptyList();

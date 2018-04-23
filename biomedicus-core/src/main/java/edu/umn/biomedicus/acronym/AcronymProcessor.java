@@ -122,11 +122,11 @@ class AcronymProcessor implements DocumentProcessor {
     for (int i = 0; i < size; i++) {
       TermToken termToken = termTokenLabelList.get(i);
 
-      List<PosTag> partOfSpeechLabelsForToken = partOfSpeechLabels.insideSpan(termToken).asList();
+      List<PosTag> partOfSpeechLabelsForToken = partOfSpeechLabels.inside(termToken).asList();
 
       if (!partOfSpeechLabelsForToken.stream().map(PosTag::getPartOfSpeech).allMatch(EXCLUDE_POS::contains)) {
         if (!checkAndLabel(i, termToken) && checkParseTokens) {
-          for (ParseToken parseToken : parseTokenLabels.insideSpan(termToken)) {
+          for (ParseToken parseToken : parseTokenLabels.inside(termToken)) {
             if (!EXCLUDE_POS.contains(partOfSpeechLabels.atLocation(parseToken).iterator().next().getPartOfSpeech())) {
               if (checkAndLabel(i, parseToken)) {
                 continue TERM_TOKENS;

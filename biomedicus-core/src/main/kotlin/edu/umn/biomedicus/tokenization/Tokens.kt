@@ -146,7 +146,7 @@ class ParseTokenLabeler : DocumentProcessor {
         val labeler = document.labeler<ParseToken>()
         val text = document.text
         document.sentences().forEach {
-            val insideSentence = candidates.insideSpan(it).asList()
+            val insideSentence = candidates.inside(it).asList()
             val lastOrNull = insideSentence.lastOrNull()
             insideSentence.forEach { candidate ->
                 if (lastOrNull == candidate && candidate.endsWithPeriod(text)) {

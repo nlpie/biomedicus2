@@ -65,7 +65,7 @@ public class NumberRecognizer implements DocumentProcessor {
     labeler = document.labeler(Number.class);
 
     for (Sentence sentenceLabel : sentenceLabelIndex) {
-      extract(parseTokenLabelIndex.insideSpan(sentenceLabel));
+      extract(parseTokenLabelIndex.inside(sentenceLabel));
     }
   }
 

@@ -1577,7 +1577,7 @@ public class SearchExpr {
     State search(DefaultSearcher search, State state) {
       LabelIndex<?> labelIndex = contains
           ? search.document.labelIndex(labelType).containing(state.getCovered())
-          : search.document.labelIndex(labelType).insideSpan(state.getUncovered());
+          : search.document.labelIndex(labelType).inside(state.getUncovered());
 
       if (!seek) {
         Label label = labelIndex.first();

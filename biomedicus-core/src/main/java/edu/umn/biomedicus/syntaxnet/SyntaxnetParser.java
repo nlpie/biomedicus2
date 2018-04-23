@@ -146,7 +146,7 @@ public final class SyntaxnetParser implements DocumentProcessor {
           tagger.getOutputStream())) {
         for (Sentence sentence : sentenceLabelIndex) {
           Collection<ParseToken> sentenceTokens = tokenLabelIndex
-              .insideSpan(sentence);
+              .inside(sentence);
           String conllString = new Tokens2Conll(sentenceTokens)
               .conllString();
           writer.write(conllString);

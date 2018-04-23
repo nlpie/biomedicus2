@@ -142,7 +142,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
     Span phraseAsSpan = new Span(tokenSet.get(0).getStartIndex(),
         tokenSet.get(tokenSet.size() - 1).getEndIndex());
     StringsBag.Builder builder = StringsBag.builder();
-    for (NormForm normForm : normIndexes.insideSpan(phraseAsSpan)) {
+    for (NormForm normForm : normIndexes.inside(phraseAsSpan)) {
 
       PosTag posTag = posTags.firstAtLocation(normForm);
 
@@ -185,7 +185,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
 
       StringBuilder editedString = new StringBuilder();
       List<Span> editedStringSpans = new ArrayList<>();
-      List<TermToken> sentenceTermTokens = termTokenLabelIndex.insideSpan(sentence).asList();
+      List<TermToken> sentenceTermTokens = termTokenLabelIndex.inside(sentence).asList();
 
       for (TermToken sentenceTermToken : sentenceTermTokens) {
         Acronym acronymForToken = acronymLabelIndex.firstAtLocation(sentenceTermToken);
@@ -217,7 +217,7 @@ class DictionaryConceptRecognizer implements DocumentProcessor {
           TermToken last = windowSubset.get(subsetSize - 1);
           Span entire = new Span(first.getStartIndex(), last.getEndIndex());
 
-          if (posTags.insideSpan(entire).stream()
+          if (posTags.inside(entire).stream()
               .map(PosTag::getPartOfSpeech).allMatch(TRIVIAL_POS::contains)) {
             continue;
           }

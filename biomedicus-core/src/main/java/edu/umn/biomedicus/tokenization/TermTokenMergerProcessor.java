@@ -32,7 +32,7 @@ public final class TermTokenMergerProcessor implements DocumentProcessor {
     Labeler<TermToken> termTokenLabeler = document.labeler(TermToken.class);
 
     for (Sentence sentence : sentenceLabelIndex) {
-      LabelIndex<ParseToken> labelIndex = parseTokens.insideSpan(sentence);
+      LabelIndex<ParseToken> labelIndex = parseTokens.inside(sentence);
       TermTokenMerger tokenMerger = new TermTokenMerger(labelIndex);
       while (tokenMerger.hasNext()) {
         TermToken termToken = tokenMerger.next();

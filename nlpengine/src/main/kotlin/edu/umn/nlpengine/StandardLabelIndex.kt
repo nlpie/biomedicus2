@@ -86,7 +86,7 @@ class StandardLabelIndex<T : Label> internal constructor(
             minEnd = endIndex
     )
 
-    override fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T> = AscendingView(
+    override fun inside(startIndex: Int, endIndex: Int): LabelIndex<T> = AscendingView(
             minBegin = startIndex,
             maxBegin = endIndex - 1,
             minEnd = startIndex,
@@ -439,7 +439,7 @@ class StandardLabelIndex<T : Label> internal constructor(
                         newMinEnd = maxOf(index, minEnd)
                 )
 
-        override fun insideSpan(startIndex: Int, endIndex: Int) =
+        override fun inside(startIndex: Int, endIndex: Int) =
                 updateBounds(
                         newMinBegin = maxOf(startIndex, minBegin),
                         newMaxBegin = minOf(endIndex - 1, maxBegin),

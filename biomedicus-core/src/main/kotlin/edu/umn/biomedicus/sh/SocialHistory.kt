@@ -264,21 +264,21 @@ class SocialHistoryCandidateDetector(
         document.labelIndex<SectionHeader>()
                 .asSequence()
                 .filter {
-                    val headerTokens = tokens.insideSpan(it).asList()
+                    val headerTokens = tokens.inside(it).asList()
                     headers.matches(headerTokens) != null ||
                             headersExact.matches(headerTokens) != null
                 }
                 .forEach {
                     val section = sections.containing(it).first() ?: return@forEach
 
-                    val contents = sectionContents.insideSpan(section).first()
+                    val contents = sectionContents.inside(section).first()
                             ?: throw BiomedicusException("No contents for section: $section")
 
-                    sentences.insideSpan(contents)
+                    sentences.inside(contents)
                             .filter { document.text[it.endIndex - 1] != ':' }
-                            .filter { relatives.insideSpan(it).isEmpty() }
+                            .filter { relatives.inside(it).isEmpty() }
                             .forEach { sentence ->
-                                val sentenceTokens = tokens.insideSpan(sentence).asList()
+                                val sentenceTokens = tokens.inside(sentence).asList()
 
                                 alcoholDetector.detectAll(sentenceTokens)
                                         .takeIf { it.isNotEmpty() }
@@ -368,7 +368,7 @@ class UsageFrequencyPhraseDetector @Inject constructor(
                     nicotineCandidates.containsSpan(it) || alcoholCandidates.containsSpan(it)
                             || drugCandidates.containsSpan(it)
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens).forEach {
                         labeler.add(UsageFrequencyPhrase(sentenceTokens[it.first].startIndex,
@@ -462,7 +462,7 @@ class UsageStatusDetector(
                     nicotineCandidates.containsSpan(it) || alcoholCandidates.containsSpan(it)
                             || drugCandidates.containsSpan(it)
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens).forEach {
                         labeler.add(UsageStatus(sentenceTokens[it.first].startIndex,
@@ -505,7 +505,7 @@ class GenericMethodPhraseDetector(
                     nicotineCandidates.containsSpan(it) || alcoholCandidates.containsSpan(it)
                             || drugCandidates.containsSpan(it)
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .forEach { sentenceTokens ->
                     detector.detectAll(sentenceTokens).forEach {
                         labeler.add(GenericMethodPhrase(sentenceTokens[it.first].startIndex,
@@ -523,7 +523,7 @@ internal fun Document.findRelevantAncestors(labels: LabelIndex<*>): Collection<D
     labels
             .asSequence()
             .map {
-                val cueDependencies = dependencies.insideSpan(it)
+                val cueDependencies = dependencies.inside(it)
                 cueDependencies.mapTo(relevants) { it }
                 findHead(cueDependencies)
             }

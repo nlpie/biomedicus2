@@ -70,7 +70,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testInsideSpan() {
-        val insideSpan = tested.insideSpan(1, 8)
+        val insideSpan = tested.inside(1, 8)
 
         assertEquals(insideSpan.size, 3)
 
@@ -83,7 +83,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testInsideSpanBefore() {
-        val insideSpan = tested.insideSpan(0, 3)
+        val insideSpan = tested.inside(0, 3)
 
         assertEquals(insideSpan.size, 0)
 
@@ -93,7 +93,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testInsideSpanAfter() {
-        val insideSpan = tested.insideSpan(15, 20)
+        val insideSpan = tested.inside(15, 20)
 
         assertEquals(insideSpan.size, 0)
 
@@ -358,8 +358,8 @@ class StandardLabelIndexTest {
         assertFalse(asList.contains(TestLabel(0, 30)))
     }
 
-    val ascending = tested.insideSpan(0, 13)
-    val insideSpan = ascending.insideSpan(1, 13)
+    val ascending = tested.inside(0, 13)
+    val insideSpan = ascending.inside(1, 13)
     val ascendingReversing = tested.descendingEndIndex()
     val descendingReversing = tested.descendingStartIndex()
     val descending = tested.descendingStartIndex().descendingEndIndex()
@@ -437,7 +437,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewGetNotInsideView() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
 
         val get = nothing.atLocation(TestLabel(9, 13))
         assertEquals(get.size, 0)
@@ -451,7 +451,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewIsEmpty() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertTrue(nothing.isEmpty())
     }
 
@@ -462,7 +462,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewNotContains() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertFalse(nothing.contains(TestLabel(2, 6)))
     }
 
@@ -473,7 +473,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewNotContainsSpan() {
-        val nothing = tested.insideSpan(0, 0)
+        val nothing = tested.inside(0, 0)
         assertFalse(nothing.containsSpan(TestLabel(2, 6)))
     }
 
@@ -525,7 +525,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewInsideSpanBefore() {
-        val insideSpan = ascending.insideSpan(0, 1)
+        val insideSpan = ascending.inside(0, 1)
 
         assertEquals(insideSpan.size, 0)
 
@@ -544,7 +544,7 @@ class StandardLabelIndexTest {
                 TestLabel(9, 10),
                 TestLabel(9, 13),
                 TestLabel(9, 13)
-        ).insideSpan(2, 9)
+        ).inside(2, 9)
 
         val beginsInside = tested.beginsInside(0, 9)
 
@@ -569,7 +569,7 @@ class StandardLabelIndexTest {
                 TestLabel(9, 10),
                 TestLabel(9, 13),
                 TestLabel(9, 13)
-        ).insideSpan(2, 9)
+        ).inside(2, 9)
 
         val beginsInside = tested.beginsInside(0, 10)
 
@@ -594,7 +594,7 @@ class StandardLabelIndexTest {
                 TestLabel(9, 10),
                 TestLabel(9, 13),
                 TestLabel(9, 13)
-        ).insideSpan(2, 9)
+        ).inside(2, 9)
 
         assertEquals(
                 expected = listOf(
@@ -615,7 +615,7 @@ class StandardLabelIndexTest {
                 TestLabel(9, 10),
                 TestLabel(9, 13),
                 TestLabel(9, 13)
-        ).insideSpan(2, 9)
+        ).inside(2, 9)
 
         assertEquals(
                 expected = listOf(
@@ -629,7 +629,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewInsideSpanAfter() {
-        val insideSpan = ascending.insideSpan(14, 15)
+        val insideSpan = ascending.inside(14, 15)
 
         assertEquals(insideSpan.size, 0)
 
@@ -665,7 +665,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewAsListSizeEmpty() {
-        val emptyAsList = ascending.insideSpan(0, -1).asList()
+        val emptyAsList = ascending.inside(0, -1).asList()
 
         assertEquals(emptyAsList.size, 0)
     }
@@ -682,7 +682,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testViewAsListIsEmptyTrue() {
-        val emptyAsList = ascending.insideSpan(0, -1).asList()
+        val emptyAsList = ascending.inside(0, -1).asList()
 
         assertTrue(emptyAsList.isEmpty())
     }
@@ -756,7 +756,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testAscendingUpdateBounds() {
-        val ascendingInsideSpan = ascending.insideSpan(2, 13)
+        val ascendingInsideSpan = ascending.inside(2, 13)
 
         val it = ascendingInsideSpan.iterator()
         assertEquals(it.next(), TestLabel(2, 6))
@@ -816,7 +816,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testDescendingUpdateBounds() {
-        val insideSpan = descending.insideSpan(2, 10)
+        val insideSpan = descending.inside(2, 10)
 
         val it = insideSpan.iterator()
         assertEquals(it.next(), TestLabel(9, 10))
@@ -874,7 +874,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testTestAscendingReversingUpdateBounds() {
-        val insideSpan = ascendingReversing.insideSpan(2, 10)
+        val insideSpan = ascendingReversing.inside(2, 10)
 
         val it = insideSpan.iterator()
         assertEquals(it.next(), TestLabel(2, 6))
@@ -932,7 +932,7 @@ class StandardLabelIndexTest {
 
     @Test
     fun testDescendingReversingUpdateBounds() {
-        val insideSpan = descendingReversing.insideSpan(2, 10)
+        val insideSpan = descendingReversing.inside(2, 10)
 
         val it = insideSpan.iterator()
         assertEquals(it.next(), TestLabel(9, 10))

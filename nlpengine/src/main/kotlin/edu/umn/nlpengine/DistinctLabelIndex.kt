@@ -83,7 +83,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
         return AscendingView(left = index, right = index)
     }
 
-    override fun insideSpan(startIndex: Int, endIndex: Int): LabelIndex<T> =
+    override fun inside(startIndex: Int, endIndex: Int): LabelIndex<T> =
             AscendingView(minTextIndex = startIndex, maxTextIndex = endIndex)
 
     override fun beginsInside(startIndex: Int, endIndex: Int): LabelIndex<T> =
@@ -302,7 +302,7 @@ class DistinctLabelIndex<T : Label> internal constructor(
 
         override fun toTheRightOf(index: Int) = updateBounds(minTextIndex = index)
 
-        override fun insideSpan(startIndex: Int, endIndex: Int) = updateBounds(
+        override fun inside(startIndex: Int, endIndex: Int) = updateBounds(
                 minTextIndex = startIndex,
                 maxTextIndex = endIndex
         )

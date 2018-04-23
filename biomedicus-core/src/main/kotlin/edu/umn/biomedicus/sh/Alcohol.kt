@@ -108,7 +108,7 @@ class AlcoholRelevantLabeler : DocumentProcessor {
 }
 
 internal fun Document.isAlcoholDep(textRange: TextRange): Boolean {
-    val insideSpan = dependencies().insideSpan(textRange)
+    val insideSpan = dependencies().inside(textRange)
     val alcoholRelevants = labelIndex<AlcoholRelevant>()
     val drugRelevants = labelIndex<DrugRelevant>()
     val nicotineRelevants = labelIndex<NicotineRelevant>()
@@ -151,7 +151,7 @@ class AlcoholUnitDetector(
         val labeler = document.labeler<AlcoholUnit>()
 
         document.labelIndex<AlcoholCandidate>()
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isAlcoholDep(it) }
                 .forEach { labeler.add(AlcoholUnit(it)) }
@@ -202,7 +202,7 @@ class AlcoholFrequencyDetector : DocumentProcessor {
         val labeler = document.labeler<AlcoholFrequency>()
 
         document.labelIndex<AlcoholCandidate>()
-                .flatMap { usageFrequencies.insideSpan(it) }
+                .flatMap { usageFrequencies.inside(it) }
                 .filter { amounts.containing(it).isEmpty() }
                 .filter { document.isAlcoholDep(it) }
                 .map { AlcoholFrequency(it) }
@@ -224,7 +224,7 @@ class AlcoholTemporalDetector : DocumentProcessor {
         val temporalLabeler = document.labeler<AlcoholTemporal>()
 
         document.labelIndex<AlcoholCandidate>()
-                .flatMap { temporalPhrases.insideSpan(it) }
+                .flatMap { temporalPhrases.inside(it) }
                 .filter { amounts.containing(it).isEmpty() }
                 .filter { frequencies.containing(it).isEmpty() }
                 .filter { document.isAlcoholDep(it) }
@@ -255,7 +255,7 @@ class AlcoholTypeDetector(
         val tokens = document.tokens()
         val labeler = document.labeler<AlcoholType>()
         document.labelIndex<AlcoholCandidate>()
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isAlcoholDep(it) }
                 .forEach { labeler.add(AlcoholType(it)) }
@@ -288,11 +288,11 @@ class AlcoholStatusDetector(
 
         document.labelIndex<AlcoholCandidate>()
                 .onEach {
-                    usageStatuses.insideSpan(it)
+                    usageStatuses.inside(it)
                             .filter { document.isAlcoholDep(it) }
                             .forEach { labeler.add(AlcoholStatus(it)) }
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isAlcoholDep(it) }
                 .forEach { labeler.add(AlcoholStatus(it)) }
@@ -325,11 +325,11 @@ class AlcoholMethodDetector(
 
         document.labelIndex<AlcoholCandidate>()
                 .onEach {
-                    genericMethods.insideSpan(it)
+                    genericMethods.inside(it)
                             .filter { document.isAlcoholDep(it) }
                             .forEach { labeler.add(AlcoholMethod(it)) }
                 }
-                .map { tokens.insideSpan(it).asList() }
+                .map { tokens.inside(it).asList() }
                 .flatMap { detector.detectAllSpans(it) }
                 .filter { document.isAlcoholDep(it) }
                 .forEach { labeler.add(AlcoholMethod(it)) }
