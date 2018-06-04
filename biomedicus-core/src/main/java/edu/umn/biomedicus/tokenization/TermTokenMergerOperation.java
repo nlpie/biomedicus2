@@ -18,12 +18,12 @@ package edu.umn.biomedicus.tokenization;
 
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import org.jetbrains.annotations.NotNull;
 
-public final class TermTokenMergerProcessor implements DocumentProcessor {
+public final class TermTokenMergerOperation implements DocumentOperation {
 
   @Override
   public void process(@NotNull Document document) {

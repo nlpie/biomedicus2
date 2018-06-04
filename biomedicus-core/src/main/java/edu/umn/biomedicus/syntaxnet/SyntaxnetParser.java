@@ -22,7 +22,7 @@ import edu.umn.biomedicus.parsing.DependencyParse;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.io.BufferedReader;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.5.0
  * @deprecated doesn't actually label anything right now
  */
-public final class SyntaxnetParser implements DocumentProcessor {
+public final class SyntaxnetParser implements DocumentOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SyntaxnetParser.class);
 

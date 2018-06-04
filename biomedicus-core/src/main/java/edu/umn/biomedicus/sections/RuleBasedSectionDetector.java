@@ -21,7 +21,7 @@ import edu.umn.biomedicus.formatting.Bold;
 import edu.umn.biomedicus.formatting.Underlined;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.regex.Pattern;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Yan Wang (rules)
  * @since 1.4
  */
-public class RuleBasedSectionDetector implements DocumentProcessor {
+public class RuleBasedSectionDetector implements DocumentOperation {
 
   private final Pattern headers;
 

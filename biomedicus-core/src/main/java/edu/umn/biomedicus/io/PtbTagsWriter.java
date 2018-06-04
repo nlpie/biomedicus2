@@ -21,7 +21,7 @@ import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
-public class PtbTagsWriter implements DocumentProcessor {
+public class PtbTagsWriter implements DocumentOperation {
 
   private final Path outputDir;
 

@@ -44,7 +44,7 @@ data class SectionHeader(override val startIndex: Int, override val endIndex: In
 @LabelMetadata(versionId = "2_0", distinct = true)
 data class SectionContent(override val startIndex: Int, override val endIndex: Int) : Label()
 
-class SectionContentLabeler : DocumentProcessor {
+class SectionContentLabeler : DocumentOperation {
     override fun process(document: Document) {
         val sectionHeaders = document.labelIndex<SectionHeader>()
         val sentences = document.labelIndex<Sentence>()

@@ -19,7 +19,7 @@ package edu.umn.biomedicus.sentences
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.biomedicus.io.TextFilesArtifactSource
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentProcessor
+import edu.umn.nlpengine.DocumentOperation
 import edu.umn.nlpengine.Span
 import edu.umn.nlpengine.labeler
 import java.io.File
@@ -30,7 +30,7 @@ import javax.inject.Inject
  */
 class BratSentencesReader @Inject internal constructor(
         @ProcessorSetting("labelUnsure") private val labelUnsure: Boolean
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         val sourceFile = File(document.metadata[TextFilesArtifactSource.SOURCE_PATH]
                 ?: error("Document does not have source path"))

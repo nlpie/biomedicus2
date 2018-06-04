@@ -28,9 +28,6 @@
     <delegateAnalysisEngine key="table">
       <import location="annotator/rtf/RtfTableAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="textSegmenter">
-      <import location="annotator/rtf/RtfTextSegmenter.xml"/>
-    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>Rtf document pipeline</name>
@@ -56,7 +53,6 @@
           <parameter>parser/documentName</parameter>
           <parameter>paragraph/documentName</parameter>
           <parameter>table/documentName</parameter>
-          <parameter>textSegmenter/documentName</parameter>
         </overrides>
       </configurationParameter>
       <configurationParameter>
@@ -131,7 +127,6 @@
         <node>parser</node>
         <node>paragraph</node>
         <node>table</node>
-        <node>textSegmenter</node>
       </fixedFlow>
     </flowConstraints>
     <capabilities>
@@ -155,7 +150,6 @@
           <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.CellAnnotation</type>
           <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedRowAnnotation</type>
           <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedCellAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.TextSegmentAnnotation</type>
         </outputs>
         <inputSofas>
           <sofaName>OriginalDocument</sofaName>

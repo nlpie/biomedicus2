@@ -99,7 +99,7 @@ data class DrugMethod(override val startIndex: Int, override val endIndex: Int) 
 /**
  * Detects [DrugRelevant] labels from [DrugCue] labels in text.
  */
-class DrugRelevantLabeler : DocumentProcessor {
+class DrugRelevantLabeler : DocumentOperation {
     override fun process(document: Document) {
         val relevants = document.findRelevantAncestors(document.labelIndex<DrugCue>())
                 .map { DrugRelevant(it) }
@@ -142,7 +142,7 @@ class DrugAmountUnits(
  */
 class DrugUnitDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(amountUnits: DrugAmountUnits) : this(amountUnits.detector)
 
     override fun process(document: Document) {
@@ -176,7 +176,7 @@ class DrugAmountExpr(val expr: TagEx) {
  *
  * @property expr the drug amount TagEx expression.
  */
-class DrugAmountDetector(private val expr: TagEx) : DocumentProcessor {
+class DrugAmountDetector(private val expr: TagEx) : DocumentOperation {
     @Inject internal constructor(amountExpr: DrugAmountExpr) : this(amountExpr.expr)
 
     override fun process(document: Document) {
@@ -194,7 +194,7 @@ class DrugAmountDetector(private val expr: TagEx) : DocumentProcessor {
  * Detects and labels [DrugFrequency] instances in text using the general [UsageFrequency]
  * label and resolving drug related dependencies.
  */
-class DrugFrequencyDetector : DocumentProcessor {
+class DrugFrequencyDetector : DocumentOperation {
     override fun process(document: Document) {
         val amounts = document.labelIndex<DrugAmount>()
 
@@ -215,7 +215,7 @@ class DrugFrequencyDetector : DocumentProcessor {
  * checks for whether there are overlaps with any amounts, frequencies, and whether it is an
  * drug related parsing dependency.
  */
-class DrugTemporalDetector : DocumentProcessor {
+class DrugTemporalDetector : DocumentOperation {
     override fun process(document: Document) {
         val frequencies = document.labelIndex<DrugFrequency>()
         val amounts = document.labelIndex<DrugAmount>()
@@ -248,7 +248,7 @@ class DrugTypes(val detector: SequenceDetector<String, Token>) {
  */
 class DrugTypeDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(drugTypes: DrugTypes) : this(drugTypes.detector)
 
     override fun process(document: Document) {
@@ -266,7 +266,7 @@ class DrugTypeDetector(
  * Detects and labels [DrugStatus] in text using pre-labeled [UsageStatus] instances. Filters on
  * drug related linguistic dependency.
  */
-class DrugStatusDetector : DocumentProcessor {
+class DrugStatusDetector : DocumentOperation {
     override fun process(document: Document) {
         val usageStatuses = document.labelIndex<UsageStatus>()
         val labeler = document.labeler<DrugStatus>()
@@ -294,7 +294,7 @@ class DrugMethodPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class DrugMethodDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: DrugMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {

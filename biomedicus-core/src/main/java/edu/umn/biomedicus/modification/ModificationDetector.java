@@ -27,7 +27,7 @@ import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 /**
  *
  */
-public class ModificationDetector implements DocumentProcessor {
+public class ModificationDetector implements DocumentOperation {
 
   private static final ContextCues CUES = ContextCues
       .builder()

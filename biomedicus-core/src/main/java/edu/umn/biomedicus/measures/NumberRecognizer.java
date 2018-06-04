@@ -25,7 +25,7 @@ import edu.umn.biomedicus.numbers.Numbers;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.math.BigDecimal;
@@ -39,7 +39,7 @@ import javax.inject.Inject;
  * @author Ben Knoll
  * @since 1.8.0
  */
-public class NumberRecognizer implements DocumentProcessor {
+public class NumberRecognizer implements DocumentOperation {
 
   private final CombinedNumberDetector numberDetector;
 

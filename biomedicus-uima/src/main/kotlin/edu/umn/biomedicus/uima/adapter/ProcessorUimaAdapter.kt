@@ -22,6 +22,7 @@ import edu.umn.nlpengine.Runner
 import org.apache.uima.UimaContext
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase
 import org.apache.uima.cas.CAS
+import org.apache.uima.impl.UimaContext_ImplBase
 import org.apache.uima.resource.ResourceInitializationException
 
 class ProcessorUimaAdapter : CasAnnotator_ImplBase() {
@@ -34,6 +35,10 @@ class ProcessorUimaAdapter : CasAnnotator_ImplBase() {
 
     override fun initialize(uimaContext: UimaContext) {
         super.initialize(uimaContext)
+
+        val context = uimaContext as UimaContext_ImplBase
+
+        val uniqueName = context.uniqueName
 
         guiceInjector = uimaContext.getResourceObject("guiceInjector")
                 ?.let { it as? GuiceInjector }
@@ -48,7 +53,7 @@ class ProcessorUimaAdapter : CasAnnotator_ImplBase() {
                 }
 
         val runnerFactory = injector.getInstance(RunnerFactory::class.java)
-        runner = runnerFactory.getRunner(settingsMap, emptyMap())
+        runner = runnerFactory.getRunner(uniqueName, settingsMap, emptyMap())
     }
 
     override fun process(aCAS: CAS) {

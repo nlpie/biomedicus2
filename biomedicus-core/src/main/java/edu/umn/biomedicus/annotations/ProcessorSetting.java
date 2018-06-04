@@ -24,11 +24,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- *
+ * Indicates a field or parameter should be injected with the value of a setting.
  */
 @ProcessorScoped
 @Retention(RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @BindingAnnotation
 public @interface ProcessorSetting {
 

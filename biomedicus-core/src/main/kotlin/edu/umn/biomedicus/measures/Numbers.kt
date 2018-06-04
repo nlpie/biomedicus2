@@ -20,7 +20,7 @@ import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.framework.get
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentProcessor
+import edu.umn.nlpengine.DocumentOperation
 import edu.umn.nlpengine.Label
 import edu.umn.nlpengine.LabelMetadata
 import java.math.BigDecimal
@@ -74,7 +74,7 @@ class NumberRangesPattern @Inject constructor(
  */
 class NumberRangesLabeler @Inject internal constructor(
         numberRangesPattern: NumberRangesPattern
-) : DocumentProcessor {
+) : DocumentOperation {
     private val expr = numberRangesPattern.expr
 
     override fun process(document: Document) {

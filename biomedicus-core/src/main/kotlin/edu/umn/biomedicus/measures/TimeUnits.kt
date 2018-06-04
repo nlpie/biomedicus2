@@ -52,7 +52,7 @@ class TimeUnits @Inject constructor(
 
 class TimeUnitDetector @Inject constructor(
         val units: TimeUnits
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         val parseTokens = document.labelIndex<ParseToken>()
 
@@ -74,7 +74,7 @@ data class TimeFrequencyUnits(val units: List<String>) {
             this(File(path).readLines(StandardCharsets.UTF_8))
 }
 
-data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentProcessor {
+data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentOperation {
 
     @Inject constructor(timeFrequencyUnits: TimeFrequencyUnits) : this(timeFrequencyUnits.units)
 

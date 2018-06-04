@@ -29,7 +29,6 @@
     <module>biomedicus-rtf</module>
     <module>biomedicus-uima</module>
     <module>biomedicus-distribution</module>
-    <module>biomedicus-gate</module>
     <module>nlpengine</module>
   </modules>
 

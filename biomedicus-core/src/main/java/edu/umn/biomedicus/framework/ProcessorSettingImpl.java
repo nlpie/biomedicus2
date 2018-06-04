@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 /**
+ * An implementation of the annotation {@link ProcessorSetting} so that it can be instantiated and
+ * bound to an instance to be used as an injection key.
  */
 public final class ProcessorSettingImpl implements ProcessorSetting, Serializable {
 

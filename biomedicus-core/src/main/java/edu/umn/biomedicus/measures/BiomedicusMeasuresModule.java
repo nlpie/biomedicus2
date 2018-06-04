@@ -34,10 +34,9 @@ public class BiomedicusMeasuresModule extends AbstractModule {
     bind(NumberModel.class).toProvider(NumberModelLoader.class).in(Scopes.SINGLETON);
 
     bind(UnitRecognizer.Factory.class).toProvider(UnitsFactoryLoader.class).in(Scopes.SINGLETON);
-    bind(UnitRecognizer.class).toProvider(UnitRecognizerProvider.class);
+    bind(UnitRecognizer.class).toProvider(UnitRecognizerProvider.class).in(Scopes.SINGLETON);
   }
 
-  @Singleton
   private static final class UnitRecognizerProvider implements Provider<UnitRecognizer> {
     private final Factory factory;
 

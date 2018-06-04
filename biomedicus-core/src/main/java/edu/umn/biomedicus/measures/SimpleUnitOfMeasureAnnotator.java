@@ -19,12 +19,12 @@ package edu.umn.biomedicus.measures;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import javax.annotation.Nonnull;
 
-public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
+public class SimpleUnitOfMeasureAnnotator implements DocumentOperation {
 
   private final UnitRecognizer unitRecognizer;
 

@@ -99,7 +99,7 @@ data class NicotineMethod(override val startIndex: Int, override val endIndex: I
 /**
  * Detects [NicotineRelevant] labels from [NicotineCue] labels in text.
  */
-class NicotineRelevantLabeler : DocumentProcessor {
+class NicotineRelevantLabeler : DocumentOperation {
     override fun process(document: Document) {
         val relevants = document.findRelevantAncestors(document.labelIndex<NicotineCue>())
                 .map { NicotineRelevant(it) }
@@ -143,7 +143,7 @@ class NicotineAmountUnits(
  */
 class NicotineUnitDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(amountUnits: NicotineAmountUnits) : this(amountUnits.detector)
 
     override fun process(document: Document) {
@@ -189,7 +189,7 @@ class NicotineAmountSearchExpr(val expr: TagEx) {
  *
  * @property expr the nicotine amount TagEx search expression
  */
-class NicotineAmountDetector(private val expr: TagEx) : DocumentProcessor {
+class NicotineAmountDetector(private val expr: TagEx) : DocumentOperation {
     @Inject internal constructor(
             nicotineAmountSearchExpr: NicotineAmountSearchExpr
     ) : this(nicotineAmountSearchExpr.expr)
@@ -210,7 +210,7 @@ class NicotineAmountDetector(private val expr: TagEx) : DocumentProcessor {
  * Detects and labels [NicotineFrequency] instances in text using the general [UsageFrequency]
  * label.
  */
-class NicotineFrequencyDetector : DocumentProcessor {
+class NicotineFrequencyDetector : DocumentOperation {
     override fun process(document: Document) {
         val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
@@ -234,7 +234,7 @@ class NicotineFrequencyDetector : DocumentProcessor {
 /**
  * Detects and labels [NicotineTemporal] instances in text using the general [TemporalPhrase].
  */
-class NicotineTemporalDetector : DocumentProcessor {
+class NicotineTemporalDetector : DocumentOperation {
     override fun process(document: Document) {
         val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
@@ -270,7 +270,7 @@ class NicotineTypes(val detector: SequenceDetector<String, Token>) {
  */
 class NicotineTypeDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(nicotineTypes: NicotineTypes) : this(nicotineTypes.detector)
 
     override fun process(document: Document) {
@@ -312,7 +312,7 @@ class NicotineStatusPhrases(val detector: SequenceDetector<String, ParseToken>) 
  */
 class NicotineStatusDetector(
         private val detector: SequenceDetector<String, ParseToken>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(
             statusPhrases: NicotineStatusPhrases
     ) : this(statusPhrases.detector)
@@ -361,7 +361,7 @@ class NicotineMethodPhrases(val detector: SequenceDetector<String, ParseToken>) 
  */
 class NicotineMethodDetector(
         private val detector: SequenceDetector<String, ParseToken>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: NicotineMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {

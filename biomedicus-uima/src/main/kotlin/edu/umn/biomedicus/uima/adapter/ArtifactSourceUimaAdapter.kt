@@ -22,6 +22,7 @@ import edu.umn.biomedicus.uima.labels.LabelAdapters
 import edu.umn.nlpengine.Artifact
 import org.apache.uima.cas.CAS
 import org.apache.uima.collection.CollectionReader_ImplBase
+import org.apache.uima.impl.UimaContext_ImplBase
 import org.apache.uima.resource.ResourceInitializationException
 import org.apache.uima.util.Progress
 import org.apache.uima.util.ProgressImpl
@@ -44,6 +45,11 @@ class ArtifactSourceUimaAdapter : CollectionReader_ImplBase() {
     private var total: Long = 0
 
     override fun initialize() {
+
+        val context = uimaContext as UimaContext_ImplBase
+
+        val uniqueName = context.uniqueName
+
         guiceInjector = uimaContext.getResourceObject("guiceInjector")
                 ?.let { it as? GuiceInjector }
         val injector = guiceInjector
@@ -57,7 +63,8 @@ class ArtifactSourceUimaAdapter : CollectionReader_ImplBase() {
                 }
 
         val runnerFactory = injector.getInstance(RunnerFactory::class.java)
-        val runner = runnerFactory.getSourceRunner(settingsMap, emptyMap())
+        val runner = runnerFactory.getSourceRunner(uniqueName, settingsMap,
+                emptyMap())
 
         total = runner.estimateTotal()
 

@@ -19,7 +19,7 @@ package edu.umn.biomedicus.utilities;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.Labeler;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public class MipacqParseTagger implements DocumentProcessor {
+public class MipacqParseTagger implements DocumentOperation {
 
   @Override
   public void process(@NotNull Document document) {

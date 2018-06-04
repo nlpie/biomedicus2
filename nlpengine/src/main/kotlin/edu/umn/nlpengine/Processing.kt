@@ -24,15 +24,15 @@ interface Runner {
     fun done() { }
 }
 
-interface ArtifactProcessor {
+interface ArtifactOperation {
     fun process(artifact: Artifact)
 }
 
-interface DocumentProcessor  {
+interface DocumentOperation  {
     fun process(document: Document)
 }
 
-interface Aggregator {
+interface ArtifactProcessor {
     fun process(artifact: Artifact)
 
     fun done()

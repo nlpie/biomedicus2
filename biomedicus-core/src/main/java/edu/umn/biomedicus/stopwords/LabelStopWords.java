@@ -19,17 +19,17 @@ package edu.umn.biomedicus.stopwords;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import org.jetbrains.annotations.NotNull;
 
-public class StopwordsProcessor implements DocumentProcessor {
+public class LabelStopWords implements DocumentOperation {
 
   private final Stopwords stopwords;
 
   @Inject
-  public StopwordsProcessor(Stopwords stopwords) {
+  public LabelStopWords(Stopwords stopwords) {
     this.stopwords = stopwords;
   }
 

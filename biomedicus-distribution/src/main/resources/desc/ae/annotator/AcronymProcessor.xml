@@ -60,7 +60,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.acronym.AcronymProcessor</string>
+          <string>edu.umn.biomedicus.acronym.LabelAcronyms</string>
         </value>
       </nameValuePair>
       <nameValuePair>

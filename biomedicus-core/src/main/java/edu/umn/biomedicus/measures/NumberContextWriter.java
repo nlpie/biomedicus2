@@ -21,7 +21,7 @@ import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
  * @author Ben Knoll
  * @since 1.8.0
  */
-public class NumberContextWriter implements DocumentProcessor {
+public class NumberContextWriter implements DocumentOperation {
   private final Path outputDirectory;
 
   private final int contextSize;

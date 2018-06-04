@@ -17,13 +17,15 @@
 package edu.umn.biomedicus.vocabulary;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scope;
+import com.google.inject.Scopes;
 
 public class VocabularyModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class);
-    bind(VocabularyStore.class).to(RocksDbVocabStore.class);
-    bind(VocabularyBuilder.class).to(RocksDbVocabularyBuilder.class);
+    bind(Vocabulary.class).toProvider(DefaultVocabulary.Loader.class).in(Scopes.SINGLETON);
+    bind(VocabularyStore.class).to(RocksDbVocabStore.class).in(Scopes.SINGLETON);
+    bind(VocabularyBuilder.class).to(RocksDbVocabularyBuilder.class).in(Scopes.SINGLETON);
   }
 }

@@ -21,7 +21,7 @@ import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.Span;
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  *
  */
-public class SearcherPrinter implements DocumentProcessor {
+public class SearcherPrinter implements DocumentOperation {
 
   private final SearchExpr searchExpr;
 

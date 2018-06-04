@@ -233,7 +233,7 @@ class SocialHistoryCandidateDetector(
         private val alcoholIgnoreDetector: SequenceDetector<String, Token>,
         private val drugDetector: SequenceDetector<String, Token>,
         private val nicotineDetector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
 
     @Inject constructor(
             candidateDetectionRules: CandidateDetectionRules
@@ -350,7 +350,7 @@ class UsageFrequencyPhrases @Inject constructor(
  */
 class UsageFrequencyPhraseDetector @Inject constructor(
         usageFrequencyPhrases: UsageFrequencyPhrases
-) : DocumentProcessor {
+) : DocumentOperation {
     val detector = usageFrequencyPhrases.detector
 
     override fun process(document: Document) {
@@ -401,7 +401,7 @@ data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
  * Detects [UsageFrequency], generic usage frequency phrases that could apply to any social history
  * type.
  */
-class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentProcessor {
+class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentOperation {
     @Inject internal constructor(
             usageFrequencyPattern: UsageFrequencyPattern
     ) : this(usageFrequencyPattern.searchExpr)
@@ -444,7 +444,7 @@ class UsageStatusPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class UsageStatusDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: UsageStatusPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
@@ -487,7 +487,7 @@ class GenericMethodPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class GenericMethodPhraseDetector(
         val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: GenericMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {

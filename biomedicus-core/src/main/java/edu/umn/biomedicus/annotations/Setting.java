@@ -24,10 +24,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- *
+ * An annotation that indicates a parameter or field should be injected a specific setting.
  */
 @Retention(RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @BindingAnnotation
 public @interface Setting {
 

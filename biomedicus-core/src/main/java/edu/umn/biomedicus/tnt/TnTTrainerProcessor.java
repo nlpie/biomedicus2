@@ -21,13 +21,14 @@ import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
-import edu.umn.nlpengine.Aggregator;
+import edu.umn.nlpengine.ArtifactProcessor;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Trains the TnT model using the tagged parts of speech in all documents.
@@ -35,7 +36,7 @@ import java.util.List;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public class TntModelTrainerAggregator implements Aggregator {
+public class TnTTrainerProcessor implements ArtifactProcessor {
 
   private final String viewName;
 
@@ -44,9 +45,11 @@ public class TntModelTrainerAggregator implements Aggregator {
   private final Path outputDir;
 
   @Inject
-  TntModelTrainerAggregator(@ProcessorSetting("tnt.train.viewName") String viewName,
+  TnTTrainerProcessor(
+      @ProcessorSetting("tnt.train.viewName") String viewName,
       @ProcessorSetting("tnt.train.outputDir") Path outputDir,
-      DataStoreFactory dataStoreFactory) {
+      DataStoreFactory dataStoreFactory
+  ) {
     this.viewName = viewName;
 
     dataStoreFactory.setDbPath(outputDir.resolve("words/"));
@@ -74,7 +77,7 @@ public class TntModelTrainerAggregator implements Aggregator {
   }
 
   @Override
-  public void process(Artifact artifact) {
+  public void process(@Nonnull Artifact artifact) {
     Document view = artifact.getDocuments().get(viewName);
 
     if (view == null) {

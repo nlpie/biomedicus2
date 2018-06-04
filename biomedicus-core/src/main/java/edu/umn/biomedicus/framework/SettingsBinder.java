@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Binds a set of settings to a Guice module.
  *
  */
 class SettingsBinder {
@@ -71,25 +72,28 @@ class SettingsBinder {
     }
   }
 
-  void addSettings(Map<String, Object> settings) {
-    this.settings.putAll(settings);
+  void addSettings(Map<?, ?> settings) {
+    settings.forEach((key, value) -> {
+      if (key instanceof String) {
+        this.settings.put((String) key, value);
+      } else {
+        throw new IllegalStateException("Setting key without String type: " + key);
+      }
+    });
   }
 
   private void performBindings(Binder binder) {
     this.binder = binder;
-    interfaceImplementations.forEach((interfaceClass, implementations) -> {
-      implementations.forEach((key, implementation) -> {
-        bindInterfaceImplementation(interfaceClass, key, implementation);
-      });
-    });
+    interfaceImplementations.forEach((interfaceClass, implementations) ->
+        implementations.forEach((key, implementation) ->
+            bindInterfaceImplementation(interfaceClass, key, implementation)));
 
     binder.bind(new TypeLiteral<Map<String, Class<?>>>() {
     }).annotatedWith(Names.named("settingInterfaces"))
         .toInstance(settingInterfaces);
 
     binder.bind(new TypeLiteral<Map<String, Object>>() {
-    }).annotatedWith(Names.named("globalSettings"))
-        .toInstance(settings);
+    }).annotatedWith(Names.named("globalSettings")).toInstance(settings);
 
     binder.bind(new TypeLiteral<Map<String, ?>>() {
     }).annotatedWith(Names.named("globalSettings")).toInstance(settings);

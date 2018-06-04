@@ -72,7 +72,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.stopwords.StopwordsProcessor</string>
+          <string>edu.umn.biomedicus.stopwords.LabelStopWords</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

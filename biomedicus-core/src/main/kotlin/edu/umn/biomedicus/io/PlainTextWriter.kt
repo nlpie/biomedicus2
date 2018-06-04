@@ -18,7 +18,7 @@ package edu.umn.biomedicus.io
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentProcessor
+import edu.umn.nlpengine.DocumentOperation
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,7 +30,7 @@ import javax.inject.Inject
 class PlainTextWriter @Inject constructor(
         @ProcessorSetting("outputDirectory") private val outputDirectory: Path,
         @ProcessorSetting("charset") private val charsetName: String
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         outputDirectory.resolve("${document.artifactID}.txt")
                 .also { Files.createDirectories(it.parent) }

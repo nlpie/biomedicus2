@@ -20,7 +20,7 @@ import edu.umn.biomedicus.common.utilities.Patterns;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.sentences.TextSegment;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.Span;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ONLPSentenceDetector implements DocumentProcessor {
+public class ONLPSentenceDetector implements DocumentOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ONLPSentenceDetector.class);
 

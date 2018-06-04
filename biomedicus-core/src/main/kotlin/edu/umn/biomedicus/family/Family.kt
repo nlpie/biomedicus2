@@ -65,7 +65,7 @@ class RelativeModel @Inject constructor(
  */
 class RelativeLabeler @Inject internal constructor(
         private val model: RelativeModel
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         val labeler = document.labeler(Relative::class.java)
 

@@ -27,7 +27,7 @@ import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.Token;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import edu.umn.nlpengine.TextRange;
@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
  * @author Greg Finley
  * @since 1.5.0
  */
-class AcronymProcessor implements DocumentProcessor {
+class LabelAcronyms implements DocumentOperation {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AcronymProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LabelAcronyms.class);
 
   /*
    * All part of speech tags to exclude from consideration as acronyms.
@@ -92,7 +92,7 @@ class AcronymProcessor implements DocumentProcessor {
    * @param orthographicModel optional - an orthographic model for detecting unknown abbreviations
    */
   @Inject
-  public AcronymProcessor(
+  public LabelAcronyms(
       @Setting("acronym.model") AcronymModel model,
       @ProcessorSetting("acronym.checkParseTokens") Boolean checkParseTokens,
       @ProcessorSetting("acronym.labelOtherSenses") Boolean labelOtherSenses,

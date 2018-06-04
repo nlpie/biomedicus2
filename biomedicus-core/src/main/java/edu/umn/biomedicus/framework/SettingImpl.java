@@ -21,7 +21,8 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 /**
- *
+ * An implementation of the {@link Setting} annotation so it can be instantiated and used a key
+ * for Guice injection.
  */
 class SettingImpl implements Setting, Serializable {
 

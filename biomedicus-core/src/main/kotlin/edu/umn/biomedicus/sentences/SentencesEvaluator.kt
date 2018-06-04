@@ -20,7 +20,7 @@ import edu.umn.biomedicus.annotations.ProcessorScoped
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.biomedicus.sentences
 import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactProcessor
+import edu.umn.nlpengine.ArtifactOperation
 import java.io.File
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ class SentencesEvaluator @Inject internal constructor(
         @ProcessorSetting("evaluatedDocument") private val evaluatedDocumentName: String,
         @ProcessorSetting("goldDocument") private val goldDocumentName: String,
         private val sentencesEvaluationWriter: SentencesEvaluationWriter
-) : ArtifactProcessor {
+) : ArtifactOperation {
 
     override fun process(artifact: Artifact) {
         val goldDocument = artifact.documents[goldDocumentName]

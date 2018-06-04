@@ -25,7 +25,6 @@ import edu.umn.biomedicus.numbers.NumberModel;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@Singleton
 public class NumberModelLoader extends DataLoader<NumberModel> {
 
   private final Path nrnumPath;
@@ -33,8 +32,10 @@ public class NumberModelLoader extends DataLoader<NumberModel> {
   private final Path nrvarPath;
 
   @Inject
-  public NumberModelLoader(@Setting("measures.numbers.nrnumPath") Path nrnumPath,
-      @Setting("measures.numbers.nrvarPath") Path nrvarPath) {
+  public NumberModelLoader(
+      @Setting("measures.numbers.nrnumPath") Path nrnumPath,
+      @Setting("measures.numbers.nrvarPath") Path nrvarPath
+  ) {
     this.nrnumPath = nrnumPath;
     this.nrvarPath = nrvarPath;
   }

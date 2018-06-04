@@ -25,7 +25,7 @@ import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import javax.annotation.Nonnull;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.7.0
  */
-final public class Normalizer implements DocumentProcessor {
+final public class Normalizer implements DocumentOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Normalizer.class);
 

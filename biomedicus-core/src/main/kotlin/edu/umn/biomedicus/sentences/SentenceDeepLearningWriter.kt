@@ -19,45 +19,53 @@ package edu.umn.biomedicus.sentences
 import edu.umn.biomedicus.annotations.ProcessorSetting
 import edu.umn.biomedicus.tokenization.TokenCandidate
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentProcessor
+import edu.umn.nlpengine.DocumentOperation
 import edu.umn.nlpengine.labelIndex
 import java.io.File
 import javax.inject.Inject
 
 class SentenceDeepLearningWriter @Inject constructor(
         @ProcessorSetting("outputDirectory") val outputDirectory: String
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         val artifactID = document.artifactID
 
         val nameWithoutExtension = File(artifactID).nameWithoutExtension
 
         val text = document.text
-        File(outputDirectory).resolve("$nameWithoutExtension.txt").writeText(text)
 
+        val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<TokenCandidate>()
 
-        File(outputDirectory)
-                .resolve("$nameWithoutExtension.labels")
-                .bufferedWriter()
-                .use {
+        File(outputDirectory).resolve("$nameWithoutExtension.txt")
+                .writeText(text)
 
-                    for (sentence in document.labelIndex<Sentence>()) {
-                        if (sentence.sentenceClass == Sentence.unknown) {
-                            for ((startIndex, endIndex) in tokens inside sentence)
-                                it.appendln("$startIndex $endIndex O ${text.subSequence(startIndex, endIndex)}")
-                        } else {
-                            val tokenIt = tokens.inside(sentence).iterator()
-                            if (tokenIt.hasNext()) {
-                                val (startIndex, endIndex) = tokenIt.next()
-                                it.appendln("$startIndex $endIndex B ${text.subSequence(startIndex, endIndex)}")
+        val sentenceIt = sentences.iterator()
+        var sentence = if (sentenceIt.hasNext()) sentenceIt.next() else null
+
+        for ((count, textSegment) in document.labelIndex<TextSegment>().withIndex()) {
+            File(outputDirectory)
+                    .resolve("$nameWithoutExtension-$count.labels")
+                    .bufferedWriter()
+                    .use {
+                        for (token in tokens inside textSegment) {
+                            if (sentence?.contains(token)?.not() == true) {
+                                sentence = if (sentenceIt.hasNext()) sentenceIt.next() else null
                             }
-                            while (tokenIt.hasNext()) {
-                                val (startIndex, endIndex) = tokenIt.next()
-                                it.appendln("$startIndex $endIndex I ${text.subSequence(startIndex, endIndex)}")
+                            if (sentence != null) {
+                                val type = when {
+                                    sentence?.sentenceClass == Sentence.unknown -> 'O'
+                                    token == sentence?.let { tokens.inside(it).first() } -> 'B'
+                                    else -> 'I'
+                                }
+
+                                it.appendln("${token.startIndex} ${token.endIndex} $type ${token.coveredText(text)}")
                             }
                         }
                     }
-                }
+
+        }
+
+
     }
 }

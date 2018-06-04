@@ -21,7 +21,7 @@ import com.google.inject.Key;
 import java.util.Collection;
 
 /**
- * Module used for creating child injectors
+ * Module used for creating child injectors containing processor-specific settings.
  *
  * @author Ben Knoll
  * @since 1.5.0

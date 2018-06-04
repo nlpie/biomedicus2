@@ -123,7 +123,7 @@ class IndefiniteQuantifierCues @Inject constructor(
 
 class IndefiniteQuantifierDetector @Inject internal constructor(
         private val cues: IndefiniteQuantifierCues
-) : DocumentProcessor {
+) : DocumentOperation {
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
@@ -168,7 +168,7 @@ class StandaloneQuantifiers @Inject constructor(
 
 class StandaloneQuantifierDetector @Inject constructor(
         standaloneQuantifiers: StandaloneQuantifiers
-) : DocumentProcessor {
+) : DocumentOperation {
     val detector = standaloneQuantifiers.detector
 
     override fun process(document: Document) {
@@ -204,7 +204,7 @@ class QuantifierExpression(val expr: TagEx) {
 /**
  * Detects quantifier phrases in text.
  */
-class QuantifierDetector(private val expr: TagEx) : DocumentProcessor {
+class QuantifierDetector(private val expr: TagEx) : DocumentOperation {
     @Inject constructor(expression: QuantifierExpression) : this(expression.expr)
 
     override fun process(document: Document) {

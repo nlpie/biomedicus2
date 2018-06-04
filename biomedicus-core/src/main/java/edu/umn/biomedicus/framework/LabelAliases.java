@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
- *
+ * Maps labels to short aliases for SearchExpr/TagEx.
  */
 @Singleton
 public class LabelAliases {

@@ -113,7 +113,7 @@ class DaysOfWeek @Inject constructor(
  */
 class DayOfWeekDetector @Inject constructor(
         daysOfWeek: DaysOfWeek
-) : DocumentProcessor {
+) : DocumentOperation {
     private val values = daysOfWeek.values
 
     override fun process(document: Document) {
@@ -138,7 +138,7 @@ class TimesOfDay @Inject constructor(@Setting("time.timesOfDayPath") path: Strin
     val values = File(path).readLines(StandardCharsets.UTF_8)
 }
 
-class TimeOfDayWordDetector @Inject constructor(timesOfDay: TimesOfDay) : DocumentProcessor {
+class TimeOfDayWordDetector @Inject constructor(timesOfDay: TimesOfDay) : DocumentOperation {
     private val values = timesOfDay.values
 
     override fun process(document: Document) {
@@ -156,7 +156,7 @@ class Seasons @Inject constructor(@Setting("time.seasonsPath") path: String) {
     val values = File(path).readLines(StandardCharsets.UTF_8)
 }
 
-class SeasonWordDetector @Inject constructor(seasons: Seasons) : DocumentProcessor {
+class SeasonWordDetector @Inject constructor(seasons: Seasons) : DocumentOperation {
     private val values = seasons.values
 
     override fun process(document: Document) {
@@ -184,7 +184,7 @@ class Months @Inject constructor(
  */
 class MonthDetector @Inject constructor(
         months: Months
-) : DocumentProcessor {
+) : DocumentOperation {
     private val months = months.months
 
     override fun process(document: Document) {
@@ -210,7 +210,7 @@ class MonthDetector @Inject constructor(
 
 internal val yearPattern = Regex("(18|19|20)\\d{2}")
 
-class YearNumberDetector : DocumentProcessor {
+class YearNumberDetector : DocumentOperation {
     override fun process(document: Document) {
         val tokens = document.labelIndex<ParseToken>()
 
@@ -227,7 +227,7 @@ class YearRangePattern @Inject constructor(searchExprFactory: SearchExprFactory)
     val expr = searchExprFactory.parse("[?NumberRange YearNumber (Number<getNumberType=eCARDINAL> | YearNumber)]")
 }
 
-class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : DocumentProcessor {
+class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : DocumentOperation {
     private val expr = pattern.expr
 
     override fun process(document: Document) {
@@ -252,7 +252,7 @@ data class TextTimePattern(val expr: SearchExpr) {
     ))
 }
 
-class TextTimeDetector(val expr: SearchExpr) : DocumentProcessor {
+class TextTimeDetector(val expr: SearchExpr) : DocumentOperation {
     @Inject constructor(textTimePattern: TextTimePattern): this(textTimePattern.expr)
 
     override fun process(document: Document) {
@@ -282,7 +282,7 @@ data class DatePattern(val expr: SearchExpr) {
 """))
 }
 
-class DateDetector @Inject constructor(pattern: DatePattern) : DocumentProcessor {
+class DateDetector @Inject constructor(pattern: DatePattern) : DocumentOperation {
     private val expr = pattern.expr
 
     override fun process(document: Document) {
@@ -322,7 +322,7 @@ class TemporalPhrasePattern @Inject constructor(
 
 class TemporalPhraseDetector @Inject constructor(
         pattern: TemporalPhrasePattern
-) : DocumentProcessor {
+) : DocumentOperation {
     private val expr = pattern.expr
 
     override fun process(document: Document) {

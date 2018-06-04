@@ -99,7 +99,7 @@ data class AlcoholMethod(override val startIndex: Int, override val endIndex: In
 /**
  * Detects [AlcoholRelevant] labels from [AlcoholCue] labels in text.
  */
-class AlcoholRelevantLabeler : DocumentProcessor {
+class AlcoholRelevantLabeler : DocumentOperation {
     override fun process(document: Document) {
         val relevants = document.findRelevantAncestors(document.labelIndex<AlcoholCue>())
                 .map { AlcoholRelevant(it) }
@@ -142,7 +142,7 @@ class AlcoholAmountUnits(
  */
 class AlcoholUnitDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(amountUnits: AlcoholAmountUnits) : this(amountUnits.detector)
 
     override fun process(document: Document) {
@@ -176,7 +176,7 @@ class AlcoholAmountExpr(val expr: TagEx) {
  *
  * @property expr the alcohol amount TagEx expression.
  */
-class AlcoholAmountDetector(private val expr: TagEx) : DocumentProcessor {
+class AlcoholAmountDetector(private val expr: TagEx) : DocumentOperation {
     @Inject internal constructor(amountExpr: AlcoholAmountExpr) : this(amountExpr.expr)
 
     override fun process(document: Document) {
@@ -194,7 +194,7 @@ class AlcoholAmountDetector(private val expr: TagEx) : DocumentProcessor {
  * Detects and labels [AlcoholFrequency] instances in text using the general [UsageFrequency]
  * label and resolving alcohol related dependencies.
  */
-class AlcoholFrequencyDetector : DocumentProcessor {
+class AlcoholFrequencyDetector : DocumentOperation {
     override fun process(document: Document) {
         val amounts = document.labelIndex<AlcoholAmount>()
 
@@ -215,7 +215,7 @@ class AlcoholFrequencyDetector : DocumentProcessor {
  * checks for whether there are overlaps with any amounts, frequencies, and whether it is an
  * alcohol related parsing dependency.
  */
-class AlcoholTemporalDetector : DocumentProcessor {
+class AlcoholTemporalDetector : DocumentOperation {
     override fun process(document: Document) {
         val frequencies = document.labelIndex<AlcoholFrequency>()
         val amounts = document.labelIndex<AlcoholAmount>()
@@ -248,7 +248,7 @@ class AlcoholTypes(val detector: SequenceDetector<String, Token>) {
  */
 class AlcoholTypeDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(alcoholTypes: AlcoholTypes) : this(alcoholTypes.detector)
 
     override fun process(document: Document) {
@@ -278,7 +278,7 @@ class AlcoholStatusPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class AlcoholStatusDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: AlcoholStatusPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {
@@ -315,7 +315,7 @@ class AlcoholMethodPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class AlcoholMethodDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentProcessor {
+) : DocumentOperation {
     @Inject internal constructor(phrases: AlcoholMethodPhrases) : this(phrases.detector)
 
     override fun process(document: Document) {

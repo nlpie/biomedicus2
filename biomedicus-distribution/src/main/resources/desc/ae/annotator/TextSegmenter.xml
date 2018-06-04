@@ -24,21 +24,20 @@
   </annotatorImplementationName>
   <!-- Biomedicus document processors are all run using DocumentProcessorUimaAdapter -->
   <analysisEngineMetaData>
-    <name>GATE Sentences Writer</name>
-    <description>Writes GATE XML Documents containing the annotations for sentences</description>
+    <name>Text Segmenter</name>
+    <description>Segments text for sentence processing.</description>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
-        <name>outputDirectory</name>
-        <description>The directory to write the GATE documents to.</description>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
         <name>processorClass</name>
-        <description>The document processor class to instantiate.
-        </description>
+        <description>The document processor class to instantiate.</description>
         <type>String</type>
         <mandatory>true</mandatory>
       </configurationParameter>
@@ -67,9 +66,15 @@
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.io.GateSentencesWriter</string>
+          <string>edu.umn.biomedicus.sentences.TextSegmenter</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -83,6 +88,11 @@
         <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
       </imports>
     </typePriorities>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

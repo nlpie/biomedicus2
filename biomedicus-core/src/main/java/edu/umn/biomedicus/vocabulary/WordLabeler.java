@@ -22,7 +22,7 @@ import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Locale;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.6.0
  */
-public final class WordLabeler implements DocumentProcessor {
+public final class WordLabeler implements DocumentOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WordLabeler.class);
 

@@ -3,7 +3,7 @@ systems: [ edu.umn.biomedicus.BiomedicusSystem ]
 paths:
   #home: /absolute-path
   #data: /absolute-path
-# settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
+  #settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
   vocabulary:
     db.path: vocabulary

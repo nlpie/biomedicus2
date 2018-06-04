@@ -17,24 +17,26 @@
 package edu.umn.biomedicus.util
 
 import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.nlpengine.ArtifactProcessor
 import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactOperation
+import java.io.File
 import javax.inject.Inject
 
-/**
- * Copies the text from the documents named [sourceDocumentName] to new documents named
- * [targetDocumentName].
- *
- * @param sourceDocumentName The name of the document to take text from.
- * @param targetDocumentName The name of the document to create with text.
- */
-class CopyTextFromDocument @Inject internal constructor(
-        @ProcessorSetting("sourceDocumentName") private val sourceDocumentName: String,
-        @ProcessorSetting("targetDocumentName") private val targetDocumentName: String
-) : ArtifactOperation {
+
+class UniqueCharactersProcessor @Inject internal constructor(
+        @ProcessorSetting("outputFile") private val outputFile: String,
+        @ProcessorSetting("documentName") private val documentName: String
+) : ArtifactProcessor {
+    private val chars = HashSet<Char>()
+
     override fun process(artifact: Artifact) {
-        val text = artifact.documents[sourceDocumentName]?.text
-                ?: error("No existing document with name $sourceDocumentName")
-        artifact.addDocument(targetDocumentName, text)
+        (artifact.documents[documentName] ?: error("No document with name $documentName"))
+                .text.chars().forEach { chars.add(it.toChar()) }
+    }
+
+    override fun done() {
+        val file = File(outputFile)
+        file.parentFile.mkdirs()
+        file.writeText(chars.joinToString("", postfix = "\n"))
     }
 }

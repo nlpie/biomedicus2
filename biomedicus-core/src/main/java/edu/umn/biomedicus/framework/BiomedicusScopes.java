@@ -70,7 +70,7 @@ public final class BiomedicusScopes {
 
     return seededObjects.entrySet()
         .stream()
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -110,6 +110,7 @@ public final class BiomedicusScopes {
 
     private final ThreadLocal<Context> contextRef;
     private final Map<Key<?>, Object> objectsMap;
+    private final Object lock = new Object();
 
     private Context(ThreadLocal<Context> contextRef, Map<Key<?>, Object> objectsMap) {
       this.contextRef = contextRef;
@@ -136,6 +137,23 @@ public final class BiomedicusScopes {
         contextRef.remove();
       }
     }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T get(Key<T> key, Provider<T> unscoped) {
+      T t = (T) objectsMap.get(key);
+      if (t == null) {
+        synchronized (lock) {
+          t = (T) objectsMap.get(key);
+          if (t == null) {
+            t = unscoped.get();
+            if (!Scopes.isCircularProxy(t)) {
+              objectsMap.put(key, t);
+            }
+          }
+        }
+      }
+      return t;
+    }
   }
 
   /**
@@ -154,19 +172,10 @@ public final class BiomedicusScopes {
     public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
       return () -> {
         Context context = contextRef.get();
-        if (null != context) {
-          @SuppressWarnings("unchecked")
-          T t = (T) context.objectsMap.get(key);
-
-          if (t == null) {
-            t = unscoped.get();
-            if (!Scopes.isCircularProxy(t)) {
-              context.objectsMap.put(key, t);
-            }
-          }
-          return t;
+        if (context != null) {
+          return context.get(key, unscoped);
         } else {
-          throw new OutOfScopeException("Not currently in a document scope");
+          throw new OutOfScopeException("Not currently in a scope");
         }
       };
     }

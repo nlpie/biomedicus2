@@ -22,7 +22,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
 import edu.umn.biomedicus.annotations.ProcessorSetting;
 import edu.umn.biomedicus.sentences.Sentence;
-import edu.umn.nlpengine.Aggregator;
+import edu.umn.nlpengine.ArtifactProcessor;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.Document;
 import java.io.IOException;
@@ -47,7 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ONLPSentenceTrainer implements Aggregator {
+public class ONLPSentenceTrainer implements ArtifactProcessor {
   private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
   private static final String POISON = ">poison<";
   private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();

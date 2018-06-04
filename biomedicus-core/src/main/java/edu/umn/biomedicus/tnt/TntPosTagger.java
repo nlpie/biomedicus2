@@ -28,7 +28,7 @@ import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentProcessor;
+import edu.umn.nlpengine.DocumentOperation;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.0.0
  */
-public class TntPosTagger implements DocumentProcessor {
+public class TntPosTagger implements DocumentOperation {
 
   /**
    * A pos cap for before the beginning of sentences.

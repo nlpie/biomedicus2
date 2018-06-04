@@ -72,7 +72,7 @@
       <nameValuePair>
         <name>processorClass</name>
         <value>
-          <string>edu.umn.biomedicus.tokenization.TermTokenMergerProcessor</string>
+          <string>edu.umn.biomedicus.tokenization.TermTokenMergerOperation</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

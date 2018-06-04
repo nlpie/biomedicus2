@@ -101,7 +101,6 @@
     </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
-      <!-- TODO: change to false if multithreading not supported -->
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
       <outputsNewCASes>false</outputsNewCASes>
     </operationalProperties>

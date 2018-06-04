@@ -27,6 +27,7 @@ import edu.umn.nlpengine.Systems;
 import edu.umn.nlpengine.SystemsModule;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,14 +50,16 @@ import org.yaml.snakeyaml.Yaml;
  */
 public final class Bootstrapper {
 
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(Bootstrapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrapper.class);
 
   private final List<Module> modules = new ArrayList<>();
+
   @Nullable
   private String home = null;
+
   @Nullable
   private Injector injector = null;
+
   @Nullable
   private Map<String, Object> overloadedSettings = null;
 
@@ -158,28 +161,37 @@ public final class Bootstrapper {
     Yaml yaml = new Yaml();
 
     // load configuration
-    Path configurationFilePath = configDir
-        .resolve("biomedicusConfiguration.yml");
+    Path configurationFilePath = configDir.resolve("biomedicusConfiguration.yml");
     Map<String, Object> biomedicusConfiguration;
-    try (BufferedReader bufferedReader = Files
-        .newBufferedReader(configurationFilePath)) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> configuration = yaml
-          .load(bufferedReader);
-      biomedicusConfiguration = configuration;
+    try (BufferedReader bufferedReader = Files.newBufferedReader(configurationFilePath)) {
+      biomedicusConfiguration = yaml.load(bufferedReader);
     } catch (IOException e) {
-      throw new BiomedicusException("Failed to load configuration.", e);
+      LOGGER.warn("Failed to load configuration, falling back to default configuration file.");
+      try (BufferedReader bufferedReader = new BufferedReader(
+          new InputStreamReader(
+              getClass().getClassLoader().getResourceAsStream("biomedicusConfiguration.yml")
+          )
+      )) {
+        biomedicusConfiguration = yaml.load(bufferedReader);
+      } catch (IOException e1) {
+        throw new BiomedicusException(e1);
+      }
     }
 
     // resolve paths
-
-    @SuppressWarnings("unchecked")
-    Map<String, Object> biomedicusPaths
-        = (Map<String, Object>) biomedicusConfiguration.get("paths");
+    Map<?, ?> biomedicusPaths = null;
+    Object pathsObject = biomedicusConfiguration.get("paths");
+    if (pathsObject instanceof Map) {
+      biomedicusPaths = (Map) pathsObject;
+    }
 
     // resolve home path from configuration if not already
-    if (home == null) {
-      home = (String) biomedicusPaths.get("home");
+    if (home == null && biomedicusPaths != null) {
+      Object home = biomedicusPaths.get("home");
+      if (!(home instanceof String)) {
+        throw new BiomedicusException("home path not String: " + home);
+      }
+      this.home = (String) home;
     }
 
     String dataEnv = System.getProperty("biomedicus.paths.data");
@@ -190,8 +202,7 @@ public final class Bootstrapper {
     if (dataEnv != null) {
       dataPath = Paths.get(dataEnv);
     } else {
-      if (biomedicusPaths != null && biomedicusPaths
-          .containsKey("data")) {
+      if (biomedicusPaths != null && biomedicusPaths.containsKey("data")) {
         String dataDir = (String) biomedicusPaths.get("data");
         dataPath = absoluteOrResolveAgainstHome(Paths.get(dataDir));
       } else {
@@ -202,10 +213,10 @@ public final class Bootstrapper {
     LOGGER.info("Using data directory: {}", dataPath);
 
     // collapse settings maps
-    SettingsBinder settingsBinder = SettingsBinder
-        .create(dataPath, configDir, homePath());
-    SettingsLoader configurationSettingsLoader = SettingsLoader
-        .createSettingsLoader(configurationFilePath);
+    SettingsBinder settingsBinder = SettingsBinder.create(dataPath, configDir, homePath());
+
+    SettingsLoader configurationSettingsLoader = new SettingsLoader(biomedicusConfiguration);
+
     configurationSettingsLoader.loadSettings();
     configurationSettingsLoader.addToBinder(settingsBinder);
 
@@ -213,17 +224,19 @@ public final class Bootstrapper {
     systems.addSystems(configurationSettingsLoader.getSystemClasses());
 
     try {
-      Iterator<Path> settingsFilesItr = Files.walk(configDir)
-          .filter(path -> path.getFileName().toString()
-              .endsWith("Settings.yml"))
-          .iterator();
-      while (settingsFilesItr.hasNext()) {
-        Path settingsFilePath = settingsFilesItr.next();
-        SettingsLoader settingsLoader = SettingsLoader
-            .createSettingsLoader(settingsFilePath);
-        settingsLoader.loadSettings();
-        settingsLoader.addToBinder(settingsBinder);
-        systems.addSystems(settingsLoader.getSystemClasses());
+      if (Files.exists(configDir)) {
+        Iterator<Path> settingsFilesItr = Files.walk(configDir)
+            .filter(path -> path.getFileName().toString()
+                .endsWith("Settings.yml"))
+            .iterator();
+        while (settingsFilesItr.hasNext()) {
+          Path settingsFilePath = settingsFilesItr.next();
+          SettingsLoader settingsLoader = SettingsLoader
+              .createSettingsLoader(settingsFilePath);
+          settingsLoader.loadSettings();
+          settingsLoader.addToBinder(settingsBinder);
+          systems.addSystems(settingsLoader.getSystemClasses());
+        }
       }
     } catch (IOException e) {
       throw new BiomedicusException(e);
@@ -264,8 +277,7 @@ public final class Bootstrapper {
     if (injector != null) {
       biomedicusInjector = injector.createChildInjector(modules);
     } else {
-      biomedicusInjector = Guice
-          .createInjector(Stage.PRODUCTION, modules);
+      biomedicusInjector = Guice.createInjector(Stage.PRODUCTION, modules);
     }
 
     return biomedicusInjector.getInstance(Application.class);
