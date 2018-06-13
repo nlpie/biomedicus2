@@ -32,276 +32,276 @@ enum class Foo {
     BAZ
 }
 
-@LabelMetadata(versionId = "1_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class HasEnum(
         override val startIndex: Int,
         override val endIndex: Int,
         val foo: Foo
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableEnum(
         override val startIndex: Int,
         override val endIndex: Int,
         val foo: Foo?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasEnumArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val enums: Array<Foo>
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableEnumArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val enums: Array<Foo>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasEnumList(
         override val startIndex: Int,
         override val endIndex: Int,
         val enums: List<Foo>
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableEnumList(
         override val startIndex: Int,
         override val endIndex: Int,
         val enums: List<Foo>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasBigDecimal(
         override val startIndex: Int,
         override val endIndex: Int,
         val bigDecimal: BigDecimal
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableBigDecimal(
         override val startIndex: Int,
         override val endIndex: Int,
         val bigDecimal: BigDecimal?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasSpan(
         override val startIndex: Int,
         override val endIndex: Int,
         val span: Span
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableSpan(
         override val startIndex: Int,
         override val endIndex: Int,
         val span: Span?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasSpanArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val spans: Array<Span>
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasNullableSpanArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val spans: Array<Span>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasSpanList(
         override val startIndex: Int,
         override val endIndex: Int,
         val spans: List<Span>
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLabel(
         override val startIndex: Int,
         override val endIndex: Int,
         val hasBoolean: HasBoolean?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLabelArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val hasBooleans: Array<HasBoolean>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLabelList(
         override val startIndex: Int,
         override val endIndex: Int,
         val hasBooleans: List<HasBoolean>?
 ) : Label()
 
-@LabelMetadata(versionId = "test", distinct = true)
+@LabelMetadata(classpath = "test", distinct = true)
 data class HasBoolean(
         override val startIndex: Int,
         override val endIndex: Int,
         val boolean: Boolean
 ) : Label()
 
-@LabelMetadata(versionId = "test", distinct = true)
+@LabelMetadata(classpath = "test", distinct = true)
 data class HasByte(
         val byte: Byte,
         override val startIndex: Int,
         override val endIndex: Int
 ) : Label()
 
-@LabelMetadata(versionId = "test", distinct = true)
+@LabelMetadata(classpath = "test", distinct = true)
 data class HasShort(
         override val startIndex: Int,
         override val endIndex: Int,
         val short: Short
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasInt(override val startIndex: Int, override val endIndex: Int, val int: Int) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLong(
         override val startIndex: Int,
         override val endIndex: Int,
         val long: Long
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasFloat(
         override val startIndex: Int,
         override val endIndex: Int,
         val float: Float
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasDouble(
         override val startIndex: Int,
         override val endIndex: Int,
         val double: Double
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasString(
         override val startIndex: Int,
         override val endIndex: Int,
         val string: String?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasBooleanArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val booleanArray: BooleanArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasByteArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val byteArray: ByteArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasShortArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val shortArray: ShortArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasIntArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val intArray: IntArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLongArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val longArray: LongArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasFloatArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val floatArray: FloatArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasDoubleArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val doubleArray: DoubleArray?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasStringArray(
         override val startIndex: Int,
         override val endIndex: Int,
         val stringArray: Array<String>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasBooleanList(
         override val startIndex: Int,
         override val endIndex: Int,
         val booleans: List<Boolean>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasByteList(
         override val startIndex: Int,
         override val endIndex: Int,
         val bytes: List<Byte>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasShortList(
         override val startIndex: Int,
         override val endIndex: Int,
         val shorts: List<Short>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasIntList(
         override val startIndex: Int,
         override val endIndex: Int,
         val ints: List<Int>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasLongList(
         override val startIndex: Int,
         override val endIndex: Int,
         val longs: List<Long>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasFloatList(
         override val startIndex: Int,
         override val endIndex: Int,
         val floats: List<Float>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasDoubleList(
         override val startIndex: Int,
         override val endIndex: Int,
         val doubles: List<Double>?
 ) : Label()
 
-@LabelMetadata(versionId = "test")
+@LabelMetadata(classpath = "test")
 data class HasStringList(
         override val startIndex: Int,
         override val endIndex: Int,

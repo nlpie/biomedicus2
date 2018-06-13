@@ -561,7 +561,7 @@ class SearchExprTest {
     BAR
   }
 
-  @LabelMetadata(versionId = "test")
+  @LabelMetadata(classpath = "test")
   static class HasEnum extends Label {
 
     private final int startIndex;
@@ -1579,7 +1579,7 @@ class SearchExprTest {
 
 
 
-  @LabelMetadata(versionId = "2_0")
+  @LabelMetadata(classpath = "biomedicus.v2")
   static class Blah extends Label {
 
     private int startIndex;
@@ -1606,7 +1606,7 @@ class SearchExprTest {
     }
   }
 
-  @LabelMetadata(versionId = "2_0")
+  @LabelMetadata(classpath = "biomedicus.v2")
   public static class Foo extends Label {
 
     private String value;

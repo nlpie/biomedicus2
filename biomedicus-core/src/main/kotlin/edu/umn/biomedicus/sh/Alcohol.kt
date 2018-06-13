@@ -35,7 +35,7 @@ import javax.inject.Singleton
 /**
  * A verb indicating dependants are related to alcohol usage.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholRelevant(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -43,7 +43,7 @@ data class AlcoholRelevant(override val startIndex: Int, override val endIndex: 
 /**
  * The unit of measurement of an alcohol usage measurement, used in [AlcoholAmount] detection.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholUnit(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -51,7 +51,7 @@ data class AlcoholUnit(override val startIndex: Int, override val endIndex: Int)
 /**
  * The measurement / amount of an alcohol usage. E.g. 4-8 beers
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholAmount(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -59,7 +59,7 @@ data class AlcoholAmount(override val startIndex: Int, override val endIndex: In
 /**
  * The frequency that an alcohol usage occurs. E.g. "daily", "weekly"
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -67,7 +67,7 @@ data class AlcoholFrequency(override val startIndex: Int, override val endIndex:
 /**
  * The time period alcohol usage occurs or occurred in. Phrases like "for thirty years", "at night"
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholTemporal(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -75,7 +75,7 @@ data class AlcoholTemporal(override val startIndex: Int, override val endIndex: 
 /**
  * The type of alcohol, e.g. beer, liquor.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholType(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -83,7 +83,7 @@ data class AlcoholType(override val startIndex: Int, override val endIndex: Int)
 /**
  * A word that indicates whether alcohol usage is ongoing or has ceased.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholStatus(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -91,7 +91,7 @@ data class AlcoholStatus(override val startIndex: Int, override val endIndex: In
 /**
  * The method
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholMethod(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

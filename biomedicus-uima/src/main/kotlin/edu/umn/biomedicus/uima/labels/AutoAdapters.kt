@@ -34,6 +34,10 @@ import kotlin.reflect.full.*
 
 private val featureDesc = "Automatically generated feature"
 
+/**
+ * Global object responsible for storing [Label] and [Enum] classes from modules, creating their
+ * UIMA type system counterparts.
+ */
 @Singleton
 class AutoAdapters @Inject constructor(
         internal val labelAdapters: LabelAdapters,
@@ -75,6 +79,9 @@ class AutoAdapters @Inject constructor(
 }
 
 
+/**
+ * An auto-adapter from a [Label] to an auto-generated UIMA type.
+ */
 class AutoAdapter<T : Label>(
         override val labelClass: Class<T>,
         private var labelAdapters: LabelAdapters
@@ -1276,8 +1283,9 @@ class AutoAdapter<T : Label>(
 }
 
 private fun <T : Label> uimaTypeName(labelClass: Class<T>) =
-        "edu.umn.nlpengine.generated${(labelClass.kotlin.findAnnotation<LabelMetadata>()
-                ?: throw IllegalStateException("Label class without @Label annotation")).versionId}.${labelClass.simpleName}"
+        "${(labelClass.kotlin.findAnnotation<LabelMetadata>()
+                ?: throw IllegalStateException("Label class without @Label annotation")).classpath
+        }.${labelClass.simpleName}"
 
 
 fun TypeSystemDescription.addEnum(clazz: Class<*>) {
@@ -1290,6 +1298,5 @@ fun TypeSystemDescription.addEnum(clazz: Class<*>) {
             .toTypedArray()
 }
 
-private fun createEnumTypeName(clazz: Class<*>) =
-        "edu.umn.biomedicus.types.auto.${clazz.simpleName}"
+private fun createEnumTypeName(clazz: Class<*>) = clazz.canonicalName
 

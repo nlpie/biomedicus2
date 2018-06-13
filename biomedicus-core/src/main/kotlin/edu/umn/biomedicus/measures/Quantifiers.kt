@@ -53,7 +53,7 @@ enum class IndefiniteQuantifierType {
  * @property endIndex the end of the cue phrase
  * @property type
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class IndefiniteQuantifierCue(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -74,14 +74,14 @@ data class IndefiniteQuantifierCue(
 /**
  * A standalone value which doesn't have a definite amount, like "a few" or "some."
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class FuzzyValue(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * A word that functions as a quantifier without modifying a unit. "never", "significant", "few",
  * "heavy".
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class StandaloneQuantifier(
         override val startIndex: Int,
         override val endIndex: Int
@@ -90,7 +90,7 @@ data class StandaloneQuantifier(
 /**
  * An amount of something. Modifies a unit
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Quantifier(
         override val startIndex: Int,
         override val endIndex: Int,

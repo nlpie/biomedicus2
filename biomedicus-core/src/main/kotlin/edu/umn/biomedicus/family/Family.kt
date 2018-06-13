@@ -37,7 +37,7 @@ class FamilyModule : SystemModule() {
  * @property endIndex the end in text
  * @property value the word referencing the relative
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Relative(
         override val startIndex: Int,
         override val endIndex: Int,

@@ -49,6 +49,11 @@ class SentenceDeepLearningWriter @Inject constructor(
                     .bufferedWriter()
                     .use {
                         for (token in tokens inside textSegment) {
+                            val prevEnd
+                                    = tokens.backwardFrom(token).first()?.endIndex ?: 0
+                            val nextBegin
+                                    = tokens.forwardFrom(token).first()?.startIndex ?: text.length
+
                             if (sentence?.contains(token)?.not() == true) {
                                 sentence = if (sentenceIt.hasNext()) sentenceIt.next() else null
                             }
@@ -59,7 +64,7 @@ class SentenceDeepLearningWriter @Inject constructor(
                                     else -> 'I'
                                 }
 
-                                it.appendln("${token.startIndex} ${token.endIndex} $type ${token.coveredText(text)}")
+                                it.appendln("$prevEnd ${token.startIndex} ${token.endIndex} $nextBegin $type ${token.coveredText(text)}")
                             }
                         }
                     }

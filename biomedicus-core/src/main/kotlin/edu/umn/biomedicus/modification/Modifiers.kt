@@ -34,12 +34,12 @@ interface DictionaryTermModifier : TextRange {
     val cueTerms: List<ModificationCue>
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class ModificationCue(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Historical(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -49,7 +49,7 @@ data class Historical(
             this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Negated(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -59,7 +59,7 @@ data class Negated(
             this(textRange.startIndex, textRange.endIndex, cueTerms)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Probable(
         override val startIndex: Int,
         override val endIndex: Int,

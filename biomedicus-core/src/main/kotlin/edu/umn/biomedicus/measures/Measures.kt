@@ -45,7 +45,7 @@ class MeasuresModule: SystemModule() {
 /**
  * A candidate unit of measure.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class CandidateUnitOfMeasure(
         override val startIndex: Int,
         override val endIndex: Int

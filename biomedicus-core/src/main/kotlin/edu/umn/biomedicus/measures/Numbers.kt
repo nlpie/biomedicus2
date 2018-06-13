@@ -33,7 +33,7 @@ import javax.inject.Singleton
  * @property denominator the BigDecimal representation
  * @property numberType
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Number(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -49,7 +49,7 @@ data class Number(
 /**
  * A number range from one number to another in text.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NumberRange(
         override val startIndex: Int,
         override val endIndex: Int,

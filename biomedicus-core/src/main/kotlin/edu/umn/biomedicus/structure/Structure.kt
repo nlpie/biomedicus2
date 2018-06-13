@@ -32,25 +32,25 @@ class StructureModule : SystemModule() {
 
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Paragraph(override val startIndex: Int, override val endIndex: Int) : Label()
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Row(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Cell(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NestedRow(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NestedCell(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

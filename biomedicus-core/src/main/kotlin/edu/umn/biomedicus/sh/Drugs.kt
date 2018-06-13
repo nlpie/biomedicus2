@@ -35,7 +35,7 @@ import javax.inject.Singleton
 /**
  * A verb indicating dependants are related to drug usage.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugRelevant(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -43,7 +43,7 @@ data class DrugRelevant(override val startIndex: Int, override val endIndex: Int
 /**
  * The unit of measurement of an drug usage measurement, used in [DrugAmount] detection.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugUnit(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -51,7 +51,7 @@ data class DrugUnit(override val startIndex: Int, override val endIndex: Int) : 
 /**
  * The measurement / amount of an drug usage. E.g. 4-8 beers
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugAmount(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -59,7 +59,7 @@ data class DrugAmount(override val startIndex: Int, override val endIndex: Int) 
 /**
  * The frequency that an drug usage occurs. E.g. "daily", "weekly"
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -67,7 +67,7 @@ data class DrugFrequency(override val startIndex: Int, override val endIndex: In
 /**
  * The time period drug usage occurs or occurred in. Phrases like "for thirty years", "at night"
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugTemporal(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -75,7 +75,7 @@ data class DrugTemporal(override val startIndex: Int, override val endIndex: Int
 /**
  * The type of drug, e.g. beer, liquor.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugType(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -83,7 +83,7 @@ data class DrugType(override val startIndex: Int, override val endIndex: Int) : 
 /**
  * A word that indicates whether drug usage is ongoing or has ceased.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugStatus(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -91,7 +91,7 @@ data class DrugStatus(override val startIndex: Int, override val endIndex: Int) 
 /**
  * The method
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugMethod(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

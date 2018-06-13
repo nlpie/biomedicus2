@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets
 /**
  * Some kind of time unit: days, months, years, hours
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TimeUnit(
         override val startIndex: Int,
         override val endIndex: Int
@@ -38,7 +38,7 @@ data class TimeUnit(
 /**
  * A time frequency: hourly, daily, weekly, yearly.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TimeFrequencyUnit(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }

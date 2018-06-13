@@ -44,7 +44,7 @@ interface Token : TextRange {
  * A token which represents a single word or semantic unit. Examples would be the parse tokens
  * "wo" "n't" being merged into "won't".
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TermToken(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -62,7 +62,7 @@ data class TermToken(
  * A token roughly equivalent to a penn treebank token. Contains tokens to be labeled with part of
  * speech tags and
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class ParseToken(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -86,7 +86,7 @@ data class ParseToken(
  * An initial candidate for tokens. Uses a simple rule based penn-like tokenization without
  * splitting end-of-sentence periods into their own tokens like [ParseToken].
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TokenCandidate(
         override val startIndex: Int,
         override val endIndex: Int
@@ -105,7 +105,7 @@ data class TokenCandidate(
 /**
  * A universal word index (for a word vector space) which is parallel to [ParseToken] labels.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class WordIndex(
         override val startIndex: Int,
         override val endIndex: Int,

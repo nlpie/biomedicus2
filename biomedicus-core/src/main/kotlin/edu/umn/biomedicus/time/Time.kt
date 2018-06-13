@@ -48,17 +48,17 @@ class TimeModule : SystemModule() {
 /**
  * A day of week in text, e.g. "Monday", "tue.", etc
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DayOfWeek(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TimeOfDayWord(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class SeasonWord(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -66,12 +66,12 @@ data class SeasonWord(override val startIndex: Int, override val endIndex: Int) 
 /**
  * A month in text, e.g. "Jan", "February", "Sept."
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Month(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class YearNumber(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -85,16 +85,16 @@ data class YearNumber(
     ) : this(textRange.startIndex, textRange.endIndex, value)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class YearRange(override val startIndex: Int, override val endIndex: Int) : Label()
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TextTime(override val startIndex: Int, override val endIndex: Int) : Label()
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TextDate(override val startIndex: Int, override val endIndex: Int) : Label()
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TemporalPhrase(override val startIndex: Int, override val endIndex: Int) : Label()
 
 

@@ -34,7 +34,7 @@ import javax.inject.Singleton
 /**
  * The verb that is a head for nicotine social history information.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineRelevant(
         override val startIndex: Int,
         override val endIndex: Int
@@ -46,13 +46,13 @@ data class NicotineRelevant(
  * The unit of a nicotine usage measurement, used in [NicotineAmount] detection.
  * E.g. cigarettes, packs, tins.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineUnit(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * The quantity and unit of a nicotine usage measurement. E.g. 1 - 5 packs
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineAmount(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -60,7 +60,7 @@ data class NicotineAmount(override val startIndex: Int, override val endIndex: I
 /**
  * How often nicotine is used. E.g. daily, infrequently
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -69,7 +69,7 @@ data class NicotineFrequency(override val startIndex: Int, override val endIndex
  * The time period nicotine usage occurs/occurred in or over. Includes phrases like
  * "for thirty years" or "at night" or "weekend nights"
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineTemporal(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -77,13 +77,13 @@ data class NicotineTemporal(override val startIndex: Int, override val endIndex:
 /**
  * The type of nicotine, cigarettes, chewing tobacco, etc.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineType(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * A word that indicates whether usage is ongoing or has ceased.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineStatus(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -91,7 +91,7 @@ data class NicotineStatus(override val startIndex: Int, override val endIndex: I
 /**
  * The method how nicotine usage occurred. E.g. smoked, chewed, etc.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineMethod(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

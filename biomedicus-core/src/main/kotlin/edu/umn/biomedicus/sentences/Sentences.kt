@@ -29,7 +29,7 @@ class SentencesModule : SystemModule() {
 /**
  * A unit of language of multiple words making up a complete thought.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Sentence(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -58,7 +58,7 @@ data class Sentence(
     }
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TextSegment(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }

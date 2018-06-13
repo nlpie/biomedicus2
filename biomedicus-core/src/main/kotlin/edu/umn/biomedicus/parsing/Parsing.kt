@@ -30,7 +30,7 @@ class ParsingModule : SystemModule() {
     }
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class ConstituencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -46,7 +46,7 @@ data class ConstituencyParse(
  * @property endIndex the index after the word which is the root
  * @property root the span of the root
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DependencyParse(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -66,7 +66,7 @@ data class DependencyParse(
  * @property relation the relation between dependant and head
  * @property head the span of the head
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Dependency(
         override val startIndex: Int,
         override val endIndex: Int,

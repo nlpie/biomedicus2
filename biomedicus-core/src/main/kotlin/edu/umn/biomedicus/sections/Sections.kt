@@ -27,7 +27,7 @@ class SectionsModule : SystemModule() {
     }
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Section(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -36,12 +36,12 @@ data class Section(
     constructor(textRange: TextRange, kind: String?) : this(textRange.startIndex, textRange.endIndex, kind)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class SectionHeader(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class SectionContent(override val startIndex: Int, override val endIndex: Int) : Label()
 
 class SectionContentLabeler : DocumentOperation {

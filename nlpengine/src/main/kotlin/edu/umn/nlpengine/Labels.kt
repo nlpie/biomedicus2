@@ -18,9 +18,17 @@ package edu.umn.nlpengine
 
 import java.util.regex.Matcher
 
+/**
+ * A annotation that describes some metadata about the label.
+ *
+ * @property classpath The classpath that the label occurs on.
+ * @property distinct If the label is distinct, i.e. non-overlapping with any label of the same
+ * type.
+ *
+ */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class LabelMetadata(val versionId: String, val distinct: Boolean = false)
+annotation class LabelMetadata(val classpath: String, val distinct: Boolean = false)
 
 /**
  * A location in text. Its indices consistent with [String.substring] and [CharSequence.subSequence]

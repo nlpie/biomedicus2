@@ -32,7 +32,7 @@ class AcronymModule : SystemModule() {
 /**
  * An acronym or abbreviation in text.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Acronym(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -48,7 +48,7 @@ data class Acronym(
     ): this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter, score)
 }
 
-@LabelMetadata(versionId = "2_0", distinct = false)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = false)
 data class OtherAcronymSense(
         override val startIndex: Int,
         override val endIndex: Int,

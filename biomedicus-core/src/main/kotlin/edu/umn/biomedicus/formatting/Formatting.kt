@@ -30,11 +30,11 @@ class FormattingModule : SystemModule() {
 /**
  * Text that has been bolded.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Bold(override val startIndex: Int, override val endIndex: Int): Label()
 
 /**
  * Text that has been underlined.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Underlined(override val startIndex: Int, override val endIndex: Int): Label()

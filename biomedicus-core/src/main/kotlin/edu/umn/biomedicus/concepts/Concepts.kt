@@ -41,7 +41,7 @@ interface Concept {
 /**
  * A dictionary concept - a standardized code for the idea the text represents.
  */
-@LabelMetadata(versionId = "2_0", distinct = false)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = false)
 data class DictionaryConcept(
         override val startIndex: Int,
         override val endIndex: Int,
@@ -62,7 +62,7 @@ data class DictionaryConcept(
 /**
  * A dictionary term - a span of text that has one or more dictionary concepts associated with it.
  */
-@LabelMetadata(versionId = "2_0", distinct = false)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = false)
 data class DictionaryTerm(
         override val startIndex: Int,
         override val endIndex: Int

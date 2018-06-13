@@ -85,7 +85,7 @@ class SocialHistoryModule : SystemModule() {
 /**
  * A social history candidate for alcohol usage.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholCandidate(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -93,13 +93,13 @@ data class AlcoholCandidate(override val startIndex: Int, override val endIndex:
 /**
  * A word that indicates a sentence is an alcohol social history candidate.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class AlcoholCue(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * A social history candidate for drug usage.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugCandidate(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -107,13 +107,13 @@ data class DrugCandidate(override val startIndex: Int, override val endIndex: In
 /**
  * A word that indicates a sentence is a drug social history candidate.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class DrugCue(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * A social history candidate for nicotine usage.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineCandidate(
         override val startIndex: Int,
         override val endIndex: Int
@@ -124,7 +124,7 @@ data class NicotineCandidate(
 /**
  * A word that indicates a sentence is a nicotine social history candidate.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class NicotineCue(
         override val startIndex: Int,
         override val endIndex: Int
@@ -134,7 +134,7 @@ data class NicotineCue(
  * A general known usage frequency phrase that could potentially apply to any social history usage
  * type.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class UsageFrequencyPhrase(
         override val startIndex: Int,
         override val endIndex: Int
@@ -143,7 +143,7 @@ data class UsageFrequencyPhrase(
 /**
  * A general usage frequency that could potentially apply to any social history usage type.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class UsageFrequency(override val startIndex: Int, override val endIndex: Int) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 }
@@ -151,13 +151,13 @@ data class UsageFrequency(override val startIndex: Int, override val endIndex: I
 /**
  * A general usage status that could potentially apply to any social history type.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class UsageStatus(override val startIndex: Int, override val endIndex: Int) : Label()
 
 /**
  * A general method phrase that could potentially apply to any social history method.
  */
-@LabelMetadata(versionId = "2_0", distinct = true)
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class GenericMethodPhrase(override val startIndex: Int, override val endIndex: Int) : Label()
 
 internal val headers = SequenceDetector(
