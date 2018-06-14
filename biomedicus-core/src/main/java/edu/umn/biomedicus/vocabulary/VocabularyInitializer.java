@@ -16,7 +16,9 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.tokenization.ParseToken;
@@ -83,7 +85,8 @@ public class VocabularyInitializer {
 
   public static void main(String[] args) {
     try {
-      Bootstrapper.create().getInstance(VocabularyInitializer.class).doMain(args);
+      Bootstrapper.create(Guice.createInjector(Stage.DEVELOPMENT))
+          .getInstance(VocabularyInitializer.class).doMain(args);
     } catch (BiomedicusException e) {
       e.printStackTrace();
     }
