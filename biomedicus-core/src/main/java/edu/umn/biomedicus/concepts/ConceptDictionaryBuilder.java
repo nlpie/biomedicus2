@@ -25,6 +25,7 @@ import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -32,6 +33,8 @@ import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +47,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -192,19 +196,16 @@ public class ConceptDictionaryBuilder {
     System.out.println("Loading phrases and SUI -> CUIs from MRCONSO: " + mrconsoPath);
     Set<SUI> bannedSUIs = new HashSet<>();
 
+    Map<String, Integer> sources = new HashMap<>();
+    Map<SuiCui, List<Integer>> suiCuiSources = new HashMap<>();
+
     Files.createDirectories(dbPath);
-    int mrConsoTotalLines = 0;
+    long mrConsoTotalLines = Files.lines(mrconsoPath).count();
     int mrConsoCompletedLines = 0;
 
-    try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
-      while (bufferedReader.readLine() != null) {
-        mrConsoTotalLines++;
-      }
-    }
-
     {
-      NavigableMap<String, List<SuiCuiTui>> phrasesMap = new TreeMap<>();
-      NavigableMap<String, List<SuiCuiTui>> lowercaseMap = new TreeMap<>();
+      NavigableMap<String, List<ConceptRow>> phrasesMap = new TreeMap<>();
+      NavigableMap<String, List<ConceptRow>> lowercaseMap = new TreeMap<>();
 
       try (BufferedReader bufferedReader = Files.newBufferedReader(mrconsoPath)) {
         String line;
@@ -217,6 +218,7 @@ public class ConceptDictionaryBuilder {
           if ("ENG".equals(splitLine[1])) {
             SUI sui = new SUI(splitLine[5]);
             String obsoleteOrSuppressible = splitLine[16];
+            String source = splitLine[11];
             String tty = splitLine[12];
             String phrase = splitLine[14];
 
@@ -240,16 +242,21 @@ public class ConceptDictionaryBuilder {
               continue;
             }
             for (TUI tui : tuis) {
+              SuiCui sc = new SuiCui(sui, cui);
               if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
-                  || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis
+                  || filteredSuiCuis.contains(sc) || filteredSuis
                   .contains(sui)) {
                 continue;
               }
 
-              SuiCuiTui value = new SuiCuiTui(sui, cui, tui);
+              Integer sourceId = sources.computeIfAbsent(source, (unused) -> sources.size());
+
+              ConceptRow value = new ConceptRow(sui, cui, tui, sourceId);
 
               multimapPut(phrasesMap, phrase, value);
               multimapPut(lowercaseMap, phrase, value);
+
+              multimapPut(suiCuiSources, sc, sourceId);
             }
           }
         }
@@ -257,8 +264,8 @@ public class ConceptDictionaryBuilder {
           try (RocksDB phrases = RocksDB.open(options, dbPath.resolve("phrases").toString());
               RocksDB lowercase = RocksDB.open(options, dbPath.resolve("lowercase").toString())) {
             int wrote = 0;
-            for (Entry<String, List<SuiCuiTui>> entry : phrasesMap.entrySet()) {
-              List<SuiCuiTui> suiCuiTuis = entry.getValue();
+            for (Entry<String, List<ConceptRow>> entry : phrasesMap.entrySet()) {
+              List<ConceptRow> suiCuiTuis = entry.getValue();
               byte[] suiCuiTuiBytes = getBytes(suiCuiTuis);
               phrases.put(entry.getKey().getBytes(), suiCuiTuiBytes);
               if (++wrote % 10_000 == 0) {
@@ -266,8 +273,8 @@ public class ConceptDictionaryBuilder {
               }
             }
             wrote = 0;
-            for (Entry<String, List<SuiCuiTui>> entry : lowercaseMap.entrySet()) {
-              List<SuiCuiTui> suiCuiTuis = entry.getValue();
+            for (Entry<String, List<ConceptRow>> entry : lowercaseMap.entrySet()) {
+              List<ConceptRow> suiCuiTuis = entry.getValue();
               byte[] suiCuiTuiBytes = getBytes(suiCuiTuis);
               lowercase.put(entry.getKey().getBytes(), suiCuiTuiBytes);
               if (++wrote % 10_000 == 0) {
@@ -285,16 +292,10 @@ public class ConceptDictionaryBuilder {
     Path mrxnsPath = umlsPath.resolve("MRXNS_ENG.RRF");
     System.out.println("Loading lowercase normalized strings from MRXNS_ENG: " + mrxnsPath);
 
-    int totalLines = 0;
     int lineCount = 0;
+    long totalLines = Files.lines(mrxnsPath).count();
 
-    try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
-      while (bufferedReader.readLine() != null) {
-        totalLines++;
-      }
-    }
-
-    NavigableMap<StringsBag, List<SuiCuiTui>> map = new TreeMap<>();
+    NavigableMap<StringsBag, List<ConceptRow>> map = new TreeMap<>();
 
     try (BufferedReader bufferedReader = Files.newBufferedReader(mrxnsPath)) {
       String line;
@@ -325,12 +326,16 @@ public class ConceptDictionaryBuilder {
             continue;
           }
           for (TUI tui : tuis) {
+            SuiCui sc = new SuiCui(sui, cui);
             if (filteredCuis.contains(cui) || filteredTuis.contains(tui)
-                || filteredSuiCuis.contains(new SuiCui(sui, cui)) || filteredSuis.contains(sui)) {
+                || filteredSuiCuis.contains(sc) || filteredSuis.contains(sui)) {
               continue;
             }
 
-            multimapPut(map, termsBag, new SuiCuiTui(sui, cui, tui));
+            List<Integer> sourceList = suiCuiSources.get(sc);
+            for (Integer sourceId : sourceList) {
+              multimapPut(map, termsBag, new ConceptRow(sui, cui, tui, sourceId));
+            }
           }
         }
       }
@@ -339,8 +344,8 @@ public class ConceptDictionaryBuilder {
     int wrote = 0;
     try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad();
         RocksDB normsDb = RocksDB.open(options, dbPath.resolve("norms").toString())) {
-      for (Entry<StringsBag, List<SuiCuiTui>> entry : map.entrySet()) {
-        List<SuiCuiTui> suiCuiTuis = entry.getValue();
+      for (Entry<StringsBag, List<ConceptRow>> entry : map.entrySet()) {
+        List<ConceptRow> suiCuiTuis = entry.getValue();
         byte[] suiCuiTuiBytes = getBytes(suiCuiTuis);
         normsDb.put(entry.getKey().getBytes(), suiCuiTuiBytes);
         if (++wrote % 10_000 == 0) {
@@ -348,21 +353,35 @@ public class ConceptDictionaryBuilder {
         }
       }
     } catch (RocksDBException e) {
-      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+
+    try (BufferedWriter writer = Files.newBufferedWriter(dbPath.resolve("sources.txt"))) {
+      sources.entrySet().stream()
+          .sorted(Comparator.comparing(Entry::getValue))
+          .map(Entry::getKey)
+          .forEach(s -> {
+            try {
+              writer.write(s);
+              writer.newLine();
+            } catch (IOException e) {
+              throw new IllegalStateException(e);
+            }
+          });
     }
   }
 
-  private byte[] getBytes(List<SuiCuiTui> suiCuiTuis) {
-    ByteBuffer byteBuffer = ByteBuffer.allocate(12 * suiCuiTuis.size());
-    for (SuiCuiTui suiCuiTui : suiCuiTuis) {
-      byteBuffer.put(suiCuiTui.getBytes());
+  private byte[] getBytes(List<ConceptRow> rows) {
+    ByteBuffer byteBuffer = ByteBuffer.allocate(ConceptRow.NUM_BYTES * rows.size());
+    for (ConceptRow row : rows) {
+      byteBuffer.put(row.getBytes());
     }
 
     return byteBuffer.array();
   }
 
   private <K, V> void multimapPut(Map<K, List<V>> map, K key, V value) {
-    map.compute(key, (k, v) -> {
+    map.compute(key, (unused, v) -> {
       if (v == null) {
         v = new ArrayList<>();
       }
@@ -371,23 +390,12 @@ public class ConceptDictionaryBuilder {
     });
   }
 
-  private void multimapPut(RocksDB db, byte[] key, byte[] value) throws RocksDBException {
-    byte[] current = db.get(key);
-    if (current != null) {
-      current = ByteBuffer.allocate(current.length + value.length).put(current).put(value).array();
-      db.delete(key);
-    } else {
-      current = value;
-    }
-    db.put(key, current);
-  }
-
-  private static final class SuiCui {
+  private static final class SuiCui implements Comparable<SuiCui> {
 
     private final SUI sui;
     private final CUI cui;
 
-    public SuiCui(SUI sui, CUI cui) {
+    SuiCui(SUI sui, CUI cui) {
       this.sui = sui;
       this.cui = cui;
     }
@@ -415,6 +423,13 @@ public class ConceptDictionaryBuilder {
       int result = sui.hashCode();
       result = 31 * result + cui.hashCode();
       return result;
+    }
+
+    @Override
+    public int compareTo(@NotNull SuiCui o) {
+      int compare = Integer.compare(sui.identifier(), o.sui.identifier());
+      if (compare != 0) return compare;
+      return Integer.compare(cui.identifier(), o.cui.identifier());
     }
   }
 }

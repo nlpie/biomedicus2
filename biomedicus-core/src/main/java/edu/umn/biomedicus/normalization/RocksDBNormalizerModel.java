@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.rocksdb.InfoLogLevel;
+import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
@@ -35,8 +37,8 @@ public class RocksDBNormalizerModel implements NormalizerModel {
   RocksDBNormalizerModel(Path dbPath) {
     RocksDB.loadLibrary();
 
-    try {
-      db = RocksDB.openReadOnly(dbPath.toString());
+    try (Options options = new Options().setInfoLogLevel(InfoLogLevel.ERROR_LEVEL)) {
+      db = RocksDB.openReadOnly(options, dbPath.toString());
     } catch (RocksDBException e) {
       throw new RuntimeException(e);
     }

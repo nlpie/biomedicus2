@@ -79,7 +79,7 @@ class DictionaryConceptRecognizer implements DocumentOperation {
 
   private LabelIndex<NormForm> normIndexes;
 
-  private Labeler<DictionaryConcept> conceptLabeler;
+  private Labeler<UmlsConcept> conceptLabeler;
 
   /**
    * Creates a dictionary concept recognizer from a concept dictionary and a document.
@@ -112,7 +112,7 @@ class DictionaryConceptRecognizer implements DocumentOperation {
   }
 
   private boolean checkPhrase(Span span, String phrase, boolean oneToken, double confMod) {
-    List<SuiCuiTui> phraseSUI = conceptDictionary.forPhrase(phrase);
+    List<ConceptRow> phraseSUI = conceptDictionary.forPhrase(phrase);
 
     if (phraseSUI != null) {
       makeTerm(span, phraseSUI, 1 - confMod);
@@ -123,8 +123,7 @@ class DictionaryConceptRecognizer implements DocumentOperation {
       return false;
     }
 
-    phraseSUI = conceptDictionary
-        .forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
+    phraseSUI = conceptDictionary.forLowercasePhrase(phrase.toLowerCase(Locale.ENGLISH));
 
     if (phraseSUI != null) {
       makeTerm(span, phraseSUI, 0.6 - confMod);
@@ -154,15 +153,29 @@ class DictionaryConceptRecognizer implements DocumentOperation {
     }
     StringsBag normBag = builder.build();
 
-    List<SuiCuiTui> normsCUI = conceptDictionary.forNorms(normBag);
+    List<ConceptRow> normsCUI = conceptDictionary.forNorms(normBag);
     if (normsCUI != null) {
       makeTerm(phraseAsSpan, normsCUI, .3);
     }
   }
 
-  private void makeTerm(TextRange label, List<SuiCuiTui> cuis, double confidence) {
-    for (SuiCuiTui cui : cuis) {
-      conceptLabeler.add(cui.toConcept(label, confidence));
+  private void makeTerm(TextRange label, List<ConceptRow> cuis, double confidence) {
+    for (ConceptRow row : cuis) {
+      String source = conceptDictionary.source(row.getSource());
+      if (source == null) {
+        source = "unknown";
+        LOGGER.warn("Unknown source");
+      }
+      conceptLabeler.add(
+          new UmlsConcept(
+              label,
+              row.getSui().toString(),
+              row.getCui().toString(),
+              row.getTui().toString(),
+              source,
+              confidence
+          )
+      );
     }
     termLabeler.add(new DictionaryTerm(label));
   }
@@ -174,7 +187,7 @@ class DictionaryConceptRecognizer implements DocumentOperation {
     LabelIndex<Sentence> sentences = document.labelIndex(Sentence.class);
     normIndexes = document.labelIndex(NormForm.class);
     termLabeler = document.labeler(DictionaryTerm.class);
-    conceptLabeler = document.labeler(DictionaryConcept.class);
+    conceptLabeler = document.labeler(UmlsConcept.class);
     posTags = document.labelIndex(PosTag.class);
     LabelIndex<TermToken> termTokenLabelIndex = document.labelIndex(TermToken.class);
     LabelIndex<Acronym> acronymLabelIndex = document.labelIndex(Acronym.class);

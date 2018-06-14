@@ -17,12 +17,12 @@
 package edu.umn.biomedicus.concepts;
 
 import edu.umn.biomedicus.common.dictionary.StringsBag;
-import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.LifecycleManaged;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
@@ -40,15 +40,33 @@ class RocksDbConceptDictionary implements ConceptDictionary, LifecycleManaged {
 
   private final RocksDB normsDB;
 
-  RocksDbConceptDictionary(RocksDB phrases, RocksDB lowercase, RocksDB normsDB) {
+  private final Map<Integer, String> sources;
+
+  RocksDbConceptDictionary(
+      RocksDB phrases,
+      RocksDB lowercase,
+      RocksDB normsDB,
+      Map<Integer, String> sources
+  ) {
     this.phrases = phrases;
     this.lowercase = lowercase;
     this.normsDB = normsDB;
+    this.sources = sources;
+  }
+
+  static List<ConceptRow> toList(byte[] bytes) {
+    List<ConceptRow> list = new ArrayList<>();
+    ByteBuffer buffer = ByteBuffer.wrap(bytes);
+    while (buffer.hasRemaining()) {
+      list.add(ConceptRow.next(buffer));
+    }
+
+    return list;
   }
 
   @Nullable
   @Override
-  public List<SuiCuiTui> forPhrase(String phrase) {
+  public List<ConceptRow> forPhrase(String phrase) {
     try {
       byte[] bytes = phrases.get(phrase.getBytes(StandardCharsets.UTF_8));
       return bytes == null ? null : toList(bytes);
@@ -59,7 +77,7 @@ class RocksDbConceptDictionary implements ConceptDictionary, LifecycleManaged {
 
   @Nullable
   @Override
-  public List<SuiCuiTui> forLowercasePhrase(String phrase) {
+  public List<ConceptRow> forLowercasePhrase(String phrase) {
     try {
       byte[] bytes = lowercase.get(phrase.getBytes(StandardCharsets.UTF_8));
       return bytes == null ? null : toList(bytes);
@@ -70,36 +88,26 @@ class RocksDbConceptDictionary implements ConceptDictionary, LifecycleManaged {
 
   @Nullable
   @Override
-  public List<SuiCuiTui> forNorms(StringsBag norms) {
+  public List<ConceptRow> forNorms(StringsBag norms) {
     if (norms.uniqueTerms() == 0) {
       return null;
     }
     try {
       byte[] bytes = normsDB.get(norms.getBytes());
-      return bytes == null ? null: toList(bytes);
+      return bytes == null ? null : toList(bytes);
     } catch (RocksDBException e) {
       throw new RuntimeException(e);
     }
   }
 
+  @Nullable
+  @Override
+  public String source(int identifier) {
+    return sources.get(identifier);
+  }
+
   @Override
   public void doShutdown() {
 
-  }
-
-  static List<SuiCuiTui> toList(byte[] bytes) {
-
-    int len = SuiCuiTui.BYTES_LENGTH;
-    int size = bytes.length / len;
-    List<SuiCuiTui> list = new ArrayList<>(size);
-    ByteBuffer buffer = ByteBuffer.wrap(bytes);
-
-    byte[] localBytes = new byte[len];
-    for (int i = 0; i < size; i++) {
-      buffer.get(localBytes);
-      list.add(new SuiCuiTui(localBytes));
-    }
-
-    return list;
   }
 }

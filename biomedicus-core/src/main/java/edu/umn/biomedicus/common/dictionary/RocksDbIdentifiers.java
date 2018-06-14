@@ -23,6 +23,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
+import org.rocksdb.InfoLogLevel;
+import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
@@ -38,8 +40,8 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
   public RocksDbIdentifiers(Path identifiersPath) {
     RocksDB.loadLibrary();
 
-    try {
-      indices = RocksDB.openReadOnly(identifiersPath.toString());
+    try (Options options = new Options().setInfoLogLevel(InfoLogLevel.ERROR_LEVEL)) {
+      indices = RocksDB.openReadOnly(options, identifiersPath.toString());
     } catch (RocksDBException e) {
       // says "if error happens in underlying native library", can't possible hope to handle that.
       throw new RuntimeException(e);

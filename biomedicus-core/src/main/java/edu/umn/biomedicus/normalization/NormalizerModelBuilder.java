@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -167,6 +168,9 @@ public final class NormalizerModelBuilder {
 
     Pattern exclusionPattern = Pattern.compile(".*[|$#,@;:<>?\\[\\]{}\\d.].*");
 
+    final long lines = Files.lines(lragrPath).count();
+    AtomicLong current = new AtomicLong();
+
     Files.lines(lragrPath)
         .map(line -> line.split("\\|"))
         .forEach(lragrArray -> {
@@ -201,9 +205,15 @@ public final class NormalizerModelBuilder {
                   new TermString(normsIndex.getTermIdentifier(baseForm), baseForm));
             }
           }
+
+          if (current.incrementAndGet() % 10_000 == 0) {
+            System.out.println("Read " + current.get() + " of " + lines + " from LRAGR.");
+          }
         });
 
     RocksDB.loadLibrary();
+
+    System.out.println("Creating normalizer db from " + builder.size() + " terms");
 
     try (Options options = new Options().setCreateIfMissing(true).prepareForBulkLoad()) {
       try (RocksDB rocksDB = RocksDB.open(options, dbPath.toString())) {

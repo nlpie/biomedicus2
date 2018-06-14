@@ -26,13 +26,39 @@ import javax.annotation.Nullable;
  */
 @ProvidedBy(ConceptDictionaryLoader.class)
 public interface ConceptDictionary {
-
+  /**
+   * Finds the applicable concepts for a given phase in text.
+   *
+   * @param phrase the phrase in text
+   * @return a list of all the concepts that apply to the given text
+   */
   @Nullable
-  List<SuiCuiTui> forPhrase(String phrase);
+  List<ConceptRow> forPhrase(String phrase);
 
+  /**
+   * Finds the applicable concepts for a given lowercased phrase in text.
+   *
+   * @param phrase a lowercased phrase in text
+   * @return a list of all the concepts that apply
+   */
   @Nullable
-  List<SuiCuiTui> forLowercasePhrase(String phrase);
+  List<ConceptRow> forLowercasePhrase(String phrase);
 
+  /**
+   * Finds the applicable concepts for a bag of token norms.
+   *
+   * @param norms the bag of token norms
+   * @return a list of all the concepts that apply
+   */
   @Nullable
-  List<SuiCuiTui> forNorms(StringsBag norms);
+  List<ConceptRow> forNorms(StringsBag norms);
+
+  /**
+   * Returns the full source name for the identifier.
+   *
+   * @param identifier the source identifier
+   * @return String full source name as it appears in the UMLS, or null if it's not found
+   */
+  @Nullable
+  String source(int identifier);
 }

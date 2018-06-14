@@ -20,21 +20,37 @@ import edu.umn.nlpengine.Label
 import edu.umn.nlpengine.LabelMetadata
 import edu.umn.nlpengine.SystemModule
 import edu.umn.nlpengine.TextRange
+import java.nio.ByteBuffer
 
 class ConceptModule : SystemModule() {
     override fun setup() {
-        addLabelClass<DictionaryConcept>()
+        addLabelClass<UmlsConcept>()
         addLabelClass<DictionaryTerm>()
     }
 }
 
+/**
+ * A discrete concept / idea in some kind of taxonomy.
+ */
 interface Concept {
+    /**
+     * A unique identifier for the concept.
+     */
     val identifier: String
 
+    /**
+     * The source dictionary / taxonomy.
+     */
     val source: String
 
+    /**
+     * A semantic type or grouping identifier for the concept.
+     */
     val semanticType: String
 
+    /**
+     * A relative confidence value of how likely the concept represents an actual concept.
+     */
     val confidence: Double
 }
 
@@ -42,21 +58,29 @@ interface Concept {
  * A dictionary concept - a standardized code for the idea the text represents.
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = false)
-data class DictionaryConcept(
+data class UmlsConcept(
         override val startIndex: Int,
         override val endIndex: Int,
-        override val identifier: String,
+        val sui: String,
+        val cui: String,
+        val tui: String,
         override val source: String,
-        override val semanticType: String,
         override val confidence: Double
 ) : Label(), Concept {
     constructor(
             textRange: TextRange,
-            identifier: String,
+            sui: String,
+            cui: String,
+            tui: String,
             source: String,
-            type: String,
             confidence: Double
-    ): this(textRange.startIndex, textRange.endIndex, identifier, source, type, confidence)
+    ) : this(textRange.startIndex, textRange.endIndex, sui, cui, tui, source, confidence)
+
+    override val identifier: String
+        get() = cui
+
+    override val semanticType: String
+        get() = tui
 }
 
 /**
@@ -68,4 +92,43 @@ data class DictionaryTerm(
         override val endIndex: Int
 ) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
+}
+
+/**
+ * Representative form of concept for storage.
+ * @property sui the concept's string unique identifier
+ * @property cui the concept's
+ */
+data class ConceptRow(
+        val sui: SUI,
+        val cui: CUI,
+        val tui: TUI,
+        val source: Int
+) {
+    /**
+     * Serializes the ConceptRow to bytes.
+     */
+    val bytes: ByteArray get() {
+        return ByteBuffer.allocate(16 )
+                .putInt(sui.identifier())
+                .putInt(cui.identifier())
+                .putInt(tui.identifier())
+                .putInt(source)
+                .array()
+    }
+
+    companion object Factory {
+        @JvmField
+        val NUM_BYTES = 16
+
+        @JvmStatic
+        fun next(buffer: ByteBuffer): ConceptRow {
+            return ConceptRow(
+                    sui = SUI(buffer.int),
+                    cui = CUI(buffer.int),
+                    tui = TUI(buffer.int),
+                    source = buffer.int
+            )
+        }
+    }
 }
