@@ -20,46 +20,46 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="tokenCandidates">
-      <import location="annotator/TokenCandidateDetector.xml"/>
+      <import location="annotator/DetectTokenCandidates.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="sentence">
-      <import location="annotator/SentenceDetector.xml"/>
+    <delegateAnalysisEngine key="sentences">
+      <import location="annotator/ONLPDetectSentences.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="sectionHeaders">
-      <import location="annotator/RuleBasedSectionDetector.xml"/>
+      <import location="annotator/RuleBasedSectionHeaderDetector.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="sections">
-      <import location="annotator/SectionLabeler.xml"/>
+      <import location="annotator/SectionContentLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
-      <import location="annotator/ParseTokenLabeler.xml"/>
+      <import location="annotator/DetectParseTokens.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="measuresPipeline">
       <import location="MeasuresPipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="words">
-      <import location="annotator/WordLabeler.xml"/>
+      <import location="annotator/LabelWordIndexes.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="posAnnotator">
-      <import location="annotator/PosTagger.xml"/>
+    <delegateAnalysisEngine key="partsOfSpeech">
+      <import location="annotator/TnTPosTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="normalizer">
       <import location="annotator/Normalizer.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="termTokens">
-      <import location="annotator/TermTokenMerger.xml"/>
+      <import location="annotator/MergeTermTokens.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="timePipeline">
       <import location="TimePipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="acronyms">
-      <import location="annotator/AcronymProcessor.xml"/>
+      <import location="annotator/DetectAcronyms.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="dictionaryMapper">
-      <import location="annotator/DictionaryConceptRecognizer.xml"/>
+    <delegateAnalysisEngine key="concepts">
+      <import location="annotator/DetectConcepts.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="modification">
-      <import location="annotator/Modification.xml"/>
+      <import location="annotator/DetectModifiers.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -74,18 +74,18 @@
         <mandatory>true</mandatory>
         <overrides>
           <parameter>tokenCandidates/documentName</parameter>
-          <parameter>sentence/documentName</parameter>
+          <parameter>sentences/documentName</parameter>
           <parameter>sectionHeaders/documentName</parameter>
           <parameter>sections/documentName</parameter>
           <parameter>parseTokens/documentName</parameter>
           <parameter>measuresPipeline/documentName</parameter>
           <parameter>words/documentName</parameter>
-          <parameter>posAnnotator/documentName</parameter>
+          <parameter>partsOfSpeech/documentName</parameter>
           <parameter>normalizer/documentName</parameter>
           <parameter>termTokens/documentName</parameter>
           <parameter>timePipeline/documentName</parameter>
           <parameter>acronyms/documentName</parameter>
-          <parameter>dictionaryMapper/documentName</parameter>
+          <parameter>concepts/documentName</parameter>
           <parameter>modification/documentName</parameter>
         </overrides>
       </configurationParameter>
@@ -101,18 +101,18 @@
     <flowConstraints>
       <fixedFlow>
         <node>tokenCandidates</node>
-        <node>sentence</node>
+        <node>sentences</node>
         <node>sectionHeaders</node>
         <node>sections</node>
         <node>parseTokens</node>
         <node>measuresPipeline</node>
         <node>words</node>
-        <node>posAnnotator</node>
+        <node>partsOfSpeech</node>
         <node>timePipeline</node>
         <node>normalizer</node>
         <node>termTokens</node>
         <node>acronyms</node>
-        <node>dictionaryMapper</node>
+        <node>concepts</node>
         <node>modification</node>
       </fixedFlow>
     </flowConstraints>

@@ -18,35 +18,35 @@
 <casMappings>
   <controlWordCasMappings>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.RowEnd</annotationName>
+      <annotationName>biomedicus.v2.rtf.RowEnd</annotationName>
       <controlWord>row</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.CellEnd</annotationName>
+      <annotationName>biomedicus.v2.rtf.CellEnd</annotationName>
       <controlWord>cell</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.NestRowEnd</annotationName>
+      <annotationName>biomedicus.v2.rtf.NestRowEnd</annotationName>
       <controlWord>nestrow</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.NestCellEnd</annotationName>
+      <annotationName>biomedicus.v2.rtf.NestCellEnd</annotationName>
       <controlWord>nestcell</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.LineBreak</annotationName>
+      <annotationName>biomedicus.v2.rtf.LineBreak</annotationName>
       <controlWord>line</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.TableRowFormattingDefaults</annotationName>
+      <annotationName>biomedicus.v2.rtf.TableRowFormattingDefaults</annotationName>
       <controlWord>trowd</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.CellDefinitionEnd</annotationName>
+      <annotationName>biomedicus.v2.rtf.CellDefinitionEnd</annotationName>
       <controlWord>cellx</controlWord>
     </controlWordCasMapping>
     <controlWordCasMapping>
-      <annotationName>edu.umn.biomedicus.rtfuima.type.NewParagraph</annotationName>
+      <annotationName>biomedicus.v2.rtf.NewParagraph</annotationName>
       <controlWord>par</controlWord>
     </controlWordCasMapping>
   </controlWordCasMappings>
@@ -60,7 +60,7 @@
 
   <propertyCasMappings>
     <propertyCasMapping>
-      <annotationClassName>edu.umn.biomedicus.rtfuima.type.Bold</annotationClassName>
+      <annotationClassName>biomedicus.v2.Bold</annotationClassName>
       <minimumValue>1</minimumValue>
       <propertyGroup>CharacterFormatting</propertyGroup>
       <propertyName>Bold</propertyName>
@@ -68,7 +68,7 @@
       <zeroLengthEmitted>false</zeroLengthEmitted>
     </propertyCasMapping>
     <propertyCasMapping>
-      <annotationClassName>edu.umn.biomedicus.rtfuima.type.Italic</annotationClassName>
+      <annotationClassName>biomedicus.v2.Italic</annotationClassName>
       <minimumValue>1</minimumValue>
       <propertyGroup>CharacterFormatting</propertyGroup>
       <propertyName>Italic</propertyName>
@@ -76,7 +76,7 @@
       <zeroLengthEmitted>false</zeroLengthEmitted>
     </propertyCasMapping>
     <propertyCasMapping>
-      <annotationClassName>edu.umn.biomedicus.rtfuima.type.Underline</annotationClassName>
+      <annotationClassName>biomedicus.v2.Underline</annotationClassName>
       <minimumValue>1</minimumValue>
       <propertyGroup>CharacterFormatting</propertyGroup>
       <propertyName>Underline</propertyName>
@@ -84,7 +84,7 @@
       <zeroLengthEmitted>false</zeroLengthEmitted>
     </propertyCasMapping>
     <propertyCasMapping>
-      <annotationClassName>edu.umn.biomedicus.rtfuima.type.ParagraphInTable</annotationClassName>
+      <annotationClassName>biomedicus.v2.rtf.ParagraphInTable</annotationClassName>
       <minimumValue>1</minimumValue>
       <propertyGroup>ParagraphFormatting</propertyGroup>
       <propertyName>InTable</propertyName>

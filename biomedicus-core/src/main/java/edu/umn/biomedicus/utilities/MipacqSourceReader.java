@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.utilities;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.ArtifactSource;
 import edu.umn.nlpengine.StandardArtifact;
@@ -29,7 +29,7 @@ import java.util.Spliterator;
 import java.util.function.Predicate;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  *
@@ -44,8 +44,8 @@ public class MipacqSourceReader implements ArtifactSource {
 
   @Inject
   public MipacqSourceReader(
-      @ProcessorSetting("inputDirectory") Path inputDirectory,
-      @ProcessorSetting("documentName") String documentName
+      @ComponentSetting("inputDirectory") Path inputDirectory,
+      @ComponentSetting("documentName") String documentName
   ) throws IOException {
     this.documentName = documentName;
     Predicate<Path> endsWithSource = f -> f.toString().endsWith(".source");
@@ -64,7 +64,7 @@ public class MipacqSourceReader implements ArtifactSource {
   }
 
   @Override
-  public boolean tryAdvance(@NotNull Function1<? super Artifact, Unit> consumer) {
+  public boolean tryAdvance(@Nonnull Function1<? super Artifact, Unit> consumer) {
     return iterator.tryAdvance((next) -> {
       StringBuilder sb = new StringBuilder();
       try {

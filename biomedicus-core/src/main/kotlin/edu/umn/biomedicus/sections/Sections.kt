@@ -44,45 +44,33 @@ data class SectionHeader(override val startIndex: Int, override val endIndex: In
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class SectionContent(override val startIndex: Int, override val endIndex: Int) : Label()
 
-class SectionContentLabeler : DocumentOperation {
+class SectionContentLabeler : DocumentsProcessor {
     override fun process(document: Document) {
-        val sectionHeaders = document.labelIndex<SectionHeader>()
         val sentences = document.labelIndex<Sentence>()
 
         val sectionLabeler = document.labeler<Section>()
         val contentLabeler = document.labeler<SectionContent>()
 
-        var prev: SectionHeader? = null
-        for (sectionHeader in sectionHeaders) {
-            if (prev != null) {
-                val sectionSentences = sentences.inside(prev.endIndex, sectionHeader.startIndex)
-                createSectionFromSentences(sectionSentences, prev, contentLabeler, sectionLabeler)
+        val create = { sectionStart: Int, contentStart: Int, end: Int ->
+            val sectionSentences = sentences.inside(contentStart, end)
+            if (!sectionSentences.isEmpty()) {
+                val first = sectionSentences.first()
+                        ?: throw IllegalStateException("Non-empty without first")
+
+                val last = sectionSentences.last()
+                        ?: throw IllegalStateException("Non-empty without last")
+
+                SectionContent(first.startIndex, last.endIndex).addTo(contentLabeler)
+
+                Section(sectionStart, last.endIndex, null).addTo(sectionLabeler)
             }
-            prev = sectionHeader
         }
 
-        if (prev != null) {
-            val endSentences = sentences.inside(prev.endIndex, document.endIndex)
-            createSectionFromSentences(endSentences, prev, contentLabeler, sectionLabeler)
-        }
+        document.labelIndex<SectionHeader>().fold(null) { prev: SectionHeader?, current ->
+            if (prev != null) {
+                create(prev.startIndex, prev.endIndex, current.startIndex)
+            }
+            current
+        }?.let { create(it.startIndex, it.endIndex, document.endIndex) }
     }
-
-    private fun createSectionFromSentences(
-            sectionSentences: LabelIndex<Sentence>,
-            prev: SectionHeader,
-            contentLabeler: Labeler<SectionContent>,
-            sectionLabeler: Labeler<Section>) {
-        if (!sectionSentences.isEmpty()) {
-            val first = sectionSentences.first()
-                    ?: throw IllegalStateException("Non-empty without first")
-
-            val last = sectionSentences.last()
-                    ?: throw IllegalStateException("Non-empty without last")
-
-            SectionContent(first.startIndex, last.endIndex).addTo(contentLabeler)
-
-            Section(prev.startIndex, last.endIndex, null).addTo(sectionLabeler)
-        }
-    }
-
 }

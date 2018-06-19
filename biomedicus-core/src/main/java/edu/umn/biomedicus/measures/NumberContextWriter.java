@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -42,22 +42,22 @@ import javax.annotation.Nonnull;
  * @author Ben Knoll
  * @since 1.8.0
  */
-public class NumberContextWriter implements DocumentOperation {
+public class NumberContextWriter implements DocumentTask {
   private final Path outputDirectory;
 
   private final int contextSize;
 
   @Inject
   public NumberContextWriter(
-      @ProcessorSetting("outputDirectory") Path outputDirectory,
-      @ProcessorSetting("contextSize") Integer contextSize
+      @ComponentSetting("outputDirectory.orig") Path outputDirectory,
+      @ComponentSetting("contextSize") Integer contextSize
   ) {
     this.outputDirectory = outputDirectory;
     this.contextSize = contextSize;
   }
 
   @Override
-  public void process(@Nonnull Document document) {
+  public void run(@Nonnull Document document) {
     LabelIndex<Number> numbersIndex = document.labelIndex(Number.class);
     LabelIndex<Sentence> sentencesIndex = document.labelIndex(Sentence.class);
     LabelIndex<ParseToken> tokensIndex = document.labelIndex(ParseToken.class);

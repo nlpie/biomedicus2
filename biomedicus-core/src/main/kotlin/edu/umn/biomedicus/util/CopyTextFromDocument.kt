@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.util
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactOperation
+import edu.umn.nlpengine.ArtifactTask
 import javax.inject.Inject
 
 /**
@@ -29,10 +29,10 @@ import javax.inject.Inject
  * @param targetDocumentName The name of the document to create with text.
  */
 class CopyTextFromDocument @Inject internal constructor(
-        @ProcessorSetting("sourceDocumentName") private val sourceDocumentName: String,
-        @ProcessorSetting("targetDocumentName") private val targetDocumentName: String
-) : ArtifactOperation {
-    override fun process(artifact: Artifact) {
+        @ComponentSetting("sourceDocumentName") private val sourceDocumentName: String,
+        @ComponentSetting("targetDocumentName") private val targetDocumentName: String
+) : ArtifactTask {
+    override fun run(artifact: Artifact) {
         val text = artifact.documents[sourceDocumentName]?.text
                 ?: error("No existing document with name $sourceDocumentName")
         artifact.addDocument(targetDocumentName, text)

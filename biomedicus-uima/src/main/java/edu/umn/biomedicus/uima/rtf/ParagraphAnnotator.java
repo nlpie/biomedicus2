@@ -55,10 +55,10 @@ public class ParagraphAnnotator extends CasAnnotator_ImplBase {
     CAS systemView = aCAS.getView(documentName);
 
     Type newParagraphType = systemView.getTypeSystem()
-        .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
+        .getType("biomedicus.v2.rtf.NewParagraph");
 
     Type paragraphType = systemView.getTypeSystem()
-        .getType("edu.umn.nlpengine.generated2_0.Paragraph");
+        .getType("biomedicus.v2.Paragraph");
 
     AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
         .getAnnotationIndex(newParagraphType);

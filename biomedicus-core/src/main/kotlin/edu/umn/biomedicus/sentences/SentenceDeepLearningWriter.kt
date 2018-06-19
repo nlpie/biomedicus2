@@ -16,18 +16,18 @@
 
 package edu.umn.biomedicus.sentences
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.biomedicus.tokenization.TokenCandidate
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentOperation
+import edu.umn.nlpengine.DocumentTask
 import edu.umn.nlpengine.labelIndex
 import java.io.File
 import javax.inject.Inject
 
 class SentenceDeepLearningWriter @Inject constructor(
-        @ProcessorSetting("outputDirectory") val outputDirectory: String
-) : DocumentOperation {
-    override fun process(document: Document) {
+        @ComponentSetting("outputDirectory.orig") val outputDirectory: String
+) : DocumentTask {
+    override fun run(document: Document) {
         val artifactID = document.artifactID
 
         val nameWithoutExtension = File(artifactID).nameWithoutExtension

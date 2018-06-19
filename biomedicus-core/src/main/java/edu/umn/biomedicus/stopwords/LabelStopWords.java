@@ -19,12 +19,12 @@ package edu.umn.biomedicus.stopwords;
 import com.google.inject.Inject;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
-public class LabelStopWords implements DocumentOperation {
+public class LabelStopWords implements DocumentTask {
 
   private final Stopwords stopwords;
 
@@ -34,7 +34,7 @@ public class LabelStopWords implements DocumentOperation {
   }
 
   @Override
-  public void process(@NotNull Document document) {
+  public void run(@Nonnull Document document) {
     LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
     Labeler<StopWord> stopWordsLabeler = document.labeler(StopWord.class);
 

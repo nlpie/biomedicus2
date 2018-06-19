@@ -128,8 +128,8 @@ data class WordIndex(
 /**
  * Detects [TokenCandidate] labels using [Tokenizer].
  */
-class TokenCandidateDetector : DocumentOperation {
-    override fun process(document: Document) {
+class DetectTokenCandidates : DocumentTask {
+    override fun run(document: Document) {
         val labeler = document.labeler<TokenCandidate>()
         Tokenizer.tokenize(document.text)
                 .forEach { labeler.add(TokenCandidate(it.startIndex, it.endIndex)) }
@@ -140,8 +140,8 @@ class TokenCandidateDetector : DocumentOperation {
  * Turns [TokenCandidate] labels into [ParseToken] labels by using
  * [edu.umn.biomedicus.sentences.Sentence] labels to split trailing periods.
  */
-class ParseTokenLabeler : DocumentOperation {
-    override fun process(document: Document) {
+class DetectParseTokens : DocumentTask {
+    override fun run(document: Document) {
         val candidates = document.labelIndex<TokenCandidate>()
         val labeler = document.labeler<ParseToken>()
         val text = document.text

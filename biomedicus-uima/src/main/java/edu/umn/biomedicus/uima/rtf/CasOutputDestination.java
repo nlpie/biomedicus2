@@ -96,8 +96,7 @@ class CasOutputDestination implements OutputDestination {
     this.annotationTypeForControlWord = annotationTypeForControlWord;
     this.name = name;
     TypeSystem typeSystem = destinationView.getTypeSystem();
-    illegalCharType = typeSystem
-        .getType("edu.umn.biomedicus.type.IllegalXmlCharacter");
+    illegalCharType = typeSystem.getType("biomedicus.v2.rtf.IllegalXmlCharacter");
     valueFeat = illegalCharType.getFeatureByBaseName("value");
   }
 
@@ -116,9 +115,8 @@ class CasOutputDestination implements OutputDestination {
       if (!isValidXml(ch)) {
         // add zero-width space and annotate it as an illegal xml character.
         sofaBuilder.append((char) 0x200B);
-        AnnotationFS annotation = destinationView
-            .createAnnotation(illegalCharType,
-                sofaBuilder.length() - 1, sofaBuilder.length());
+        AnnotationFS annotation = destinationView.createAnnotation(illegalCharType,
+            sofaBuilder.length() - 1, sofaBuilder.length());
         annotation.setIntValue(valueFeat, (int) ch);
         completedAnnotations.add(annotation);
       } else {

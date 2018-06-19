@@ -19,14 +19,14 @@ package edu.umn.biomedicus.utilities;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.Labeler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * This class attaches parse data from MiPACQ .parse files to their source documents.
@@ -34,10 +34,10 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public class MipacqParseTagger implements DocumentOperation {
+public class MipacqParseTagger implements DocumentTask {
 
   @Override
-  public void process(@NotNull Document document) {
+  public void run(@Nonnull Document document) {
     String sourcePath = document.getMetadata().get("path");
 
     if (sourcePath == null) {

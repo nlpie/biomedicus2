@@ -22,7 +22,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * An interface for the dictionary of concepts used by the DictionaryConceptRecognizer.
+ * An interface for the dictionary of concepts used by the DetectDictionaryConcepts.
  */
 @ProvidedBy(ConceptDictionaryLoader.class)
 public interface ConceptDictionary {

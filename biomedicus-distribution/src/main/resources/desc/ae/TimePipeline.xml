@@ -20,31 +20,31 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="days">
-      <import location="annotator/time/DaysOfWeekDetector.xml"/>
+      <import location="annotator/time/DetectDaysOfWeek.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="timesOfDay">
-      <import location="annotator/time/TimeOfDayWordDetector.xml"/>
+      <import location="annotator/time/DetectTimesOfDay.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="seasonWords">
-      <import location="annotator/time/SeasonWordDetector.xml"/>
+      <import location="annotator/time/DetectSeasonWords.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="months">
-      <import location="annotator/time/MonthDetector.xml"/>
+      <import location="annotator/time/DetectMonths.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="yearNumbers">
-      <import location="annotator/time/YearNumberDetector.xml"/>
+      <import location="annotator/time/DetectYearNumbers.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="yearRanges">
-      <import location="annotator/time/YearRangeDetector.xml"/>
+      <import location="annotator/time/DetectYearRanges.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="times">
-      <import location="annotator/time/TextTimeDetector.xml"/>
+      <import location="annotator/time/DetectTextTimes.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="dates">
-      <import location="annotator/time/DateDetector.xml"/>
+      <import location="annotator/time/DetectDates.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="temporalPhrases">
-      <import location="annotator/time/TemporalPhraseDetector.xml"/>
+      <import location="annotator/time/DetectTemporalPhrases.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

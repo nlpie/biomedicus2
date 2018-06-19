@@ -117,13 +117,3 @@ settings:
       methodPhrasesPath: sh/nicotine/methodPhrases.txt
       statusPhrasesPath: sh/nicotine/statusPhrases.txt
       typesPath: sh/nicotine/types.txt
-# these indicate settings keys which are bound against a certain class
-settingInterfaces:
-  acronym.model: edu.umn.biomedicus.acronym.AcronymModel
-  stopwords.model: edu.umn.biomedicus.stopwords.Stopwords
-# these indicate the options for the bindings above
-interfaceImplementations:
-  edu.umn.biomedicus.acronym.AcronymModel:
-    vector: edu.umn.biomedicus.acronym.AcronymVectorModel
-  edu.umn.biomedicus.stopwords.Stopwords:
-    fileBased: edu.umn.biomedicus.stopwords.StopwordsModel

@@ -109,10 +109,12 @@ public class State {
    * @param outputDestinationFactory a factory which contains a new output destination.
    * @param indexListener listens for the indices of characters written to output destinations.
    */
-  public State(Map<String, OutputDestination> outputDestinationMap,
+  public State(
+      Map<String, OutputDestination> outputDestinationMap,
       OutputDestinationFactory outputDestinationFactory,
       Map<String, Map<String, Integer>> properties,
-      IndexListener indexListener) {
+      IndexListener indexListener
+  ) {
     this.outputDestinationMap = outputDestinationMap;
     this.outputDestinationFactory = outputDestinationFactory;
     this.properties = properties;
@@ -336,9 +338,7 @@ public class State {
    * Finishes the current state, and all destinations in the state.
    */
   public void finishState() {
-    outputDestinationMap.values()
-        .stream()
-        .forEach(OutputDestination::finishDestination);
+    outputDestinationMap.values().forEach(OutputDestination::finishDestination);
   }
 
   /**

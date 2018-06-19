@@ -65,8 +65,8 @@ class RelativeModel @Inject constructor(
  */
 class RelativeLabeler @Inject internal constructor(
         private val model: RelativeModel
-) : DocumentOperation {
-    override fun process(document: Document) {
+) : DocumentTask {
+    override fun run(document: Document) {
         val labeler = document.labeler(Relative::class.java)
 
         for ((startIndex, endIndex, text, _) in document.labelIndex(ParseToken::class.java)) {

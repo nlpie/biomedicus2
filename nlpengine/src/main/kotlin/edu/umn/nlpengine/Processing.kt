@@ -16,30 +16,87 @@
 
 package edu.umn.nlpengine
 
-import java.io.Closeable
 
+/**
+ * The source of a collection of artifacts to be processed in a pipeline.
+ */
+interface ArtifactSource : AutoCloseable {
+    fun estimateTotal(): Long
+
+    /**
+     * When there are more artifacts in the pipeline, pass an artifact to
+     */
+    fun tryAdvance(consumer: (Artifact) -> Unit): Boolean
+}
+
+
+/**
+ * An operation to be run once on every artifact run through the processing pipeline. One instance
+ * is created per [Artifact] and [run] is called once per instance.
+ */
+interface ArtifactTask {
+    /**
+     * Performs the processing on the [artifact] this operation is responsible for processing.
+     */
+    fun run(artifact: Artifact)
+}
+
+
+/**
+ * An operation to be run once on one of the [Document] objects on each [Artifact] in the pipeline.
+ * One instance is created per [Artifact] and [run] is called exactly once per instance.
+ */
+interface DocumentTask  {
+    /**
+     * Performs the processing on the [document] this operation is responsible for processing.
+     */
+    fun run(document: Document)
+}
+
+
+/**
+ * Responsible for performing processing on a [Document] from every [Artifact] in
+ * the pipeline. Is instantiated once, globally, and [process] is called for every [Artifact],
+ * potentially from multiple threads. Implementations are responsible for thread-safety in the
+ * [process] method.
+ */
+interface DocumentsProcessor {
+    /**
+     * Performs processing on one of the [Document] in the collection of [Artifact] objects being
+     * processed.
+     */
+    fun process(document: Document)
+
+    /**
+     * Called once all the [Artifact] objects in the collection are finished processing.
+     */
+    fun done() {}
+}
+
+
+/**
+ * Responsible for performing processing on every [Artifact] in the pipeline. Is instantiated once,
+ * globally, and [process]
+ */
+interface ArtifactsProcessor {
+    /**
+     * Performs processing on one of the [Document] in the collection of [Artifact] objects being
+     * processed.
+     */
+    fun process(artifact: Artifact)
+
+    /**
+     * Called once all the [Artifact] objects in the collection are finished processing.
+     */
+    fun done()
+}
+
+
+/**
+ * Internal interface for a class responsible for running some process on a pipeline component.
+ */
 interface Runner {
     fun processArtifact(artifact: Artifact)
 
     fun done() { }
-}
-
-interface ArtifactOperation {
-    fun process(artifact: Artifact)
-}
-
-interface DocumentOperation  {
-    fun process(document: Document)
-}
-
-interface ArtifactProcessor {
-    fun process(artifact: Artifact)
-
-    fun done()
-}
-
-interface ArtifactSource : Closeable {
-    fun estimateTotal(): Long
-
-    fun tryAdvance(consumer: (Artifact) -> Unit): Boolean
 }

@@ -17,10 +17,10 @@
 package edu.umn.biomedicus.sentences
 
 import edu.umn.biomedicus.annotations.ProcessorScoped
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.biomedicus.sentences
 import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactOperation
+import edu.umn.nlpengine.ArtifactTask
 import java.io.File
 import javax.inject.Inject
 
@@ -30,12 +30,12 @@ import javax.inject.Inject
  * present in the evaluation document.
  */
 class SentencesEvaluator @Inject internal constructor(
-        @ProcessorSetting("evaluatedDocument") private val evaluatedDocumentName: String,
-        @ProcessorSetting("goldDocument") private val goldDocumentName: String,
+        @ComponentSetting("evaluatedDocument") private val evaluatedDocumentName: String,
+        @ComponentSetting("goldDocument") private val goldDocumentName: String,
         private val sentencesEvaluationWriter: SentencesEvaluationWriter
-) : ArtifactOperation {
+) : ArtifactTask {
 
-    override fun process(artifact: Artifact) {
+    override fun run(artifact: Artifact) {
         val goldDocument = artifact.documents[goldDocumentName]
                 ?: error("No gold document: $goldDocumentName")
         val evaluatedDocument = artifact.documents[evaluatedDocumentName]
@@ -61,7 +61,7 @@ class SentencesEvaluator @Inject internal constructor(
 @ProcessorScoped
 internal class SentencesEvaluationWriter(private val outputFile: File) {
     @Inject internal constructor(
-            @ProcessorSetting("outputFile") outputFile: String
+            @ComponentSetting("outputFile") outputFile: String
     ) : this(File(outputFile))
 
     private val lock = Object()

@@ -86,9 +86,34 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
   }
 
   @Override
-  public void doShutdown() {
-    for (RocksDbTermIndexBuilder builder : Arrays.asList(words, terms, norms)) {
-      builder.close();
+  public void doShutdown() throws BiomedicusException {
+    List<Exception> exceptions = new ArrayList<>();
+    try {
+      if (words != null) {
+        words.close();
+      }
+    } catch (Exception e) {
+      exceptions.add(e);
+    }
+    try {
+      if (terms != null) {
+        terms.close();
+      }
+    } catch (Exception e) {
+      exceptions.add(e);
+    }
+    try {
+      if (norms!= null) {
+        norms.close();
+      }
+    } catch (Exception e) {
+      exceptions.add(e);
+    }
+
+    if (exceptions.size() > 0) {
+      BiomedicusException exception = new BiomedicusException("Failed to close RocksDB builders.");
+      exceptions.forEach(exception::addSuppressed);
+      throw exception;
     }
   }
 

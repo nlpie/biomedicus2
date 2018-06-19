@@ -15,10 +15,10 @@
  */
 
 package edu.umn.biomedicus.util
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.Document
 import kotlin.test.Test
@@ -34,7 +34,7 @@ class CopyTextFromDocumentTest {
         whenever(artifact.documents) doReturn mapOf(Pair("source", document))
 
         CopyTextFromDocument("source", "target")
-                .process(artifact)
+                .run(artifact)
 
         verify(artifact).addDocument("target", "This is some text")
     }

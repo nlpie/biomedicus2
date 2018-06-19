@@ -28,13 +28,14 @@ import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.DocumentsProcessor;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Part of speech tagger implementation for the TnT algorithm.
@@ -42,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.0.0
  */
-public class TntPosTagger implements DocumentOperation {
+public class TntPosTagger implements DocumentsProcessor {
 
   /**
    * A pos cap for before the beginning of sentences.
@@ -91,7 +92,7 @@ public class TntPosTagger implements DocumentOperation {
   }
 
   @Override
-  public void process(@NotNull Document document) {
+  public void process(@Nonnull Document document) {
     LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
     LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
     Labeler<PosTag> partOfSpeechLabeler = document.labeler(PosTag.class);
@@ -105,8 +106,7 @@ public class TntPosTagger implements DocumentOperation {
       for (ParseToken token : tokens) {
         CharSequence text = token.coveredText(docText);
         boolean isCapitalized = Character.isUpperCase(text.charAt(0));
-        viterbiProcessor
-            .advance(new WordCap(text.toString(), isCapitalized));
+        viterbiProcessor.advance(new WordCap(text.toString(), isCapitalized));
         viterbiProcessor.beamFilter(beamThreshold);
       }
 
@@ -123,5 +123,10 @@ public class TntPosTagger implements DocumentOperation {
         partOfSpeechLabeler.add(new PosTag(token, partOfSpeech));
       }
     }
+  }
+
+  @Override
+  public void done() {
+
   }
 }

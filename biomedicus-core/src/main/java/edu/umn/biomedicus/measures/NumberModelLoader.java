@@ -16,15 +16,16 @@
 
 package edu.umn.biomedicus.measures;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.numbers.NumberModel;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class NumberModelLoader extends DataLoader<NumberModel> {
 
   private final Path nrnumPath;

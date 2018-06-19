@@ -35,9 +35,7 @@ class NumberRangesLabelerTest {
 
     private val searchExprFactory = TagExFactory(SearchExprFactory(labelAliases))
 
-    private val pattern = NumberRangesPattern(searchExprFactory)
-
-    private val numberRanges = NumberRangesLabeler(pattern)
+    private val numberRanges = NumberRangesLabeler(searchExprFactory)
 
     @Test
     fun testBetween() {

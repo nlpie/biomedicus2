@@ -39,61 +39,68 @@ class RunnerFactory @Inject constructor(
         private val settingsTransformerProvider: Provider<SettingsTransformer>
 ) {
     private val contexts = ConcurrentHashMap<String, BiomedicusScopes.Context>()
-    private val artifactProcessorRunners = ConcurrentHashMap<String, ArtifactProcessorRunner>()
+    private val processorRunners = ConcurrentHashMap<String, Runner>()
 
     fun getRunner(
             processorIdentifier: String,
             processorSettings: Map<String, *>,
-            processorScopedObjects: Map<Key<*>, Any>
+            processorScopedObjects: Map<Key<*>, Any>,
+            pipelineComponent: Class<*> = processorSettings["pipelineComponent"]
+                    ?.let { it as? String }
+                    ?.let {
+                        Class.forName(it)
+                    } ?: error("pipelineComponent illegal value")
     ): Runner {
         val (settingsInjector, processorContext) =
                 createContext(processorIdentifier, processorSettings, processorScopedObjects)
 
-        val processorClass = processorSettings["processorClass"]
-                ?.let { it as? String }
-                ?.let {
-                    Class.forName(it)
-                } ?: throw IllegalStateException("processorClass illegal value")
-
-
         @Suppress("UNCHECKED_CAST")
         return when {
-            processorClass.isSubclass<DocumentOperation>() -> DocumentOperationRunner(
-                    processorClass as Class<out DocumentOperation>,
+            pipelineComponent.isSubclass<DocumentTask>() -> DocumentTaskRunner(
+                    pipelineComponent as Class<out DocumentTask>,
                     processorContext,
                     settingsInjector,
                     processorSettings
             )
-            processorClass.isSubclass<ArtifactOperation>() -> ArtifactOperationRunner(
-                    processorClass as Class<out ArtifactOperation>,
+            pipelineComponent.isSubclass<ArtifactTask>() -> ArtifactTaskRunner(
+                    pipelineComponent as Class<out ArtifactTask>,
                     processorContext,
                     settingsInjector
             )
-            processorClass.isSubclass<ArtifactProcessor>() -> artifactProcessorRunners
+            pipelineComponent.isSubclass<ArtifactsProcessor>() -> processorRunners
                     .computeIfAbsent(processorIdentifier) {
-                        ArtifactProcessorRunner(
-                                processorClass as Class<out ArtifactProcessor>,
+                        ArtifactsProcessorRunner(
+                                pipelineComponent as Class<out ArtifactsProcessor>,
                                 processorContext,
                                 settingsInjector
                         )
                     }
-            else -> throw IllegalArgumentException("Unknown processor class ${processorClass.canonicalName}")
+            pipelineComponent.isSubclass<DocumentsProcessor>() -> processorRunners
+                    .computeIfAbsent(processorIdentifier) {
+                        DocumentsProcessorRunner(
+                                pipelineComponent as Class<out DocumentsProcessor>,
+                                processorContext,
+                                settingsInjector,
+                                processorSettings
+                        )
+                    }
+            else -> throw IllegalArgumentException("Unknown processor class ${pipelineComponent.canonicalName}")
         }
     }
 
-    fun getSourceRunner(
+    fun sourceRunner(
             processorIdentifier: String,
             processorSettings: Map<String, *>,
-            processorScopedObjects: Map<Key<*>, Any>
+            processorScopedObjects: Map<Key<*>, Any>,
+            sourceClass: Class<out ArtifactSource> = processorSettings["sourceClass"]
+                    ?.let { it as? String }
+                    ?.let {
+                        Class.forName(it).asSubclass(ArtifactSource::class.java)
+                    } ?: throw IllegalStateException("sourceClass illegal value")
     ): ArtifactSourceRunner {
         val (settingsInjector, processorContext) =
                 createContext(processorIdentifier, processorSettings, processorScopedObjects)
 
-        val sourceClass = processorSettings["sourceClass"]
-                ?.let { it as? String }
-                ?.let {
-                    Class.forName(it).asSubclass(ArtifactSource::class.java)
-                } ?: throw IllegalStateException("sourceClass illegal value")
 
         return ArtifactSourceRunner(sourceClass, processorContext, settingsInjector)
     }
@@ -104,7 +111,7 @@ class RunnerFactory @Inject constructor(
             processorScopedObjects: Map<Key<*>, Any>
     ): Pair<Injector, BiomedicusScopes.Context> {
         val settingsTransformer = settingsTransformerProvider.get()
-        settingsTransformer.setAnnotationFunction { ProcessorSettingImpl(it) }
+        settingsTransformer.setAnnotationFunction { ComponentSettingImpl(it) }
 
         settingsTransformer.addAll(globalSettings)
         settingsTransformer.addAll(processorSettings)
@@ -119,45 +126,28 @@ class RunnerFactory @Inject constructor(
         processorScopeMap.putAll(processorScopedObjects)
 
         val processorContext = contexts.computeIfAbsent(processorIdentifier) {
-            BiomedicusScopes.createProcessorContext(processorScopeMap).also {
-                it.call {
-                    processorSettings["eagerLoad"]
-                            ?.let { it as? Array<*> }
-                            ?.filterIsInstance<String>()
-                            ?.forEach {
-                                val provider = settingsInjector.getProvider(Class.forName(it))
-                                if (provider is EagerLoadable) {
-                                    provider.eagerLoad()
-                                } else {
-                                    val o = provider.get()
-                                    if (o is EagerLoadable) {
-                                        o.eagerLoad()
-                                    }
-                                }
-                            }
-                }
-            }
+            BiomedicusScopes.createProcessorContext(processorScopeMap)
         }
         return Pair(settingsInjector, processorContext)
     }
 }
 
 /**
- * Runs [ArtifactOperation] instances.
+ * Runs [ArtifactTask] instances.
  */
-class ArtifactOperationRunner(
-        private val operationClass: Class<out ArtifactOperation>,
+class ArtifactTaskRunner(
+        private val taskClass: Class<out ArtifactTask>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector
 ) : Runner {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(ArtifactOperationRunner::class.java)
+        val log: Logger = LoggerFactory.getLogger(ArtifactTaskRunner::class.java)
     }
 
     override fun processArtifact(artifact: Artifact): Unit = processorContext.call {
-        val processor = settingsInjector.getInstance(operationClass)
+        val processor = settingsInjector.getInstance(taskClass)
         try {
-            processor.process(artifact)
+            processor.run(artifact)
         } catch (e: Exception) {
             log.error("Processing failed on artifact: ${artifact.artifactID}")
             throw e
@@ -166,25 +156,31 @@ class ArtifactOperationRunner(
 }
 
 /**
- * Runs [DocumentOperation] instances.
+ * Runs [DocumentTask] instances.
  */
-class DocumentOperationRunner(
-        private val operationClass: Class<out DocumentOperation>,
+class DocumentTaskRunner(
+        private val taskClass: Class<out DocumentTask>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector,
         processorSettings: Map<String, *>
 ) : Runner {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(DocumentOperationRunner::class.java)
+        val log: Logger = LoggerFactory.getLogger(DocumentTaskRunner::class.java)
     }
 
     private val documentName = processorSettings.getSetting<String>("documentName")
+
+    init {
+        processorContext.call {
+            settingsInjector.getInstance(taskClass)
+        }
+    }
 
     override fun processArtifact(artifact: Artifact): Unit = artifact.documents[documentName]
             ?.let {
                 processorContext.call {
                     try {
-                        settingsInjector.getInstance(operationClass).process(it)
+                        settingsInjector.getInstance(taskClass).run(it)
                     } catch (e: Exception) {
                         log.error("Processing failed on artifact: ${artifact.artifactID}")
                         throw e
@@ -195,19 +191,19 @@ class DocumentOperationRunner(
 }
 
 /**
- * Runs [ArtifactProcessor] instances.
+ * Runs [ArtifactsProcessor] instances.
  */
-class ArtifactProcessorRunner(
-        processorClass: Class<out ArtifactProcessor>,
+class ArtifactsProcessorRunner(
+        pipelineComponent: Class<out ArtifactsProcessor>,
         private val processorContext: BiomedicusScopes.Context,
         private val settingsInjector: Injector
 ) : Runner {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(ArtifactProcessorRunner::class.java)
+        val log: Logger = LoggerFactory.getLogger(ArtifactsProcessorRunner::class.java)
     }
 
     private val processor = processorContext.call {
-        settingsInjector.getInstance(processorClass)
+        settingsInjector.getInstance(pipelineComponent)
     }
 
     override fun processArtifact(artifact: Artifact): Unit = processorContext.call {
@@ -218,6 +214,42 @@ class ArtifactProcessorRunner(
             throw e
         }
     }
+
+    override fun done(): Unit = processorContext.call {
+        processor.done()
+    }
+}
+
+/**
+ * Runs [DocumentsProcessor] instances.
+ */
+class DocumentsProcessorRunner(
+        pipelineComponent: Class<out DocumentsProcessor>,
+        private val processorContext: BiomedicusScopes.Context,
+        private val settingsInjector: Injector,
+        processorSettings: Map<String, *>
+) : Runner {
+    companion object {
+        val log: Logger = LoggerFactory.getLogger(DocumentsProcessorRunner::class.java)
+    }
+
+    private val documentName = processorSettings.getSetting<String>("documentName")
+
+    private val processor = processorContext.call {
+        settingsInjector.getInstance(pipelineComponent)
+    }
+
+    override fun processArtifact(artifact: Artifact) = artifact.documents[documentName]
+            ?.let {
+                processorContext.call {
+                    try {
+                        processor.process(it)
+                    } catch (e: Exception) {
+                        log.error("Processing failed on artifact: ${artifact.artifactID}")
+                        throw e
+                    }
+                }
+            } ?: throw IllegalArgumentException("No document with name: $documentName")
 
     override fun done(): Unit = processorContext.call {
         processor.done()

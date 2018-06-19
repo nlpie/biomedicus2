@@ -102,21 +102,17 @@ data class TemporalPhrase(override val startIndex: Int, override val endIndex: I
  * Data model for days of week
  */
 @Singleton
-class DaysOfWeek @Inject constructor(
-        @Setting("time.daysPath") path: String
-) {
-    val values = File(path).readLines()
+class DaysOfWeek(val values: List<String>) {
+    @Inject constructor(@Setting("time.daysPath") path: String) : this(File(path).readLines())
 }
 
 /**
  * Detects days of week in text
  */
-class DayOfWeekDetector @Inject constructor(
-        daysOfWeek: DaysOfWeek
-) : DocumentOperation {
-    private val values = daysOfWeek.values
+class DetectDaysOfWeek(val values: List<String>) : DocumentTask {
+    @Inject constructor(daysOfWeek: DaysOfWeek) : this(daysOfWeek.values)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val tokens = document.labelIndex<ParseToken>()
         val posTags = document.labelIndex<PosTag>()
 
@@ -134,14 +130,16 @@ class DayOfWeekDetector @Inject constructor(
 
 
 @Singleton
-class TimesOfDay @Inject constructor(@Setting("time.timesOfDayPath") path: String) {
-    val values = File(path).readLines(StandardCharsets.UTF_8)
+class TimesOfDay(val values: List<String>) {
+    @Inject constructor(@Setting("time.timesOfDayPath") path: String) : this(
+            File(path).readLines(StandardCharsets.UTF_8)
+    )
 }
 
-class TimeOfDayWordDetector @Inject constructor(timesOfDay: TimesOfDay) : DocumentOperation {
-    private val values = timesOfDay.values
+class DetectTimesOfDay(val values: List<String>) : DocumentTask {
+    @Inject constructor(timesOfDay: TimesOfDay) : this(timesOfDay.values)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val labeler = document.labeler<TimeOfDayWord>()
 
         document.labelIndex<ParseToken>()
@@ -152,14 +150,16 @@ class TimeOfDayWordDetector @Inject constructor(timesOfDay: TimesOfDay) : Docume
 
 
 @Singleton
-class Seasons @Inject constructor(@Setting("time.seasonsPath") path: String) {
-    val values = File(path).readLines(StandardCharsets.UTF_8)
+class Seasons(val values: List<String>) {
+    @Inject constructor(@Setting("time.seasonsPath") path: String) : this(
+            File(path).readLines(StandardCharsets.UTF_8)
+    )
 }
 
-class SeasonWordDetector @Inject constructor(seasons: Seasons) : DocumentOperation {
-    private val values = seasons.values
+class DetectSeasonWords(val values: List<String>) : DocumentTask {
+    @Inject constructor(seasons: Seasons) : this(seasons.values)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val labeler = document.labeler<SeasonWord>()
 
         document.labelIndex<ParseToken>()
@@ -173,21 +173,19 @@ class SeasonWordDetector @Inject constructor(seasons: Seasons) : DocumentOperati
  * The data model for months.
  */
 @Singleton
-class Months @Inject constructor(
-        @Setting("time.monthsPath") path: String
-) {
-    val months = File(path).readLines()
+class Months(val months: List<String>) {
+    @Inject constructor(
+            @Setting("time.monthsPath") path: String
+    ) : this(File(path).readLines())
 }
 
 /**
  * Detects months in text.
  */
-class MonthDetector @Inject constructor(
-        months: Months
-) : DocumentOperation {
-    private val months = months.months
+class DetectMonths(val months: List<String>) : DocumentTask {
+    @Inject constructor(months: Months) : this(months.months)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val tokens = document.labelIndex<ParseToken>()
         val posTags = document.labelIndex<PosTag>()
 
@@ -210,8 +208,8 @@ class MonthDetector @Inject constructor(
 
 internal val yearPattern = Regex("(18|19|20)\\d{2}")
 
-class YearNumberDetector : DocumentOperation {
-    override fun process(document: Document) {
+class DetectYearNumbers : DocumentTask {
+    override fun run(document: Document) {
         val tokens = document.labelIndex<ParseToken>()
 
         val labeler = document.labeler<YearNumber>()
@@ -223,14 +221,19 @@ class YearNumberDetector : DocumentOperation {
 
 
 @Singleton
-class YearRangePattern @Inject constructor(searchExprFactory: SearchExprFactory) {
-    val expr = searchExprFactory.parse("[?NumberRange YearNumber (Number<getNumberType=eCARDINAL> | YearNumber)]")
+class YearRangePattern(val expr: SearchExpr) {
+    @Inject constructor(searchExprFactory: SearchExprFactory) : this(
+            searchExprFactory.parse(
+                    "[?NumberRange YearNumber (Number<getNumberType=eCARDINAL> | YearNumber)]"
+            )
+    )
 }
 
-class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : DocumentOperation {
-    private val expr = pattern.expr
 
-    override fun process(document: Document) {
+class DetectYearRanges(val expr: SearchExpr) : DocumentTask {
+    @Inject constructor(pattern: YearRangePattern) : this(pattern.expr)
+
+    override fun run(document: Document) {
         val searcher = expr.createSearcher(document)
 
         val labeler = document.labeler<YearRange>()
@@ -244,7 +247,7 @@ class YearRangeDetector @Inject constructor(pattern: YearRangePattern) : Documen
 
 @Singleton
 data class TextTimePattern(val expr: SearchExpr) {
-    @Inject constructor(searchExprFactory: SearchExprFactory): this(searchExprFactory.parse(
+    @Inject constructor(searchExprFactory: SearchExprFactory) : this(searchExprFactory.parse(
             """
 [?Number] ParseToken<getText=i"a.m."|i"am"|i"p.m."|i"pm"|i"a.m"|i"p.m"> |
 [?ParseToken<getText=r"[0-2]?[0-9]">] ParseToken<getText=":"> ParseToken<getText=r"[0-5][0-9]"> ParseToken<getText=i"a.m."|i"am"|i"p.m."|i"pm"|i"a.m"|i"p.m">?
@@ -252,10 +255,10 @@ data class TextTimePattern(val expr: SearchExpr) {
     ))
 }
 
-class TextTimeDetector(val expr: SearchExpr) : DocumentOperation {
-    @Inject constructor(textTimePattern: TextTimePattern): this(textTimePattern.expr)
+class DetectTextTimes(val expr: SearchExpr) : DocumentTask {
+    @Inject constructor(textTimePattern: TextTimePattern) : this(textTimePattern.expr)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
 
         val labeler = document.labeler(TextTime::class.java)
@@ -272,9 +275,7 @@ class TextTimeDetector(val expr: SearchExpr) : DocumentOperation {
 
 @Singleton
 data class DatePattern(val expr: SearchExpr) {
-    @Inject constructor(
-            searchExprFactory: SearchExprFactory
-    ) : this(searchExprFactory.parse("""
+    @Inject constructor(searchExprFactory: SearchExprFactory) : this(searchExprFactory.parse("""
 ([?weekday:DayOfWeek] ParseToken<getText=",">? ->)? [?month:Month] (-> dayNo:Number<getNumberType=eCARDINAL>)? (ParseToken<getText=","|"of"> -> year:YearNumber)?
 | [?monthNo:ParseToken<getText=r"([1-9]|1[0-2])">] ParseToken<getText="/"> ParseToken<getText=r"[1-9]|[1-2][1-9]|3[0-1]"> (ParseToken<getText="/"|"-"> -> YearNumber)?
 | [?monthNo:ParseToken<getText=r"([1-9]|1[0-2])">] ParseToken<getText="-"> ParseToken<getText=r"[1-9]|[1-2][1-9]|3[0-1]"> ParseToken<getText="-"> -> YearNumber
@@ -282,10 +283,10 @@ data class DatePattern(val expr: SearchExpr) {
 """))
 }
 
-class DateDetector @Inject constructor(pattern: DatePattern) : DocumentOperation {
-    private val expr = pattern.expr
+class DetectDates(val expr: SearchExpr) : DocumentTask {
+    @Inject constructor(pattern: DatePattern) : this(pattern.expr)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val searcher = expr.createSearcher(document)
 
         val sentences = document.labelIndex<Sentence>()
@@ -302,10 +303,9 @@ class DateDetector @Inject constructor(pattern: DatePattern) : DocumentOperation
 
 
 @Singleton
-class TemporalPhrasePattern @Inject constructor(
-        searchExprFactory: SearchExprFactory
-) {
-    val expr = searchExprFactory.parse("""
+class TemporalPhrasePattern(val expr: SearchExpr) {
+    @Inject constructor(searchExprFactory: SearchExprFactory) : this(
+            searchExprFactory.parse("""
 ([?PosTag<getPartOfSpeech=eIN>] ->)? ([?ParseToken<getText="a"|"the">] ->)? (
   ([?PosTag<getPartOfSpeech=eJJ>] PosTag<getPartOfSpeech=eJJ>{0,2} ->)? ([?Quantifier] ->)? [?TimeUnit] ParseToken<getText="ago">? |
   [?DayOfWeek] -> TimeOfDayWord |
@@ -318,14 +318,13 @@ class TemporalPhrasePattern @Inject constructor(
   [?YearRange] |
   [?TimeOfDayWord]
 )""")
+    )
 }
 
-class TemporalPhraseDetector @Inject constructor(
-        pattern: TemporalPhrasePattern
-) : DocumentOperation {
-    private val expr = pattern.expr
+class DetectTemporalPhrases(val expr: SearchExpr) : DocumentTask {
+    @Inject constructor(pattern: TemporalPhrasePattern) : this(pattern.expr)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
 
         val labeler = document.labeler<TemporalPhrase>()

@@ -16,11 +16,13 @@
 
 package edu.umn.biomedicus.framework;
 
+import com.google.inject.Key;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +43,7 @@ class SettingsLoader {
   @Nullable
   private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
 
-  private Map<?, ?> settings;
+  private final Map<String, Object> settings = new HashMap<>();
 
   private List<String> systemClasses = new ArrayList<>();
 
@@ -92,11 +94,30 @@ class SettingsLoader {
 
     Object settings = configurations.get("settings");
     if (settings instanceof Map) {
-      this.settings = (Map) settings;
-    } else {
-      throw new BiomedicusException("Null settings from file: ");
+      recursiveAddSettings((Map<?, ?>) settings, null);
     }
+  }
 
+  private void recursiveAddSettings(Map<?, ?> settingsMap, @Nullable String prevKey) {
+    for (Map.Entry<?, ?> settingEntry : settingsMap.entrySet()) {
+      Object keyObject = settingEntry.getKey();
+      if (!(keyObject instanceof String)) {
+        throw new IllegalStateException("Non-String key in settings");
+      }
+      String entryKey = (String) keyObject;
+      String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
+      Object value = settingEntry.getValue();
+      if (value == null) {
+        LOGGER.debug("Null setting: {}", key);
+        continue;
+      }
+
+      if (value instanceof Map) {
+        recursiveAddSettings((Map<?, ?>) value, key);
+      } else {
+        settings.put(key, value);
+      }
+    }
   }
 
   private Map<String, Class<?>> getClassMap(
@@ -122,12 +143,6 @@ class SettingsLoader {
   }
 
   void addToBinder(SettingsBinder settingsBinder) {
-    if (settingInterfaces != null) {
-      settingsBinder.addSettingsInterfaces(settingInterfaces);
-    }
-    if (interfaceImplementations != null) {
-      settingsBinder.addInterfaceImplementations(interfaceImplementations);
-    }
     settingsBinder.addSettings(settings);
   }
 

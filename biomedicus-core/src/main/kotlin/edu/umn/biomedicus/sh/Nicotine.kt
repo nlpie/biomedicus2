@@ -99,8 +99,8 @@ data class NicotineMethod(override val startIndex: Int, override val endIndex: I
 /**
  * Detects [NicotineRelevant] labels from [NicotineCue] labels in text.
  */
-class NicotineRelevantLabeler : DocumentOperation {
-    override fun process(document: Document) {
+class NicotineRelevantLabeler : DocumentTask {
+    override fun run(document: Document) {
         val relevants = document.findRelevantAncestors(document.labelIndex<NicotineCue>())
                 .map { NicotineRelevant(it) }
         document.labelAll(relevants)
@@ -143,10 +143,10 @@ class NicotineAmountUnits(
  */
 class NicotineUnitDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(amountUnits: NicotineAmountUnits) : this(amountUnits.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
 
@@ -189,12 +189,12 @@ class NicotineAmountSearchExpr(val expr: TagEx) {
  *
  * @property expr the nicotine amount TagEx search expression
  */
-class NicotineAmountDetector(private val expr: TagEx) : DocumentOperation {
+class NicotineAmountDetector(private val expr: TagEx) : DocumentTask {
     @Inject internal constructor(
             nicotineAmountSearchExpr: NicotineAmountSearchExpr
     ) : this(nicotineAmountSearchExpr.expr)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val labeler = document.labeler<NicotineAmount>()
 
         document.labelIndex<NicotineCandidate>()
@@ -210,8 +210,8 @@ class NicotineAmountDetector(private val expr: TagEx) : DocumentOperation {
  * Detects and labels [NicotineFrequency] instances in text using the general [UsageFrequency]
  * label.
  */
-class NicotineFrequencyDetector : DocumentOperation {
-    override fun process(document: Document) {
+class NicotineFrequencyDetector : DocumentTask {
+    override fun run(document: Document) {
         val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
         val amounts = document.labelIndex<NicotineAmount>()
@@ -234,8 +234,8 @@ class NicotineFrequencyDetector : DocumentOperation {
 /**
  * Detects and labels [NicotineTemporal] instances in text using the general [TemporalPhrase].
  */
-class NicotineTemporalDetector : DocumentOperation {
-    override fun process(document: Document) {
+class NicotineTemporalDetector : DocumentTask {
+    override fun run(document: Document) {
         val nicotineCandidates = document.labelIndex<NicotineCandidate>()
 
         val frequencies = document.labelIndex<NicotineFrequency>()
@@ -270,10 +270,10 @@ class NicotineTypes(val detector: SequenceDetector<String, Token>) {
  */
 class NicotineTypeDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(nicotineTypes: NicotineTypes) : this(nicotineTypes.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val candidates = document.labelIndex<NicotineCandidate>()
         val tokens = document.labelIndex<ParseToken>()
 
@@ -312,12 +312,12 @@ class NicotineStatusPhrases(val detector: SequenceDetector<String, ParseToken>) 
  */
 class NicotineStatusDetector(
         private val detector: SequenceDetector<String, ParseToken>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(
             statusPhrases: NicotineStatusPhrases
     ) : this(statusPhrases.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val tokens = document.labelIndex<ParseToken>()
 
         val usageStatuses = document.labelIndex<UsageStatus>()
@@ -361,10 +361,10 @@ class NicotineMethodPhrases(val detector: SequenceDetector<String, ParseToken>) 
  */
 class NicotineMethodDetector(
         private val detector: SequenceDetector<String, ParseToken>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(phrases: NicotineMethodPhrases) : this(phrases.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val candidates = document.labelIndex<NicotineCandidate>()
         val tokens = document.labelIndex<ParseToken>()
 

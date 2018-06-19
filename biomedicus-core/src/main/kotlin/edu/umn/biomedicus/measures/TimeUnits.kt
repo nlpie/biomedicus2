@@ -16,13 +16,12 @@
 
 package edu.umn.biomedicus.measures
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.*
 import java.io.File
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 /**
  * Some kind of time unit: days, months, years, hours
@@ -43,16 +42,11 @@ data class TimeFrequencyUnit(override val startIndex: Int, override val endIndex
     constructor(textRange: TextRange): this(textRange.startIndex, textRange.endIndex)
 }
 
-@Singleton
-class TimeUnits @Inject constructor(
-        @Setting("measures.timeUnitsPath") timeUnitsPath: String
-) {
-    val words = File(timeUnitsPath).readLines(StandardCharsets.UTF_8)
-}
+class TimeUnitDetector(val words: List<String>) : DocumentsProcessor {
+    @Inject constructor(
+            @Setting("measures.timeUnitsPath") timeUnitsPath: String
+    ): this(File(timeUnitsPath).readLines(StandardCharsets.UTF_8))
 
-class TimeUnitDetector @Inject constructor(
-        val units: TimeUnits
-) : DocumentOperation {
     override fun process(document: Document) {
         val parseTokens = document.labelIndex<ParseToken>()
 
@@ -60,7 +54,7 @@ class TimeUnitDetector @Inject constructor(
 
         parseTokens
                 .filter {
-                    units.words.indexOfFirst { tu ->
+                    words.indexOfFirst { tu ->
                         it.text.compareTo(tu, true) == 0
                     } != -1
                 }
@@ -68,15 +62,10 @@ class TimeUnitDetector @Inject constructor(
     }
 }
 
-@Singleton
-data class TimeFrequencyUnits(val units: List<String>) {
-    @Inject constructor(@Setting("measures.timeFrequencyUnitsPath") path: String) :
-            this(File(path).readLines(StandardCharsets.UTF_8))
-}
-
-data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentOperation {
-
-    @Inject constructor(timeFrequencyUnits: TimeFrequencyUnits) : this(timeFrequencyUnits.units)
+data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentsProcessor {
+    @Inject constructor(
+            @Setting("measures.timeFrequencyUnitsPath") path: String
+    ) : this(File(path).readLines(StandardCharsets.UTF_8))
 
     override fun process(document: Document) {
         val parseTokens = document.labelIndex<ParseToken>()

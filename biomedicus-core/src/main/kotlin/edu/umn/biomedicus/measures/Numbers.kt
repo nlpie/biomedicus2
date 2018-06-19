@@ -16,16 +16,16 @@
 
 package edu.umn.biomedicus.measures
 
+import edu.umn.biomedicus.framework.TagEx
 import edu.umn.biomedicus.framework.TagExFactory
 import edu.umn.biomedicus.framework.get
 import edu.umn.biomedicus.numbers.NumberType
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentOperation
+import edu.umn.nlpengine.DocumentsProcessor
 import edu.umn.nlpengine.Label
 import edu.umn.nlpengine.LabelMetadata
 import java.math.BigDecimal
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * A number in text.
@@ -40,7 +40,7 @@ data class Number(
         val numerator: String,
         val denominator: String,
         val numberType: NumberType
-): Label() {
+) : Label() {
     fun value(): BigDecimal {
         return BigDecimal(numerator).divide(BigDecimal(denominator), BigDecimal.ROUND_HALF_UP)
     }
@@ -55,40 +55,33 @@ data class NumberRange(
         override val endIndex: Int,
         val lower: BigDecimal,
         val upper: BigDecimal
-): Label()
-
-/**
- * The shared resource that provides the compiled number ranges pattern.
- */
-@Singleton
-class NumberRangesPattern @Inject constructor(
-     tagExFactory: TagExFactory
-) {
-    val expr = tagExFactory.parse(
-            "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | [?ParseToken<getText=i\"between\">] -> lower:Number ParseToken<getText=\"and\"> -> upper:Number)"
-    )
-}
+) : Label()
 
 /**
  * The document processor which is responsible for detecting number ranges in text.
  */
-class NumberRangesLabeler @Inject internal constructor(
-        numberRangesPattern: NumberRangesPattern
-) : DocumentOperation {
-    private val expr = numberRangesPattern.expr
+class NumberRangesLabeler(val expr: TagEx) : DocumentsProcessor {
+    @Inject internal constructor(tagExFactory: TagExFactory) : this(
+            tagExFactory.parse(
+                    "(?<range> [?lower:Number] ParseToken<getText=\"-\"|i\"to\"> -> upper:Number | [?ParseToken<getText=i\"between\">] -> lower:Number ParseToken<getText=\"and\"> -> upper:Number)"
+            )
+    )
 
     override fun process(document: Document) {
         val labeler = document.labeler(NumberRange::class.java)
 
         for (tagExResult in expr.findAll(document)) {
-            val lower : Number = tagExResult.namedLabels["lower"] ?: error("lower should always have value")
+            val lower: Number = tagExResult.namedLabels["lower"]
+                    ?: error("lower should always have value")
 
-            val upper : Number = tagExResult.namedLabels["upper"] ?: error("upper should always have value")
+            val upper: Number = tagExResult.namedLabels["upper"]
+                    ?: error("upper should always have value")
 
             val lowerValue = lower.value()
             val upperValue = upper.value()
             if (upperValue > lowerValue) {
-                val (startIndex, endIndex) = tagExResult.namedSpans["range"] ?: error("range should always have value")
+                val (startIndex, endIndex) = tagExResult.namedSpans["range"]
+                        ?: error("range should always have value")
                 labeler.add(NumberRange(startIndex, endIndex, lowerValue, upperValue))
             }
         }

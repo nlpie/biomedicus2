@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Class which loads all biomedicus configuration and creates a Guice injector.
- * Should only be used once per application run.
+ * Class which loads all biomedicus configuration and creates a Guice injector. Should only be used
+ * once per application run.
  *
  * @author Ben Knoll
  * @since 1.5.0
@@ -69,17 +69,15 @@ public final class Bootstrapper {
   }
 
   /**
-   * Creates an instance of the Biomedicus application class using a
-   * pre-existing guice injector. Biomedicus will use
-   * a child injector of this application.
+   * Creates an instance of the Biomedicus application class using a pre-existing guice injector.
+   * Biomedicus will use a child injector of this application.
    *
    * @param injector the pre-existing guice injector
    * @return biomedicus application whose injector is a child of the argument injector
    * @throws BiomedicusException if we fail to load necessary configuration, or a necessary path is
    * undefined
    */
-  public static Application create(Injector injector)
-      throws BiomedicusException {
+  public static Application create(Injector injector) throws BiomedicusException {
     Bootstrapper bootstrapper = new Bootstrapper();
     bootstrapper.setInjector(injector);
     bootstrapper.initializePathsAndConfiguration();
@@ -87,9 +85,8 @@ public final class Bootstrapper {
   }
 
   /**
-   * Creates an instance of the biomedicus application class with optional
-   * overloaded settings and optional additional
-   * guice modules.
+   * Creates an instance of the biomedicus application class with optional overloaded settings and
+   * optional additional guice modules.
    *
    * @param overloadedSettings the settings to overload.
    * @param additionalModules the additional guice modules to add.
@@ -110,8 +107,8 @@ public final class Bootstrapper {
   }
 
   /**
-   * Creates an instance of the biomedicus application class with optional
-   * additional guice modules.
+   * Creates an instance of the biomedicus application class with optional additional guice
+   * modules.
    *
    * @param additionalModules the additional guice modules to add.
    * @return biomedicus application class
@@ -244,6 +241,22 @@ public final class Bootstrapper {
 
     if (overloadedSettings != null) {
       settingsBinder.addSettings(overloadedSettings);
+    }
+
+    String overloadFile = System.getProperty("biomedicus.settings.overloads");
+    if (overloadFile != null) {
+      LOGGER.info("Loading setting overloads: {}", overloadFile);
+      SettingsLoader settingsLoader;
+      try {
+        Path overloadFilePath = Paths.get(overloadFile);
+        settingsLoader = SettingsLoader
+            .createSettingsLoader(absoluteOrResolveAgainstHome(overloadFilePath));
+      } catch (IOException e) {
+        throw new BiomedicusException(e);
+      }
+      settingsLoader.loadSettings();
+      settingsLoader.addToBinder(settingsBinder);
+      systems.addSystems(settingsLoader.getSystemClasses());
     }
 
     modules.add(new SystemsModule(systems));

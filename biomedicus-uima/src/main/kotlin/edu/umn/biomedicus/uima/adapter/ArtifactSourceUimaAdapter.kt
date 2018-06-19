@@ -63,7 +63,7 @@ class ArtifactSourceUimaAdapter : CollectionReader_ImplBase() {
                 }
 
         val runnerFactory = injector.getInstance(RunnerFactory::class.java)
-        val runner = runnerFactory.getSourceRunner(uniqueName, settingsMap,
+        val runner = runnerFactory.sourceRunner(uniqueName, settingsMap,
                 emptyMap())
 
         total = runner.estimateTotal()

@@ -48,10 +48,9 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
-import org.jetbrains.annotations.NotNull;
 
 /**
- * UIMA implementation of the {@link Document} interface. Uses an empty "metadata" view to hold
+ * UIMA implementation of the {@link Artifact} interface. Uses an empty "metadata" view to hold
  * metadata as well as the document identifier.
  *
  * @author Ben Knoll
@@ -69,7 +68,7 @@ public final class CASArtifact extends AbstractArtifact {
   private final Feature keyFeature;
   private final Feature valueFeature;
 
-  private final String documentId;
+  private final String artifactID;
 
   private final FSIndex<FeatureStructure> metadataIndex;
 
@@ -82,17 +81,15 @@ public final class CASArtifact extends AbstractArtifact {
     this.cas = cas;
 
     TypeSystem typeSystem = cas.getTypeSystem();
-    metadataType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentMetadata");
+    metadataType = typeSystem.getType("ArtifactMetadata");
     keyFeature = metadataType.getFeatureByBaseName("key");
     valueFeature = metadataType.getFeatureByBaseName("value");
 
     metadataCas = cas.getView("metadata");
-    Type idType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
-    Feature idFeat = idType.getFeatureByBaseName("documentId");
+    Type idType = typeSystem.getType("ArtifactID");
+    Feature idFeat = idType.getFeatureByBaseName("artifactID");
     FSIndexRepository indexRepository = metadataCas.getIndexRepository();
-    documentId = indexRepository.getIndex("documentId", idType).iterator().get()
+    artifactID = indexRepository.getIndex("artifactID", idType).iterator().get()
         .getStringValue(idFeat);
     metadataIndex = indexRepository.getIndex("metadata", metadataType);
 
@@ -102,26 +99,24 @@ public final class CASArtifact extends AbstractArtifact {
   CASArtifact(
       @Nullable LabelAdapters labelAdapters,
       CAS cas,
-      String documentId
+      String artifactID
   ) {
     this.labelAdapters = labelAdapters;
     this.cas = cas;
 
     TypeSystem typeSystem = cas.getTypeSystem();
-    metadataType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentMetadata");
+    metadataType = typeSystem.getType("ArtifactMetadata");
     keyFeature = metadataType.getFeatureByBaseName("key");
     valueFeature = metadataType.getFeatureByBaseName("value");
 
     metadataCas = cas.createView("metadata");
     metadataCas.setDocumentText("");
 
-    Type idType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
-    Feature idFeat = idType.getFeatureByBaseName("documentId");
-    this.documentId = documentId;
+    Type idType = typeSystem.getType("ArtifactID");
+    Feature idFeat = idType.getFeatureByBaseName("artifactID");
+    this.artifactID = artifactID;
     FeatureStructure documentIdFs = metadataCas.createFS(idType);
-    documentIdFs.setStringValue(idFeat, documentId);
+    documentIdFs.setStringValue(idFeat, artifactID);
     metadataCas.addFsToIndexes(documentIdFs);
     metadataIndex = metadataCas.getIndexRepository().getIndex("metadata", metadataType);
 
@@ -137,20 +132,18 @@ public final class CASArtifact extends AbstractArtifact {
     this.cas = cas;
 
     TypeSystem typeSystem = cas.getTypeSystem();
-    metadataType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentMetadata");
+    metadataType = typeSystem.getType("ArtifactMetadata");
     keyFeature = metadataType.getFeatureByBaseName("key");
     valueFeature = metadataType.getFeatureByBaseName("value");
 
     metadataCas = cas.createView("metadata");
     metadataCas.setDocumentText("");
 
-    Type idType = typeSystem
-        .getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
-    Feature idFeat = idType.getFeatureByBaseName("documentId");
-    this.documentId = artifact.getArtifactID();
+    Type idType = typeSystem.getType("ArtifactID");
+    Feature idFeat = idType.getFeatureByBaseName("artifactID");
+    this.artifactID = artifact.getArtifactID();
     FeatureStructure documentIdFs = metadataCas.createFS(idType);
-    documentIdFs.setStringValue(idFeat, documentId);
+    documentIdFs.setStringValue(idFeat, artifactID);
     metadataCas.addFsToIndexes(documentIdFs);
     metadataIndex = metadataCas.getIndexRepository().getIndex("metadata", metadataType);
 
@@ -172,12 +165,13 @@ public final class CASArtifact extends AbstractArtifact {
     return new CASArtifact(labelAdapters, top, documentId);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getArtifactID() {
-    return documentId;
+    return artifactID;
   }
 
+  @Nonnull
   @Override
   public Map<String, String> getMetadata() {
     return casMetadata;
@@ -187,18 +181,21 @@ public final class CASArtifact extends AbstractArtifact {
     return cas;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public Map<String, Document> getDocuments() {
     return new AbstractMap<String, Document>() {
+      @Nonnull
       @Override
       public Set<Entry<String, Document>> entrySet() {
         return new AbstractSet<Entry<String, Document>>() {
+          @Nonnull
           @Override
           public Iterator<Entry<String, Document>> iterator() {
             Iterator<CAS> viewIterator = cas.getViewIterator();
             return new Iterator<Entry<String, Document>>() {
-              @Nullable CAS nextCas;
+              @Nullable
+              CAS nextCas;
 
               {
                 advance();
@@ -210,7 +207,8 @@ public final class CASArtifact extends AbstractArtifact {
                   return;
                 }
                 CAS next = viewIterator.next();
-                if (!next.getViewName().equals("metadata") && !next.getViewName().equals(CAS.NAME_DEFAULT_SOFA)) {
+                if (!next.getViewName().equals("metadata") && !next.getViewName()
+                    .equals(CAS.NAME_DEFAULT_SOFA)) {
                   nextCas = next;
                 } else {
                   advance();
@@ -250,18 +248,20 @@ public final class CASArtifact extends AbstractArtifact {
     };
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public Document addDocument(@NotNull String name, @NotNull String text) {
+  public Document addDocument(@Nonnull String name, @Nonnull String text) {
     CAS view = cas.createView(name);
     view.setDocumentText(text);
     return new CASDocument(view, labelAdapters);
   }
 
   private class CASMetadata extends AbstractMap<String, String> {
+    @Nonnull
     @Override
     public Set<Entry<String, String>> entrySet() {
       return new AbstractSet<Entry<String, String>>() {
+        @Nonnull
         @Override
         public Iterator<Entry<String, String>> iterator() {
           FSIterator<FeatureStructure> it = metadataIndex.iterator();
@@ -329,6 +329,7 @@ public final class CASArtifact extends AbstractArtifact {
   }
 
   private class CASDocument extends AbstractDocument {
+
     private final CAS view;
 
     @Nullable
@@ -386,22 +387,23 @@ public final class CASArtifact extends AbstractArtifact {
       return view.hashCode();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getArtifactID() {
-      return documentId;
+      return artifactID;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Map<String, String> getMetadata() {
       return casMetadata;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Collection<LabelIndex<?>> labelIndexes() {
       return new AbstractCollection<LabelIndex<?>>() {
+        @Nonnull
         @Override
         public Iterator<LabelIndex<?>> iterator() {
           Iterator<FSIndex<FeatureStructure>> indexes = view.getIndexRepository().getIndexes();
@@ -415,15 +417,19 @@ public final class CASArtifact extends AbstractArtifact {
             }
 
             void tryAdvance() {
+              if (labelAdapters == null) {
+                throw new IllegalStateException("Attempting to iterate a cas document with label adapters");
+              }
               FSIndex<FeatureStructure> index = indexes.next();
-              Type type = index.getType();
-              LabelAdapterFactory<?> factory = labelAdapters.getLabelAdapterFactory(type);
-              if (factory != null) {
-                hasNext = true;
-                next = new UimaLabelIndex<>(cas, factory.create(cas, CASDocument.this));
-              } else {
+              if (next == null) {
                 hasNext = false;
               }
+
+              Type type = index.getType();
+
+              LabelAdapterFactory<?> factory = labelAdapters.getLabelAdapterFactory(type);
+              hasNext = true;
+              next = new UimaLabelIndex<>(cas, factory.create(cas, CASDocument.this));
             }
 
             @Override

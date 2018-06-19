@@ -24,6 +24,7 @@ class FormattingModule : SystemModule() {
     override fun setup() {
         addLabelClass<Bold>()
         addLabelClass<Underlined>()
+        addLabelClass<Italic>()
     }
 }
 
@@ -38,3 +39,12 @@ data class Bold(override val startIndex: Int, override val endIndex: Int): Label
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Underlined(override val startIndex: Int, override val endIndex: Int): Label()
+
+/**
+ * Text that has been italicized.
+ */
+@LabelMetadata(classpath = "biomedicus.v2", distinct = true)
+data class Italic(override val startIndex: Int, override val endIndex: Int) : Label()
+
+
+

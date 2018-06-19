@@ -56,7 +56,7 @@ class UsageFrequencyDetectorTest {
 
         TimeUnit(2, 5).addTo(document)
 
-        usageFrequencyDetector.process(document)
+        usageFrequencyDetector.run(document)
 
         val freqs = document.labelIndex<UsageFrequency>().asList()
         assertEquals(freqs.size, 1)

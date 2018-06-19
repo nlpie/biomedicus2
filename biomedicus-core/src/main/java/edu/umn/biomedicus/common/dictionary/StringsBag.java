@@ -16,23 +16,18 @@
 
 package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Strings;
 import java.nio.ByteBuffer;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * An unordered bag of terms and their counts. Implemented as a counting map.
@@ -40,7 +35,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public final class StringsBag extends AbstractCollection<StringIdentifier> implements Comparable<StringsBag> {
+public final class StringsBag extends AbstractCollection<StringIdentifier>
+    implements Comparable<StringsBag> {
 
   private final int[] terms;
   private final int[] counts;
@@ -79,12 +75,13 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> imple
   }
 
   /**
-   * Converts the bag to a new list of {@link StringIdentifier} objects. If a term occurs n times in the
-   * bag it will get added to the list n times. The terms are sorted with identifiers ascending.
+   * Converts the bag to a new list of {@link StringIdentifier} objects. If a term occurs n times in
+   * the bag it will get added to the list n times. The terms are sorted with identifiers
+   * ascending.
    *
    * @return newly allocated list of terms
    */
-  List<StringIdentifier> toTerms() {
+  public List<StringIdentifier> toTerms() {
     List<StringIdentifier> result = new ArrayList<>();
     for (int i = 0; i < terms.length; i++) {
       for (int j = 0; j < counts[i]; j++) {
@@ -210,14 +207,22 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> imple
   }
 
   @Override
-  public int compareTo(@NotNull StringsBag o) {
+  public int compareTo(@Nonnull StringsBag o) {
     for (int i = 0; i < Math.max(terms.length, o.terms.length); i++) {
-      if (terms.length == i) return -1;
-      if (o.terms.length == i) return 1;
+      if (terms.length == i) {
+        return -1;
+      }
+      if (o.terms.length == i) {
+        return 1;
+      }
       int compare = Integer.compare(terms[i], o.terms[i]);
-      if (compare != 0) return compare;
+      if (compare != 0) {
+        return compare;
+      }
       compare = Integer.compare(counts[i], o.counts[i]);
-      if (compare != 0) return compare;
+      if (compare != 0) {
+        return compare;
+      }
     }
     return 0;
   }

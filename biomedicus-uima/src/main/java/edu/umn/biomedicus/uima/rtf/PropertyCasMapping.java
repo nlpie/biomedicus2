@@ -83,6 +83,9 @@ public class PropertyCasMapping {
 
     TypeSystem typeSystem = cas.getTypeSystem();
     Type type = typeSystem.getType(annotationClassName);
+    if (type == null) {
+      throw new IllegalStateException("Annotation class not found: " + annotationClassName);
+    }
     AnnotationFS annotation = cas.createAnnotation(type, begin, end);
     if (valueIncluded) {
       Feature valueFeature = type.getFeatureByBaseName("value");

@@ -28,29 +28,8 @@ import edu.umn.biomedicus.annotations.ProcessorScoped;
  *
  */
 final class BiomedicusModule extends AbstractModule {
-
   @Override
   protected void configure() {
     bindScope(ProcessorScoped.class, BiomedicusScopes.PROCESSOR_SCOPE);
-
-    LifecycleManager lifecycleManager = new LifecycleManager();
-
-    bind(LifecycleManager.class).toInstance(lifecycleManager);
-
-    InjectionListener<LifecycleManaged> injectionListener = lifecycleManager::register;
-
-    TypeListener listener = new TypeListener() {
-      @SuppressWarnings("unchecked")
-      @Override
-      public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
-        ((TypeEncounter<LifecycleManaged>) typeEncounter).register(injectionListener);
-      }
-    };
-    bindListener(new AbstractMatcher<TypeLiteral<?>>() {
-      @Override
-      public boolean matches(TypeLiteral<?> typeLiteral) {
-        return LifecycleManaged.class.isAssignableFrom(typeLiteral.getRawType());
-      }
-    }, listener);
   }
 }

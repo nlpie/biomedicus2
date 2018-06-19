@@ -18,16 +18,30 @@ package edu.umn.biomedicus.framework
 
 import com.google.inject.Guice
 import com.google.inject.Stage
-import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactProcessor
-import edu.umn.nlpengine.Runner
+import edu.umn.nlpengine.*
+import java.lang.System
 import kotlin.concurrent.thread
 import kotlin.test.Test
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 
+private var processed: Document? = null
+private var done = false
+
+class DPStub : DocumentsProcessor {
+    override fun process(document: Document) {
+        processed = document
+    }
+
+    override fun done() {
+        done = true
+    }
+
+}
+
 class RunnerFactoryTest {
-    class TestArtifactProcessor : ArtifactProcessor {
+    class TestArtifactsProcessor : ArtifactsProcessor {
         override fun process(artifact: Artifact) {
 
         }
@@ -45,16 +59,36 @@ class RunnerFactoryTest {
         val runnerFactory = application.getInstance(RunnerFactory::class.java)
 
         val runner1 = runnerFactory.getRunner("test",
-                mapOf(Pair("processorClass", TestArtifactProcessor::class.java.name)),
+                mapOf(Pair("pipelineComponent", TestArtifactsProcessor::class.java.name)),
                 emptyMap())
 
         var runner2: Runner? = null
         thread(start = true) {
             runner2 = runnerFactory.getRunner("test",
-                    mapOf(Pair("processorClass", TestArtifactProcessor::class.java.name)),
+                    mapOf(Pair("pipelineComponent", TestArtifactsProcessor::class.java.name)),
                     emptyMap())
         }.join()
 
         assertTrue(runner1 === runner2, "Runners should be shared across threads")
+    }
+
+    @Test
+    fun `document processor runner`() {
+        System.setProperty("biomedicus.paths.home", ".")
+        val application = Bootstrapper.create(Guice.createInjector(Stage.DEVELOPMENT))
+        val runnerFactory = application.getInstance(RunnerFactory::class.java)
+
+        val runner = runnerFactory.getRunner("test",
+                mapOf(Pair("pipelineComponent", DPStub::class.java.name),
+                        Pair("documentName", "blah")),
+                emptyMap())
+
+        val artifact = StandardArtifact("blah")
+        val document = artifact.addDocument("blah", "some text")
+        runner.processArtifact(artifact)
+        runner.done()
+
+        assertSame(document, processed, "document passed to processor")
+        assertTrue(done, "done not called after finished")
     }
 }

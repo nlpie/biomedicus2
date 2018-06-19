@@ -16,6 +16,7 @@
 
 package edu.umn.biomedicus.acronym;
 
+import com.google.inject.ProvidedBy;
 import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.tokenization.Token;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.Set;
  *
  * @author Greg Finley
  */
+@ProvidedBy(AcronymVectorModel.Loader.class)
 interface AcronymModel {
 
   <T extends Token> boolean hasAcronym(T token);

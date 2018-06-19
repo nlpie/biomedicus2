@@ -42,8 +42,8 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>addDocumentId</name>
-        <description>Whether or not we should add a missing ClinicalNoteAnnotation::documentId
+        <name>addArtifactID</name>
+        <description>Whether or not we should add a missing artifact identifier
         </description>
         <type>Boolean</type>
         <mandatory>true</mandatory>
@@ -67,7 +67,7 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>addDocumentId</name>
+        <name>addArtifactID</name>
         <value>
           <boolean>false</boolean>
         </value>

@@ -52,22 +52,6 @@
         <import name="edu.umn.biomedicus.types.IndexCollection"/>
       </imports>
     </fsIndexCollection>
-    <capabilities>
-      <capability>
-        <inputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
-        </inputs>
-        <outputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
-        </outputs>
-        <inputSofas>
-          <sofaName>System</sofaName>
-        </inputSofas>
-        <outputSofas>
-          <sofaName>System</sofaName>
-        </outputSofas>
-      </capability>
-    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

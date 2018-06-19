@@ -22,7 +22,7 @@
   <groupId>edu.umn.biomedicus</groupId>
   <artifactId>biomedicus</artifactId>
   <packaging>pom</packaging>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>2.0.0</version>
 
   <modules>
     <module>biomedicus-core</module>
@@ -38,15 +38,19 @@
     large-scale text analysis and processing of biomedical and clinical reports.
   </description>
 
+  <url>https://nlpie.github.io/biomedicus</url>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <biomedicus.version>2.0.0-SNAPSHOT</biomedicus.version>
-    <kotlin.version>1.2.31</kotlin.version>
+    <biomedicus.version>2.0.0</biomedicus.version>
+    <kotlin.version>1.2.50</kotlin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <dokka.version>0.9.16</dokka.version>
+    <slf4j.version>1.7.25</slf4j.version>
+    <top.basedir>${project.basedir}</top.basedir>
   </properties>
 
   <distributionManagement>
@@ -121,6 +125,20 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+        <version>${dokka.version}</version>
+        <executions>
+          <execution>
+            <phase>none</phase>
+            <goals>
+              <goal>dokka</goal>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -172,24 +190,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.junit.platform</groupId>
-              <artifactId>junit-platform-surefire-provider</artifactId>
-              <version>1.1.0</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-engine</artifactId>
-              <version>5.1.0</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.vintage</groupId>
-              <artifactId>junit-vintage-engine</artifactId>
-              <version>5.1.0</version>
-            </dependency>
-          </dependencies>
+          <version>2.22.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -211,14 +212,6 @@
           <groupId>org.jetbrains.dokka</groupId>
           <artifactId>dokka-maven-plugin</artifactId>
           <version>${dokka.version}</version>
-          <executions>
-            <execution>
-              <phase>pre-site</phase>
-              <goals>
-                <goal>dokka</goal>
-              </goals>
-            </execution>
-          </executions>
           <configuration>
             <sourceDirectories>
               <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
@@ -311,17 +304,11 @@
       <artifactId>kotlin-reflect</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-test-junit</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.25</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -332,8 +319,14 @@
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.1.0</version>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-test-junit5</artifactId>
+      <version>${kotlin.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -343,9 +336,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.nhaarman</groupId>
-      <artifactId>mockito-kotlin-kt1.1</artifactId>
-      <version>1.5.0</version>
+      <groupId>com.nhaarman.mockitokotlin2</groupId>
+      <artifactId>mockito-kotlin</artifactId>
+      <version>2.0.0-RC1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -368,6 +361,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>2.7</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0</version>
       </plugin>
     </plugins>
   </reporting>

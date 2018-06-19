@@ -47,7 +47,7 @@ class CasIndexListener implements IndexListener {
   CasIndexListener(CAS originalDocumentView) {
     this.originalDocumentView = originalDocumentView;
     viewIndexType = originalDocumentView.getTypeSystem()
-        .getType("edu.umn.biomedicus.rtfuima.type.ViewIndex");
+        .getType("biomedicus.v2.rtf.ViewIndex");
     destinationIndexFeature = viewIndexType
         .getFeatureByBaseName("destinationIndex");
     destinationNameFeature = viewIndexType

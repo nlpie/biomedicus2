@@ -42,8 +42,6 @@ public class SettingsTransformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsTransformer.class);
 
-  private final Map<String, Class<?>> settingInterfaces;
-
   private final Path dataPath;
 
   private final Map<Key<?>, Object> settings;
@@ -53,15 +51,13 @@ public class SettingsTransformer {
 
   @Inject
   SettingsTransformer(
-      @Named("settingInterfaces") Map<String, Class<?>> settingInterfaces,
       @Setting("paths.data") Path dataPath
   ) {
-    this.settingInterfaces = settingInterfaces;
     this.dataPath = dataPath;
     settings = new HashMap<>();
   }
 
-  void setAnnotationFunction(Function<String, Annotation> annotationFunction) {
+  void setAnnotationFunction(@Nullable Function<String, Annotation> annotationFunction) {
     this.annotationFunction = annotationFunction;
   }
 
@@ -69,31 +65,11 @@ public class SettingsTransformer {
    * Adds all of the specified settings to be transformed to Guice keys.
    */
   void addAll(Map<String, ?> settingsMap) {
-    Preconditions.checkNotNull(annotationFunction,
-        "Annotation function not initialized");
-    recursiveAddSettings(settingsMap, null);
-  }
-
-  /**
-   *
-   * @return
-   */
-  Map<Key<?>, Object> getSettings() {
-    return settings;
-  }
-
-  private void recursiveAddSettings(Map<String, ?> settingsMap, @Nullable String prevKey) {
-    assert annotationFunction != null : "checked at entry points";
+    Preconditions.checkNotNull(annotationFunction);
 
     for (Map.Entry<String, ?> settingEntry : settingsMap.entrySet()) {
-      String entryKey = settingEntry.getKey();
-      String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
+      String key = settingEntry.getKey();
       Object value = settingEntry.getValue();
-
-      Class<?> interfaceClass = settingInterfaces.get(key);
-      if (interfaceClass != null) {
-        addSettingImplementation(interfaceClass, key, (String) value);
-      }
 
       if (value == null) {
         LOGGER.debug("Null setting: {}", key);
@@ -101,9 +77,7 @@ public class SettingsTransformer {
       }
 
       if (value instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> valueMap = (Map<String, Object>) value;
-        recursiveAddSettings(valueMap, key);
+        throw new IllegalStateException("Maps should already be collapsed at this point.");
       } else if (value instanceof String && endsWithPathFileDir(key)) {
         Path path = absoluteOrResolveAgainstData(Paths.get((String) value));
         settings.putIfAbsent(Key.get(Path.class, annotationFunction.apply(key)), path);
@@ -113,6 +87,10 @@ public class SettingsTransformer {
         addSetting(key, value, value.getClass());
       }
     }
+  }
+
+  Map<Key<?>, Object> getSettings() {
+    return settings;
   }
 
   private <T> void addSettingImplementation(Class<T> interfaceClass, String settingKey,

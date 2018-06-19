@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
@@ -58,12 +57,9 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
     CAS systemView = aCAS.getView(documentName);
 
     TypeSystem typeSystem = aCAS.getTypeSystem();
-    Type intblType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.ParagraphInTable");
-    Type rowEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.RowEnd");
-    Type rowType = typeSystem
-        .getType("edu.umn.nlpengine.generated2_0.Row");
+    Type intblType = typeSystem.getType("biomedicus.v2.rtf.ParagraphInTable");
+    Type rowEndType = typeSystem.getType("biomedicus.v2.rtf.RowEnd");
+    Type rowType = typeSystem.getType("biomedicus.v2.Row");
 
     ArrayList<Integer> intblBegins = new ArrayList<>();
     AnnotationIndex<AnnotationFS> intblIndex = systemView.getAnnotationIndex(intblType);
@@ -95,17 +91,17 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
       }
     }
 
-    Type cellEndType = typeSystem.getType("edu.umn.biomedicus.rtfuima.type.CellEnd");
-    Type cellType = typeSystem.getType("edu.umn.nlpengine.generated2_0.Cell");
+    Type cellEndType = typeSystem.getType("biomedicus.v2.rtf.CellEnd");
+    Type cellType = typeSystem.getType("biomedicus.v2.Cell");
 
     Type nestRowEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.NestRowEnd");
+        .getType("biomedicus.v2.rtf.NestRowEnd");
     Type nestedRowType = typeSystem
-        .getType("edu.umn.nlpengine.generated2_0.NestedRow");
+        .getType("biomedicus.v2.NestedRow");
     Type nestedCellEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.NestCellEnd");
+        .getType("biomedicus.v2.rtf.NestCellEnd");
     Type nestedCellType = typeSystem
-        .getType("edu.umn.nlpengine.generated2_0.NestedCell");
+        .getType("biomedicus.v2.NestedCell");
 
     TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(systemView);
     tableAnnotationDivider.using(cellEndType)

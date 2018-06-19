@@ -22,18 +22,18 @@
   <vendor>${project.organization.name}</vendor>
   <types>
     <typeDescription>
-      <name>edu.umn.biomedicus.uima.type1_5.DocumentId</name>
+      <name>ArtifactID</name>
       <description>
-        A document identifier.
+        A unique artifact identifier.
       </description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
         <featureDescription>
-          <name>documentId</name>
+          <name>artifactID</name>
           <description>
-            The identification string for the document. This should be the file name for files, or
-            the unique identifier used in a database if the document source is a database collection
-            reader.
+            A unique identification string for the artifact. This should be the file name for files,
+            or the unique identifier used in a database if the document source is a database
+            collection reader.
           </description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
@@ -41,9 +41,9 @@
     </typeDescription>
 
     <typeDescription>
-      <name>edu.umn.biomedicus.uima.type1_5.DocumentMetadata</name>
+      <name>ArtifactMetadata</name>
       <description>
-        A piece of metadata about the document in the form of a key value pair.
+        A piece of metadata about the artifact in the form of a key value pair.
       </description>
       <supertypeName>uima.cas.TOP</supertypeName>
       <features>
@@ -56,141 +56,6 @@
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
-    </typeDescription>
-
-    <!-- RTF types below here -->
-    <typeDescription>
-      <name>edu.umn.biomedicus.type.IllegalXmlCharacter</name>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.OriginalDocumentOffsets</name>
-      <description>The offsets to the original document for a destination view.</description>
-      <supertypeName>uima.cas.TOP</supertypeName>
-      <features>
-        <featureDescription>
-          <name>offsets</name>
-          <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.ViewIndex</name>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>destinationName</name>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>destinationIndex</name>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.ControlWord</name>
-      <description>A control word.</description>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>name</name>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>param</name>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>index</name>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>known</name>
-          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.UnknownControlWord</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-      <features>
-        <featureDescription>
-          <name>keyword</name>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.RowEnd</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.CellEnd</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.NestRowEnd</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.NestCellEnd</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.LineBreak</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.TableRowFormattingDefaults</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.CellDefinitionEnd</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.NewParagraph</name>
-      <description>Used whenever the par keyword is omitted.</description>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.ControlWord</supertypeName>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.PropertyValue</name>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>value</name>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
-        </featureDescription>
-      </features>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.Bold</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.Italic</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
-    </typeDescription>
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.Underline</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
-    </typeDescription>
-
-    <typeDescription>
-      <name>edu.umn.biomedicus.rtfuima.type.ParagraphInTable</name>
-      <supertypeName>edu.umn.biomedicus.rtfuima.type.PropertyValue</supertypeName>
     </typeDescription>
     <!-- end rtf types -->
   </types>

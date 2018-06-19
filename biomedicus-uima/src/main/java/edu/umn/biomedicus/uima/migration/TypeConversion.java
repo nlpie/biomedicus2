@@ -17,21 +17,24 @@
 package edu.umn.biomedicus.uima.migration;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 
 /**
- *
+ * A type conversion from one UIMA type to another.
  */
 public interface TypeConversion {
 
+  @Nonnull
   String sourceTypeName();
 
+  @Nonnull
   List<FeatureStructure> doMigrate(
-      CAS sourceView,
-      CAS targetView,
-      FeatureStructure from,
-      Type fromType
+      @Nonnull CAS sourceView,
+      @Nonnull CAS targetView,
+      @Nonnull FeatureStructure from,
+      @Nonnull Type fromType
   );
 }

@@ -16,17 +16,17 @@
 
 package edu.umn.biomedicus.util
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
-import edu.umn.nlpengine.ArtifactProcessor
+import edu.umn.biomedicus.annotations.ComponentSetting
+import edu.umn.nlpengine.ArtifactsProcessor
 import edu.umn.nlpengine.Artifact
 import java.io.File
 import javax.inject.Inject
 
 
 class UniqueCharactersProcessor @Inject internal constructor(
-        @ProcessorSetting("outputFile") private val outputFile: String,
-        @ProcessorSetting("documentName") private val documentName: String
-) : ArtifactProcessor {
+        @ComponentSetting("outputFile") private val outputFile: String,
+        @ComponentSetting("documentName") private val documentName: String
+) : ArtifactsProcessor {
     private val chars = HashSet<Char>()
 
     override fun process(artifact: Artifact) {

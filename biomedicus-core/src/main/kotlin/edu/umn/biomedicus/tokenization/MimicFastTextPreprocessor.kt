@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.tokenization
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.biomedicus.sentences.TextSegment
-import edu.umn.nlpengine.ArtifactProcessor
+import edu.umn.nlpengine.ArtifactsProcessor
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.labelIndex
 import javax.inject.Inject
@@ -27,9 +27,9 @@ import javax.inject.Inject
  * Performs pre-processing on MIMIC tokens before writing them for FastText vector creation.
  */
 class MimicFastTextPreprocessor @Inject constructor(
-        @ProcessorSetting("documentName") private val documentName: String,
-        @ProcessorSetting("outputFile") private val outputFile: String
-) : ArtifactProcessor {
+        @ComponentSetting("documentName") private val documentName: String,
+        @ComponentSetting("outputFile") private val outputFile: String
+) : ArtifactsProcessor {
 
     override fun process(artifact: Artifact) {
         val document = artifact.documents[documentName]

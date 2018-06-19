@@ -20,9 +20,9 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.sentences.Sentence;
-import edu.umn.nlpengine.ArtifactProcessor;
+import edu.umn.nlpengine.ArtifactsProcessor;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.Document;
 import java.io.IOException;
@@ -43,11 +43,11 @@ import opennlp.tools.sentdetect.SentenceSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.StringList;
 import opennlp.tools.util.TrainingParameters;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ONLPSentenceTrainer implements ArtifactProcessor {
+public class ONLPSentenceTrainer implements ArtifactsProcessor {
   private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
   private static final String POISON = ">poison<";
   private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();
@@ -66,13 +66,13 @@ public class ONLPSentenceTrainer implements ArtifactProcessor {
   @Inject
   ONLPSentenceTrainer(
       AcronymExpansionsModel acronymExpansionsModel,
-      @ProcessorSetting("outputDirectory") Path outputPath,
-      @ProcessorSetting("documentName") String documentName,
-      @ProcessorSetting("eosChars") String eosChars,
-      @ProcessorSetting("useTokenEnd") Boolean useTokenEnd,
-      @ProcessorSetting("useNewlineAsEos") Boolean useNewlineAsEos,
-      @ProcessorSetting("useTabAsEos") Boolean useTabAsEos,
-      @ProcessorSetting("useUnsure") Boolean useUnsure
+      @ComponentSetting("outputDirectory.orig") Path outputPath,
+      @ComponentSetting("documentName") String documentName,
+      @ComponentSetting("eosChars") String eosChars,
+      @ComponentSetting("useTokenEnd") Boolean useTokenEnd,
+      @ComponentSetting("useNewlineAsEos") Boolean useNewlineAsEos,
+      @ComponentSetting("useTabAsEos") Boolean useTabAsEos,
+      @ComponentSetting("useUnsure") Boolean useUnsure
   ) {
     this.outputPath = outputPath;
     this.documentName = documentName;
@@ -162,7 +162,7 @@ public class ONLPSentenceTrainer implements ArtifactProcessor {
   }
 
   @Override
-  public void process(@NotNull Artifact artifact) {
+  public void process(@Nonnull Artifact artifact) {
     Document document = artifact.getDocuments().get(documentName);
 
     if (document == null) {

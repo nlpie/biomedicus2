@@ -18,10 +18,10 @@ package edu.umn.biomedicus.util
 
 import edu.umn.biomedicus.common.DocumentIdentifiers
 import edu.umn.nlpengine.Artifact
-import edu.umn.nlpengine.ArtifactOperation
+import edu.umn.nlpengine.ArtifactTask
 
-class CopyAnalysisToGold : ArtifactOperation {
-    override fun process(artifact: Artifact) {
+class CopyAnalysisToGold : ArtifactTask {
+    override fun run(artifact: Artifact) {
         artifact.copyDocument(
                 artifact.documents[DocumentIdentifiers.ANALYSIS] ?: error("No Analysis document."),
                 DocumentIdentifiers.GOLD_STANDARD

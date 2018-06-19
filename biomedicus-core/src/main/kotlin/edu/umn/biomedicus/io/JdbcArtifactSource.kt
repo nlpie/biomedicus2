@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.io
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.ArtifactSource
 import edu.umn.nlpengine.StandardArtifact
@@ -35,8 +35,8 @@ import javax.inject.Inject
  * A document source that pulls from a database using JDBC.
  */
 class JdbcArtifactSource @Inject internal constructor(
-        @ProcessorSetting("documentName") private val documentName: String,
-        @ProcessorSetting("configFile") private val configFile: Path
+        @ComponentSetting("documentName") private val documentName: String,
+        @ComponentSetting("configFile") private val configFile: Path
 ) : ArtifactSource {
 
     private val connection: Connection

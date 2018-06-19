@@ -22,7 +22,7 @@ import edu.umn.biomedicus.parsing.DependencyParse;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.LabelIndex;
 import edu.umn.nlpengine.Labeler;
 import java.io.BufferedReader;
@@ -34,7 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.5.0
  * @deprecated doesn't actually label anything right now
  */
-public final class SyntaxnetParser implements DocumentOperation {
+public final class SyntaxnetParser implements DocumentTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SyntaxnetParser.class);
 
@@ -86,7 +86,7 @@ public final class SyntaxnetParser implements DocumentOperation {
   }
 
   @Override
-  public void process(@NotNull Document document) {
+  public void run(@Nonnull Document document) {
     LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
 
     LabelIndex<ParseToken> tokenLabelIndex = document.labelIndex(ParseToken.class);

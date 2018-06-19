@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.ArtifactSource;
 import edu.umn.nlpengine.StandardArtifact;
@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.Spliterator;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +57,15 @@ public class TextFilesArtifactSource implements ArtifactSource {
 
   @Inject
   TextFilesArtifactSource(
-      @ProcessorSetting("inputDirectory.orig") String directoryPath,
-      @ProcessorSetting("extension") String extension,
-      @ProcessorSetting("charsetName") String charsetName,
-      @ProcessorSetting("documentName") String documentName
+      @ComponentSetting("inputDirectory.orig") String directoryPath,
+      @ComponentSetting("extension") String extension,
+      @ComponentSetting("charsetName") String charsetName,
+      @ComponentSetting("documentName") String documentName
   ) throws IOException {
     charset = Charset.forName(charsetName);
     inputDirectory = Paths.get(directoryPath);
     total = Files.walk(inputDirectory).filter(f -> f.toString().endsWith(extension)).count();
+    LOGGER.debug("Reading {} files from {}", total, inputDirectory);
     iterator = Files.walk(inputDirectory).filter(f -> f.toString().endsWith(extension))
         .spliterator();
     this.documentName = documentName;
@@ -81,7 +82,7 @@ public class TextFilesArtifactSource implements ArtifactSource {
   }
 
   @Override
-  public boolean tryAdvance(@NotNull Function1<? super Artifact, Unit> consumer) {
+  public boolean tryAdvance(@Nonnull Function1<? super Artifact, Unit> consumer) {
     return iterator.tryAdvance((next) -> {
       if (LOGGER.isTraceEnabled()) {
         LOGGER.trace("Reading document: " + next.toString());

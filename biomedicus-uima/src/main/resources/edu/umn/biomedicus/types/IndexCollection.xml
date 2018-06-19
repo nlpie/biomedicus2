@@ -23,18 +23,18 @@
 
   <fsIndexes>
     <fsIndexDescription>
-      <label>documentId</label>
-      <typeName>edu.umn.biomedicus.uima.type1_5.DocumentId</typeName>
+      <label>artifactID</label>
+      <typeName>ArtifactID</typeName>
       <keys>
         <fsIndexKey>
-          <featureName>documentId</featureName>
+          <featureName>artifactID</featureName>
           <comparator>standard</comparator>
         </fsIndexKey>
       </keys>
     </fsIndexDescription>
     <fsIndexDescription>
       <label>metadata</label>
-      <typeName>edu.umn.biomedicus.uima.type1_5.DocumentMetadata</typeName>
+      <typeName>ArtifactMetadata</typeName>
       <keys>
         <fsIndexKey>
           <featureName>key</featureName>

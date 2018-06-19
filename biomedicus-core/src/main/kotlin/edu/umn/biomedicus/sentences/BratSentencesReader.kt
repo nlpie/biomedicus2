@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.sentences
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.biomedicus.io.TextFilesArtifactSource
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentOperation
+import edu.umn.nlpengine.DocumentTask
 import edu.umn.nlpengine.Span
 import edu.umn.nlpengine.labeler
 import java.io.File
@@ -29,9 +29,9 @@ import javax.inject.Inject
  * Reads in sentences from the brat .ann files and adds them as sentences.
  */
 class BratSentencesReader @Inject internal constructor(
-        @ProcessorSetting("labelUnsure") private val labelUnsure: Boolean
-) : DocumentOperation {
-    override fun process(document: Document) {
+        @ComponentSetting("labelUnsure") private val labelUnsure: Boolean
+) : DocumentTask {
+    override fun run(document: Document) {
         val sourceFile = File(document.metadata[TextFilesArtifactSource.SOURCE_PATH]
                 ?: error("Document does not have source path"))
 

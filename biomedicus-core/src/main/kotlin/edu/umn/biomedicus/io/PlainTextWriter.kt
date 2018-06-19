@@ -16,9 +16,10 @@
 
 package edu.umn.biomedicus.io
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentOperation
+import edu.umn.nlpengine.DocumentTask
+import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
@@ -28,13 +29,21 @@ import javax.inject.Inject
  * Writes the contents of a view to a directory.
  */
 class PlainTextWriter @Inject constructor(
-        @ProcessorSetting("outputDirectory") private val outputDirectory: Path,
-        @ProcessorSetting("charset") private val charsetName: String
-) : DocumentOperation {
-    override fun process(document: Document) {
+        @ComponentSetting("outputDirectory.orig") private val outputDirectory: Path,
+        @ComponentSetting("charset") private val charsetName: String
+) : DocumentTask {
+    init {
+        log.debug("Writing plain text files to directory: {}", outputDirectory)
+    }
+
+    override fun run(document: Document) {
         outputDirectory.resolve("${document.artifactID}.txt")
                 .also { Files.createDirectories(it.parent) }
                 .toFile().writeText(document.text, Charset.forName(charsetName))
 
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(PlainTextWriter::class.java)
     }
 }

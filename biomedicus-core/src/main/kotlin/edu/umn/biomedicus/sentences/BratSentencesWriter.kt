@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.sentences
 
-import edu.umn.biomedicus.annotations.ProcessorSetting
+import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.DocumentOperation
+import edu.umn.nlpengine.DocumentTask
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
@@ -27,14 +27,14 @@ import javax.inject.Inject
 val newlineTab = Regex(" *\\n+ *")
 
 class BratSentencesWriter @Inject internal constructor(
-        @ProcessorSetting("outputDirectory") private val outputDirectory: Path
-) : DocumentOperation {
-    override fun process(document: Document) {
+        @ComponentSetting("outputDirectory.orig") private val outputDirectory: Path
+) : DocumentTask {
+    override fun run(document: Document) {
         val documentId = java.lang.String.format("%07d", document.artifactID.toInt())
 
         val text = document.text
-        val textPath = outputDirectory.resolve(documentId + ".txt")
-        val annPath = outputDirectory.resolve(documentId + ".ann")
+        val textPath = outputDirectory.resolve("$documentId.txt")
+        val annPath = outputDirectory.resolve("$documentId.ann")
 
         Files.createDirectories(outputDirectory)
         textPath.toFile().writeText(text, StandardCharsets.UTF_8)

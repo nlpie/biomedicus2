@@ -49,7 +49,7 @@ class QuantifierDetectorTest {
         labelAliases.addAlias("ParseToken", ParseToken::class.java)
         labelAliases.addAlias("PosTag", PosTag::class.java)
 
-        quantifierDetector = QuantifierDetector(QuantifierExpression(searchExprFactory))
+        quantifierDetector = QuantifierDetector(searchExprFactory)
     }
 
     @Test

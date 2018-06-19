@@ -111,26 +111,6 @@ public final class RocksDbStrings extends AbstractStrings {
     return (_size = size);
   }
 
-  public Strings inMemory(boolean inMemory) throws IOException {
-    if (inMemory) {
-      TreeMap<Integer, String> treeMap = new TreeMap<>();
-
-      try (MappingIterator mappingIterator = mappingIterator()) {
-        while (mappingIterator.isValid()) {
-          treeMap.put(mappingIterator.identifier(), mappingIterator.string());
-          mappingIterator.next();
-        }
-      }
-
-      String[] strings = new String[treeMap.size()];
-      for (Entry<Integer, String> entry : treeMap.entrySet()) {
-        strings[entry.getKey()] = entry.getValue();
-      }
-      return new ArrayStrings(strings);
-    }
-    return this;
-  }
-
   @Override
   public void close() {
     terms.close();

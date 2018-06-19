@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.LabelIndex;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,19 +29,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
-public class PtbTagsWriter implements DocumentOperation {
+public class PtbTagsWriter implements DocumentTask {
 
   private final Path outputDir;
 
   @Inject
   public PtbTagsWriter(
-      @ProcessorSetting("writer.ptbTags.outputDir.path") Path outputDir
+      @ComponentSetting("writer.ptbTags.outputDir.path") Path outputDir
   ) {
     this.outputDir = outputDir;
   }
 
   @Override
-  public void process(@Nonnull Document document) {
+  public void run(@Nonnull Document document) {
     String documentId = document.getArtifactID();
 
     String text = document.getText();

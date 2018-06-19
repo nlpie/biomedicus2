@@ -52,29 +52,6 @@
         <import name="edu.umn.biomedicus.types.IndexCollection"/>
       </imports>
     </fsIndexCollection>
-    <capabilities>
-      <capability>
-        <inputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.ParagraphInTable</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.RowEnd</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.CellEnd</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NestRowEnd</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NestCellEnd</type>
-        </inputs>
-        <outputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.RowAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.CellAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedRowAnnotation</type>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.NestedCellAnnotation</type>
-        </outputs>
-        <inputSofas>
-          <sofaName>System</sofaName>
-        </inputSofas>
-        <outputSofas>
-          <sofaName>System</sofaName>
-        </outputSofas>
-      </capability>
-    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

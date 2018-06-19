@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.io;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
 import edu.umn.biomedicus.sentences.Sentence;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Spliterator;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +65,10 @@ public class PTBArtifactSource implements ArtifactSource {
 
   @Inject
   PTBArtifactSource(
-      @ProcessorSetting("inputDirectory") Path directoryPath,
-      @ProcessorSetting("extension") String extension,
-      @ProcessorSetting("charsetName") String charsetName,
-      @ProcessorSetting("documentName") String documentName
+      @ComponentSetting("inputDirectory") Path directoryPath,
+      @ComponentSetting("extension") String extension,
+      @ComponentSetting("charsetName") String charsetName,
+      @ComponentSetting("documentName") String documentName
   ) throws IOException {
     charset = Charset.forName(charsetName);
     total = Files.walk(directoryPath).filter(f -> f.toString().endsWith(extension)).count();
@@ -88,7 +88,7 @@ public class PTBArtifactSource implements ArtifactSource {
   }
 
   @Override
-  public boolean tryAdvance(@NotNull Function1<? super Artifact, Unit> consumer) {
+  public boolean tryAdvance(@Nonnull Function1<? super Artifact, Unit> consumer) {
     return iterator.tryAdvance((path) -> {
       String artifactID = path.getFileName().toString();
       Artifact artifact = new StandardArtifact(artifactID);
@@ -128,7 +128,7 @@ public class PTBArtifactSource implements ArtifactSource {
 
             String label = leaf.getLabel();
             PartOfSpeech partOfSpeech = PartsOfSpeech.forTagWithFallback(label)
-                .orElseGet(() -> PartOfSpeech.XX);
+                .orElse(PartOfSpeech.XX);
             partOfSpeechLabels.add(new PosTag(tokenSpan, partOfSpeech));
 
           }

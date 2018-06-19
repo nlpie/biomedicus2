@@ -17,11 +17,11 @@
 package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.tagging.PosTag;
 import edu.umn.biomedicus.tokenization.ParseToken;
-import edu.umn.nlpengine.ArtifactProcessor;
+import edu.umn.nlpengine.ArtifactsProcessor;
 import edu.umn.nlpengine.Artifact;
 import edu.umn.nlpengine.Document;
 import edu.umn.nlpengine.LabelIndex;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public class TnTTrainerProcessor implements ArtifactProcessor {
+public class TnTTrainerProcessor implements ArtifactsProcessor {
 
   private final String viewName;
 
@@ -46,8 +46,8 @@ public class TnTTrainerProcessor implements ArtifactProcessor {
 
   @Inject
   TnTTrainerProcessor(
-      @ProcessorSetting("tnt.train.viewName") String viewName,
-      @ProcessorSetting("tnt.train.outputDir") Path outputDir,
+      @ComponentSetting("tnt.train.viewName") String viewName,
+      @ComponentSetting("tnt.train.outputDir") Path outputDir,
       DataStoreFactory dataStoreFactory
   ) {
     this.viewName = viewName;

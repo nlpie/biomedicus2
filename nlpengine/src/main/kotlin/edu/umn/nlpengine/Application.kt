@@ -87,5 +87,4 @@ abstract class SystemModule {
     protected fun addEnumClass(enumClass: Class<*>) = _enumClasses.add(enumClass)
 
     protected inline fun <reified T> addEnumClass() = addEnumClass(T::class.java)
-
 }

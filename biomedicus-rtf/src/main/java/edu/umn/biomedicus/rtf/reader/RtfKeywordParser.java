@@ -107,6 +107,4 @@ public class RtfKeywordParser {
 
     return keywordAction;
   }
-
-
 }

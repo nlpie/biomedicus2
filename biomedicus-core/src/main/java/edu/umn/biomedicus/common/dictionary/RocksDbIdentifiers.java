@@ -16,7 +16,6 @@
 
 package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -43,7 +42,6 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     try (Options options = new Options().setInfoLogLevel(InfoLogLevel.ERROR_LEVEL)) {
       indices = RocksDB.openReadOnly(options, identifiersPath.toString());
     } catch (RocksDBException e) {
-      // says "if error happens in underlying native library", can't possible hope to handle that.
       throw new RuntimeException(e);
     }
   }
@@ -62,7 +60,6 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
       }
       return ByteBuffer.wrap(idBytes).getInt();
     } catch (RocksDBException e) {
-      // says "if error happens in underlying native library", can't possible hope to handle that.
       throw new RuntimeException(e);
     }
   }
@@ -125,35 +122,15 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     }
 
     size = 0;
-    MappingIterator mappingIterator = mappingIterator();
-    while (mappingIterator.isValid()) {
-      size++;
-      mappingIterator.next();
+    try (MappingIterator mappingIterator = mappingIterator()) {
+      while (mappingIterator.isValid()) {
+        size++;
+        mappingIterator.next();
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
     }
 
     return (_size = size);
-  }
-
-  public Identifiers inMemory(boolean inMemory) {
-    if (inMemory) {
-      HashIdentifiers hashIdentifiers = new HashIdentifiers();
-      try (RocksIterator rocksIterator = indices.newIterator()) {
-        rocksIterator.seekToFirst();
-        while (rocksIterator.isValid()) {
-          byte[] key = rocksIterator.key();
-          String stringKey = new String(key, StandardCharsets.UTF_8);
-
-          byte[] value = rocksIterator.value();
-          int intValue = ByteBuffer.wrap(value).getInt();
-
-          hashIdentifiers.addMapping(stringKey, intValue);
-
-          rocksIterator.next();
-        }
-      }
-      close();
-      return hashIdentifiers;
-    }
-    return this;
   }
 }

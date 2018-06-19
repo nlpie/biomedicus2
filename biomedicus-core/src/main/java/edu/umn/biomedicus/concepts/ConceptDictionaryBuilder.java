@@ -47,7 +47,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -101,7 +101,8 @@ public class ConceptDictionaryBuilder {
   private Path dbPath;
 
   @Inject
-  ConceptDictionaryBuilder(@Setting("concepts.filters.sui.path") Path filteredSuisPath,
+  ConceptDictionaryBuilder(
+      @Setting("concepts.filters.sui.path") Path filteredSuisPath,
       @Setting("concepts.filters.cui.path") Path filteredCuisPath,
       @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
       @Setting("concepts.filters.tui.path") Path filteredTuisPath,
@@ -426,7 +427,7 @@ public class ConceptDictionaryBuilder {
     }
 
     @Override
-    public int compareTo(@NotNull SuiCui o) {
+    public int compareTo(@Nonnull SuiCui o) {
       int compare = Integer.compare(sui.identifier(), o.sui.identifier());
       if (compare != 0) return compare;
       return Integer.compare(cui.identifier(), o.cui.identifier());

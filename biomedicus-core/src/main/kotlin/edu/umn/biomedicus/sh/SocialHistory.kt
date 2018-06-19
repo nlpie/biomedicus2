@@ -233,7 +233,7 @@ class SocialHistoryCandidateDetector(
         private val alcoholIgnoreDetector: SequenceDetector<String, Token>,
         private val drugDetector: SequenceDetector<String, Token>,
         private val nicotineDetector: SequenceDetector<String, Token>
-) : DocumentOperation {
+) : DocumentTask {
 
     @Inject constructor(
             candidateDetectionRules: CandidateDetectionRules
@@ -245,7 +245,7 @@ class SocialHistoryCandidateDetector(
             nicotineDetector = candidateDetectionRules.nicotineCueDetector
     )
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sections = document.labelIndex<Section>()
         val sectionContents = document.labelIndex<SectionContent>()
         val sentences = document.labelIndex<Sentence>()
@@ -350,10 +350,10 @@ class UsageFrequencyPhrases @Inject constructor(
  */
 class UsageFrequencyPhraseDetector @Inject constructor(
         usageFrequencyPhrases: UsageFrequencyPhrases
-) : DocumentOperation {
+) : DocumentTask {
     val detector = usageFrequencyPhrases.detector
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
 
@@ -401,12 +401,12 @@ data class UsageFrequencyPattern(val searchExpr: SearchExpr) {
  * Detects [UsageFrequency], generic usage frequency phrases that could apply to any social history
  * type.
  */
-class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentOperation {
+class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentTask {
     @Inject internal constructor(
             usageFrequencyPattern: UsageFrequencyPattern
     ) : this(usageFrequencyPattern.searchExpr)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
 
         val nicotineCandidates = document.labelIndex<NicotineCandidate>()
@@ -444,10 +444,10 @@ class UsageStatusPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class UsageStatusDetector(
         private val detector: SequenceDetector<String, Token>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(phrases: UsageStatusPhrases) : this(phrases.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
 
@@ -487,10 +487,10 @@ class GenericMethodPhrases(val detector: SequenceDetector<String, Token>) {
  */
 class GenericMethodPhraseDetector(
         val detector: SequenceDetector<String, Token>
-) : DocumentOperation {
+) : DocumentTask {
     @Inject internal constructor(phrases: GenericMethodPhrases) : this(phrases.detector)
 
-    override fun process(document: Document) {
+    override fun run(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
 

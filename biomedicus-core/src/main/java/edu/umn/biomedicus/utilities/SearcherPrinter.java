@@ -16,34 +16,34 @@
 
 package edu.umn.biomedicus.utilities;
 
-import edu.umn.biomedicus.annotations.ProcessorSetting;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
 import edu.umn.biomedicus.framework.Searcher;
 import edu.umn.nlpengine.Document;
-import edu.umn.nlpengine.DocumentOperation;
+import edu.umn.nlpengine.DocumentTask;
 import edu.umn.nlpengine.Label;
 import edu.umn.nlpengine.Span;
 import javax.inject.Inject;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  *
  */
-public class SearcherPrinter implements DocumentOperation {
+public class SearcherPrinter implements DocumentTask {
 
   private final SearchExpr searchExpr;
 
   @Inject
   public SearcherPrinter(
       SearchExprFactory searchExprFactory,
-      @ProcessorSetting("searchPattern") String searchPattern
+      @ComponentSetting("searchPattern") String searchPattern
   ) {
     searchExpr = searchExprFactory.parse(searchPattern);
   }
 
   @Override
-  public void process(@NotNull Document document) {
+  public void run(@Nonnull Document document) {
     Searcher searcher = searchExpr.createSearcher(document);
 
     while (true) {

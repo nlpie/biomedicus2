@@ -20,7 +20,7 @@
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
     <delegateAnalysisEngine key="numbers">
-      <import location="annotator/measures/NumberRecognizer.xml"/>
+      <import location="annotator/measures/DetectNumbers.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="numberRanges">
       <import location="annotator/measures/NumberRangeLabeler.xml"/>

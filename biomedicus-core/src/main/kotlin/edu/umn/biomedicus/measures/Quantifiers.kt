@@ -105,25 +105,27 @@ private val test: (String, Token) -> Boolean = { word, token: Token ->
 }
 
 /**
- * A word or phrase which indicates a quantifier is indefinite
+ * Detects instances of [IndefiniteQuantifierCue], which are of 3 types defined in
+ * [IndefiniteQuantifierType] and also detects [FuzzyValue].
  */
-@Singleton
-class IndefiniteQuantifierCues @Inject constructor(
-        @Setting("measures.indefiniteQuantifiers.leftPath") leftPath: String,
-        @Setting("measures.indefiniteQuantifiers.rightPath") rightPath: String,
-        @Setting("measures.indefiniteQuantifiers.localPath") localPath: String,
-        @Setting("measures.indefiniteQuantifiers.fuzzyPath") fuzzyPath: String
-) {
-    val left = SequenceDetector.loadFromFile(leftPath, test)
-    val right = SequenceDetector.loadFromFile(rightPath, test)
-    val local = SequenceDetector.loadFromFile(localPath, test)
-    val fuzzy = SequenceDetector.loadFromFile(fuzzyPath, test)
-}
+class IndefiniteQuantifierDetector(
+        private val left: SequenceDetector<String, Token>,
+        private val right: SequenceDetector<String, Token>,
+        private val local: SequenceDetector<String, Token>,
+        private val fuzzy: SequenceDetector<String, Token>
+) : DocumentsProcessor {
+    @Inject internal constructor(
+            @Setting("measures.indefiniteQuantifiers.leftPath") leftPath: String,
+            @Setting("measures.indefiniteQuantifiers.rightPath") rightPath: String,
+            @Setting("measures.indefiniteQuantifiers.localPath") localPath: String,
+            @Setting("measures.indefiniteQuantifiers.fuzzyPath") fuzzyPath: String
+    ) : this(
+            SequenceDetector.loadFromFile(leftPath, test),
+            SequenceDetector.loadFromFile(rightPath, test),
+            SequenceDetector.loadFromFile(localPath, test),
+            SequenceDetector.loadFromFile(fuzzyPath, test)
+    )
 
-
-class IndefiniteQuantifierDetector @Inject internal constructor(
-        private val cues: IndefiniteQuantifierCues
-) : DocumentOperation {
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()
         val tokens = document.labelIndex<ParseToken>()
@@ -134,22 +136,22 @@ class IndefiniteQuantifierDetector @Inject internal constructor(
         for (sentence in sentences) {
             val sentenceTokens = tokens.inside(sentence).asList()
 
-            cues.left.detectAll(sentenceTokens).forEach {
+            left.detectAll(sentenceTokens).forEach {
                 cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
                         sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LEFT.name))
             }
 
-            cues.right.detectAll(sentenceTokens).forEach {
+            right.detectAll(sentenceTokens).forEach {
                 cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
                         sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.RIGHT.name))
             }
 
-            cues.local.detectAll(sentenceTokens).forEach {
+            local.detectAll(sentenceTokens).forEach {
                 cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
                         sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LOCAL.name))
             }
 
-            cues.fuzzy.detectAll(sentenceTokens).forEach {
+            fuzzy.detectAll(sentenceTokens).forEach {
                 fuzzyLabeler.add(FuzzyValue(
                         sentenceTokens[it.first].startIndex,
                         sentenceTokens[it.last].endIndex
@@ -159,17 +161,15 @@ class IndefiniteQuantifierDetector @Inject internal constructor(
     }
 }
 
-@Singleton
-class StandaloneQuantifiers @Inject constructor(
-        @Setting("measures.standaloneQuantifiersPath") path: String
-) {
-    val detector = SequenceDetector.loadFromFile(path, test)
-}
-
-class StandaloneQuantifierDetector @Inject constructor(
-        standaloneQuantifiers: StandaloneQuantifiers
-) : DocumentOperation {
-    val detector = standaloneQuantifiers.detector
+/**
+ * Detects instances of [StandaloneQuantifier] labels.
+ */
+class StandaloneQuantifierDetector(
+        val detector: SequenceDetector<String, Token>
+) : DocumentsProcessor {
+    @Inject constructor(
+            @Setting("measures.standaloneQuantifiersPath") path: String
+    ) : this(SequenceDetector.loadFromFile(path, test))
 
     override fun process(document: Document) {
         val sentences = document.labelIndex<Sentence>()
@@ -189,23 +189,14 @@ class StandaloneQuantifierDetector @Inject constructor(
 }
 
 /**
- * The TagEx expression for detecting quantifiers.
+ * Detects [Quantifier] instances in text.
  */
-@Singleton
-class QuantifierExpression(val expr: TagEx) {
+class QuantifierDetector(private val expr: TagEx) : DocumentsProcessor {
     @Inject constructor(factory: TagExFactory) : this(
             factory.parse("""([?indef:IndefiniteQuantifierCue] ->)?
                                    ([?NumberRange] | [?Number] | [?fuzz:FuzzyValue]
                                      | [?PosTag<getPartOfSpeech=eDT> ParseToken<getText="a">])"""
-            )
-    )
-}
-
-/**
- * Detects quantifier phrases in text.
- */
-class QuantifierDetector(private val expr: TagEx) : DocumentOperation {
-    @Inject constructor(expression: QuantifierExpression) : this(expression.expr)
+            ))
 
     override fun process(document: Document) {
         val labeler = document.labeler<Quantifier>()
