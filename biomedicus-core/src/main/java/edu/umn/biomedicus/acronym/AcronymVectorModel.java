@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,24 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.tuples.Pair;
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.serialization.YamlSerialization;
+import edu.umn.biomedicus.tokenization.Token;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,24 +73,28 @@ class AcronymVectorModel implements AcronymModel {
   @Nullable
   private final AlignmentModel alignmentModel;
 
+  private final double cutoffScore;
+
   /**
    * Constructor. Needs several things already made:
-   *
-   * @param wordVectorSpace the vector space (most importantly dictionary) used to build context
+   *  @param wordVectorSpace the vector space (most importantly dictionary) used to build context
    * vectors
    * @param senseVectors which maps between senses and their context vectors
    * @param alignmentModel a model used for alignment of unknown acronyms
+   * @param cutoffScore
    */
   AcronymVectorModel(
       WordVectorSpace wordVectorSpace,
       SenseVectors senseVectors,
       AcronymExpansionsModel acronymExpansionsModel,
-      @Nullable AlignmentModel alignmentModel
+      @Nullable AlignmentModel alignmentModel,
+      double cutoffScore
   ) {
     this.acronymExpansionsModel = acronymExpansionsModel;
     this.senseVectors = senseVectors;
     this.wordVectorSpace = wordVectorSpace;
     this.alignmentModel = alignmentModel;
+    this.cutoffScore = cutoffScore;
   }
 
   /**
@@ -123,7 +130,7 @@ class AcronymVectorModel implements AcronymModel {
    * @param forThisIndex an integer specifying the index of the acronym
    */
   @Override
-  public String findBestSense(List<? extends Token> context, int forThisIndex) {
+  public List<ScoredSense> findBestSense(List<? extends Token> context, int forThisIndex) {
 
     String acronym = Acronyms.standardAcronymForm(context.get(forThisIndex));
 
@@ -142,12 +149,12 @@ class AcronymVectorModel implements AcronymModel {
       senses = alignmentModel.findBestLongforms(acronym);
     }
     if (senses == null || senses.size() == 0) {
-      return Acronyms.UNKNOWN;
+      return Collections.emptyList();
     }
 
     // If the acronym is unambiguous, our work is done
     if (senses.size() == 1) {
-      return senses.iterator().next();
+      return Collections.singletonList(new ScoredSense(senses.iterator().next(), 1));
     }
 
     List<Pair<String, SparseVector>> usableSenses = new ArrayList<>();
@@ -171,7 +178,7 @@ class AcronymVectorModel implements AcronymModel {
 
     // Should this just guess the first sense instead?
     if (usableSenses.size() == 0) {
-      return Acronyms.UNKNOWN;
+      return Collections.emptyList();
     }
 
     double best = -Double.MAX_VALUE;
@@ -186,7 +193,14 @@ class AcronymVectorModel implements AcronymModel {
         winner = senseAndVector.first();
       }
     }
-    return winner;
+    return usableSenses.stream()
+        .map(pair -> {
+          double score = vector.dot(pair.getSecond());
+          return new ScoredSense(pair.first(), score);
+        })
+        .filter(scored -> scored.getScore() >= cutoffScore)
+        .sorted(Comparator.comparing(ScoredSense::getScore).reversed())
+        .collect(Collectors.toList());
   }
 
   /**
@@ -247,6 +261,7 @@ class AcronymVectorModel implements AcronymModel {
     private final Boolean sensesInMemory;
 
     private final AcronymExpansionsModel expansionsModel;
+    private final Double cutoffScore;
 
 
     @Inject
@@ -256,13 +271,16 @@ class AcronymVectorModel implements AcronymModel {
         @Setting("acronym.vector.model.path") Path vectorSpacePath,
         @Setting("acronym.senseMap.path") Path senseMapPath,
         @Setting("acronym.senseMap.inMemory") Boolean sensesInMemory,
-        AcronymExpansionsModel expansionsModel) {
+        @Setting("acronym.cutoffScore") Double cutoffScore,
+        AcronymExpansionsModel expansionsModel
+    ) {
       this.alignmentModel = alignmentModel;
       this.useAlignment = useAlignment;
       this.vectorSpacePath = vectorSpacePath;
       this.senseMapPath = senseMapPath;
       this.sensesInMemory = sensesInMemory;
       this.expansionsModel = expansionsModel;
+      this.cutoffScore = cutoffScore;
     }
 
     @Override
@@ -273,7 +291,7 @@ class AcronymVectorModel implements AcronymModel {
       try {
         LOGGER.info("Loading acronym vector space: {}", vectorSpacePath);
         @SuppressWarnings("unchecked")
-        WordVectorSpace wordVectorSpace = (WordVectorSpace) yaml
+        WordVectorSpace wordVectorSpace = yaml
             .load(Files.newBufferedReader(vectorSpacePath));
 
         LOGGER.info("Loading acronym sense map: {}. inMemory = {}", senseMapPath, sensesInMemory);
@@ -281,7 +299,7 @@ class AcronymVectorModel implements AcronymModel {
             .inMemory(sensesInMemory);
 
         return new AcronymVectorModel(wordVectorSpace, senseVectors, expansionsModel,
-            useAlignment ? alignmentModel.get() : null);
+            useAlignment ? alignmentModel.get() : null, cutoffScore);
       } catch (IOException e) {
         throw new BiomedicusException(e);
       }

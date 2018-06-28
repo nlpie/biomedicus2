@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,19 @@
 package edu.umn.biomedicus.normalization;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ImmutableNormForm;
-import edu.umn.biomedicus.common.types.text.NormForm;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.WordIndex;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.biomedicus.tokenization.WordIndex;
 import edu.umn.biomedicus.vocabulary.Vocabulary;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.DocumentsProcessor;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @since 1.7.0
  */
-final public class Normalizer implements DocumentProcessor {
+final public class Normalizer implements DocumentsProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Normalizer.class);
 
@@ -61,24 +58,19 @@ final public class Normalizer implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void process(@Nonnull Document document) {
     LOGGER.debug("Normalizing tokens in a document.");
-    TextView textView = StandardViews.getSystemView(document);
+    LabelIndex<WordIndex> wordIndexLabelIndex = document.labelIndex(WordIndex.class);
+    LabelIndex<PosTag> posTagIndex = document.labelIndex(PosTag.class);
+    Labeler<NormForm> normFormLabeler = document.labeler(NormForm.class);
 
-    LabelIndex<WordIndex> wordIndexLabelIndex = textView.getLabelIndex(WordIndex.class);
-    LabelIndex<PartOfSpeech> partOfSpeechLabelIndex = textView.getLabelIndex(PartOfSpeech.class);
-    Labeler<NormForm> normFormLabeler = textView.getLabeler(NormForm.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
 
-    LabelIndex<ParseToken> parseTokenLabelIndex = textView.getLabelIndex(ParseToken.class);
-
-    for (Label<WordIndex> wordIndexLabel : wordIndexLabelIndex) {
-      PartOfSpeech partOfSpeech = partOfSpeechLabelIndex
-          .withTextLocation(wordIndexLabel)
-          .orElseThrow(BiomedicusException.supplier(
-              "Part of speech label not found for word index"))
-          .value();
-
-      StringIdentifier wordTerm = wordIndexLabel.getValue().term();
+    for (WordIndex wordIndex : wordIndexLabelIndex) {
+      PartOfSpeech partOfSpeech = posTagIndex
+          .firstAtLocation(wordIndex)
+          .getPartOfSpeech();
+      StringIdentifier wordTerm = wordIndex.getStringIdentifier();
       TermString normAndTerm = null;
       if (!wordTerm.isUnknown()) {
         normAndTerm = normalizerStore.get(new TermPos(wordTerm, partOfSpeech));
@@ -86,10 +78,8 @@ final public class Normalizer implements DocumentProcessor {
       String norm;
       StringIdentifier normTerm;
       if (normAndTerm == null) {
-        norm = parseTokenLabelIndex.withTextLocation(wordIndexLabel)
-            .orElseThrow(BiomedicusException.supplier("parse token not found for word index"))
-            .value()
-            .text()
+        norm = parseTokenLabelIndex.firstAtLocation(wordIndex)
+            .getText()
             .toLowerCase();
         normTerm = normsIndex.getTermIdentifier(norm);
       } else {
@@ -97,12 +87,12 @@ final public class Normalizer implements DocumentProcessor {
         normTerm = normAndTerm.getTerm();
       }
 
-      normFormLabeler.value(
-          ImmutableNormForm.builder()
-              .normalForm(norm)
-              .normTermIdentifier(normTerm.value())
-              .build()
-      ).label(wordIndexLabel);
+      normFormLabeler.add(new NormForm(wordIndex, norm, normTerm));
     }
+  }
+
+  @Override
+  public void done() {
+
   }
 }

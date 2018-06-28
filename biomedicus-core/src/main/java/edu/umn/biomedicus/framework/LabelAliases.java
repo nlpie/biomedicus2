@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,26 @@
 
 package edu.umn.biomedicus.framework;
 
+import edu.umn.nlpengine.Label;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /**
- *
+ * Maps labels to short aliases for SearchExpr/TagEx.
  */
 @Singleton
 public class LabelAliases {
 
-  private final Map<String, Class<?>> aliases = new HashMap<>();
+  private final Map<String, Class<? extends Label>> aliases = new HashMap<>();
 
-  public void addAlias(String alias, Class<?> labelableClass) {
+  public void addAlias(String alias, Class<? extends Label> labelableClass) {
     aliases.put(alias, labelableClass);
   }
 
   @Nullable
-  public Class<?> getLabelable(String alias) {
+  public Class<? extends Label> getLabelable(String alias) {
     return aliases.get(alias);
   }
 }

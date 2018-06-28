@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class RocksDBSenseVectors implements SenseVectors {
           }
 
           @Override
-          protected void finalize() throws Throwable {
+          protected void finalize() {
             if (!closed) {
               rocksIterator.close();
             }
@@ -170,7 +170,7 @@ public class RocksDBSenseVectors implements SenseVectors {
           }
 
           @Override
-          protected void finalize() throws Throwable {
+          protected void finalize() {
             if (!closed) {
               rocksIterator.close();
             }
@@ -239,7 +239,7 @@ public class RocksDBSenseVectors implements SenseVectors {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     rocksDB.close();
   }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,36 +21,55 @@
   <parent>
     <artifactId>biomedicus</artifactId>
     <groupId>edu.umn.biomedicus</groupId>
-    <version>1.8.4</version>
+    <version>2.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>biomedicus-core</artifactId>
 
+  <name>BioMedICUS Core</name>
+  <description>Core NLP and analysis functionality</description>
+
   <properties>
-    <jackson.version>2.8.3</jackson.version>
+    <jackson.version>2.9.5</jackson.version>
+    <guice.version>4.2.0</guice.version>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <dependency>
+      <groupId>edu.umn.biomedicus</groupId>
+      <artifactId>nlpengine</artifactId>
+      <version>${biomedicus.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>4.1.0</version>
+      <version>${guice.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-multibindings</artifactId>
-      <version>4.1.0</version>
+      <version>${guice.version}</version>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>1.17</version>
+      <version>1.20</version>
     </dependency>
     <dependency>
       <groupId>org.rocksdb</groupId>
       <artifactId>rocksdbjni</artifactId>
-      <version>5.5.1</version>
+      <version>5.13.4</version>
     </dependency>
     <dependency>
       <groupId>args4j</groupId>
@@ -63,20 +82,20 @@
       <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.immutables</groupId>
-      <artifactId>value</artifactId>
-      <version>2.4.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.opennlp</groupId>
       <artifactId>opennlp-tools</artifactId>
-      <version>1.8.1</version>
+      <version>1.8.4</version>
     </dependency>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
       <artifactId>biomedicus-measures</artifactId>
       <version>2.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>edu.umn.biomedicus</groupId>
+      <artifactId>biomedicus-tokenizer</artifactId>
+      <version>0.0.1</version>
+    </dependency>
   </dependencies>
+
 </project>

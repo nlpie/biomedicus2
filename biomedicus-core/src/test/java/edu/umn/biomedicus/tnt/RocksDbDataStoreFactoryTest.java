@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package edu.umn.biomedicus.tnt;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import java.util.Arrays;
 import java.util.List;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class RocksDbDataStoreFactoryTest {
 
   @Test
-  public void testWordPosBytes() throws Exception {
+  public void testWordPosBytes() {
     String word = "aWord";
     PartOfSpeech pos = PartOfSpeech.NN;
 
@@ -38,7 +38,7 @@ public class RocksDbDataStoreFactoryTest {
   }
 
   @Test
-  public void testPosListBytes() throws Exception {
+  public void testPosListBytes() {
     List<PartOfSpeech> partOfSpeeches = Arrays.asList(PartOfSpeech.NN, PartOfSpeech.NNP,
         PartOfSpeech.NNS);
 

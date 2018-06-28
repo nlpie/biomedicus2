@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package edu.umn.biomedicus.framework;
 
+import com.google.inject.Key;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -29,70 +33,108 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 class SettingsLoader {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsLoader.class);
-  private final Path settingsFilePath;
-  private final Yaml yaml;
+
+  private final Map<String, Object> configurations = new HashMap<>();
+
   @Nullable
   private Map<String, Class<?>> settingInterfaces;
+
   @Nullable
   private Map<Class<?>, Map<String, Class<?>>> interfaceImplementations;
-  private Map<String, Object> settings;
 
-  private SettingsLoader(Path settingsFilePath, Yaml yaml) {
-    this.settingsFilePath = settingsFilePath;
-    this.yaml = yaml;
+  private final Map<String, Object> settings = new HashMap<>();
+
+  private List<String> systemClasses = new ArrayList<>();
+
+  public SettingsLoader(Map<String, Object> configurations) {
+    this.configurations.putAll(configurations);
   }
 
-  static SettingsLoader createSettingsLoader(Path settingsFilePath) {
-    return new SettingsLoader(settingsFilePath, new Yaml());
-  }
-
-  @SuppressWarnings("unchecked")
-  void loadSettings() throws BiomedicusException {
-    Map<String, Object> settingsFileYaml;
+  static SettingsLoader createSettingsLoader(Path settingsFilePath) throws IOException {
     try (BufferedReader bufferedReader = Files.newBufferedReader(settingsFilePath)) {
-      settingsFileYaml = (Map<String, Object>) yaml.load(bufferedReader);
-    } catch (IOException e) {
-      throw new BiomedicusException(e);
+      return new SettingsLoader(new Yaml().load(bufferedReader));
+    }
+  }
+
+  void loadSettings() throws BiomedicusException {
+    Object systems = configurations.get("systems");
+    if (systems instanceof List) {
+      List systemsList = (List) systems;
+      for (Object o : systemsList) {
+        if (o instanceof String) {
+          systemClasses.add(((String) o));
+        }
+      }
     }
 
-    Map<String, String> settingInterfacesYaml = (Map<String, String>) settingsFileYaml
-        .get("settingInterfaces");
-    if (settingInterfacesYaml != null) {
-      settingInterfaces = getClassMap(settingInterfacesYaml);
+    Object settingInterfacesYaml = configurations.get("settingInterfaces");
+    if (settingInterfacesYaml instanceof Map) {
+      settingInterfaces = getClassMap((Map<?, ?>) settingInterfacesYaml);
     }
 
-    Map<String, Map<String, String>> implementationsYaml;
-    implementationsYaml = (Map<String, Map<String, String>>) settingsFileYaml
-        .get("interfaceImplementations");
-    if (implementationsYaml != null) {
+    Object implementationsYaml = configurations.get("interfaceImplementations");
+    if (implementationsYaml instanceof Map) {
       interfaceImplementations = new HashMap<>();
-      for (Map.Entry<String, Map<String, String>> interfaceEntry : implementationsYaml.entrySet()) {
+      for (Map.Entry<?, ?> interfaceEntry : ((Map<?, ?>) implementationsYaml).entrySet()) {
         try {
-          Class<?> interfaceClass = Class.forName(interfaceEntry.getKey());
-          Map<String, String> interfaceMapYaml = interfaceEntry.getValue();
-          Map<String, Class<?>> interfaceMap = getClassMap(interfaceMapYaml);
-          interfaceImplementations.put(interfaceClass, interfaceMap);
+          Object className = interfaceEntry.getKey();
+          Object interfaceMap = interfaceEntry.getValue();
+          if (className instanceof String && interfaceMap instanceof Map) {
+            Class<?> interfaceClass = Class.forName((String) className);
+            Map<?, ?> interfaceMapYaml = (Map) interfaceMap;
+            Map<String, Class<?>> interfaces = getClassMap(interfaceMapYaml);
+            interfaceImplementations.put(interfaceClass, interfaces);
+          }
         } catch (ClassNotFoundException e) {
           throw new BiomedicusException(e);
         }
       }
     }
 
-    settings = ((Map<String, Object>) settingsFileYaml.get("settings"));
-    if (settings == null) {
-      throw new BiomedicusException("Null settings from file: " + settingsFilePath);
+    Object settings = configurations.get("settings");
+    if (settings instanceof Map) {
+      recursiveAddSettings((Map<?, ?>) settings, null);
     }
   }
 
-  private Map<String, Class<?>> getClassMap(Map<String, String> settingInterfacesYaml)
-      throws BiomedicusException {
+  private void recursiveAddSettings(Map<?, ?> settingsMap, @Nullable String prevKey) {
+    for (Map.Entry<?, ?> settingEntry : settingsMap.entrySet()) {
+      Object keyObject = settingEntry.getKey();
+      if (!(keyObject instanceof String)) {
+        throw new IllegalStateException("Non-String key in settings");
+      }
+      String entryKey = (String) keyObject;
+      String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
+      Object value = settingEntry.getValue();
+      if (value == null) {
+        LOGGER.debug("Null setting: {}", key);
+        continue;
+      }
+
+      if (value instanceof Map) {
+        recursiveAddSettings((Map<?, ?>) value, key);
+      } else {
+        settings.put(key, value);
+      }
+    }
+  }
+
+  private Map<String, Class<?>> getClassMap(
+      Map<?, ?> settingInterfacesYaml
+  ) throws BiomedicusException {
     Map<String, Class<?>> settingInterfaces = new HashMap<>();
-    for (Map.Entry<String, String> entry : settingInterfacesYaml.entrySet()) {
+    for (Map.Entry<?, ?> entry : settingInterfacesYaml.entrySet()) {
       try {
-        Class<?> aClass = Class.forName(entry.getValue());
-        settingInterfaces.put(entry.getKey(), aClass);
+        Object key = entry.getKey();
+        Object className = entry.getValue();
+        if (key instanceof String && className instanceof String) {
+          Class<?> aClass = Class.forName((String) className);
+          settingInterfaces.put((String) key, aClass);
+        } else {
+          LOGGER.warn("Key or value not String in settingInterfaces map. Key: {}. Value: {}",
+              key, className);
+        }
       } catch (ClassNotFoundException e) {
         throw new BiomedicusException(e);
       }
@@ -101,12 +143,10 @@ class SettingsLoader {
   }
 
   void addToBinder(SettingsBinder settingsBinder) {
-    if (settingInterfaces != null) {
-      settingsBinder.addSettingsInterfaces(settingInterfaces);
-    }
-    if (interfaceImplementations != null) {
-      settingsBinder.addInterfaceImplementations(interfaceImplementations);
-    }
     settingsBinder.addSettings(settings);
+  }
+
+  List<String> getSystemClasses() {
+    return systemClasses;
   }
 }

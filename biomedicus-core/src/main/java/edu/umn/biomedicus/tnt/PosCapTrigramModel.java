@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,12 +82,14 @@ class PosCapTrigramModel {
    * @param bigramLambda smoothing factor for the bigram probabilities
    * @param trigramLambda smoothing factor for the trigram probabilities
    */
-  public PosCapTrigramModel(double[] unigramProbabilities,
+  public PosCapTrigramModel(
+      double[] unigramProbabilities,
       double[][] bigramProbabilities,
       double[][][] trigramProbabilities,
       double unigramLambda,
       double bigramLambda,
-      double trigramLambda) {
+      double trigramLambda
+  ) {
     this.unigramProbabilities = unigramProbabilities;
     this.bigramProbabilities = bigramProbabilities;
     this.trigramProbabilities = trigramProbabilities;

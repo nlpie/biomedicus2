@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,12 @@ class CasOutputDestination implements OutputDestination {
    * The name of the output destination.
    */
   private final String name;
+
   private final Type illegalCharType;
+
   private final Feature valueFeat;
+
+  private boolean inSuperSub = false;
 
   /**
    * Default constructor, initializes all fields.
@@ -92,8 +96,7 @@ class CasOutputDestination implements OutputDestination {
     this.annotationTypeForControlWord = annotationTypeForControlWord;
     this.name = name;
     TypeSystem typeSystem = destinationView.getTypeSystem();
-    illegalCharType = typeSystem
-        .getType("edu.umn.biomedicus.type.IllegalXmlCharacter");
+    illegalCharType = typeSystem.getType("biomedicus.v2.rtf.IllegalXmlCharacter");
     valueFeat = illegalCharType.getFeatureByBaseName("value");
   }
 
@@ -112,12 +115,28 @@ class CasOutputDestination implements OutputDestination {
       if (!isValidXml(ch)) {
         // add zero-width space and annotate it as an illegal xml character.
         sofaBuilder.append((char) 0x200B);
-        AnnotationFS annotation = destinationView
-            .createAnnotation(illegalCharType,
-                sofaBuilder.length() - 1, sofaBuilder.length());
+        AnnotationFS annotation = destinationView.createAnnotation(illegalCharType,
+            sofaBuilder.length() - 1, sofaBuilder.length());
         annotation.setIntValue(valueFeat, (int) ch);
         completedAnnotations.add(annotation);
       } else {
+        int superSub = state.getPropertyValue("CharacterFormatting", "SuperSub");
+        if (superSub > 0) {
+          if (!inSuperSub) {
+            inSuperSub = true;
+            if (Character.isDigit(sofaBuilder.charAt(sofaBuilder.length() - 1))
+                && Character.isDigit(ch)) {
+              sofaBuilder.append('^');
+            }
+            sofaBuilder.append('(');
+          }
+        } else {
+          if (inSuperSub) {
+            sofaBuilder.append(')');
+            inSuperSub = false;
+          }
+        }
+
         sofaBuilder.append(ch);
       }
       return sofaBuilder.length() - 1;

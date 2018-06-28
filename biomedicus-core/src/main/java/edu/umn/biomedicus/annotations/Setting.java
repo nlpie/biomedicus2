@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- *
+ * An annotation that indicates a parameter or field should be injected a specific setting.
  */
 @Retention(RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @BindingAnnotation
 public @interface Setting {
 

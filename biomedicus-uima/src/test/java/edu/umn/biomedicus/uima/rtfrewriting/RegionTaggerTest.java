@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package edu.umn.biomedicus.uima.rtfrewriting;
 import mockit.Expectations;
 import mockit.FullVerificationsInOrder;
 import mockit.Mocked;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class RegionTaggerTest {
 
@@ -30,7 +30,7 @@ public class RegionTaggerTest {
   RtfRewriterCursor rtfRewriterCursor;
 
   @Test
-  public void testOutsideDestination() throws Exception {
+  public void testOutsideDestination() {
     new Expectations() {{
       symbolIndexedDocument.symbolIndex(12, "dest");
       result = 3;

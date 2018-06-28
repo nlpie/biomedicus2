@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,9 @@ import org.slf4j.LoggerFactory;
  * @author Ben Knoll
  * @since 1.5.0
  */
-class SettingsTransformer {
+public class SettingsTransformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SettingsTransformer.class);
-
-  private final Map<String, Class<?>> settingInterfaces;
 
   private final Path dataPath;
 
@@ -53,64 +51,46 @@ class SettingsTransformer {
 
   @Inject
   SettingsTransformer(
-      @Named("settingInterfaces") Map<String, Class<?>> settingInterfaces,
       @Setting("paths.data") Path dataPath
   ) {
-    this.settingInterfaces = settingInterfaces;
     this.dataPath = dataPath;
     settings = new HashMap<>();
   }
 
-  void setAnnotationFunction(Function<String, Annotation> annotationFunction) {
+  void setAnnotationFunction(@Nullable Function<String, Annotation> annotationFunction) {
     this.annotationFunction = annotationFunction;
   }
 
   /**
    * Adds all of the specified settings to be transformed to Guice keys.
    */
-  void addAll(Map<String, Object> settingsMap) {
-    Preconditions.checkNotNull(annotationFunction,
-        "Annotation function not initialized");
-    recursiveAddSettings(settingsMap, null);
-  }
+  void addAll(Map<String, ?> settingsMap) {
+    Preconditions.checkNotNull(annotationFunction);
 
-  /**
-   *
-   * @return
-   */
-  Map<Key<?>, Object> getSettings() {
-    return settings;
-  }
-
-  private void recursiveAddSettings(Map<String, Object> settingsMap, @Nullable String prevKey) {
-    assert annotationFunction != null : "checked at entry points";
-
-    for (Map.Entry<String, Object> settingEntry : settingsMap.entrySet()) {
-      String entryKey = settingEntry.getKey();
-      String key = prevKey == null ? entryKey : prevKey + "." + entryKey;
+    for (Map.Entry<String, ?> settingEntry : settingsMap.entrySet()) {
+      String key = settingEntry.getKey();
       Object value = settingEntry.getValue();
 
-      Class<?> interfaceClass = settingInterfaces.get(key);
-      if (interfaceClass != null) {
-        addSettingImplementation(interfaceClass, key, (String) value);
-      }
-
       if (value == null) {
-        LOGGER.info("Null setting: {}", key);
+        LOGGER.debug("Null setting: {}", key);
         continue;
       }
 
       if (value instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> valueMap = (Map<String, Object>) value;
-        recursiveAddSettings(valueMap, key);
-      } else if (endsWithPathFileDir(key)) {
+        throw new IllegalStateException("Maps should already be collapsed at this point.");
+      } else if (value instanceof String && endsWithPathFileDir(key)) {
         Path path = absoluteOrResolveAgainstData(Paths.get((String) value));
         settings.putIfAbsent(Key.get(Path.class, annotationFunction.apply(key)), path);
+        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key)), path.toString());
+        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key + ".orig")), value);
       } else {
         addSetting(key, value, value.getClass());
       }
     }
+  }
+
+  Map<Key<?>, Object> getSettings() {
+    return settings;
   }
 
   private <T> void addSettingImplementation(Class<T> interfaceClass, String settingKey,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,16 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 import edu.umn.biomedicus.acronym.AcronymExpansionsModel;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.Aggregator;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.annotations.ComponentSetting;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.nlpengine.ArtifactsProcessor;
+import edu.umn.nlpengine.Artifact;
+import edu.umn.nlpengine.Document;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -45,19 +43,19 @@ import opennlp.tools.sentdetect.SentenceSampleStream;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.StringList;
 import opennlp.tools.util.TrainingParameters;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ONLPSentenceTrainer implements Aggregator {
-
+public class ONLPSentenceTrainer implements ArtifactsProcessor {
   private static final Logger logger = LoggerFactory.getLogger(ONLPSentenceTrainer.class);
-
-  private static final char[] EOS_CHARS = ".!?:\n\t".toCharArray();
   private static final String POISON = ">poison<";
   private final BlockingDeque<String> samplesQueue = new LinkedBlockingDeque<>();
   private final Dictionary abbrevs;
   private final Path outputPath;
   private final CountDownLatch modelTrained = new CountDownLatch(1);
+  private final String documentName;
+  private final Boolean useUnsure;
 
   @Nullable
   private SentenceModel sentenceModel = null;
@@ -66,13 +64,27 @@ public class ONLPSentenceTrainer implements Aggregator {
   private IOException ioException = null;
 
   @Inject
-  ONLPSentenceTrainer(AcronymExpansionsModel acronymExpansionsModel,
-      @ProcessorSetting("opennlp.sentence.trainerOutputDirectory") Path outputPath) {
+  ONLPSentenceTrainer(
+      AcronymExpansionsModel acronymExpansionsModel,
+      @ComponentSetting("outputDirectory.orig") Path outputPath,
+      @ComponentSetting("documentName") String documentName,
+      @ComponentSetting("eosChars") String eosChars,
+      @ComponentSetting("useTokenEnd") Boolean useTokenEnd,
+      @ComponentSetting("useNewlineAsEos") Boolean useNewlineAsEos,
+      @ComponentSetting("useTabAsEos") Boolean useTabAsEos,
+      @ComponentSetting("useUnsure") Boolean useUnsure
+  ) {
     this.outputPath = outputPath;
+    this.documentName = documentName;
+
+    this.useUnsure = useUnsure;
+
     abbrevs = new Dictionary(true);
     for (String s : acronymExpansionsModel.getAcronyms()) {
       abbrevs.put(new StringList(s));
     }
+    char[] eos = (eosChars + (useNewlineAsEos != null && useNewlineAsEos ? "\n" : "")
+        + (useTabAsEos != null && useTabAsEos ? "\t" : "")).toCharArray();
 
     Thread thread = new Thread(() -> {
       try {
@@ -101,18 +113,18 @@ public class ONLPSentenceTrainer implements Aggregator {
               }
 
               @Override
-              public void reset() throws IOException,
+              public void reset() throws
                   UnsupportedOperationException {
                 throw new UnsupportedOperationException();
               }
 
               @Override
-              public void close() throws IOException {
+              public void close() {
 
               }
             });
         SentenceDetectorFactory sentenceDetectorFactory = new SentenceDetectorFactory("en",
-            false, abbrevs, EOS_CHARS);
+            useTokenEnd != null && useTokenEnd, abbrevs, eos);
         TrainingParameters params = TrainingParameters.defaultParams();
         logger.info("Training sentence model.");
         sentenceModel = SentenceDetectorME.train("en", samples, sentenceDetectorFactory, params);
@@ -126,39 +138,52 @@ public class ONLPSentenceTrainer implements Aggregator {
   }
 
   @Override
-  public void addDocument(Document document) {
-    TextView textView = document.getTextView(StandardViews.SYSTEM)
-        .orElseThrow(() -> new IllegalStateException("No system view."));
-
-    String text = textView.getText();
-
-    for (Label<Sentence> sentenceLabel : textView.getLabelIndex(Sentence.class)) {
-      CharSequence sample = sentenceLabel.getCovered(text);
-      samplesQueue.add(sample.toString());
-    }
-  }
-
-  @Override
-  public void done() throws BiomedicusException {
+  public void done() {
 
     samplesQueue.add(POISON);
     try {
       modelTrained.await();
       if (ioException != null) {
-        throw new BiomedicusException(ioException);
+        throw new RuntimeException(ioException);
       }
 
       if (sentenceModel == null) {
-        throw new BiomedicusException("Error training sentence model.");
+        throw new RuntimeException("Error training sentence model.");
       }
 
       OutputStream outputStream = Files.newOutputStream(outputPath.resolve("sentence.bin"), CREATE,
           TRUNCATE_EXISTING);
       sentenceModel.serialize(outputStream);
     } catch (InterruptedException e) {
-      throw new BiomedicusException("Interrupted before model could be saved.");
+      throw new RuntimeException("Interrupted before model could be saved.");
     } catch (IOException e) {
-      throw new BiomedicusException("Failed to write out model.");
+      throw new RuntimeException("Failed to write out model.");
+    }
+  }
+
+  @Override
+  public void process(@Nonnull Artifact artifact) {
+    Document document = artifact.getDocuments().get(documentName);
+
+    if (document == null) {
+      throw new RuntimeException("No document with name: " + documentName);
+    }
+
+    String text = document.getText();
+
+    Iterator<Sentence> sentenceIt = document.labelIndex(Sentence.class).iterator();
+    if (!sentenceIt.hasNext()) {
+      return;
+    }
+
+    int prev = 0;
+    while (sentenceIt.hasNext()) {
+      Sentence sentence = sentenceIt.next();
+      int endIndex = sentence.getEndIndex();
+      if (sentence.getSentenceClass() == 1 || (useUnsure != null && useUnsure)) {
+        samplesQueue.add(text.substring(prev, endIndex));
+      }
+      prev = endIndex;
     }
   }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.umn.biomedicus.uima.files.FilesInDirectoryReader</implementationName>
+  <implementationName>edu.umn.biomedicus.uima.xmi.XmiCollectionReader</implementationName>
   <processingResourceMetaData>
     <name>XMI Collection Reader</name>
     <description>Reads XMI files from the filesystem.</description>
@@ -42,20 +42,14 @@
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>addDocumentId</name>
-        <description>Whether or not we should add a missing ClinicalNoteAnnotation::documentId
+        <name>addArtifactID</name>
+        <description>Whether or not we should add a missing artifact identifier
         </description>
         <type>Boolean</type>
         <mandatory>true</mandatory>
       </configurationParameter>
       <configurationParameter>
-        <name>extensionGlob</name>
-        <description>A glob matcher to determine which files to load.</description>
-        <type>String</type>
-      </configurationParameter>
-      <configurationParameter>
-        <name>inputFileAdapterClass</name>
-        <description>Class to use to adapt files to CAS.</description>
+        <name>extension</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -67,33 +61,21 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>inputDirectory</name>
-        <value>
-          <string>/path/to/inputDirectory</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
         <name>recurseDepth</name>
         <value>
           <integer>1</integer>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>addDocumentId</name>
+        <name>addArtifactID</name>
         <value>
           <boolean>false</boolean>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>extensionGlob</name>
+        <name>extension</name>
         <value>
-          <string>**/*.xmi</string>
-        </value>
-      </nameValuePair>
-      <nameValuePair>
-        <name>inputFileAdapterClass</name>
-        <value>
-          <string>edu.umn.biomedicus.uima.xmi.XmiInputFileAdapter</string>
+          <string>xmi</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
@@ -109,48 +91,16 @@
         <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
       </imports>
     </typePriorities>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
 
-    <capabilities>
-      <capability>
-        <inputs/>
-        <outputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
-        </outputs>
-        <outputSofas>
-          <sofaName>SystemView</sofaName>
-        </outputSofas>
-        <languagesSupported/>
-      </capability>
-    </capabilities>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
       <outputsNewCASes>true</outputsNewCASes>
     </operationalProperties>
   </processingResourceMetaData>
-
-  <externalResourceDependencies>
-    <externalResourceDependency>
-      <key>guiceInjector</key>
-      <description>The guice injector resource.</description>
-    </externalResourceDependency>
-  </externalResourceDependencies>
-
-  <resourceManagerConfiguration>
-    <externalResources>
-      <externalResource>
-        <name>guiceInjector</name>
-        <description>The guice resource.</description>
-        <customResourceSpecifier>
-          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
-        </customResourceSpecifier>
-      </externalResource>
-    </externalResources>
-    <externalResourceBindings>
-      <externalResourceBinding>
-        <key>guiceInjector</key>
-        <resourceName>guiceInjector</resourceName>
-      </externalResourceBinding>
-    </externalResourceBindings>
-  </resourceManagerConfiguration>
 </collectionReaderDescription>

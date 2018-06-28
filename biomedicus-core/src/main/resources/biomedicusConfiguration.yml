@@ -1,0 +1,119 @@
+# paths can be set here, by environment variable or java property.
+systems: [ edu.umn.biomedicus.BiomedicusSystem ]
+paths:
+  #home: /absolute-path
+  #data: /absolute-path
+  #settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
+settings:
+  vocabulary:
+    db.path: vocabulary
+    inMemory: no
+  spelling:
+    arpa.path: spell/UPMC.arpa
+    maxEditDistance: 4
+  measures:
+    numbers:
+      nrnumPath: measures/NRNUM
+      nrvarPath: measures/NRVAR
+      includeFractions: yes
+      includePercent: no
+    units:
+      modelPath: measures/concepts.tsv
+    indefiniteQuantifiers:
+      leftPath: measures/leftIndefiniteQuantifiers.txt
+      rightPath: measures/rightIndefiniteQuantifiers.txt
+      localPath: measures/localIndefiniteQuantifiers.txt
+      fuzzyPath: measures/fuzzyValues.txt
+    standaloneQuantifiersPath: measures/standaloneQuantifiers.txt
+    timeUnitsPath: measures/timeUnits.txt
+    timeFrequencyUnitsPath: measures/timeFrequencyUnits.txt
+  time:
+    daysPath: time/days.txt
+    monthsPath: time/months.txt
+    timesOfDayPath: time/timesOfDay.txt
+    seasonsPath: time/seasons.txt
+  tnt:
+    trigram.path: tnt/trigram.yml
+    word:
+      inMemory: no
+      dbPath: tnt/words
+      metadataPath: tnt/wordMetadata.yml
+    beam.threshold: 2.0
+  stopwords:
+    model: fileBased
+    fileBased.path: stopwords/PubMedStopwords.txt
+  normalization:
+    db.path: normalization
+    inMemory: no
+  acronym:
+    checkParseTokens: yes
+    labelOtherSenses: yes
+    useAlignment: no
+    expansionsModel.path: acronym/expansions.txt
+    alignmentModel.path: acronym-alignment/alignment.yml
+    model: vector
+    cutoffScore: 0.001
+    vector:
+      model.path: acronym/vectorSpace.yml
+      trainer:
+        expansionMap.path: REPLACE_ME_PATH_TO
+        uniqueIdMap.path: REPLACE_ME_PATH_TO
+        longforms.path: REPLACE_ME_PATH_TO
+        outputDir.path: REPLACE_ME_PATH_TO
+    senseMap:
+      path: acronym/senseVectors
+      inMemory: no
+    orthographicModel.path: acronym-orthographic/orthographicModel.yml
+  semanticNetwork:
+    srdef.path: semnetwork/SRDEF
+    semgroups.path: semnetwork/SemGroups.txt
+  concepts:
+    db.path: concepts
+    inMemory: no
+    filters:
+      sui.path: conceptFilters/filteredSuis.txt
+      suicui.path: conceptFilters/filteredSuiCuis.txt
+      cui.path: conceptFilters/filteredCuis.txt
+      tui.path: conceptFilters/filteredTuis.txt
+  sections.headers.path: sections/headers.txt
+  parser.implementation: opennlp
+  opennlp:
+    sentence:
+      model.path: opennlp/sentence.bin
+  syntaxnet:
+    installationDir.path: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
+    modelDir: syntaxnet/models/parsey_mcparseface
+  specialist.path: SPECIALIST/LEX
+  modification:
+    history.path: modification/history.yml
+    negation.path: modification/negation.yml
+    probability.path: modification/probability.yml
+  family:
+    relativesPath: family/relatives.txt
+  sh:
+    usageFrequencyPhrasesPath: sh/usageFrequencyPhrases.txt
+    usageFrequencyPatternsPath: sh/usageFrequencyPatterns.txt
+    statusPhrasesPath: sh/genericStatusPhrases.txt
+    genericMethodPhrasesPath: sh/genericMethodPhrases.txt
+    alcohol:
+      amountExprPath: sh/alcohol/amountSearchExpr.txt
+      amountUnitsPath: sh/alcohol/amountUnits.txt
+      candidateCuesPath: sh/alcohol/candidateCues.txt
+      cueIgnorePath: sh/alcohol/alcoholIgnore.txt
+      methodPhrasesPath: sh/alcohol/methodPhrases.txt
+      nonalcoholicDrinksPath: sh/alcohol/nonalcoholicDrinks.txt
+      statusPhrasesPath: sh/alcohol/statusPhrases.txt
+      typesPath: sh/alcohol/types.txt
+    drugs:
+      amountExprPath: sh/drugs/amountSearchExpr.txt
+      amountUnitsPath: sh/drugs/amountUnits.txt
+      candidateCuesPath: sh/drugs/candidateCues.txt
+      methodPhrasesPath: sh/drugs/methodPhrases.txt
+      typesPath: sh/drugs/types.txt
+    nicotine:
+      amountExprPath: sh/nicotine/amountSearchExpr.txt
+      amountUnitsPath: sh/nicotine/amountUnits.txt
+      candidateCuesPath: sh/nicotine/candidateCues.txt
+      methodPhrasesPath: sh/nicotine/methodPhrases.txt
+      statusPhrasesPath: sh/nicotine/statusPhrases.txt
+      typesPath: sh/nicotine/types.txt

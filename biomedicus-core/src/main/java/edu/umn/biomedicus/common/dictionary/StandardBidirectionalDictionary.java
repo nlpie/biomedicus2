@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,15 +85,18 @@ public final class StandardBidirectionalDictionary implements BidirectionalDicti
   public StandardBidirectionalDictionary inMemory(boolean inMemory) {
     if (inMemory) {
       int size = identifiers.size();
-      MappingIterator mappingIterator = identifiers.mappingIterator();
       HashIdentifiers hashIdentifiers = new HashIdentifiers(size);
       String[] strings = new String[size];
-      while (mappingIterator.isValid()) {
-        int identifier = mappingIterator.identifier();
-        String string = mappingIterator.string();
-        hashIdentifiers.addMapping(string, identifier);
-        strings[identifier] = string;
-        mappingIterator.next();
+      try (MappingIterator mappingIterator = identifiers.mappingIterator()) {
+        while (mappingIterator.isValid()) {
+          int identifier = mappingIterator.identifier();
+          String string = mappingIterator.string();
+          hashIdentifiers.addMapping(string, identifier);
+          strings[identifier] = string;
+          mappingIterator.next();
+        }
+      } catch (IOException e) {
+        throw new IllegalStateException(e);
       }
 
       return new StandardBidirectionalDictionary(hashIdentifiers, new ArrayStrings(strings));

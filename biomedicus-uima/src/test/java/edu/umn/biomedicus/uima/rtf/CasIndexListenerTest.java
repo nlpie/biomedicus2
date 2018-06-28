@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Span;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -26,7 +26,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link CasIndexListener}.
@@ -44,7 +44,7 @@ public class CasIndexListenerTest {
   @Mocked AnnotationFS annotationFS;
 
   @Test
-  public void testWroteToDestination() throws Exception {
+  public void testWroteToDestination() {
     new Expectations() {{
       originalDocumentView.createAnnotation(type, 200, 201);
       result = annotationFS;

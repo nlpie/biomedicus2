@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public final class ArrayStrings extends AbstractStrings {
       }
 
       @Override
-      public void close() throws IOException {
+      public void close() {
 
       }
     };
@@ -68,7 +68,7 @@ public final class ArrayStrings extends AbstractStrings {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 }

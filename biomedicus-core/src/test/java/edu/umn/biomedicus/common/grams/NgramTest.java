@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package edu.umn.biomedicus.common.grams;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,147 +32,143 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link Ngram}.
  */
-public class NgramTest {
+class NgramTest {
 
-  Ngram<String> bigram = Ngram.create("one", "two");
-  Ngram<String> trigram = Ngram.create("first", "second", "third");
-  Ngram<String> arrayBi = Ngram.bigram(new String[]{"a", "b", "c", "d", "e"}, 2);
-  Ngram<String> arrayTri = Ngram.trigram(new String[]{"a", "b", "c", "d", "e"}, 2);
+  private Ngram<String> bigram = Ngram.create("one", "two");
+  private Ngram<String> trigram = Ngram.create("first", "second", "third");
+  private Ngram<String> arrayBi = Ngram.bigram(new String[]{"a", "b", "c", "d", "e"}, 2);
+  private Ngram<String> arrayTri = Ngram.trigram(new String[]{"a", "b", "c", "d", "e"}, 2);
 
-  @Test(expectedExceptions = UnsupportedOperationException.class)
-  public void testTailBigram() throws Exception {
-    bigram.tail();
-    fail("Tail should exception out by this point");
+  @Test
+  void testTailBigram() {
+    assertThrows(UnsupportedOperationException.class, () -> bigram.tail());
   }
 
   @Test
-  public void testTail() throws Exception {
+  void testTail() {
     Ngram<String> tail = arrayTri.tail();
     assertEquals(tail, Ngram.create("d", "e"),
         "Tail should return a bigram of the final two objects of a trigram");
   }
 
-  @Test(expectedExceptions = UnsupportedOperationException.class)
-  public void testHeadBigram() throws Exception {
-    bigram.head();
-    fail("Head should exception out by this point");
+  @Test
+  void testHeadBigram() {
+    assertThrows(UnsupportedOperationException.class, () -> bigram.head());
   }
 
   @Test
-  public void testHead() throws Exception {
+  void testHead() {
     Ngram<String> head = arrayTri.head();
     assertEquals(head, Ngram.create("c", "d"),
         "Head should return a bigram of the first two objects of a trigram");
   }
 
   @Test
-  public void testGetFirst() throws Exception {
+  void testGetFirst() {
     String first = arrayBi.getFirst();
     assertEquals(first, "c", "First should return the first object in a ngram");
   }
 
   @Test
-  public void testGetSecond() throws Exception {
+  void testGetSecond() {
     String second = arrayBi.getSecond();
     assertEquals(second, "d", "Second should return the second object in a ngram");
   }
 
   @Test
-  public void testGetThird() throws Exception {
+  void testGetThird() {
     String third = trigram.getThird();
     assertEquals(third, "third", "Third should return the third object in a trigram");
   }
 
-  @Test(expectedExceptions = UnsupportedOperationException.class)
-  public void testGetThirdBigram() throws Exception {
-    bigram.getThird();
-    fail("Should have thrown exception");
+  @Test
+  void testGetThirdBigram() {
+    assertThrows(UnsupportedOperationException.class, () -> bigram.getThird());
   }
 
   @Test
-  public void testCompareToDifferentLength() throws Exception {
+  void testCompareToDifferentLength() {
     assertNotEquals(bigram.compareTo(trigram), 0,
         "Different length ngrams should not be equal when compared");
   }
 
   @Test
-  public void testCompareToDifferentValues() throws Exception {
+  void testCompareToDifferentValues() {
     assertNotEquals(bigram.compareTo(arrayBi), 0,
         "Ngrams containing different values should not be equal when compared");
   }
 
   @Test
-  public void testCompareToEquals() throws Exception {
+  void testCompareToEquals() {
     assertEquals(bigram.compareTo(Ngram.create("one", "two")), 0,
         "Equal bigrams should return 0 when compared");
   }
 
   @Test
-  public void testIterator() throws Exception {
+  void testIterator() {
     List<String> list = new ArrayList<>();
     arrayBi.iterator().forEachRemaining(list::add);
     assertEquals(list, Arrays.asList("c", "d"));
   }
 
-  @Test(expectedExceptions = NoSuchElementException.class)
-  public void testIteratorBeyond() throws Exception {
+  @Test
+  void testIteratorBeyond() {
     Iterator<String> iterator = arrayBi.iterator();
     iterator.next();
     iterator.next();
-    iterator.next();
-    fail("Should have failed on the third called to next");
+    assertThrows(NoSuchElementException.class, iterator::next);
   }
 
   @Test
-  public void testEqualsSameObject() throws Exception {
-    assertTrue(arrayTri.equals(arrayTri), "Object should be equal to itself");
+  void testEqualsSameObject() {
+    assertEquals(arrayTri, arrayTri, "Object should be equal to itself");
   }
 
   @Test
-  public void testEqualsNull() throws Exception {
+  void testEqualsNull() {
     assertFalse(arrayTri.equals(null), "Object should not equal null.");
   }
 
   @Test
-  public void testEqualsOtherClass() throws Exception {
-    assertFalse(arrayTri.equals("string"), "Object should never equal another class");
+  void testEqualsOtherClass() {
+    assertNotEquals("string", arrayTri, "Object should never equal another class");
   }
 
   @Test
-  public void testEqualsDifferentLength() throws Exception {
-    assertFalse(arrayTri.equals(arrayBi), "Ngram should not equal ngram with different length");
+  void testEqualsDifferentLength() {
+    assertNotEquals(arrayTri, arrayBi, "Ngram should not equal ngram with different length");
   }
 
   @Test
-  public void testEqualsDifferentValues() throws Exception {
-    assertFalse(arrayTri.equals(trigram), "Ngram should not equal ngram with different values");
+  void testEqualsDifferentValues() {
+    assertNotEquals(arrayTri, trigram, "Ngram should not equal ngram with different values");
   }
 
   @Test
-  public void testEquals() throws Exception {
-    assertTrue(arrayTri.equals(Ngram.create("c", "d", "e")),
+  void testEquals() {
+    assertEquals(arrayTri, Ngram.create("c", "d", "e"),
         "Ngram should be equal to ngram with same values");
   }
 
   @Test
-  public void testHashCodeNeq() throws Exception {
+  void testHashCodeNeq() {
     assertNotEquals(arrayTri.hashCode(), arrayBi.hashCode(),
         "hash code for ngram with different values should not be equal");
   }
 
   @Test
-  public void testHashCode() throws Exception {
+  void testHashCode() {
     assertEquals(arrayTri.hashCode(), Ngram.create("c", "d", "e").hashCode(),
         "hash code for objects with same value should be equal");
   }
 
   @Test
-  public void testSerialization() throws Exception {
+  void testSerialization() throws Exception {
     PipedOutputStream pipedOutputStream = new PipedOutputStream();
     PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
     ObjectOutputStream objectOutputStream = new ObjectOutputStream(pipedOutputStream);

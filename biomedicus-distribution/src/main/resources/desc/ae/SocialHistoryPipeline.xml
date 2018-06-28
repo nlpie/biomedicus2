@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
+  <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
+  <primitive>false</primitive>
+  <delegateAnalysisEngineSpecifiers>
+    <delegateAnalysisEngine key="candidates">
+      <import location="annotator/sh/SocialHistoryCandidateDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="parser">
+      <import location="annotator/SHParser.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholRelevants">
+      <import location="annotator/sh/AlcoholRelevantLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugRelevants">
+      <import location="annotator/sh/DrugRelevantLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineRelevants">
+      <import location="annotator/sh/NicotineRelevantLabeler.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageFrequencyPhrases">
+      <import location="annotator/sh/UsageFrequencyPhraseDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageFrequencies">
+      <import location="annotator/sh/UsageFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="usageStatuses">
+      <import location="annotator/sh/UsageStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="genericMethodPhrases">
+      <import location="annotator/sh/GenericMethodPhraseDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholAmountUnits">
+      <import location="annotator/sh/AlcoholUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholAmounts">
+      <import location="annotator/sh/AlcoholAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholFrequencies">
+      <import location="annotator/sh/AlcoholFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholTemporals">
+      <import location="annotator/sh/AlcoholTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholTypes">
+      <import location="annotator/sh/AlcoholTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholStatuses">
+      <import location="annotator/sh/AlcoholStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="alcoholMethods">
+      <import location="annotator/sh/AlcoholMethodDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugAmountUnits">
+      <import location="annotator/sh/DrugUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugAmounts">
+      <import location="annotator/sh/DrugAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugFrequencies">
+      <import location="annotator/sh/DrugFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugTemporals">
+      <import location="annotator/sh/DrugTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugTypes">
+      <import location="annotator/sh/DrugTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugStatuses">
+      <import location="annotator/sh/DrugStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="drugMethods">
+      <import location="annotator/sh/DrugMethodDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineAmountUnits">
+      <import location="annotator/sh/NicotineUnitDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineAmounts">
+      <import location="annotator/sh/NicotineAmountDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineFrequencies">
+      <import location="annotator/sh/NicotineFrequencyDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineTemporals">
+      <import location="annotator/sh/NicotineTemporalDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineTypes">
+      <import location="annotator/sh/NicotineTypeDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineStatuses">
+      <import location="annotator/sh/NicotineStatusDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="nicotineMethods">
+      <import location="annotator/sh/NicotineMethodDetector.xml"/>
+    </delegateAnalysisEngine>
+  </delegateAnalysisEngineSpecifiers>
+  <analysisEngineMetaData>
+    <name>Social History Pipeline</name>
+    <version>${project.version}</version>
+    <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>candidates/documentName</parameter>
+          <parameter>parser/documentName</parameter>
+          <parameter>alcoholRelevants/documentName</parameter>
+          <parameter>drugRelevants/documentName</parameter>
+          <parameter>nicotineRelevants/documentName</parameter>
+          <parameter>usageFrequencyPhrases/documentName</parameter>
+          <parameter>usageFrequencies/documentName</parameter>
+          <parameter>usageStatuses/documentName</parameter>
+          <parameter>genericMethodPhrases/documentName</parameter>
+          <parameter>alcoholAmountUnits/documentName</parameter>
+          <parameter>alcoholAmounts/documentName</parameter>
+          <parameter>alcoholFrequencies/documentName</parameter>
+          <parameter>alcoholTemporals/documentName</parameter>
+          <parameter>alcoholTypes/documentName</parameter>
+          <parameter>alcoholStatuses/documentName</parameter>
+          <parameter>alcoholMethods/documentName</parameter>
+          <parameter>drugAmountUnits/documentName</parameter>
+          <parameter>drugAmounts/documentName</parameter>
+          <parameter>drugFrequencies/documentName</parameter>
+          <parameter>drugTemporals/documentName</parameter>
+          <parameter>drugTypes/documentName</parameter>
+          <parameter>drugStatuses/documentName</parameter>
+          <parameter>drugMethods/documentName</parameter>
+          <parameter>nicotineAmountUnits/documentName</parameter>
+          <parameter>nicotineAmounts/documentName</parameter>
+          <parameter>nicotineFrequencies/documentName</parameter>
+          <parameter>nicotineTemporals/documentName</parameter>
+          <parameter>nicotineTypes/documentName</parameter>
+          <parameter>nicotineStatuses/documentName</parameter>
+          <parameter>nicotineMethods/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
+    <flowConstraints>
+      <fixedFlow>
+        <node>candidates</node>
+        <node>parser</node>
+        <node>alcoholRelevants</node>
+        <node>drugRelevants</node>
+        <node>nicotineRelevants</node>
+        <node>usageFrequencyPhrases</node>
+        <node>usageFrequencies</node>
+        <node>usageStatuses</node>
+        <node>genericMethodPhrases</node>
+        <node>alcoholAmountUnits</node>
+        <node>alcoholAmounts</node>
+        <node>alcoholFrequencies</node>
+        <node>alcoholTemporals</node>
+        <node>alcoholTypes</node>
+        <node>alcoholStatuses</node>
+        <node>alcoholMethods</node>
+        <node>drugAmountUnits</node>
+        <node>drugAmounts</node>
+        <node>drugFrequencies</node>
+        <node>drugTemporals</node>
+        <node>drugTypes</node>
+        <node>drugStatuses</node>
+        <node>drugMethods</node>
+        <node>nicotineAmountUnits</node>
+        <node>nicotineAmounts</node>
+        <node>nicotineFrequencies</node>
+        <node>nicotineTemporals</node>
+        <node>nicotineTypes</node>
+        <node>nicotineStatuses</node>
+        <node>nicotineMethods</node>
+      </fixedFlow>
+    </flowConstraints>
+    <capabilities>
+      <capability>
+        <inputSofas>
+          <sofaName>System</sofaName>
+        </inputSofas>
+        <outputSofas>
+          <sofaName>System</sofaName>
+        </outputSofas>
+      </capability>
+    </capabilities>
+    <operationalProperties>
+      <modifiesCas>true</modifiesCas>
+      <multipleDeploymentAllowed>true</multipleDeploymentAllowed>
+      <outputsNewCASes>false</outputsNewCASes>
+    </operationalProperties>
+  </analysisEngineMetaData>
+
+  <externalResourceDependencies>
+    <externalResourceDependency>
+      <key>guiceInjector</key>
+      <description>The guice injector resource.</description>
+    </externalResourceDependency>
+  </externalResourceDependencies>
+
+  <resourceManagerConfiguration>
+    <externalResources>
+      <externalResource>
+        <name>guiceInjector</name>
+        <description>The guice resource.</description>
+        <customResourceSpecifier>
+          <resourceClassName>edu.umn.biomedicus.uima.adapter.GuiceInjector</resourceClassName>
+        </customResourceSpecifier>
+      </externalResource>
+    </externalResources>
+    <externalResourceBindings>
+      <externalResourceBinding>
+        <key>guiceInjector</key>
+        <resourceName>guiceInjector</resourceName>
+      </externalResourceBinding>
+    </externalResourceBindings>
+  </resourceManagerConfiguration>
+</analysisEngineDescription>

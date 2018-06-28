@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,25 +22,206 @@
   <groupId>edu.umn.biomedicus</groupId>
   <artifactId>biomedicus</artifactId>
   <packaging>pom</packaging>
-  <version>1.8.4</version>
+  <version>2.0.0</version>
 
   <modules>
     <module>biomedicus-core</module>
     <module>biomedicus-rtf</module>
     <module>biomedicus-uima</module>
     <module>biomedicus-distribution</module>
+    <module>nlpengine</module>
   </modules>
 
-  <name>biomedicus</name>
-  <description>BioMedICUS Annotation System</description>
+  <name>BioMedICUS</name>
+  <description>
+    The BioMedical Information Collection and Understanding System (BioMedICUS) is a system for
+    large-scale text analysis and processing of biomedical and clinical reports.
+  </description>
+
+  <url>https://nlpie.github.io/biomedicus</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <biomedicus.version>1.8.4</biomedicus.version>
+    <java.version>1.8</java.version>
+    <biomedicus.version>2.0.0</biomedicus.version>
+    <kotlin.version>1.2.50</kotlin.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <dokka.version>0.9.16</dokka.version>
+    <slf4j.version>1.7.25</slf4j.version>
+    <top.basedir>${project.basedir}</top.basedir>
   </properties>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
+
   <build>
+    <plugins>
+      <plugin>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <version>${kotlin.version}</version>
+        <configuration>
+          <apiVersion>1.2</apiVersion>
+          <jvmTarget>${java.version}</jvmTarget>
+        </configuration>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+              </sourceDirs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>test-compile</goal>
+            </goals>
+            <configuration>
+              <sourceDirs>
+                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                <sourceDir>${project.basedir}/src/test/java</sourceDir>
+              </sourceDirs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jasig.maven</groupId>
+        <artifactId>maven-notice-plugin</artifactId>
+        <version>1.0.4</version>
+        <configuration>
+          <noticeTemplate>developer/NOTICE.txt.template</noticeTemplate>
+
+          <licenseMapping>
+            <param>https://source.jasig.org/licenses/license-mappings.xml</param>
+          </licenseMapping>
+          <generateChildNotices>false</generateChildNotices>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+        <version>${dokka.version}</version>
+        <executions>
+          <execution>
+            <phase>none</phase>
+            <goals>
+              <goal>dokka</goal>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.7.0</version>
+          <configuration>
+            <compilerArgs>
+              <compilerArg>-Xlint:unchecked</compilerArg>
+            </compilerArgs>
+          </configuration>
+          <executions>
+            <!-- Replacing default-compile as it is treated specially by maven -->
+            <execution>
+              <id>default-compile</id>
+              <phase>none</phase>
+            </execution>
+            <!-- Replacing default-testCompile as it is treated specially by maven -->
+            <execution>
+              <id>default-testCompile</id>
+              <phase>none</phase>
+            </execution>
+            <execution>
+              <id>java-compile</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>java-test-compile</id>
+              <phase>test-compile</phase>
+              <goals>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jetbrains.dokka</groupId>
+          <artifactId>dokka-maven-plugin</artifactId>
+          <version>${dokka.version}</version>
+          <configuration>
+            <sourceDirectories>
+              <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+              <sourceDir>${project.basedir}/src/main/java</sourceDir>
+            </sourceDirectories>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -57,56 +238,109 @@
         </excludes>
       </resource>
     </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.jasig.maven</groupId>
-        <artifactId>maven-notice-plugin</artifactId>
-        <version>1.0.4</version>
-        <configuration>
-          <noticeTemplate>developer/NOTICE.txt.template</noticeTemplate>
-
-          <licenseMapping>
-            <param>https://source.jasig.org/licenses/license-mappings.xml</param>
-          </licenseMapping>
-          <generateChildNotices>false</generateChildNotices>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <compilerArgs>
-            <compilerArg>-Xlint:unchecked</compilerArg>
-          </compilerArgs>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20.1</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.jetbrains.dokka</groupId>
+            <artifactId>dokka-maven-plugin</artifactId>
+            <version>${dokka.version}</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>dokka</goal>
+                  <goal>javadoc</goal>
+                  <goal>javadocJar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib-jdk8</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.21</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.2</version>
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-test-junit5</artifactId>
+      <version>${kotlin.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.17.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.nhaarman.mockitokotlin2</groupId>
+      <artifactId>mockito-kotlin</artifactId>
+      <version>2.0.0-RC1</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
@@ -114,15 +348,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <version>6.10</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-nop</artifactId>
-      <version>1.7.21</version>
+      <version>1.7.25</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -137,10 +365,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
-        <configuration>
-          <failOnError>false</failOnError>
-        </configuration>
+        <version>3.0.0</version>
       </plugin>
     </plugins>
   </reporting>
@@ -172,4 +397,12 @@
     <connection>scm:git:https://github.com/nlpie/biomedicus.git</connection>
     <developerConnection>scm:git:https://github.com/nlpie/biomedicus.git</developerConnection>
   </scm>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jcenter</id>
+      <name>JCenter</name>
+      <url>https://jcenter.bintray.com/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

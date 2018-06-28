@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,17 +21,29 @@
   <parent>
     <artifactId>biomedicus</artifactId>
     <groupId>edu.umn.biomedicus</groupId>
-    <version>1.8.4</version>
+    <version>2.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>biomedicus-rtf</artifactId>
 
+  <name>BioMedICUS RTF</name>
+  <description>A RTF parser.</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jetbrains.dokka</groupId>
+        <artifactId>dokka-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>edu.umn.biomedicus</groupId>
       <artifactId>biomedicus-core</artifactId>
-      <version>1.8.4</version>
+      <version>${biomedicus.version}</version>
     </dependency>
   </dependencies>
 

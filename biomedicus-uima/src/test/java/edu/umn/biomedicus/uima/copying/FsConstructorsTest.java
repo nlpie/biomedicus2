@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package edu.umn.biomedicus.uima.copying;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -26,7 +26,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link FsConstructors}.
@@ -60,7 +60,7 @@ public class FsConstructorsTest {
   FeatureStructure featureStructure;
 
   @Test
-  public void testCreateArrayFs() throws Exception {
+  public void testCreateArrayFs() {
     new Expectations() {{
       booleanArrayFS.getType();
       result = type;
@@ -76,7 +76,7 @@ public class FsConstructorsTest {
   }
 
   @Test
-  public void testCreateGenericFs() throws Exception {
+  public void testCreateGenericFs() {
     new Expectations() {{
       featureStructure.getType();
       result = type;

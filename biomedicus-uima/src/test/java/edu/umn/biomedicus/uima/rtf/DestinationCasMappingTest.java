@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package edu.umn.biomedicus.uima.rtf;
 
 import static mockit.Deencapsulation.getField;
 import static mockit.Deencapsulation.setField;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import mockit.Tested;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link DestinationCasMapping}.
@@ -32,28 +32,28 @@ public class DestinationCasMappingTest {
   DestinationCasMapping destinationCasMapping;
 
   @Test
-  public void testGetDestinationName() throws Exception {
+  public void testGetDestinationName() {
     setField(destinationCasMapping, "destinationName", "dest");
 
     assertEquals(destinationCasMapping.getDestinationName(), "dest");
   }
 
   @Test
-  public void testSetDestinationName() throws Exception {
+  public void testSetDestinationName() {
     destinationCasMapping.setDestinationName("destName");
 
     assertEquals(getField(destinationCasMapping, "destinationName"), "destName");
   }
 
   @Test
-  public void testGetViewName() throws Exception {
+  public void testGetViewName() {
     setField(destinationCasMapping, "viewName", "view");
 
     assertEquals(destinationCasMapping.getViewName(), "view");
   }
 
   @Test
-  public void testSetViewName() throws Exception {
+  public void testSetViewName() {
     destinationCasMapping.setViewName("viewName");
 
     assertEquals(getField(destinationCasMapping, "viewName"), "viewName");

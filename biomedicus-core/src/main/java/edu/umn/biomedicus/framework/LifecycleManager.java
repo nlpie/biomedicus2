@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,11 @@ public class LifecycleManager {
    * @throws BiomedicusException if any of the services shutdown
    */
   public void triggerShutdown() throws BiomedicusException {
-    List<BiomedicusException> exceptionList = new ArrayList<>();
+    List<Exception> exceptionList = new ArrayList<>();
     for (LifecycleManaged lifecycleManaged : lifecycleManageds) {
       try {
         lifecycleManaged.doShutdown();
-      } catch (BiomedicusException e) {
+      } catch (Exception e) {
         exceptionList.add(e);
       }
     }

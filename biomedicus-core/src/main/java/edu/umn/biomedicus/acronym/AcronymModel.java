@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
+import com.google.inject.ProvidedBy;
+import edu.umn.biomedicus.acronyms.ScoredSense;
+import edu.umn.biomedicus.tokenization.Token;
 import java.util.List;
 import java.util.Set;
 
@@ -29,11 +31,12 @@ import java.util.Set;
  *
  * @author Greg Finley
  */
+@ProvidedBy(AcronymVectorModel.Loader.class)
 interface AcronymModel {
 
-  boolean hasAcronym(Token token);
+  <T extends Token> boolean hasAcronym(T token);
 
-  String findBestSense(List<? extends Token> allTokens, int forTokenIndex);
+  List<ScoredSense> findBestSense(List<? extends Token> allTokens, int forTokenIndex);
 
   /**
    * For deidentification: remove a single word from the model entirely

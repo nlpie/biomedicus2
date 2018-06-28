@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -332,5 +332,9 @@ public enum PartOfSpeech {
   @Override
   public String toString() {
     return pos;
+  }
+
+  public boolean isVerb() {
+    return this == VB || this == VBZ || this == VBD || this == VBN || this == VBP || this == VBZ;
   }
 }

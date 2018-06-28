@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,19 +87,32 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
 
   @Override
   public void doShutdown() throws BiomedicusException {
-    BiomedicusException exception = null;
-    for (RocksDbTermIndexBuilder builder : Arrays.asList(words, terms, norms)) {
-      try {
-        builder.close();
-      } catch (IOException e) {
-        if (exception == null) {
-          exception = new BiomedicusException("Unable to close one or more builders.");
-        }
-        exception.addSuppressed(e);
+    List<Exception> exceptions = new ArrayList<>();
+    try {
+      if (words != null) {
+        words.close();
       }
+    } catch (Exception e) {
+      exceptions.add(e);
+    }
+    try {
+      if (terms != null) {
+        terms.close();
+      }
+    } catch (Exception e) {
+      exceptions.add(e);
+    }
+    try {
+      if (norms!= null) {
+        norms.close();
+      }
+    } catch (Exception e) {
+      exceptions.add(e);
     }
 
-    if (exception != null) {
+    if (exceptions.size() > 0) {
+      BiomedicusException exception = new BiomedicusException("Failed to close RocksDB builders.");
+      exceptions.forEach(exception::addSuppressed);
       throw exception;
     }
   }
@@ -115,7 +128,7 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
     }
 
     @Override
-    public void addTerm(String term) throws BiomedicusException {
+    public void addTerm(String term) {
       if (MORE_THAN_TWO_NUMBERS_IN_A_ROW.matcher(term).find()) {
         return;
       }
@@ -142,7 +155,7 @@ public class RocksDbVocabularyBuilder extends VocabularyBuilder {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
       terms.close();
       indices.close();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Strings;
 import edu.umn.biomedicus.common.dictionary.RocksDbIdentifiers;
 import edu.umn.biomedicus.common.dictionary.RocksDbStrings;
 import edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary;
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
@@ -53,16 +52,18 @@ public class RocksDbVocabStore extends VocabularyStore {
   private BidirectionalDictionary norms;
 
   @Inject
-  public RocksDbVocabStore(@Setting("vocabulary.db.path") Path dbPath,
-      @Setting("vocabulary.inMemory") Boolean inMemory) {
+  public RocksDbVocabStore(
+      @Setting("vocabulary.db.path") Path dbPath,
+      @Setting("vocabulary.inMemory") Boolean inMemory
+  ) {
     this.dbPath = dbPath;
     this.inMemory = inMemory;
   }
 
   @Override
-  void open() throws IOException {
+  void open() {
     LOGGER.info("Loading vocabularies: {}", dbPath);
-    
+
     LOGGER.info("Opening words index. inMemory = {}.", inMemory);
     Strings wordsTerms = new RocksDbStrings(dbPath.resolve("wordsTerms"));
     Identifiers wordsIndices = new RocksDbIdentifiers(dbPath.resolve("wordsIndices"));
@@ -72,7 +73,7 @@ public class RocksDbVocabStore extends VocabularyStore {
     Strings termsTerms = new RocksDbStrings(dbPath.resolve("termsTerms"));
     Identifiers termsIndices = new RocksDbIdentifiers(dbPath.resolve("termsIndices"));
     terms = new StandardBidirectionalDictionary(termsIndices, termsTerms).inMemory(inMemory);
-    
+
     LOGGER.info("Opening norms index. inMemory = {}.", inMemory);
     Strings normsTerms = new RocksDbStrings(dbPath.resolve("normsTerms"));
     Identifiers normsIndices = new RocksDbIdentifiers(dbPath.resolve("normsIndices"));

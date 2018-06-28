@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import com.google.inject.Inject;
 import com.google.inject.ProvidedBy;
 import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.tokenization.Token;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -49,7 +49,7 @@ public class StopwordsModel implements Stopwords {
 
   @Override
   public boolean isStopWord(Token token) {
-    String value = token.text().toLowerCase().trim();
+    String value = token.getText().toLowerCase().trim();
     return stopwordsList.contains(value);
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package edu.umn.biomedicus.uima.copying;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -32,15 +31,15 @@ import mockit.Tested;
 import mockit.Verifications;
 import org.apache.uima.UimaContext;
 import org.apache.uima.jcas.JCas;
-import org.testng.AssertJUnit;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for {@link ViewMigratorJCasMultiplier}
  */
-public class ViewMigratorJCasMultiplierTest {
+class ViewMigratorJCasMultiplierTest {
 
   @Tested
+  private
   ViewMigratorJCasMultiplier viewMigratorJCasMultiplier;
 
   @Mocked
@@ -68,7 +67,7 @@ public class ViewMigratorJCasMultiplierTest {
   @Injectable JCas sourceViewCopy;
 
   @Test
-  public void testSetsParameterValues() throws Exception {
+  void testSetsParameterValues() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";
@@ -82,16 +81,16 @@ public class ViewMigratorJCasMultiplierTest {
 
     viewMigratorJCasMultiplier.initialize(aContext);
 
-    AssertJUnit.assertEquals("sourceView",
+    assertEquals("sourceView",
         Deencapsulation.getField(viewMigratorJCasMultiplier, "sourceViewName"));
-    AssertJUnit.assertEquals("targetView",
+    assertEquals("targetView",
         Deencapsulation.getField(viewMigratorJCasMultiplier, "targetViewName"));
-    assertEquals(false,
+    assertFalse(
         (boolean) Deencapsulation.getField(viewMigratorJCasMultiplier, "deleteOriginalView"));
   }
 
   @Test
-  public void testHasNext() throws Exception {
+  void testHasNext() throws Exception {
 
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName"); result = "sourceView";
@@ -111,7 +110,7 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testProcessKeepOriginal() throws Exception {
+  void testProcessKeepOriginal() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";
@@ -144,7 +143,7 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testProcessDeleteOriginal() throws Exception {
+  void testProcessDeleteOriginal() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";
@@ -176,7 +175,7 @@ public class ViewMigratorJCasMultiplierTest {
   }
 
   @Test
-  public void testProcessMultiview() throws Exception {
+  void testProcessMultiview() throws Exception {
     new Expectations() {{
       aContext.getConfigParameterValue("sourceViewName");
       result = "sourceView";

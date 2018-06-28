@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,17 @@
 
 package edu.umn.biomedicus.utilities;
 
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
 import edu.umn.biomedicus.utilities.PtbReader.Node;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.Labeler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 /**
  * This class attaches parse data from MiPACQ .parse files to their source documents.
@@ -36,17 +34,18 @@ import java.util.Optional;
  * @author Ben Knoll
  * @since 1.7.0
  */
-public class MipacqParseTagger implements DocumentProcessor {
+public class MipacqParseTagger implements DocumentTask {
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+  public void run(@Nonnull Document document) {
+    String sourcePath = document.getMetadata().get("path");
 
-    String sourcePath = document.getMetadata("path")
-        .orElseThrow(() -> new BiomedicusException("Path not saved on document."));
+    if (sourcePath == null) {
+      throw new RuntimeException("Path not stored on document");
+    }
 
-    String text = systemView.getText();
-    Labeler<Sentence> sentenceLabeler = systemView.getLabeler(Sentence.class);
+    String text = document.getText();
+    Labeler<Sentence> sentenceLabeler = document.labeler(Sentence.class);
 
     Path path = Paths.get(sourcePath.replaceFirst(".source$", ".parse"));
     try {
@@ -73,11 +72,11 @@ public class MipacqParseTagger implements DocumentProcessor {
           }
         }
         if (start != -1 && start != current) {
-          sentenceLabeler.value(new Sentence()).label(start, current);
+          sentenceLabeler.add(new Sentence(start, current));
         }
       }
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

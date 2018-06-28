@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.tcas.Annotation;
 
 /**
  * Responsible for dividing annotations using 0-length marker annotations within those annotations.
@@ -41,13 +41,13 @@ class TableAnnotationDivider {
    * Annotations to divide.
    */
   @Nullable
-  private AnnotationIndex<Annotation> annotations;
+  private AnnotationIndex<AnnotationFS> annotations;
 
   /**
    * Annotations to use as divisions.
    */
   @Nullable
-  private AnnotationIndex<Annotation> dividers;
+  private AnnotationIndex<AnnotationFS> dividers;
 
   /**
    * Divided annotations type to create.
@@ -113,11 +113,11 @@ class TableAnnotationDivider {
     dividers = null;
   }
 
-  private void divideAnnotation(Annotation annotation) {
+  private void divideAnnotation(AnnotationFS annotation) {
     Objects.requireNonNull(typeToCreate);
     Objects.requireNonNull(dividers);
 
-    FSIterator<Annotation> subiterator = dividers.subiterator(annotation);
+    FSIterator<AnnotationFS> subiterator = dividers.subiterator(annotation);
     int begin = annotation.getBegin();
     while (subiterator.hasNext()) {
       int end = subiterator.next().getBegin();

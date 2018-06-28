@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link FeatureCopiers}.
@@ -59,7 +59,7 @@ public class FeatureCopiersTest {
   FeatureStructure fromFs, toFs, fromReference, toReference;
 
   @Test
-  public void testPrimitiveCopier() throws Exception {
+  public void testPrimitiveCopier() {
     new Expectations() {{
       fromFeature.getRange(); result = fromType;
       fromType.getName(); result = CAS.TYPE_NAME_BOOLEAN;
@@ -77,7 +77,7 @@ public class FeatureCopiersTest {
   }
 
   @Test
-  public void testReferenceCopier() throws Exception {
+  public void testReferenceCopier() {
     new Expectations() {{
       fromFeature.getRange();
       result = fromType;
@@ -101,7 +101,7 @@ public class FeatureCopiersTest {
   }
 
   @Test
-  public void testEnumeratedStringCopier() throws Exception {
+  public void testEnumeratedStringCopier() {
     new Expectations() {{
       fromFeature.getRange();
       result = fromType;

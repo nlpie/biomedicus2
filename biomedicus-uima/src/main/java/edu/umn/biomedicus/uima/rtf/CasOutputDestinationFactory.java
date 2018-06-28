@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,7 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
   }
 
   @Override
-  public OutputDestination create(String destinationName)
-      throws RtfReaderException {
+  public OutputDestination create(String destinationName) {
     DestinationCasMapping matchingCasMapping = null;
     for (DestinationCasMapping destMapping : destinationCasMappings) {
       if (destinationName.equals(destMapping.getDestinationName())) {

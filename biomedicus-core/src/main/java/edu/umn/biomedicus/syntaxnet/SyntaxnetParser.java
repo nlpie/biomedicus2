@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,13 @@ package edu.umn.biomedicus.syntaxnet;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.DependencyParse;
-import edu.umn.biomedicus.common.types.text.ImmutableDependencyParse;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.parsing.DependencyParse;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +43,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ben Knoll
  * @since 1.5.0
+ * @deprecated doesn't actually label anything right now
  */
-public final class SyntaxnetParser implements DocumentProcessor {
+public final class SyntaxnetParser implements DocumentTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SyntaxnetParser.class);
 
@@ -89,17 +86,12 @@ public final class SyntaxnetParser implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
+  public void run(@Nonnull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
 
-    TextView systemView = StandardViews.getSystemView(document);
+    LabelIndex<ParseToken> tokenLabelIndex = document.labelIndex(ParseToken.class);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView
-        .getLabelIndex(Sentence.class);
-
-    LabelIndex<ParseToken> tokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-
-    Labeler<DependencyParse> dependencyParseLabeler = systemView
-        .getLabeler(DependencyParse.class);
+    Labeler<DependencyParse> dependencyParseLabeler = document.labeler(DependencyParse.class);
 
     Path parserEval = installationDir.resolve("bazel-bin/syntaxnet/parser_eval");
     Path modelDir = installationDir.resolve(modelDirString);
@@ -152,10 +144,9 @@ public final class SyntaxnetParser implements DocumentProcessor {
 
       try (Writer writer = new OutputStreamWriter(
           tagger.getOutputStream())) {
-        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+        for (Sentence sentence : sentenceLabelIndex) {
           Collection<ParseToken> sentenceTokens = tokenLabelIndex
-              .insideSpan(sentenceLabel)
-              .values();
+              .inside(sentence);
           String conllString = new Tokens2Conll(sentenceTokens)
               .conllString();
           writer.write(conllString);
@@ -165,25 +156,20 @@ public final class SyntaxnetParser implements DocumentProcessor {
 
       try (BufferedReader bufferedReader = new BufferedReader(
           new InputStreamReader(parser.getInputStream()))) {
-        for (Label<Sentence> sentenceLabel : sentenceLabelIndex) {
+        for (Sentence sentence : sentenceLabelIndex) {
           StringBuilder sentenceParse = new StringBuilder();
           String line;
           while ((line = bufferedReader.readLine()) != null && !line
               .isEmpty()) {
             sentenceParse.append(line).append("\n");
           }
-          dependencyParseLabeler.value(
-              ImmutableDependencyParse.builder()
-                  .parseTree(sentenceParse.toString())
-                  .build())
-              .label(sentenceLabel);
         }
       }
 
       parser.destroy();
       tagger.destroy();
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

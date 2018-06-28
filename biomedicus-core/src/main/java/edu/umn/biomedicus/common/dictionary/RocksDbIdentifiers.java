@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package edu.umn.biomedicus.common.dictionary;
 
-import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
+import org.rocksdb.InfoLogLevel;
+import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
@@ -38,10 +39,9 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
   public RocksDbIdentifiers(Path identifiersPath) {
     RocksDB.loadLibrary();
 
-    try {
-      indices = RocksDB.openReadOnly(identifiersPath.toString());
+    try (Options options = new Options().setInfoLogLevel(InfoLogLevel.ERROR_LEVEL)) {
+      indices = RocksDB.openReadOnly(options, identifiersPath.toString());
     } catch (RocksDBException e) {
-      // says "if error happens in underlying native library", can't possible hope to handle that.
       throw new RuntimeException(e);
     }
   }
@@ -60,13 +60,12 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
       }
       return ByteBuffer.wrap(idBytes).getInt();
     } catch (RocksDBException e) {
-      // says "if error happens in underlying native library", can't possible hope to handle that.
       throw new RuntimeException(e);
     }
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
     indices.close();
   }
 
@@ -87,7 +86,7 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     RocksIterator rocksIterator = indices.newIterator();
     return new MappingIterator() {
       @Override
-      public void close() throws IOException {
+      public void close() {
         rocksIterator.close();
       }
 
@@ -123,35 +122,15 @@ public final class RocksDbIdentifiers extends AbstractIdentifiers implements Clo
     }
 
     size = 0;
-    MappingIterator mappingIterator = mappingIterator();
-    while (mappingIterator.isValid()) {
-      size++;
-      mappingIterator.next();
+    try (MappingIterator mappingIterator = mappingIterator()) {
+      while (mappingIterator.isValid()) {
+        size++;
+        mappingIterator.next();
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
     }
 
     return (_size = size);
-  }
-
-  public Identifiers inMemory(boolean inMemory) throws IOException {
-    if (inMemory) {
-      HashIdentifiers hashIdentifiers = new HashIdentifiers();
-      try (RocksIterator rocksIterator = indices.newIterator()) {
-        rocksIterator.seekToFirst();
-        while (rocksIterator.isValid()) {
-          byte[] key = rocksIterator.key();
-          String stringKey = new String(key, StandardCharsets.UTF_8);
-
-          byte[] value = rocksIterator.value();
-          int intValue = ByteBuffer.wrap(value).getInt();
-
-          hashIdentifiers.addMapping(stringKey, intValue);
-
-          rocksIterator.next();
-        }
-      }
-      close();
-      return hashIdentifiers;
-    }
-    return this;
   }
 }

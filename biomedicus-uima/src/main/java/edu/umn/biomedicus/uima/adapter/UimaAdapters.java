@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.adapter;
 
-import edu.umn.biomedicus.framework.store.Document;
 import edu.umn.biomedicus.uima.labels.LabelAdapters;
+import edu.umn.nlpengine.Artifact;
 import javax.annotation.Nullable;
 import org.apache.uima.cas.CAS;
 
@@ -36,13 +36,15 @@ public final class UimaAdapters {
   /**
    * Initializes a BioMedICUS document on a UIMA CAS view.
    */
-  public static Document createDocument(CAS initialView,
+  public static Artifact createArtifact(
+      CAS initialView,
       @Nullable LabelAdapters labelAdapters,
-      String documentId) {
-    return new CASDocument(labelAdapters, initialView, documentId);
+      String documentId
+  ) {
+    return new CASArtifact(labelAdapters, initialView, documentId);
   }
 
-  public static Document getDocument(CAS initialView, @Nullable LabelAdapters labelAdapters) {
-    return new CASDocument(labelAdapters, initialView);
+  public static Artifact getArtifact(CAS initialView, @Nullable LabelAdapters labelAdapters) {
+    return new CASArtifact(labelAdapters, initialView);
   }
 }

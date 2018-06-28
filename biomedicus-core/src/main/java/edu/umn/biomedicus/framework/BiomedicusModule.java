@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,29 +28,8 @@ import edu.umn.biomedicus.annotations.ProcessorScoped;
  *
  */
 final class BiomedicusModule extends AbstractModule {
-
   @Override
   protected void configure() {
     bindScope(ProcessorScoped.class, BiomedicusScopes.PROCESSOR_SCOPE);
-
-    LifecycleManager lifecycleManager = new LifecycleManager();
-
-    bind(LifecycleManager.class).toInstance(lifecycleManager);
-
-    InjectionListener<LifecycleManaged> injectionListener = lifecycleManager::register;
-
-    TypeListener listener = new TypeListener() {
-      @SuppressWarnings("unchecked")
-      @Override
-      public <I> void hear(TypeLiteral<I> typeLiteral, TypeEncounter<I> typeEncounter) {
-        ((TypeEncounter<LifecycleManaged>) typeEncounter).register(injectionListener);
-      }
-    };
-    bindListener(new AbstractMatcher<TypeLiteral<?>>() {
-      @Override
-      public boolean matches(TypeLiteral<?> typeLiteral) {
-        return LifecycleManaged.class.isAssignableFrom(typeLiteral.getRawType());
-      }
-    }, listener);
   }
 }

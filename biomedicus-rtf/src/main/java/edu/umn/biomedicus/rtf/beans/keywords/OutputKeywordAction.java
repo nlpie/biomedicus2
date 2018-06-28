@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package edu.umn.biomedicus.rtf.beans.keywords;
 
-import edu.umn.biomedicus.framework.store.Span;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
 import edu.umn.biomedicus.rtf.reader.KeywordAction;
 import edu.umn.biomedicus.rtf.reader.State;
+import edu.umn.nlpengine.Span;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -43,7 +43,7 @@ public class OutputKeywordAction extends AbstractKeywordAction {
   }
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
     char c = outputString.charAt(0);
     state.directWriteCharacter(c, Span.create(getBegin(), getEnd()));
   }

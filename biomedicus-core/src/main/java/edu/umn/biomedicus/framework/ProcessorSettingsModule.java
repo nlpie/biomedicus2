@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.google.inject.Key;
 import java.util.Collection;
 
 /**
- * Module used for creating child injectors
+ * Module used for creating child injectors containing processor-specific settings.
  *
  * @author Ben Knoll
  * @since 1.5.0

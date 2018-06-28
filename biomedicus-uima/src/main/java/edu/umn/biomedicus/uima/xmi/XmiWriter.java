@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,23 +85,26 @@ public class XmiWriter extends CasAnnotator_ImplBase {
       throw new AnalysisEngineProcessException(e);
     }
 
-    Type type = cas.getTypeSystem().getType("edu.umn.biomedicus.uima.type1_5.DocumentId");
-    Feature documentId = type.getFeatureByBaseName("documentId");
+    Type type = cas.getTypeSystem().getType("ArtifactID");
+    Feature documentId = type.getFeatureByBaseName("artifactID");
     String fileName = cas.getView("metadata")
         .getIndexRepository()
         .getAllIndexedFS(type)
         .next()
         .getStringValue(documentId) + ".xmi";
     Path path = outputDir.resolve(fileName);
+    LOGGER.debug("Writing XMI CAS to location: {}", path.toString());
 
-    if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("Writing XMI CAS to location: {}", path.toString());
+    try {
+      Files.createDirectories(path.getParent());
+    } catch (IOException e) {
+      LOGGER.error("Failed to create directories for document: {}", path);
+      throw new AnalysisEngineProcessException(e);
     }
-
-    try (OutputStream out = new FileOutputStream(path.toFile())) {
+    try (OutputStream out = Files.newOutputStream(path)) {
       XmiCasSerializer.serialize(cas, out);
     } catch (IOException | SAXException e) {
-      LOGGER.error("Failed on document: {}");
+      LOGGER.error("Failed on document: {}", path);
       throw new AnalysisEngineProcessException(e);
     }
   }

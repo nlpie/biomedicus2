@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -26,27 +26,32 @@
     <description>Annotates RTF paragraphs.</description>
     <version>${project.version}</version>
     <vendor>${project.organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <typeSystemDescription>
       <imports>
         <import name="edu.umn.biomedicus.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
-    <capabilities>
-      <capability>
-        <inputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.rtfuima.type.NewParagraph</type>
-        </inputs>
-        <outputs>
-          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.ParagraphAnnotation</type>
-        </outputs>
-        <inputSofas>
-          <sofaName>SystemView</sofaName>
-        </inputSofas>
-        <outputSofas>
-          <sofaName>SystemView</sofaName>
-        </outputSofas>
-      </capability>
-    </capabilities>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
     <operationalProperties>
       <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>true</multipleDeploymentAllowed>

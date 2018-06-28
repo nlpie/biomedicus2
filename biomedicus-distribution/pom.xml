@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
-  ~ Unauthorized Copying of this file, via any medium is strictly prohibited
-  ~ Proprietary and Confidential
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,12 +21,19 @@
   <parent>
     <artifactId>biomedicus</artifactId>
     <groupId>edu.umn.biomedicus</groupId>
-    <version>1.8.4</version>
+    <version>2.0.0</version>
   </parent>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>biomedicus-distribution</artifactId>
+
+  <name>BioMedICUS Distribution</name>
+  <description>Packages BioMedICUS artifacts for direct distribution.</description>
+
+  <properties>
+    <log4j.version>2.11.0</log4j.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -35,19 +52,15 @@
       <version>${biomedicus.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
-      <version>2.5</version>
+      <version>${log4j.version}</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
@@ -91,6 +104,19 @@
                 <descriptor>src/assembly/descriptor.xml</descriptor>
               </descriptors>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>none</phase>
           </execution>
         </executions>
       </plugin>

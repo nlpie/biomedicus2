@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,35 @@
 
 package edu.umn.biomedicus.utilities;
 
-import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.Searcher;
+import edu.umn.biomedicus.annotations.ComponentSetting;
 import edu.umn.biomedicus.framework.SearchExpr;
 import edu.umn.biomedicus.framework.SearchExprFactory;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.framework.Searcher;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.Span;
 import javax.inject.Inject;
+import javax.annotation.Nonnull;
 
 /**
  *
  */
-public class SearcherPrinter implements DocumentProcessor {
+public class SearcherPrinter implements DocumentTask {
 
   private final SearchExpr searchExpr;
 
   @Inject
   public SearcherPrinter(
       SearchExprFactory searchExprFactory,
-      @ProcessorSetting("searchPattern") String searchPattern
+      @ComponentSetting("searchPattern") String searchPattern
   ) {
     searchExpr = searchExprFactory.parse(searchPattern);
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
-
-    Searcher searcher = searchExpr.createSearcher(systemView);
+  public void run(@Nonnull Document document) {
+    Searcher searcher = searchExpr.createSearcher(document);
 
     while (true) {
       boolean found = searcher.search();
@@ -56,19 +52,19 @@ public class SearcherPrinter implements DocumentProcessor {
         break;
       }
       System.out
-          .println("Matching Text: " + searcher.getSpan().get().getCovered(systemView.getText()));
+          .println("Matching Text: " + searcher.getSpan().get().coveredString(document.getText()));
 
       for (String group : searcher.getGroupNames()) {
         System.out.println("\tGroup Name: " + group);
 
-        if (searcher.getSpan(group).isPresent()) {
-          Span span = searcher.getSpan(group).get();
-          System.out.println("\t\tCovered Text: " + span.getCovered(systemView.getText()));
+        Span span = searcher.getSpan(group);
+        if (span != null) {
+          System.out.println("\t\tCovered Text: " + span.coveredString(document.getText()));
         }
 
-        if (searcher.getLabel(group).isPresent()) {
-          Label<?> label = searcher.getLabel(group).get();
-          System.out.println("\t\tStored Label: " + label.getValue().toString());
+        Label label = searcher.getLabel(group);
+        if (label != null) {
+          System.out.println("\t\tStored Label: " + label.toString());
         }
       }
     }

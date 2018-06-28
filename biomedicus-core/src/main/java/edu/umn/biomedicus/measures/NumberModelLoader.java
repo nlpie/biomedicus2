@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package edu.umn.biomedicus.measures;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.numbers.NumberModel;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 @Singleton
 public class NumberModelLoader extends DataLoader<NumberModel> {
@@ -33,8 +33,10 @@ public class NumberModelLoader extends DataLoader<NumberModel> {
   private final Path nrvarPath;
 
   @Inject
-  public NumberModelLoader(@Setting("measures.numbers.nrnumPath") Path nrnumPath,
-      @Setting("measures.numbers.nrvarPath") Path nrvarPath) {
+  public NumberModelLoader(
+      @Setting("measures.numbers.nrnumPath") Path nrnumPath,
+      @Setting("measures.numbers.nrvarPath") Path nrvarPath
+  ) {
     this.nrnumPath = nrnumPath;
     this.nrvarPath = nrvarPath;
   }

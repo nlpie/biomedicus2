@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,10 @@ public final class Patterns {
    */
   public static final Pattern NEWLINE = Pattern.compile("\n");
 
+  public static final Pattern INITIAL_WHITESPACE = Pattern.compile("^\\s+");
+
+  public static final Pattern FINAL_WHITESPACE = Pattern.compile("\\s+$");
+
   /**
    * Private constructor to prevent instantiation of utility class.
    */
@@ -87,7 +91,7 @@ public final class Patterns {
   private static Pattern getPattern(BufferedReader reader) {
     return Pattern
         .compile(reader.lines().collect(Collectors.joining("|")),
-            Pattern.MULTILINE);
+            Pattern.MULTILINE|Pattern.UNIX_LINES);
   }
 
   public static Pattern loadPatternByJoiningLines(Path path)

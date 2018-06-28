@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@ package edu.umn.biomedicus.common.dictionary;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractCollection;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.TreeMap;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -35,17 +35,18 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.5.0
  */
-public final class StringsBag extends AbstractCollection<StringIdentifier> {
+public final class StringsBag extends AbstractCollection<StringIdentifier>
+    implements Comparable<StringsBag> {
 
-  private final HashMap<Integer, Integer> backingMap;
+  private final int[] terms;
+  private final int[] counts;
 
   private transient int _total = -1;
 
-  StringsBag(HashMap<Integer, Integer> backingMap) {
-    this.backingMap = backingMap;
+  public StringsBag(int[] terms, int[] counts) {
+    this.terms = terms;
+    this.counts = counts;
   }
-
-
 
   /**
    * Creates a terms bag from a byte array.
@@ -56,9 +57,11 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
   public StringsBag(byte[] bytes) {
     int size = bytes.length / 4 / 2;
     ByteBuffer wrap = ByteBuffer.wrap(bytes);
-    backingMap = new HashMap<>(size);
+    terms = new int[size];
+    counts = new int[size];
     for (int i = 0; i < size; i++) {
-      backingMap.put(wrap.getInt(), wrap.getInt());
+      terms[i] = wrap.getInt();
+      counts[i] = wrap.getInt();
     }
   }
 
@@ -72,21 +75,20 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
   }
 
   /**
-   * Converts the bag to a new list of {@link StringIdentifier} objects. If a term occurs n times in the
-   * bag it will get added to the list n times. The terms are sorted with identifiers ascending.
+   * Converts the bag to a new list of {@link StringIdentifier} objects. If a term occurs n times in
+   * the bag it will get added to the list n times. The terms are sorted with identifiers
+   * ascending.
    *
    * @return newly allocated list of terms
    */
-  List<StringIdentifier> toTerms() {
-    return backingMap.entrySet().stream().flatMap(entry -> {
-      Integer key = entry.getKey();
-      StringIdentifier identifier = new StringIdentifier(key);
-      Stream.Builder<StringIdentifier> termIdentifierBuilder = Stream.builder();
-      for (int i = 0; i < entry.getValue(); i++) {
-        termIdentifierBuilder.add(identifier);
+  public List<StringIdentifier> toTerms() {
+    List<StringIdentifier> result = new ArrayList<>();
+    for (int i = 0; i < terms.length; i++) {
+      for (int j = 0; j < counts[i]; j++) {
+        result.add(new StringIdentifier(terms[i]));
       }
-      return termIdentifierBuilder.build();
-    }).collect(Collectors.toList());
+    }
+    return result;
   }
 
   /**
@@ -96,7 +98,7 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
    * @return true if the bag contains the term, false otherwise.
    */
   public boolean contains(StringIdentifier stringIdentifier) {
-    return backingMap.containsKey(stringIdentifier.value());
+    return Arrays.binarySearch(terms, stringIdentifier.value()) != -1;
   }
 
   /**
@@ -106,8 +108,8 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
    * @return integer count
    */
   public int countOf(StringIdentifier stringIdentifier) {
-    Integer count = backingMap.get(stringIdentifier.value());
-    return count == null ? 0 : count;
+    int index = Arrays.binarySearch(terms, stringIdentifier.value());
+    return index < 0 ? 0 : counts[index];
   }
 
   /**
@@ -116,7 +118,7 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
    * @return integer count
    */
   public int uniqueTerms() {
-    return backingMap.size();
+    return terms.length;
   }
 
   @Override
@@ -130,57 +132,62 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
 
     StringsBag that = (StringsBag) o;
 
-    return backingMap.equals(that.backingMap);
+    return Arrays.equals(terms, that.terms) && Arrays.equals(counts, that.counts);
   }
 
   @Override
   public int hashCode() {
-    return backingMap.hashCode();
+    return Arrays.hashCode(terms) * 31 + Arrays.hashCode(counts);
   }
 
   public byte[] getBytes() {
-    ByteBuffer buffer = ByteBuffer.allocate(4 * 2 * backingMap.size());
-    for (Entry<Integer, Integer> entry : backingMap.entrySet()) {
-      buffer.putInt(entry.getKey());
-      buffer.putInt(entry.getValue());
+    ByteBuffer buffer = ByteBuffer.allocate(4 * 2 * terms.length);
+    for (int i = 0; i < terms.length; i++) {
+      buffer.putInt(terms[i]);
+      buffer.putInt(counts[i]);
     }
     return buffer.array();
   }
 
   @Override
   public Iterator<StringIdentifier> iterator() {
-    Set<Entry<Integer, Integer>> entries = backingMap.entrySet();
-    Iterator<Entry<Integer, Integer>> iterator = entries.iterator();
-
     return new Iterator<StringIdentifier>() {
+      int index = -1;
       int identifier;
-      int instances;
-      int count;
+      int instances = 0;
+
+      {
+        advance();
+      }
+
+      void advance() {
+        if (instances > 0) {
+          instances--;
+        } else {
+          index++;
+          if (index < terms.length) {
+            identifier = terms[index];
+            instances = counts[index];
+          }
+        }
+      }
 
       @Override
       public boolean hasNext() {
-        return instances != -1 && (count != instances || iterator.hasNext());
+        return instances > 0 || index < terms.length;
       }
 
       @Override
       public StringIdentifier next() {
-        if (instances == -1) {
+        if (instances == 0) {
           throw new NoSuchElementException();
         }
 
-        if (count == instances) {
-          if (!iterator.hasNext()) {
-            throw new NoSuchElementException();
-          }
+        int tmp = identifier;
 
-          Entry<Integer, Integer> next = iterator.next();
-          identifier = next.getKey();
-          instances = next.getValue();
-          count = 0;
-        }
+        advance();
 
-        count++;
-        return new StringIdentifier(identifier);
+        return new StringIdentifier(tmp);
       }
     };
   }
@@ -191,24 +198,45 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
     if (total != -1) {
       return total;
     }
-    total = backingMap.values().stream().mapToInt((i) -> i).sum();
+    total = 0;
+    for (int count : counts) {
+      total += count;
+    }
+
     return this._total = total;
+  }
+
+  @Override
+  public int compareTo(@Nonnull StringsBag o) {
+    for (int i = 0; i < Math.max(terms.length, o.terms.length); i++) {
+      if (terms.length == i) {
+        return -1;
+      }
+      if (o.terms.length == i) {
+        return 1;
+      }
+      int compare = Integer.compare(terms[i], o.terms[i]);
+      if (compare != 0) {
+        return compare;
+      }
+      compare = Integer.compare(counts[i], o.counts[i]);
+      if (compare != 0) {
+        return compare;
+      }
+    }
+    return 0;
   }
 
   public static class Builder {
 
-    private final HashMap<Integer, Integer> identifierToCount;
+    private final TreeMap<Integer, Integer> identifierToCount;
 
     public Builder() {
-      identifierToCount = new HashMap<>();
-    }
-
-    public Builder(int capacity) {
-      identifierToCount = new HashMap<>(capacity);
+      identifierToCount = new TreeMap<>();
     }
 
     public Builder(Map<StringIdentifier, Integer> m) {
-      identifierToCount = new HashMap<>(m.size());
+      identifierToCount = new TreeMap<>();
       for (Entry<StringIdentifier, Integer> entry : m.entrySet()) {
         identifierToCount.put(entry.getKey().value(), entry.getValue());
       }
@@ -234,7 +262,17 @@ public final class StringsBag extends AbstractCollection<StringIdentifier> {
     }
 
     public StringsBag build() {
-      return new StringsBag(identifierToCount);
+      int[] terms = new int[identifierToCount.size()];
+      int[] counts = new int[identifierToCount.size()];
+
+      Iterator<Entry<Integer, Integer>> it = identifierToCount.entrySet().iterator();
+      for (int i = 0; i < identifierToCount.size(); i++) {
+        Entry<Integer, Integer> next = it.next();
+        terms[i] = next.getKey();
+        counts[i] = next.getValue();
+      }
+
+      return new StringsBag(terms, counts);
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class PropertyCasMappingAdapter extends
     XmlAdapter<AdaptedPropertyCasMapping, PropertyCasMapping> {
 
   @Override
-  public PropertyCasMapping unmarshal(AdaptedPropertyCasMapping v) throws Exception {
+  public PropertyCasMapping unmarshal(AdaptedPropertyCasMapping v) {
     return new PropertyCasMapping(requireNonNull(v.getPropertyGroup()),
         requireNonNull(v.getPropertyName()),
         requireNonNull(v.getAnnotationClassName()), v.getMinimumValue(), v.getMaximumValue(),
@@ -38,7 +38,7 @@ public class PropertyCasMappingAdapter extends
   }
 
   @Override
-  public AdaptedPropertyCasMapping marshal(PropertyCasMapping v) throws Exception {
+  public AdaptedPropertyCasMapping marshal(PropertyCasMapping v) {
     AdaptedPropertyCasMapping adaptedPropertyCasMapping = new AdaptedPropertyCasMapping();
     adaptedPropertyCasMapping.setMaximumValue(v.getMaximumValue());
     adaptedPropertyCasMapping.setMinimumValue(v.getMinimumValue());

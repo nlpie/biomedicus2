@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package edu.umn.biomedicus.rtf.reader;
 
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextLocation;
 import edu.umn.biomedicus.rtf.exc.RtfReaderException;
+import edu.umn.nlpengine.Span;
+import edu.umn.nlpengine.TextRange;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -109,10 +109,12 @@ public class State {
    * @param outputDestinationFactory a factory which contains a new output destination.
    * @param indexListener listens for the indices of characters written to output destinations.
    */
-  public State(Map<String, OutputDestination> outputDestinationMap,
+  public State(
+      Map<String, OutputDestination> outputDestinationMap,
       OutputDestinationFactory outputDestinationFactory,
       Map<String, Map<String, Integer>> properties,
-      IndexListener indexListener) {
+      IndexListener indexListener
+  ) {
     this.outputDestinationMap = outputDestinationMap;
     this.outputDestinationFactory = outputDestinationFactory;
     this.properties = properties;
@@ -130,9 +132,11 @@ public class State {
    * @param outputDestinationFactory factory for new output destinations.
    * @return newly created State object.
    */
-  public static State createState(OutputDestinationFactory outputDestinationFactory,
+  public static State createState(
+      OutputDestinationFactory outputDestinationFactory,
       Map<String, Map<String, Integer>> properties,
-      IndexListener indexListener) throws RtfReaderException {
+      IndexListener indexListener
+  ) throws RtfReaderException {
     Map<String, OutputDestination> outputDestinationMap = new HashMap<>();
     outputDestinationMap.put("Rtf", outputDestinationFactory.create("Rtf"));
     return new State(outputDestinationMap, outputDestinationFactory, properties, indexListener);
@@ -194,7 +198,7 @@ public class State {
    * @throws RtfReaderException if there is some kind of error in writing to the output
    * destination.
    */
-  public void writeCharacter(int code, TextLocation originalDocumentTextLocation)
+  public void writeCharacter(int code, TextRange originalDocumentTextLocation)
       throws RtfReaderException {
     if (skippingDestination) {
       return;
@@ -211,13 +215,17 @@ public class State {
         directWriteCharacter((char) code, originalDocumentTextLocation);
         break;
       case HEX:
+        if (!((code >= '0' && code <= '9') || (code >= 'a' && code <= 'f')
+            || (code >= 'A' && code <= 'F'))) {
+          throw new RtfReaderException("Invalid hex code character: " + (char) code);
+        }
         hexStringBuilder.append((char) code);
         if (hexStringBuilder.length() == 2) {
           String hexString = hexStringBuilder.toString();
           Byte charByte = (byte) (Integer.parseInt(hexString, 16) & 0xff);
           code = charset.decode(ByteBuffer.wrap(new byte[]{charByte})).get(0);
           directWriteCharacter((char) code,
-              Span.create(hexStart, originalDocumentTextLocation.getEnd()));
+              Span.create(hexStart, originalDocumentTextLocation.getEndIndex()));
           inputType = InputType.NORMAL;
         }
         break;
@@ -231,10 +239,8 @@ public class State {
    *
    * @param ch character to write.
    * @param originalDocumentTextLocation the span of the character in the original document.
-   * @throws RtfReaderException if there is some kind of failure writing to output destination.
    */
-  public void directWriteCharacter(char ch, TextLocation originalDocumentTextLocation)
-      throws RtfReaderException {
+  public void directWriteCharacter(char ch, TextRange originalDocumentTextLocation) {
     if (ignoreNextChars > 0) {
       ignoreNextChars--;
       return;
@@ -332,9 +338,7 @@ public class State {
    * Finishes the current state, and all destinations in the state.
    */
   public void finishState() {
-    outputDestinationMap.values()
-        .stream()
-        .forEach(OutputDestination::finishDestination);
+    outputDestinationMap.values().forEach(OutputDestination::finishDestination);
   }
 
   /**

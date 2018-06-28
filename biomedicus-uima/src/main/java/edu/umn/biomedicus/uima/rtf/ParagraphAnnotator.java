@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package edu.umn.biomedicus.uima.rtf;
 
-import edu.umn.biomedicus.uima.common.Views;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,16 +40,25 @@ public class ParagraphAnnotator extends CasAnnotator_ImplBase {
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(ParagraphAnnotator.class);
 
+  private String documentName;
+
   @Override
-  public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.debug("Annotating rtf paragraphs.");
-    CAS systemView = aCAS.getView(Views.SYSTEM_VIEW);
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+
+    documentName = ((String) aContext.getConfigParameterValue("documentName"));
+  }
+
+  @Override
+  public void process(CAS aCAS) {
+    LOGGER.trace("Annotating rtf paragraphs.");
+    CAS systemView = aCAS.getView(documentName);
 
     Type newParagraphType = systemView.getTypeSystem()
-        .getType("edu.umn.biomedicus.rtfuima.type.NewParagraph");
+        .getType("biomedicus.v2.rtf.NewParagraph");
 
     Type paragraphType = systemView.getTypeSystem()
-        .getType("edu.umn.biomedicus.type.ParagraphAnnotation");
+        .getType("biomedicus.v2.Paragraph");
 
     AnnotationIndex<AnnotationFS> newParagraphIndex = systemView
         .getAnnotationIndex(newParagraphType);

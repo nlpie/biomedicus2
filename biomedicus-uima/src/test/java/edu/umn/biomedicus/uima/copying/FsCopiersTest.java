@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Feature;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link FsCopiers}
@@ -71,8 +71,7 @@ public class FsCopiersTest {
 
 
   @Test
-  public void testCopyPrimitiveArray()
-      throws Exception {
+  public void testCopyPrimitiveArray() {
     new Expectations() {{
       boolFrom.getType();
       result = fromType;
@@ -97,8 +96,7 @@ public class FsCopiersTest {
   }
 
   @Test
-  public void testCopyReferenceArray()
-      throws Exception {
+  public void testCopyReferenceArray() {
     new Expectations() {{
       arrayFrom.getType();
       result = fromType;
@@ -131,8 +129,7 @@ public class FsCopiersTest {
   }
 
   @Test
-  public void testCopyGenericFs()
-      throws Exception {
+  public void testCopyGenericFs() {
     List<Feature> featuresList = new ArrayList<>();
     featuresList.add(f1);
     featuresList.add(f2);

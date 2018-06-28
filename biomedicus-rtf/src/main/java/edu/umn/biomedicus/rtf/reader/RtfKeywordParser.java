@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import java.util.Map;
  */
 public class RtfKeywordParser {
 
-  public static final int KEYWORD_MAX = 30;
+  public static final int KEYWORD_MAX = 32;
 
-  public static final int PARAMETER_MAX = 20;
+  public static final int PARAMETER_MAX = 10;
 
   private final Map<String, KeywordAction> keywordActionMap;
 
@@ -55,10 +55,10 @@ public class RtfKeywordParser {
       do {
         controlWordBuilder.append((char) ch);
         ch = rtfSource.readCharacter();
-      } while (controlWordBuilder.length() < KEYWORD_MAX && Character.isAlphabetic(ch));
+      } while (controlWordBuilder.length() <= KEYWORD_MAX + 1 && Character.isAlphabetic(ch));
       controlWord = controlWordBuilder.toString();
-      if (controlWord.length() >= KEYWORD_MAX) {
-        throw new InvalidKeywordException("Keyword too long");
+      if (controlWord.length() > KEYWORD_MAX) {
+        throw new InvalidKeywordException("Keyword control word too long: " + controlWord);
       }
 
       boolean parameterIsNegative = false;
@@ -73,12 +73,18 @@ public class RtfKeywordParser {
         do {
           parameterBuilder.append((char) ch);
           ch = rtfSource.readCharacter();
-        } while (parameterBuilder.length() < PARAMETER_MAX && Character.isDigit(ch));
+        } while (parameterBuilder.length() <= PARAMETER_MAX + 1 && Character.isDigit(ch));
         String parameterString = parameterBuilder.toString();
-        if (parameterString.length() >= PARAMETER_MAX) {
-          throw new InvalidParameterException("Parameter too long");
+        if (parameterString.length() > PARAMETER_MAX) {
+          throw new InvalidParameterException("Keyword parameter too long: " + parameterString);
         }
-        parameter = (parameterIsNegative ? -1 : 1) * Integer.parseInt(parameterString);
+        try {
+          parameter = (parameterIsNegative ? -1 : 1) * Integer.parseUnsignedInt(parameterString);
+        } catch (NumberFormatException e) {
+          throw new InvalidParameterException(
+              "Unable to parse parameter into integer: " + parameterString
+          );
+        }
       }
     }
 
@@ -101,6 +107,4 @@ public class RtfKeywordParser {
 
     return keywordAction;
   }
-
-
 }

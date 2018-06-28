@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.tokenization.Token;
+import edu.umn.nlpengine.AbstractTextRange;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -259,7 +260,7 @@ public class AcronymVectorOfflineTrainer {
     }
     LOGGER.info(senseVectors.size() + " vectors total");
     LOGGER.info("initializing acronym vector model");
-    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, null, aem, null);
+    AcronymVectorModel avm = new AcronymVectorModel(vectorSpace, null, aem, null, 0.0d);
     // can help to do the GC before trying to serialize a big model
 
     LOGGER.info("writing acronym vector model");
@@ -364,7 +365,7 @@ public class AcronymVectorOfflineTrainer {
       String longestEligiblePhrase = null;
       Map<String, Object> lookup = graph;
       for (int i = index; i < words.size(); i++) {
-        String thisWord = words.get(i).text();
+        String thisWord = words.get(i).getText();
         if (lookup.containsKey(null)) {
           longestEligiblePhrase = (String) lookup.get(null);
         }
@@ -378,7 +379,7 @@ public class AcronymVectorOfflineTrainer {
     }
   }
 
-  private class DummyToken implements Token {
+  private class DummyToken extends AbstractTextRange implements Token {
 
     private String text;
 
@@ -386,12 +387,24 @@ public class AcronymVectorOfflineTrainer {
       this.text = text;
     }
 
-    public String text() {
+    @Override
+    public String getText() {
       return text;
     }
 
-    public boolean hasSpaceAfter() {
+    @Override
+    public boolean getHasSpaceAfter() {
       return true;
+    }
+
+    @Override
+    public int getStartIndex() {
+      return 0;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return 0;
     }
   }
 

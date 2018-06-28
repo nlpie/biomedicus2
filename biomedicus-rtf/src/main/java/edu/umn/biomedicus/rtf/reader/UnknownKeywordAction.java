@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class UnknownKeywordAction implements KeywordAction {
   private Integer parameter = null;
 
   @Override
-  public void executeKeyword(State state) throws RtfReaderException {
+  public void executeKeyword(State state) {
   }
 
   @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,14 @@
 package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import javax.annotation.Nonnull;
 
-public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
+public class SimpleUnitOfMeasureAnnotator implements DocumentTask {
 
   private final UnitRecognizer unitRecognizer;
 
@@ -38,19 +34,16 @@ public class SimpleUnitOfMeasureAnnotator implements DocumentProcessor {
   }
 
   @Override
-  public void process(@Nonnull Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+  public void run(@Nonnull Document document) {
+    LabelIndex<ParseToken> tokensIndex = document.labelIndex(ParseToken.class);
 
-    LabelIndex<ParseToken> labelIndex = systemView.getLabelIndex(ParseToken.class);
+    Labeler<CandidateUnitOfMeasure> candidateUnitOfMeasureLabeler = document
+        .labeler(CandidateUnitOfMeasure.class);
 
-    Labeler<CandidateUnitOfMeasure> candidateUnitOfMeasureLabeler = systemView
-        .getLabeler(CandidateUnitOfMeasure.class);
-
-    for (Label<ParseToken> parseTokenLabel : labelIndex) {
-      if (unitRecognizer.isUnitOfMeasureWord(parseTokenLabel.getValue().text())) {
-        candidateUnitOfMeasureLabeler.value(new CandidateUnitOfMeasure()).label(parseTokenLabel);
+    for (ParseToken parseToken : tokensIndex) {
+      if (unitRecognizer.isUnitOfMeasureWord(parseToken.getText())) {
+        candidateUnitOfMeasureLabeler.add(new CandidateUnitOfMeasure(parseToken));
       }
     }
-
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,9 @@ public class PropertyCasMapping {
 
     TypeSystem typeSystem = cas.getTypeSystem();
     Type type = typeSystem.getType(annotationClassName);
+    if (type == null) {
+      throw new IllegalStateException("Annotation class not found: " + annotationClassName);
+    }
     AnnotationFS annotation = cas.createAnnotation(type, begin, end);
     if (valueIncluded) {
       Feature valueFeature = type.getFeatureByBaseName("value");

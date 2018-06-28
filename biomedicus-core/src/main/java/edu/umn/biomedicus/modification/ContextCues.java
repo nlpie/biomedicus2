@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package edu.umn.biomedicus.modification;
 
 import edu.umn.biomedicus.common.tuples.Pair;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.TermToken;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Span;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,34 +65,34 @@ class ContextCues {
 
   @Nullable
   private Pair<Integer, List<Span>> search(
-      List<Label<TermToken>> parseTokenLabels,
-      LabelIndex<PartOfSpeech> partOfSpeeches,
+      List<TermToken> parseTokenLabels,
+      LabelIndex<PosTag> partOfSpeeches,
       List<List<String>> phrases,
       int maxSize
   ) {
     int size = parseTokenLabels.size();
     for (int i = 0; i < size; i++) {
-      Label<TermToken> firstParseToken = parseTokenLabels.get(i);
-      for (PartOfSpeech partOfSpeech : partOfSpeeches.insideSpan(firstParseToken).values()) {
-        if (scopeDelimitersPos.contains(partOfSpeech)) {
+      TermToken firstParseToken = parseTokenLabels.get(i);
+      for (PosTag posTag : partOfSpeeches.inside(firstParseToken)) {
+        if (scopeDelimitersPos.contains(posTag.getPartOfSpeech())) {
           return null;
         }
       }
-      String word = firstParseToken.value().text();
+      String word = firstParseToken.getText();
       if (scopeDelimiterWords.contains(word)) {
         return null;
       }
       int limit = Math.min(size - i, maxSize);
-      for (int j = 1; j <= limit; j++) {
-        List<Label<TermToken>> leftRange = parseTokenLabels.subList(i, i + j);
+      for (int j = i + 1; j <= limit; j++) {
+        List<TermToken> leftRange = parseTokenLabels.subList(i, i + j);
         List<String> leftSearch = new ArrayList<>(leftRange.size());
-        for (Label<TermToken> parseTokenLabel : leftRange) {
-          leftSearch.add(parseTokenLabel.value().text());
+        for (TermToken termToken : leftRange) {
+          leftSearch.add(termToken.getText());
         }
         int indexOf = phrases.indexOf(leftSearch);
         if (indexOf != -1) {
           ArrayList<Span> result = new ArrayList<>();
-          for (Label<TermToken> tokenLabel : leftRange) {
+          for (TermToken tokenLabel : leftRange) {
             result.add(tokenLabel.toSpan());
           }
           return new Pair<>(indexOf, result);
@@ -103,8 +103,10 @@ class ContextCues {
   }
 
   @Nullable
-  Pair<ModificationType, List<Span>> searchLeft(List<Label<TermToken>> parseTokenLabels,
-      LabelIndex<PartOfSpeech> partOfSpeeches) {
+  Pair<ModificationType, List<Span>> searchLeft(
+      List<TermToken> parseTokenLabels,
+      LabelIndex<PosTag> partOfSpeeches
+  ) {
     Pair<Integer, List<Span>> search = search(parseTokenLabels, partOfSpeeches, leftPhrases,
         maxSizeLeftPhrase);
     if (search != null) {
@@ -114,8 +116,10 @@ class ContextCues {
   }
 
   @Nullable
-  Pair<ModificationType, List<Span>> searchRight(List<Label<TermToken>> parseTokenLabels,
-      LabelIndex<PartOfSpeech> partOfSpeeches) {
+  Pair<ModificationType, List<Span>> searchRight(
+      List<TermToken> parseTokenLabels,
+      LabelIndex<PosTag> partOfSpeeches
+  ) {
     Pair<Integer, List<Span>> search = search(parseTokenLabels, partOfSpeeches, rightPhrases,
         maxSizeRightPhrase);
     return search == null ? null : Pair.of(rightTypes.get(search.getFirst()), search.getSecond());

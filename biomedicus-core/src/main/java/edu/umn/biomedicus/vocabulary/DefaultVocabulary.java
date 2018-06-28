@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,6 @@ import java.io.IOException;
  * @author Ben Knoll
  * @since 1.6.0
  */
-@Singleton
-@ProvidedBy(DefaultVocabulary.Loader.class)
 class DefaultVocabulary implements LifecycleManaged, Vocabulary {
 
   private final VocabularyStore store;
@@ -75,7 +73,6 @@ class DefaultVocabulary implements LifecycleManaged, Vocabulary {
     }
   }
 
-  @Singleton
   public static class Loader extends DataLoader<Vocabulary> {
 
     private final VocabularyStore store;

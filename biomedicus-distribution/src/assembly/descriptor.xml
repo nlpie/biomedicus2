@@ -1,12 +1,21 @@
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota - All Rights Reserved
-  ~ Unauthorized Copying of this file, via any medium is strictly prohibited
-  ~ Proprietary and Confidential
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
   -->
 
-<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
   <id>release</id>
   <formats>
     <format>dir</format>
@@ -19,6 +28,18 @@
       <useTransitiveDependencies>true</useTransitiveDependencies>
       <outputDirectory>lib</outputDirectory>
       <unpack>false</unpack>
+    </dependencySet>
+    <dependencySet>
+      <includes>
+        <include>edu.umn.biomedicus:biomedicus-core</include>
+      </includes>
+      <unpack>true</unpack>
+      <outputDirectory>config</outputDirectory>
+      <unpackOptions>
+        <includes>
+          <include>biomedicusConfiguration.yml</include>
+        </includes>
+      </unpackOptions>
     </dependencySet>
   </dependencySets>
   <fileSets>

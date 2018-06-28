@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
 package edu.umn.biomedicus.uima.rtf;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
-import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.cas.text.AnnotationIndex;
-import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,77 +40,70 @@ public class TableAnnotator extends CasAnnotator_ImplBase {
   /**
    * Class logger.
    */
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(TableAnnotator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TableAnnotator.class);
+
+  private String documentName;
 
   @Override
-  public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    LOGGER.info("Annotating rtf tables.");
+  public void initialize(UimaContext aContext) throws ResourceInitializationException {
+    super.initialize(aContext);
+
+    documentName = ((String) aContext.getConfigParameterValue("documentName"));
+  }
+
+  @Override
+  public void process(CAS aCAS) {
+    LOGGER.trace("Annotating rtf tables.");
+    CAS systemView = aCAS.getView(documentName);
+
     TypeSystem typeSystem = aCAS.getTypeSystem();
-    Type paragraphInTableType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.ParagraphInTable");
+    Type intblType = typeSystem.getType("biomedicus.v2.rtf.ParagraphInTable");
+    Type rowEndType = typeSystem.getType("biomedicus.v2.rtf.RowEnd");
+    Type rowType = typeSystem.getType("biomedicus.v2.Row");
 
-    CAS systemView = aCAS.getView("SystemView");
+    ArrayList<Integer> intblBegins = new ArrayList<>();
+    AnnotationIndex<AnnotationFS> intblIndex = systemView.getAnnotationIndex(intblType);
+    for (AnnotationFS annotationFS : intblIndex) {
+      intblBegins.add(annotationFS.getBegin());
+    }
 
-    AnnotationIndex<AnnotationFS> paragraphInTableIndex = systemView
-        .getAnnotationIndex(paragraphInTableType);
+    ArrayList<Integer> rowEnds = new ArrayList<>();
+    AnnotationIndex<AnnotationFS> rowEndIndex = systemView.getAnnotationIndex(rowEndType);
+    for (AnnotationFS rowEndAnnotation : rowEndIndex) {
+      rowEnds.add(rowEndAnnotation.getBegin());
+    }
 
-    List<Integer> inTable = new ArrayList<>();
-    for (AnnotationFS annotation : paragraphInTableIndex) {
-      for (int i = annotation.getBegin(); i <= annotation.getEnd(); i++) {
-        inTable.add(i);
+    int last = 0;
+    for (Integer intblBegin : intblBegins) {
+      if (intblBegin < last) {
+        continue;
       }
-    }
-    int[] indexes = inTable.stream().mapToInt(i -> i).sorted().distinct()
-        .toArray();
-
-    if (indexes.length == 0) {
-      return;
-    }
-
-    // divide "in table" paragraphs into rows.
-    Type rowEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.RowEnd");
-    Type rowType = typeSystem
-        .getType("edu.umn.biomedicus.type.RowAnnotation");
-
-    AnnotationIndex<Annotation> rowEndAnnotationIndex = systemView
-        .getAnnotationIndex(rowEndType);
-    for (Annotation rowEnd : rowEndAnnotationIndex) {
-      int rowEndIndex = rowEnd.getBegin();
-      int insert = Arrays.binarySearch(indexes, rowEndIndex);
+      int insert = Collections.binarySearch(rowEnds, intblBegin);
       if (insert < 0) {
         insert = insert * -1 - 1;
-      }
-      int end = indexes[insert];
-      int ptr = insert;
-      while (ptr > 0 && indexes[ptr] - indexes[ptr - 1] == 1) {
-        --ptr;
-      }
-      int begin = indexes[ptr];
-      Arrays.fill(indexes, ptr, insert, -2);
+        if (insert == rowEnds.size()) {
+          LOGGER.warn("Rtf intbl paragraph after the last row end.");
+          continue;
+        }
 
-      systemView.addFsToIndexes(systemView.createAnnotation(rowType,
-          begin, end));
+        int end = rowEnds.get(insert);
+        systemView.addFsToIndexes(systemView.createAnnotation(rowType, intblBegin, end));
+      }
     }
 
-    Type cellEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.CellEnd");
-    Type cellType = typeSystem
-        .getType("edu.umn.biomedicus.type.CellAnnotation");
+    Type cellEndType = typeSystem.getType("biomedicus.v2.rtf.CellEnd");
+    Type cellType = typeSystem.getType("biomedicus.v2.Cell");
 
     Type nestRowEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.NestRowEnd");
+        .getType("biomedicus.v2.rtf.NestRowEnd");
     Type nestedRowType = typeSystem
-        .getType("edu.umn.biomedicus.type.NestedRowAnnotation");
-
+        .getType("biomedicus.v2.NestedRow");
     Type nestedCellEndType = typeSystem
-        .getType("edu.umn.biomedicus.rtfuima.type.NestCellEnd");
+        .getType("biomedicus.v2.rtf.NestCellEnd");
     Type nestedCellType = typeSystem
-        .getType("edu.umn.biomedicus.type.NestedCellAnnotation");
+        .getType("biomedicus.v2.NestedCell");
 
-    TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider
-        .in(systemView);
+    TableAnnotationDivider tableAnnotationDivider = TableAnnotationDivider.in(systemView);
     tableAnnotationDivider.using(cellEndType)
         .divide(rowType)
         .into(cellType)

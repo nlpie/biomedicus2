@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,20 @@
 package edu.umn.biomedicus.measures;
 
 import com.google.inject.Inject;
-import edu.umn.biomedicus.annotations.ProcessorSetting;
-import edu.umn.biomedicus.common.StandardViews;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.SearchExpr;
-import edu.umn.biomedicus.framework.SearchExprFactory;
-import edu.umn.biomedicus.framework.Searcher;
-import edu.umn.biomedicus.framework.store.DefaultLabelIndex;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.annotations.ComponentSetting;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.LabelIndex;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
@@ -53,71 +42,68 @@ import javax.annotation.Nonnull;
  * @author Ben Knoll
  * @since 1.8.0
  */
-public class NumberContextWriter implements DocumentProcessor {
+public class NumberContextWriter implements DocumentTask {
   private final Path outputDirectory;
 
   private final int contextSize;
 
   @Inject
-  public NumberContextWriter(@ProcessorSetting("outputDirectory") Path outputDirectory,
-      @ProcessorSetting("contextSize") Integer contextSize) {
+  public NumberContextWriter(
+      @ComponentSetting("outputDirectory.orig") Path outputDirectory,
+      @ComponentSetting("contextSize") Integer contextSize
+  ) {
     this.outputDirectory = outputDirectory;
     this.contextSize = contextSize;
   }
 
   @Override
-  public void process(@Nonnull Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
-
-    LabelIndex<Number> numbersIndex = systemView.getLabelIndex(Number.class);
-    LabelIndex<Sentence> sentencesIndex = new DefaultLabelIndex<>(
-        systemView.getLabelIndex(Sentence.class));
-    LabelIndex<ParseToken> tokensIndex = systemView.getLabelIndex(ParseToken.class);
+  public void run(@Nonnull Document document) {
+    LabelIndex<Number> numbersIndex = document.labelIndex(Number.class);
+    LabelIndex<Sentence> sentencesIndex = document.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> tokensIndex = document.labelIndex(ParseToken.class);
 
     try (BufferedWriter bufferedWriter = Files
-        .newBufferedWriter(outputDirectory.resolve(document.getDocumentId() + ".txt"),
+        .newBufferedWriter(outputDirectory.resolve(document.getArtifactID() + ".txt"),
             StandardOpenOption.CREATE_NEW)) {
 
-      for (Label<Number> numberLabel : numbersIndex) {
-        LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(numberLabel);
-        Optional<Label<Sentence>> sentenceOption = sentenceContainingIndex.first();
-        if (!sentenceOption.isPresent()) {
-          throw new BiomedicusException("No sentence");
+      for (Number number : numbersIndex) {
+        LabelIndex<Sentence> sentenceContainingIndex = sentencesIndex.containing(number);
+        Sentence sentence = sentenceContainingIndex.first();
+        if (sentence == null) {
+          throw new RuntimeException("No sentence");
         }
-        Label<Sentence> sentenceLabel = sentenceOption.get();
-        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.insideSpan(sentenceLabel);
+        LabelIndex<ParseToken> sentenceTokensIndex = tokensIndex.inside(sentence);
 
-        Iterator<Label<ParseToken>> it = sentenceTokensIndex.leftwardsFrom(numberLabel)
-            .iterator();
+        Iterator<ParseToken> it = sentenceTokensIndex.backwardFrom(number).iterator();
         List<ParseToken> leftTokens = new ArrayList<>();
         for (int i = 0; i < contextSize; i++) {
           if (it.hasNext()) {
-            leftTokens.add(it.next().getValue());
+            leftTokens.add(it.next());
           }
         }
         int leftSize = leftTokens.size();
         for (int i = 0; i < leftSize; i++) {
-          bufferedWriter.write(leftTokens.get(leftSize - 1 - i).text() + " ");
+          bufferedWriter.write(leftTokens.get(leftSize - 1 - i).getText() + " ");
         }
         bufferedWriter.newLine();
 
-        for (ParseToken numberToken : tokensIndex.insideSpan(numberLabel).values()) {
-          bufferedWriter.write(numberToken.text() + " ");
+        for (ParseToken numberToken : tokensIndex.inside(number)) {
+          bufferedWriter.write(numberToken.getText() + " ");
         }
         bufferedWriter.newLine();
 
-        Iterator<Label<ParseToken>> rightIt = sentenceTokensIndex.rightwardsFrom(numberLabel)
+        Iterator<ParseToken> rightIt = sentenceTokensIndex.forwardFrom(number)
             .iterator();
 
         for (int i = 0; i < contextSize; i++) {
           if (rightIt.hasNext()) {
-            bufferedWriter.write(rightIt.next().getValue().text() + " ");
+            bufferedWriter.write(rightIt.next().getText() + " ");
           }
         }
         bufferedWriter.newLine();
       }
     } catch (IOException e) {
-      throw new BiomedicusException(e);
+      throw new RuntimeException(e);
     }
   }
 }

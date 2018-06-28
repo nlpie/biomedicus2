@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import com.google.inject.Singleton;
 import edu.umn.biomedicus.annotations.Setting;
 import edu.umn.biomedicus.common.collect.HashIndexMap;
 import edu.umn.biomedicus.common.collect.IndexMap;
-import edu.umn.biomedicus.common.types.text.Token;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
+import edu.umn.biomedicus.tokenization.Token;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -99,7 +99,7 @@ public class OrthographicAcronymModel implements Serializable {
    */
   boolean seemsLikeAbbreviation(Token token) {
 
-    String wordRaw = token.text();
+    String wordRaw = token.getText();
     String wordLower = wordRaw.toLowerCase();
 
     // Check to see if it's a long form first
@@ -211,7 +211,7 @@ public class OrthographicAcronymModel implements Serializable {
       Yaml yaml = new Yaml();
       try {
         @SuppressWarnings("unchecked")
-        Map<String, Object> serObj = (Map<String, Object>) yaml
+        Map<String, Object> serObj = yaml
             .load(Files.newBufferedReader(orthographicModel));
         boolean caseSensitive = (Boolean) serObj.get("caseSensitive");
         symbols = caseSensitive ? CASE_SENS_SYMBOLS : CASE_INSENS_SYMBOLS;

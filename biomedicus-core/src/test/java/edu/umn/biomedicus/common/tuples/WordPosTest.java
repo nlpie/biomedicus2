@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package edu.umn.biomedicus.common.tuples;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link WordPos}.
@@ -29,49 +29,49 @@ import org.testng.annotations.Test;
 public class WordPosTest {
 
   @Test
-  public void testForward() throws Exception {
+  public void testForward() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN).forward();
 
     assertEquals(wordPos.getWord(), "Word");
   }
 
   @Test
-  public void testGetWord() throws Exception {
+  public void testGetWord() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN);
 
     assertEquals(wordPos.getWord(), "aWord");
   }
 
   @Test
-  public void testGetTag() throws Exception {
+  public void testGetTag() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN);
 
     assertEquals(wordPos.getTag(), PartOfSpeech.NN);
   }
 
   @Test
-  public void testEqualsSameObject() throws Exception {
+  public void testEqualsSameObject() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN);
 
     assertTrue(wordPos.equals(wordPos));
   }
 
   @Test
-  public void testEqualsNull() throws Exception {
+  public void testEqualsNull() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN);
 
     assertFalse(wordPos.equals(null));
   }
 
   @Test
-  public void testEqualsDifferentType() throws Exception {
+  public void testEqualsDifferentType() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NN);
 
     assertFalse(wordPos.equals("string"));
   }
 
   @Test
-  public void testEqualsDifferentWord() throws Exception {
+  public void testEqualsDifferentWord() {
     WordPos first = new WordPos("first", PartOfSpeech.NN);
     WordPos second = new WordPos("second", PartOfSpeech.NN);
 
@@ -79,7 +79,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testEqualsDifferentPos() throws Exception {
+  public void testEqualsDifferentPos() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NN);
     WordPos second = new WordPos("aWord", PartOfSpeech.NNS);
 
@@ -87,7 +87,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testEquals() throws Exception {
+  public void testEquals() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NN);
     WordPos second = new WordPos("aWord", PartOfSpeech.NN);
 
@@ -95,7 +95,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testHashCodeEqual() throws Exception {
+  public void testHashCodeEqual() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NN);
     WordPos second = new WordPos("aWord", PartOfSpeech.NN);
 
@@ -103,7 +103,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testHashCodeNotEqual() throws Exception {
+  public void testHashCodeNotEqual() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NN);
     WordPos second = new WordPos("aWord", PartOfSpeech.NNS);
     WordPos third = new WordPos("Word", PartOfSpeech.NNS);
@@ -113,7 +113,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testCompareToDifferentWord() throws Exception {
+  public void testCompareToDifferentWord() {
     WordPos first = new WordPos("first", PartOfSpeech.NN);
     WordPos second = new WordPos("second", PartOfSpeech.NN);
 
@@ -121,7 +121,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testCompareToDifferentTag() throws Exception {
+  public void testCompareToDifferentTag() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NN);
     WordPos second = new WordPos("aWord", PartOfSpeech.NNS);
 
@@ -129,7 +129,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testCompareToEqual() throws Exception {
+  public void testCompareToEqual() {
     WordPos first = new WordPos("aWord", PartOfSpeech.NNS);
     WordPos second = new WordPos("aWord", PartOfSpeech.NNS);
 
@@ -137,7 +137,7 @@ public class WordPosTest {
   }
 
   @Test
-  public void testToString() throws Exception {
+  public void testToString() {
     WordPos wordPos = new WordPos("aWord", PartOfSpeech.NNS);
 
     assertEquals(wordPos.toString(), "WordPos{word='aWord', tag=NNS}");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package edu.umn.biomedicus.uima.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.collection.CollectionProcessingEngine;
@@ -55,10 +58,17 @@ public class SimpleRunCPE implements Callable<Void> {
 
   private long size = 0;
 
+  private final List<Exception> exceptions = new ArrayList<>();
+
+  @Nullable
+  private Consumer<CAS> casConsumer = null;
+
+
   public SimpleRunCPE(CpeDescription cpeDesc) throws ResourceInitializationException {
     LOGGER.info("Instantiating CPE");
     collectionProcessingEngine = UIMAFramework.produceCollectionProcessingEngine(cpeDesc);
     collectionProcessingEngine.addStatusCallbackListener(new StatusCallbackListener() {
+
       @Override
       public void initializationComplete() {
         LOGGER.info("CPM Initialization Complete");
@@ -103,14 +113,15 @@ public class SimpleRunCPE implements Callable<Void> {
 
       @Override
       public void entityProcessComplete(CAS aCas, EntityProcessStatus aStatus) {
-        List<Exception> exceptions = aStatus.getExceptions();
+        exceptions.addAll(aStatus.getExceptions());
         LOGGER.debug(aStatus.getStatusMessage());
+
+        if (casConsumer != null) {
+          casConsumer.accept(aCas);
+        }
 
         for (Exception exception : exceptions) {
           LOGGER.error("Exception processing a CAS: ", exception);
-        }
-        if (exceptions.size() > 0) {
-          throw new RuntimeException("Processing exception");
         }
 
         entityCount++;
@@ -120,6 +131,14 @@ public class SimpleRunCPE implements Callable<Void> {
         }
       }
     });
+  }
+
+  public void setCasConsumer(@Nullable Consumer<CAS> casConsumer) {
+    this.casConsumer = casConsumer;
+  }
+
+  public List<Exception> getExceptions() {
+    return exceptions;
   }
 
   /**
@@ -158,6 +177,10 @@ public class SimpleRunCPE implements Callable<Void> {
       simpleRunCPE.waitForCompletion();
     } catch (InterruptedException e) {
       e.printStackTrace();
+      System.exit(1);
+    }
+
+    if (simpleRunCPE.exceptions.size() > 0) {
       System.exit(1);
     }
 

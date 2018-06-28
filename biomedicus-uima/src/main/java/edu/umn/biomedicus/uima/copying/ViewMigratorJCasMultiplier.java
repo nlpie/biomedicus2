@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ public class ViewMigratorJCasMultiplier extends JCasMultiplier_ImplBase {
    * <p>It will be true iff we haven't returned the new view we create.</p>
    */
   @Override
-  public boolean hasNext() throws AnalysisEngineProcessException {
+  public boolean hasNext() {
     return !returned;
   }
 
@@ -181,7 +181,7 @@ public class ViewMigratorJCasMultiplier extends JCasMultiplier_ImplBase {
    * <p>Only returns the one new view created.</p>
    */
   @Override
-  public AbstractCas next() throws AnalysisEngineProcessException {
+  public AbstractCas next() {
     returned = true;
     return newJCas;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public final class NormalizerModelLoader extends DataLoader<NormalizerModel> {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected NormalizerModel loadModel() throws BiomedicusException {
+  protected NormalizerModel loadModel() {
     LOGGER.info("Loading normalization model: {}. inMemory = {}.", dbPath, inMemory);
 
     return new RocksDBNormalizerModel(dbPath).inMemory(inMemory);

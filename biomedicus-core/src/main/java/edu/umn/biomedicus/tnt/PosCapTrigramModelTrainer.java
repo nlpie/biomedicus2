@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package edu.umn.biomedicus.tnt;
 
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -88,11 +89,11 @@ class PosCapTrigramModelTrainer {
    * Adds the count of part of speech tag and capitalization unigram, bigrams and trigrams in the
    * sentence to the running counts in the trainer.
    */
-  public void addSentence(List<ParseToken> tokens, List<PartOfSpeech> partsOfSpeech) {
+  public void addSentence(List<ParseToken> tokens, List<PosTag> partsOfSpeech) {
     int[] tokenPosCaps = new int[tokens.size()];
     for (int i = 0; i < tokens.size(); i++) {
-      tokenPosCaps[i] = PosCap.create(partsOfSpeech.get(i),
-          Character.isUpperCase(tokens.get(i).text().charAt(0))).ordinal();
+      tokenPosCaps[i] = PosCap.create(partsOfSpeech.get(i).getPartOfSpeech(),
+          Character.isUpperCase(tokens.get(i).getText().charAt(0))).ordinal();
     }
     int[] posCaps = new int[tokenPosCaps.length + 3];
     posCaps[0] = BBS_POS_CAP.ordinal();

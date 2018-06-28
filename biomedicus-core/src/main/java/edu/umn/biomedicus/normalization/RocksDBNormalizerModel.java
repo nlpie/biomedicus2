@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.rocksdb.InfoLogLevel;
+import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
@@ -35,8 +37,8 @@ public class RocksDBNormalizerModel implements NormalizerModel {
   RocksDBNormalizerModel(Path dbPath) {
     RocksDB.loadLibrary();
 
-    try {
-      db = RocksDB.openReadOnly(dbPath.toString());
+    try (Options options = new Options().setInfoLogLevel(InfoLogLevel.ERROR_LEVEL)) {
+      db = RocksDB.openReadOnly(options, dbPath.toString());
     } catch (RocksDBException e) {
       throw new RuntimeException(e);
     }
@@ -58,7 +60,7 @@ public class RocksDBNormalizerModel implements NormalizerModel {
   }
 
   @Override
-  public void doShutdown() throws BiomedicusException {
+  public void doShutdown() {
     db.close();
   }
 

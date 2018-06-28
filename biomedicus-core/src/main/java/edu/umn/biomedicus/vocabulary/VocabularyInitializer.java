@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 package edu.umn.biomedicus.vocabulary;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
-import edu.umn.biomedicus.common.types.text.ImmutableParseToken;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
+import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.Bootstrapper;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelsUtilities;
-import edu.umn.biomedicus.framework.store.Span;
-import edu.umn.biomedicus.tokenization.PennLikePhraseTokenizer;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.biomedicus.tokenization.TermToken;
 import edu.umn.biomedicus.tokenization.TermTokenMerger;
+import edu.umn.biomedicus.tokenization.TokenResult;
+import edu.umn.biomedicus.tokenization.Tokenizer;
+import edu.umn.nlpengine.Span;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,53 +85,45 @@ public class VocabularyInitializer {
 
   public static void main(String[] args) {
     try {
-      Bootstrapper.create().getInstance(VocabularyInitializer.class).doMain(args);
+      Bootstrapper.create(Guice.createInjector(Stage.DEVELOPMENT))
+          .getInstance(VocabularyInitializer.class).doMain(args);
     } catch (BiomedicusException e) {
       e.printStackTrace();
     }
   }
 
   void addPhrase(String phrase) throws BiomedicusException {
-    Iterator<Span> tokensIterator = PennLikePhraseTokenizer
-        .tokenizePhrase(phrase).iterator();
-    List<Label<Token>> parseTokens = new ArrayList<>();
-    Span prev = null;
+    Iterator<TokenResult> tokensIterator = Tokenizer.tokenize(phrase).iterator();
+    List<ParseToken> parseTokens = new ArrayList<>();
+    TokenResult prev = null;
     while (tokensIterator.hasNext() || prev != null) {
-      Span span = null;
+      TokenResult span = null;
       if (tokensIterator.hasNext()) {
         span = tokensIterator.next();
       }
       if (prev != null) {
-        String term = prev.getCovered(phrase).toString();
+        String term = phrase.substring(prev.getStartIndex(), prev.getEndIndex());
         wordsIndexBuilder.addTerm(term);
-        boolean hasSpaceAfter = span != null && prev.getEnd() != span
-            .getBegin();
-        ParseToken parseToken = ImmutableParseToken.builder()
-            .text(term)
-            .hasSpaceAfter(hasSpaceAfter)
-            .build();
-        Label<ParseToken> parseTokenLabel = new Label<>(prev,
-            parseToken);
-        parseTokens.add(LabelsUtilities.cast(parseTokenLabel));
+        boolean hasSpaceAfter = span != null && prev.getStartIndex() != span
+            .getEndIndex();
+        ParseToken parseToken = new ParseToken(prev.getStartIndex(), prev.getEndIndex(), term,
+            hasSpaceAfter);
+        parseTokens.add(parseToken);
       }
       prev = span;
     }
 
-    TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens);
+    TermTokenMerger termTokenMerger = new TermTokenMerger(parseTokens.iterator());
     while (termTokenMerger.hasNext()) {
-      Label<TermToken> termToken = termTokenMerger.next();
-      termsIndexBuilder.addTerm(termToken.value().text());
+      TermToken termToken = termTokenMerger.next();
+      termsIndexBuilder.addTerm(termToken.getText());
     }
   }
 
   void addNormPhrase(String normPhrase) throws BiomedicusException {
-    Iterator<Span> normsIt = PennLikePhraseTokenizer
-        .tokenizePhrase(normPhrase)
-        .iterator();
-
-    while (normsIt.hasNext()) {
-      Span span = normsIt.next();
-      CharSequence norm = span.getCovered(normPhrase);
+    for (TokenResult span : Tokenizer.tokenize(normPhrase)) {
+      CharSequence norm = new Span(span.getStartIndex(), span.getEndIndex())
+          .coveredString(normPhrase);
       normsIndexBuilder.addTerm(norm.toString());
     }
   }

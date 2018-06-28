@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package edu.umn.biomedicus.tokenization;
 
-import edu.umn.biomedicus.common.types.text.ImmutableTermToken;
-import edu.umn.biomedicus.common.types.text.TermToken;
-import edu.umn.biomedicus.common.types.text.Token;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Span;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,45 +34,44 @@ import javax.annotation.Nullable;
  * @author Ben Knoll
  * @since 1.6.0
  */
-public final class TermTokenMerger implements Iterator<Label<TermToken>> {
+public final class TermTokenMerger implements Iterator<TermToken> {
 
   private static final Set<Character> MERGE
       = new HashSet<>(Arrays.asList('-', '/', '\\', '\'', '_'));
-  private final List<Label<Token>> running = new ArrayList<>();
-  private final Iterator<Label<Token>> iterator;
-  @Nullable
-  private Label<TermToken> next;
+  private final List<Token> running = new ArrayList<>();
+  private final Iterator<ParseToken> iterator;
 
-  public TermTokenMerger(Iterator<Label<Token>> iterator) {
+  @Nullable
+  private TermToken next;
+
+  public TermTokenMerger(Iterator<ParseToken> iterator) {
     this.iterator = iterator;
     findNext();
   }
 
-  public TermTokenMerger(Iterable<Label<Token>> iterable) {
-    this(iterable.iterator());
+  public TermTokenMerger(LabelIndex<ParseToken> parseTokens) {
+    this(parseTokens.iterator());
   }
 
   private void findNext() {
     next = null;
     while (next == null && iterator.hasNext()) {
-      Label<Token> tokenLabel = iterator.next();
+      Token token = iterator.next();
       if (running.size() == 0) {
-        running.add(tokenLabel);
+        running.add(token);
         continue;
       }
 
-      Label<Token> lastLabel = running.get(running.size() - 1);
-      Token lastToken = lastLabel.value();
-      String lastTokenText = lastToken.text();
+      Token lastToken = running.get(running.size() - 1);
+      String lastTokenText = lastToken.getText();
       char lastTokenLastChar = lastTokenText
           .charAt(lastTokenText.length() - 1);
-      char curTokenFirstChar = tokenLabel.value().text().charAt(0);
-      if (lastToken.hasSpaceAfter()
-          || (!MERGE.contains(curTokenFirstChar)
-          && !MERGE.contains(lastTokenLastChar))) {
+      char curTokenFirstChar = token.getText().charAt(0);
+      if (lastToken.getHasSpaceAfter() ||
+          (!MERGE.contains(curTokenFirstChar) && !MERGE.contains(lastTokenLastChar))) {
         makeTermToken();
       }
-      running.add(tokenLabel);
+      running.add(token);
     }
 
     if (next == null && !running.isEmpty()) {
@@ -88,20 +84,14 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
       return;
     }
     StringBuilder tokenText = new StringBuilder();
-    for (Label<? extends Token> label : running) {
-      Token token = label.value();
-      tokenText.append(token.text());
+    for (Token token : running) {
+      tokenText.append(token.getText());
     }
-    Label<? extends Token> lastTokenLabel = running.get(running.size() - 1);
-    boolean hasSpaceAfter = lastTokenLabel.value().hasSpaceAfter();
+    Token lastToken = running.get(running.size() - 1);
+    boolean hasSpaceAfter = lastToken.getHasSpaceAfter();
 
-    Span span = new Span(running.get(0).getBegin(),
-        lastTokenLabel.getEnd());
-    TermToken termToken = ImmutableTermToken.builder()
-        .text(tokenText.toString())
-        .hasSpaceAfter(hasSpaceAfter)
-        .build();
-    next = new Label<>(span, termToken);
+    Span span = new Span(running.get(0).getStartIndex(), lastToken.getEndIndex());
+    next = new TermToken(span, tokenText.toString(), hasSpaceAfter);
     running.clear();
   }
 
@@ -111,11 +101,11 @@ public final class TermTokenMerger implements Iterator<Label<TermToken>> {
   }
 
   @Override
-  public Label<TermToken> next() {
+  public TermToken next() {
     if (next == null) {
       throw new NoSuchElementException();
     }
-    Label<TermToken> copy = next;
+    TermToken copy = next;
     findNext();
     return copy;
   }

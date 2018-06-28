@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
 
 package edu.umn.biomedicus.framework;
 
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.Span;
+import edu.umn.nlpengine.Label;
+import edu.umn.nlpengine.TextRange;
+import edu.umn.nlpengine.Span;
 import java.util.Collection;
 import java.util.Optional;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Search results from TagEx.
  *
  * @since 1.6.0
  */
-public interface Searcher {
+public interface Searcher extends TextRange {
 
   /**
    * Returns the named label if it matched against anything.
@@ -34,7 +37,8 @@ public interface Searcher {
    * @param name the variable name assigned to the named label.
    * @return an optional containing the label matched against, or else empty if nothing matched.
    */
-  Optional<Label<?>> getLabel(String name);
+  @Nullable
+  Label getLabel(@Nonnull String name);
 
   /**
    * Gets the span of any named group or label.
@@ -43,7 +47,8 @@ public interface Searcher {
    * @return an optional containing either the name group or label's span, or else empty if the
    * named group or label did not match anything
    */
-  Optional<Span> getSpan(String name);
+  @Nullable
+  Span getSpan(@Nonnull String name);
 
   /**
    * True after a search or match if the pattern was matched or found, false otherwise.
@@ -77,6 +82,17 @@ public interface Searcher {
   boolean search(Span span);
 
   /**
+   * Performs the search on a specific section of the document, continuing from the last match if
+   * there was one.
+   *
+   * @param textRange the range of the document to search
+   * @return true if it found a match, false otherwise
+   */
+  default boolean search(TextRange textRange) {
+    return search(textRange.getStartIndex(), textRange.getEndIndex());
+  }
+
+  /**
    * Attempts to the document against the pattern, returning true if it is a match, false
    * otherwise.
    *
@@ -92,6 +108,16 @@ public interface Searcher {
    * @return true if there was a match, false otherwise
    */
   boolean match(int begin, int end);
+
+  /**
+   * Attempts to match a span in a text view against the pattern.
+   *
+   * @param textRange the span of the document to check
+   * @return true if there was a match, false otherwise
+   */
+  default boolean match(TextRange textRange) {
+    return match(textRange.getStartIndex(), textRange.getEndIndex());
+  }
 
   /**
    * Attempts to match a given span for the pattern.
@@ -123,4 +149,11 @@ public interface Searcher {
    * The end index of the span matched by the entire pattern.
    */
   int getEnd();
+
+  /**
+   * Converts this searcher into a {@link SearchResult}
+   * @return search result object, or null if this is not a match
+   */
+  @Nullable
+  SearchResult toSearchResult();
 }

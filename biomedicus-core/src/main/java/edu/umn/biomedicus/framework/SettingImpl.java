@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 /**
- *
+ * An implementation of the {@link Setting} annotation so it can be instantiated and used a key
+ * for Guice injection.
  */
 class SettingImpl implements Setting, Serializable {
 

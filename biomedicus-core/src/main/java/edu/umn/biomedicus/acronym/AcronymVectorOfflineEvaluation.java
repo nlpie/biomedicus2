@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package edu.umn.biomedicus.acronym;
 
-import edu.umn.biomedicus.common.types.text.Token;
+import edu.umn.biomedicus.acronyms.ScoredSense;
 import edu.umn.biomedicus.exc.BiomedicusException;
+import edu.umn.biomedicus.tokenization.Token;
+import edu.umn.nlpengine.AbstractTextRange;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Evaluate acronym expansion on the CASI data set without other biomedicus processing.
- * Used for quick-and-dirty checking of a model.
+ * Evaluate acronym expansion on the CASI data set without other biomedicus processing. Used for
+ * quick-and-dirty checking of a model.
  *
  * Created by gpfinley on 10/4/16.
  */
@@ -45,7 +47,7 @@ public class AcronymVectorOfflineEvaluation {
     AcronymExpansionsModel aem = new AcronymExpansionsModel.Loader(expansionsModelPath).loadModel();
 
     AcronymVectorModel avm = new AcronymVectorModel.Loader(null, false, vectorSpacePath,
-        senseMapPath, true, aem).loadModel();
+        senseMapPath, true, 0.0d, aem).loadModel();
 
     int correct = 0;
     int total = 0;
@@ -85,14 +87,17 @@ public class AcronymVectorOfflineEvaluation {
         i++;
       }
 
-      String hyp = avm.findBestSense(tokenList, tokenOfInterest);
-      results.add(new Result(acronym, expansion, hyp));
-      if (hyp.equals(expansion)) {
-        correct++;
+      List<ScoredSense> senses = avm.findBestSense(tokenList, tokenOfInterest);
+      if (senses.size() > 0) {
+        String hyp = senses.get(0).getSense();
+        results.add(new Result(acronym, expansion, hyp));
+        if (hyp.equals(expansion)) {
+          correct++;
+        }
+        System.out.format(
+            "\r%d   %d   %.1f%%           %s     %s                                                         ",
+            total, correct, 100. * correct / total, hyp, expansion);
       }
-      System.out.format(
-          "\r%d   %d   %.1f%%           %s     %s                                                         ",
-          total, correct, 100. * correct / total, hyp, expansion);
       total++;
     }
     System.out.println();
@@ -196,7 +201,7 @@ public class AcronymVectorOfflineEvaluation {
     }
   }
 
-  private class SimpleToken implements Token {
+  private class SimpleToken extends AbstractTextRange implements Token {
 
     final String text;
 
@@ -205,15 +210,23 @@ public class AcronymVectorOfflineEvaluation {
     }
 
     @Override
-    public String text() {
+    public String getText() {
       return text;
     }
 
     @Override
-    public boolean hasSpaceAfter() {
+    public boolean getHasSpaceAfter() {
       return true;
     }
+
+    @Override
+    public int getStartIndex() {
+      return 0;
+    }
+
+    @Override
+    public int getEndIndex() {
+      return 0;
+    }
   }
-
-
 }

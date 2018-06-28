@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,13 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.measures.MeasuresModule;
+import edu.umn.biomedicus.measures.BiomedicusMeasuresModule;
 import edu.umn.biomedicus.vocabulary.VocabularyModule;
+import edu.umn.nlpengine.Systems;
+import edu.umn.nlpengine.SystemsModule;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,42 +42,42 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Class which loads all biomedicus configuration and creates a Guice injector.
- * Should only be used once per application run.
+ * Class which loads all biomedicus configuration and creates a Guice injector. Should only be used
+ * once per application run.
  *
  * @author Ben Knoll
  * @since 1.5.0
  */
 public final class Bootstrapper {
 
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(Bootstrapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Bootstrapper.class);
 
   private final List<Module> modules = new ArrayList<>();
+
   @Nullable
   private String home = null;
+
   @Nullable
   private Injector injector = null;
+
   @Nullable
   private Map<String, Object> overloadedSettings = null;
 
   public Bootstrapper() {
     modules.add(new VocabularyModule());
-    modules.add(new MeasuresModule());
+    modules.add(new BiomedicusMeasuresModule());
   }
 
   /**
-   * Creates an instance of the Biomedicus application class using a
-   * pre-existing guice injector. Biomedicus will use
-   * a child injector of this application.
+   * Creates an instance of the Biomedicus application class using a pre-existing guice injector.
+   * Biomedicus will use a child injector of this application.
    *
    * @param injector the pre-existing guice injector
    * @return biomedicus application whose injector is a child of the argument injector
    * @throws BiomedicusException if we fail to load necessary configuration, or a necessary path is
    * undefined
    */
-  public static Application create(Injector injector)
-      throws BiomedicusException {
+  public static Application create(Injector injector) throws BiomedicusException {
     Bootstrapper bootstrapper = new Bootstrapper();
     bootstrapper.setInjector(injector);
     bootstrapper.initializePathsAndConfiguration();
@@ -82,9 +85,8 @@ public final class Bootstrapper {
   }
 
   /**
-   * Creates an instance of the biomedicus application class with optional
-   * overloaded settings and optional additional
-   * guice modules.
+   * Creates an instance of the biomedicus application class with optional overloaded settings and
+   * optional additional guice modules.
    *
    * @param overloadedSettings the settings to overload.
    * @param additionalModules the additional guice modules to add.
@@ -105,8 +107,8 @@ public final class Bootstrapper {
   }
 
   /**
-   * Creates an instance of the biomedicus application class with optional
-   * additional guice modules.
+   * Creates an instance of the biomedicus application class with optional additional guice
+   * modules.
    *
    * @param additionalModules the additional guice modules to add.
    * @return biomedicus application class
@@ -156,28 +158,37 @@ public final class Bootstrapper {
     Yaml yaml = new Yaml();
 
     // load configuration
-    Path configurationFilePath = configDir
-        .resolve("biomedicusConfiguration.yml");
+    Path configurationFilePath = configDir.resolve("biomedicusConfiguration.yml");
     Map<String, Object> biomedicusConfiguration;
-    try (BufferedReader bufferedReader = Files
-        .newBufferedReader(configurationFilePath)) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> configuration = (Map<String, Object>) yaml
-          .load(bufferedReader);
-      biomedicusConfiguration = configuration;
+    try (BufferedReader bufferedReader = Files.newBufferedReader(configurationFilePath)) {
+      biomedicusConfiguration = yaml.load(bufferedReader);
     } catch (IOException e) {
-      throw new BiomedicusException("Failed to load configuration.", e);
+      LOGGER.warn("Failed to load configuration, falling back to default configuration file.");
+      try (BufferedReader bufferedReader = new BufferedReader(
+          new InputStreamReader(
+              getClass().getClassLoader().getResourceAsStream("biomedicusConfiguration.yml")
+          )
+      )) {
+        biomedicusConfiguration = yaml.load(bufferedReader);
+      } catch (IOException e1) {
+        throw new BiomedicusException(e1);
+      }
     }
 
     // resolve paths
-
-    @SuppressWarnings("unchecked")
-    Map<String, Object> biomedicusPaths
-        = (Map<String, Object>) biomedicusConfiguration.get("paths");
+    Map<?, ?> biomedicusPaths = null;
+    Object pathsObject = biomedicusConfiguration.get("paths");
+    if (pathsObject instanceof Map) {
+      biomedicusPaths = (Map) pathsObject;
+    }
 
     // resolve home path from configuration if not already
-    if (home == null) {
-      home = (String) biomedicusPaths.get("home");
+    if (home == null && biomedicusPaths != null) {
+      Object home = biomedicusPaths.get("home");
+      if (!(home instanceof String)) {
+        throw new BiomedicusException("home path not String: " + home);
+      }
+      this.home = (String) home;
     }
 
     String dataEnv = System.getProperty("biomedicus.paths.data");
@@ -188,8 +199,7 @@ public final class Bootstrapper {
     if (dataEnv != null) {
       dataPath = Paths.get(dataEnv);
     } else {
-      if (biomedicusPaths != null && biomedicusPaths
-          .containsKey("data")) {
+      if (biomedicusPaths != null && biomedicusPaths.containsKey("data")) {
         String dataDir = (String) biomedicusPaths.get("data");
         dataPath = absoluteOrResolveAgainstHome(Paths.get(dataDir));
       } else {
@@ -200,23 +210,30 @@ public final class Bootstrapper {
     LOGGER.info("Using data directory: {}", dataPath);
 
     // collapse settings maps
-    SettingsBinder settingsBinder = SettingsBinder
-        .create(dataPath, configDir, homePath());
-    SettingsLoader configurationSettingsLoader = SettingsLoader
-        .createSettingsLoader(configurationFilePath);
+    SettingsBinder settingsBinder = SettingsBinder.create(dataPath, configDir, homePath());
+
+    SettingsLoader configurationSettingsLoader = new SettingsLoader(biomedicusConfiguration);
+
     configurationSettingsLoader.loadSettings();
     configurationSettingsLoader.addToBinder(settingsBinder);
+
+    Systems systems = new Systems();
+    systems.addSystems(configurationSettingsLoader.getSystemClasses());
+
     try {
-      Iterator<Path> settingsFilesItr = Files.walk(configDir)
-          .filter(path -> path.getFileName().toString()
-              .endsWith("Settings.yml"))
-          .iterator();
-      while (settingsFilesItr.hasNext()) {
-        Path settingsFilePath = settingsFilesItr.next();
-        SettingsLoader settingsLoader = SettingsLoader
-            .createSettingsLoader(settingsFilePath);
-        settingsLoader.loadSettings();
-        settingsLoader.addToBinder(settingsBinder);
+      if (Files.exists(configDir)) {
+        Iterator<Path> settingsFilesItr = Files.walk(configDir)
+            .filter(path -> path.getFileName().toString()
+                .endsWith("Settings.yml"))
+            .iterator();
+        while (settingsFilesItr.hasNext()) {
+          Path settingsFilePath = settingsFilesItr.next();
+          SettingsLoader settingsLoader = SettingsLoader
+              .createSettingsLoader(settingsFilePath);
+          settingsLoader.loadSettings();
+          settingsLoader.addToBinder(settingsBinder);
+          systems.addSystems(settingsLoader.getSystemClasses());
+        }
       }
     } catch (IOException e) {
       throw new BiomedicusException(e);
@@ -226,6 +243,23 @@ public final class Bootstrapper {
       settingsBinder.addSettings(overloadedSettings);
     }
 
+    String overloadFile = System.getProperty("biomedicus.settings.overloads");
+    if (overloadFile != null) {
+      LOGGER.info("Loading setting overloads: {}", overloadFile);
+      SettingsLoader settingsLoader;
+      try {
+        Path overloadFilePath = Paths.get(overloadFile);
+        settingsLoader = SettingsLoader
+            .createSettingsLoader(absoluteOrResolveAgainstHome(overloadFilePath));
+      } catch (IOException e) {
+        throw new BiomedicusException(e);
+      }
+      settingsLoader.loadSettings();
+      settingsLoader.addToBinder(settingsBinder);
+      systems.addSystems(settingsLoader.getSystemClasses());
+    }
+
+    modules.add(new SystemsModule(systems));
     modules.add(new BiomedicusModule());
     modules.add(settingsBinder.createModule());
   }
@@ -256,8 +290,7 @@ public final class Bootstrapper {
     if (injector != null) {
       biomedicusInjector = injector.createChildInjector(modules);
     } else {
-      biomedicusInjector = Guice
-          .createInjector(Stage.PRODUCTION, modules);
+      biomedicusInjector = Guice.createInjector(Stage.PRODUCTION, modules);
     }
 
     return biomedicusInjector.getInstance(Application.class);

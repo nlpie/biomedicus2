@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,43 +15,35 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <collectionReaderDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
-  <implementationName>edu.umn.biomedicus.uima.files.FilesInDirectoryReader</implementationName>
+  <implementationName>
+    edu.umn.biomedicus.uima.adapter.ArtifactSourceUimaAdapter
+  </implementationName>
   <processingResourceMetaData>
-    <name>RTF Collection Reader</name>
-    <description>
-      A collection reader which reads RTF documents into Uima.
-    </description>
+    <name>Text Files Document Source Collection Reader</name>
+    <description>Reads text files from a director into views in new documents.</description>
     <version>${project.version}</version>
     <vendor>${project.organization.name}</vendor>
     <configurationParameters>
       <configurationParameter>
         <name>inputDirectory</name>
-        <description>Directory containing input files</description>
-        <type>String</type>
-        <multiValued>false</multiValued>
-        <mandatory>true</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>recurseDepth</name>
-        <description>The number of levels of directories to recurse.</description>
-        <type>Integer</type>
-        <mandatory>true</mandatory>
-      </configurationParameter>
-      <configurationParameter>
-        <name>extensionGlob</name>
-        <description>A glob matcher to determine which files to load.</description>
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>inputFileAdapterClass</name>
-        <description>Class to use to adapt files to CAS.</description>
+        <name>extension</name>
         <type>String</type>
       </configurationParameter>
       <configurationParameter>
-        <name>targetViewName</name>
+        <name>charsetName</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>documentName</name>
+        <type>String</type>
+      </configurationParameter>
+      <configurationParameter>
+        <name>sourceClass</name>
         <type>String</type>
       </configurationParameter>
     </configurationParameters>
@@ -63,47 +55,63 @@
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>recurseDepth</name>
+        <name>extension</name>
         <value>
-          <integer>2</integer>
+          <string>.rtf</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>extensionGlob</name>
+        <name>charsetName</name>
         <value>
-          <string>**/*.rtf</string>
+          <string>Cp1252</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>inputFileAdapterClass</name>
+        <name>documentName</name>
         <value>
-          <string>edu.umn.biomedicus.uima.files.RtfTextFileAdapter</string>
+          <string>OriginalDocument</string>
         </value>
       </nameValuePair>
       <nameValuePair>
-        <name>targetViewName</name>
+        <name>sourceClass</name>
         <value>
-          <string>OriginalDocumentView</string>
+          <string>edu.umn.biomedicus.io.TextFilesArtifactSource</string>
         </value>
       </nameValuePair>
     </configurationParameterSettings>
+
+    <!-- Type System of CASes returned by this Collection Reader -->
+
+
     <typeSystemDescription>
       <imports>
         <import name="edu.umn.biomedicus.types.TypeSystem"/>
       </imports>
     </typeSystemDescription>
+    <typePriorities>
+      <imports>
+        <import name="edu.umn.biomedicus.types.TypeSystemTypePriorities"/>
+      </imports>
+    </typePriorities>
+    <fsIndexCollection>
+      <imports>
+        <import name="edu.umn.biomedicus.types.IndexCollection"/>
+      </imports>
+    </fsIndexCollection>
+
     <capabilities>
       <capability>
         <inputs/>
         <outputs>
+          <type allAnnotatorFeatures="true">edu.umn.biomedicus.type.DocumentAnnotation</type>
         </outputs>
         <outputSofas>
-          <sofaName>OriginalDocumentView</sofaName>
+          <sofaName>System</sofaName>
         </outputSofas>
       </capability>
     </capabilities>
     <operationalProperties>
-      <modifiesCas>false</modifiesCas>
+      <modifiesCas>true</modifiesCas>
       <multipleDeploymentAllowed>false</multipleDeploymentAllowed>
       <outputsNewCASes>true</outputsNewCASes>
     </operationalProperties>

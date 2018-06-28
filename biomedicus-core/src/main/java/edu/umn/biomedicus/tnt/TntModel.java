@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,12 +145,11 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
 
       try {
         LOGGER.info("Loading TnT trigram model: {}", trigram);
-        Map<String, Object> store = (Map<String, Object>) yaml.load(Files.newInputStream(trigram));
+        Map<String, Object> store = yaml.load(Files.newInputStream(trigram));
 
         PosCapTrigramModel posCapTrigramModel = PosCapTrigramModel.createFromStore(store);
 
-        List<WordProbabilityModel> wordModels = (List<WordProbabilityModel>)
-            yaml.load(Files.newInputStream(wordMetadata));
+        List<WordProbabilityModel> wordModels = yaml.load(Files.newInputStream(wordMetadata));
 
         LOGGER.info("Loading TnT word models.");
         wordModels.forEach(wm -> wm.openDataStore(dataStoreFactory));

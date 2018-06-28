@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -367,7 +367,7 @@ public class MeasuresAnnotationTool {
       }
     }
 
-    private String tryCollect(Scanner scanner) throws IOException {
+    private String tryCollect(Scanner scanner) {
       StringBuilder measureBuilder = new StringBuilder();
 
       System.out.print("Is this a measure? ");

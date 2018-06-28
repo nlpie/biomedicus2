@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,24 @@ package edu.umn.biomedicus.tnt;
 
 import com.google.inject.Inject;
 import edu.umn.biomedicus.annotations.Setting;
-import edu.umn.biomedicus.common.StandardViews;
 import edu.umn.biomedicus.common.grams.Ngram;
 import edu.umn.biomedicus.common.tuples.PosCap;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
-import edu.umn.biomedicus.common.types.text.Sentence;
 import edu.umn.biomedicus.common.viterbi.Viterbi;
 import edu.umn.biomedicus.common.viterbi.ViterbiProcessor;
-import edu.umn.biomedicus.exc.BiomedicusException;
-import edu.umn.biomedicus.framework.DocumentProcessor;
-import edu.umn.biomedicus.framework.store.Document;
-import edu.umn.biomedicus.framework.store.Label;
-import edu.umn.biomedicus.framework.store.LabelIndex;
-import edu.umn.biomedicus.framework.store.Labeler;
-import edu.umn.biomedicus.framework.store.TextView;
+import edu.umn.biomedicus.sentences.Sentence;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
+import edu.umn.nlpengine.Document;
+import edu.umn.nlpengine.DocumentTask;
+import edu.umn.nlpengine.DocumentsProcessor;
+import edu.umn.nlpengine.LabelIndex;
+import edu.umn.nlpengine.Labeler;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Part of speech tagger implementation for the TnT algorithm.
@@ -44,7 +43,7 @@ import java.util.List;
  * @author Ben Knoll
  * @since 1.0.0
  */
-public class TntPosTagger implements DocumentProcessor {
+public class TntPosTagger implements DocumentsProcessor {
 
   /**
    * A pos cap for before the beginning of sentences.
@@ -93,24 +92,21 @@ public class TntPosTagger implements DocumentProcessor {
   }
 
   @Override
-  public void process(Document document) throws BiomedicusException {
-    TextView systemView = StandardViews.getSystemView(document);
+  public void process(@Nonnull Document document) {
+    LabelIndex<Sentence> sentenceLabelIndex = document.labelIndex(Sentence.class);
+    LabelIndex<ParseToken> parseTokenLabelIndex = document.labelIndex(ParseToken.class);
+    Labeler<PosTag> partOfSpeechLabeler = document.labeler(PosTag.class);
 
-    LabelIndex<Sentence> sentenceLabelIndex = systemView.getLabelIndex(Sentence.class);
-    LabelIndex<ParseToken> parseTokenLabelIndex = systemView.getLabelIndex(ParseToken.class);
-    Labeler<PartOfSpeech> partOfSpeechLabeler = systemView.getLabeler(PartOfSpeech.class);
-
-    for (Label<Sentence> sentence2Label : sentenceLabelIndex) {
-      Collection<Label<ParseToken>> tokens = parseTokenLabelIndex.insideSpan(sentence2Label);
+    for (Sentence sentence : sentenceLabelIndex) {
+      Collection<ParseToken> tokens = parseTokenLabelIndex.inside(sentence);
       ViterbiProcessor<PosCap, WordCap> viterbiProcessor = Viterbi.secondOrder(tntModel, tntModel,
           Ngram.create(BBS, BOS), Ngram::create);
 
-      String docText = systemView.getText();
-      for (Label<ParseToken> token : tokens) {
-        CharSequence text = token.getCovered(docText);
+      String docText = document.getText();
+      for (ParseToken token : tokens) {
+        CharSequence text = token.coveredText(docText);
         boolean isCapitalized = Character.isUpperCase(text.charAt(0));
-        viterbiProcessor
-            .advance(new WordCap(text.toString(), isCapitalized));
+        viterbiProcessor.advance(new WordCap(text.toString(), isCapitalized));
         viterbiProcessor.beamFilter(beamThreshold);
       }
 
@@ -122,10 +118,15 @@ public class TntPosTagger implements DocumentProcessor {
       }
 
       Iterator<PosCap> it = tags.subList(2, tags.size()).iterator();
-      for (Label<ParseToken> token : tokens) {
+      for (ParseToken token : tokens) {
         PartOfSpeech partOfSpeech = it.next().getPartOfSpeech();
-        partOfSpeechLabeler.value(partOfSpeech).label(token);
+        partOfSpeechLabeler.add(new PosTag(token, partOfSpeech));
       }
     }
+  }
+
+  @Override
+  public void done() {
+
   }
 }

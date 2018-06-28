@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 Regents of the University of Minnesota.
+  ~ Copyright (c) 2018 Regents of the University of Minnesota.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,66 +19,110 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="sentence">
-      <import location="annotator/syntax/SentenceDetector.xml"/>
+    <delegateAnalysisEngine key="tokenCandidates">
+      <import location="annotator/DetectTokenCandidates.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="section">
-      <import location="annotator/semantics/RuleBasedSectionDetector.xml"/>
+    <delegateAnalysisEngine key="sentences">
+      <import location="annotator/ONLPDetectSentences.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="sectionHeaders">
+      <import location="annotator/RuleBasedSectionHeaderDetector.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="sections">
+      <import location="annotator/SectionContentLabeler.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="parseTokens">
-      <import location="annotator/syntax/PennLikeTokenizer.xml"/>
+      <import location="annotator/DetectParseTokens.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="numbers">
-      <import location="annotator/lexical/NumberRecognizer.xml"/>
+    <delegateAnalysisEngine key="measuresPipeline">
+      <import location="MeasuresPipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="words">
-      <import location="annotator/lexical/WordLabeler.xml"/>
+      <import location="annotator/LabelWordIndexes.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="posAnnotator">
-      <import location="annotator/syntax/PosTagger.xml"/>
+    <delegateAnalysisEngine key="partsOfSpeech">
+      <import location="annotator/TnTPosTagger.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="normalizer">
-      <import location="annotator/lexical/Normalizer.xml"/>
+      <import location="annotator/Normalizer.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="termTokens">
-      <import location="annotator/syntax/TermTokenMerger.xml"/>
+      <import location="annotator/MergeTermTokens.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="timePipeline">
+      <import location="TimePipeline.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="acronyms">
-      <import location="annotator/semantics/AcronymProcessor.xml"/>
+      <import location="annotator/DetectAcronyms.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="dictionaryMapper">
-      <import location="annotator/semantics/DictionaryConceptRecognizer.xml"/>
+    <delegateAnalysisEngine key="concepts">
+      <import location="annotator/DetectConcepts.xml"/>
     </delegateAnalysisEngine>
     <delegateAnalysisEngine key="modification">
-      <import location="annotator/semantics/Modification.xml"/>
+      <import location="annotator/DetectModifiers.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>Default BioMedICUS Pipeline</name>
     <version>${project.version}</version>
     <vendor>${organization.name}</vendor>
+    <configurationParameters>
+      <configurationParameter>
+        <name>documentName</name>
+        <description>The name of the document to run this processor on.</description>
+        <type>String</type>
+        <mandatory>true</mandatory>
+        <overrides>
+          <parameter>tokenCandidates/documentName</parameter>
+          <parameter>sentences/documentName</parameter>
+          <parameter>sectionHeaders/documentName</parameter>
+          <parameter>sections/documentName</parameter>
+          <parameter>parseTokens/documentName</parameter>
+          <parameter>measuresPipeline/documentName</parameter>
+          <parameter>words/documentName</parameter>
+          <parameter>partsOfSpeech/documentName</parameter>
+          <parameter>normalizer/documentName</parameter>
+          <parameter>termTokens/documentName</parameter>
+          <parameter>timePipeline/documentName</parameter>
+          <parameter>acronyms/documentName</parameter>
+          <parameter>concepts/documentName</parameter>
+          <parameter>modification/documentName</parameter>
+        </overrides>
+      </configurationParameter>
+    </configurationParameters>
+    <configurationParameterSettings>
+      <nameValuePair>
+        <name>documentName</name>
+        <value>
+          <string>Analysis</string>
+        </value>
+      </nameValuePair>
+    </configurationParameterSettings>
     <flowConstraints>
       <fixedFlow>
-        <node>sentence</node>
-        <node>section</node>
+        <node>tokenCandidates</node>
+        <node>sentences</node>
+        <node>sectionHeaders</node>
+        <node>sections</node>
         <node>parseTokens</node>
-        <node>numbers</node>
+        <node>measuresPipeline</node>
         <node>words</node>
-        <node>posAnnotator</node>
+        <node>partsOfSpeech</node>
+        <node>timePipeline</node>
         <node>normalizer</node>
         <node>termTokens</node>
         <node>acronyms</node>
-        <node>dictionaryMapper</node>
+        <node>concepts</node>
         <node>modification</node>
       </fixedFlow>
     </flowConstraints>
     <capabilities>
       <capability>
         <inputSofas>
-          <sofaName>SystemView</sofaName>
+          <sofaName>System</sofaName>
         </inputSofas>
         <outputSofas>
-          <sofaName>SystemView</sofaName>
+          <sofaName>System</sofaName>
         </outputSofas>
       </capability>
     </capabilities>

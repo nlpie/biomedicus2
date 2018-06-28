@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package edu.umn.biomedicus.tnt;
 import edu.umn.biomedicus.common.tuples.WordCap;
 import edu.umn.biomedicus.common.types.syntax.PartOfSpeech;
 import edu.umn.biomedicus.common.types.syntax.PartsOfSpeech;
-import edu.umn.biomedicus.common.types.text.ParseToken;
+import edu.umn.biomedicus.tagging.PosTag;
+import edu.umn.biomedicus.tokenization.ParseToken;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.xml.crypto.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,13 +116,13 @@ public class TntModelTrainer {
    * @param tokens the tokens in the sentence
    * @param partOfSpeeches the part of speeches of the tokens in the sentence.
    */
-  public void addSentence(List<ParseToken> tokens, List<PartOfSpeech> partOfSpeeches) {
+  public void addSentence(List<ParseToken> tokens, List<PosTag> partOfSpeeches) {
     for (int i = 0; i < tokens.size(); i++) {
       ParseToken token = tokens.get(i);
-      String tokenText = token.text();
+      String tokenText = token.getText();
       boolean isCapitalized = Character.isUpperCase(tokenText.charAt(0));
       WordCap wordCap = new WordCap(tokenText, isCapitalized);
-      PartOfSpeech partOfSpeech = partOfSpeeches.get(i);
+      PartOfSpeech partOfSpeech = partOfSpeeches.get(i).getPartOfSpeech();
       for (FilteredWordPosFrequencies filteredWordPosFrequencies : this.filteredWordPosFrequencies) {
         if (partOfSpeech != null) {
           filteredWordPosFrequencies.addWord(wordCap, partOfSpeech);

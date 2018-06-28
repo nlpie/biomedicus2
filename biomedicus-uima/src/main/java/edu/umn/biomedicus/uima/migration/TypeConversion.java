@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,24 @@
 package edu.umn.biomedicus.uima.migration;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.cas.Type;
 
 /**
- *
+ * A type conversion from one UIMA type to another.
  */
 public interface TypeConversion {
 
+  @Nonnull
   String sourceTypeName();
 
+  @Nonnull
   List<FeatureStructure> doMigrate(
-      CAS sourceView,
-      CAS targetView,
-      FeatureStructure from,
-      Type fromType
+      @Nonnull CAS sourceView,
+      @Nonnull CAS targetView,
+      @Nonnull FeatureStructure from,
+      @Nonnull Type fromType
   );
 }

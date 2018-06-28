@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Regents of the University of Minnesota.
+ * Copyright (c) 2018 Regents of the University of Minnesota.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package edu.umn.biomedicus.uima.rtfrewriting;
 
-import edu.umn.biomedicus.uima.common.Views;
-import edu.umn.biomedicus.uima.files.FileNameProviders;
+import edu.umn.biomedicus.uima.adapter.UimaAdapters;
+import edu.umn.nlpengine.Artifact;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,6 +58,10 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
   @Nullable
   private Path outputDir;
 
+  private String documentName;
+
+  private String rtfDocumentName;
+
   @Override
   public void initialize(UimaContext aContext) throws ResourceInitializationException {
     super.initialize(aContext);
@@ -70,15 +74,19 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
     } catch (IOException e) {
       throw new ResourceInitializationException(e);
     }
+
+    documentName = ((String) aContext.getConfigParameterValue("documentName"));
+
+    rtfDocumentName = ((String) aContext.getConfigParameterValue("rtfDocumentName"));
   }
 
   @Override
   public void process(CAS aCAS) throws AnalysisEngineProcessException {
-    CAS originalDocumentView = aCAS.getView(Views.ORIGINAL_DOCUMENT_VIEW);
-    SymbolIndexedDocument symbolIndexedDocument
-        = SymbolIndexedDocument.fromView(originalDocumentView);
+    CAS originalDocumentView = aCAS.getView(rtfDocumentName);
+    SymbolIndexedDocument symbolIndexedDocument =
+        SymbolIndexedDocument.fromView(originalDocumentView);
 
-    CAS view = aCAS.getView(Views.SYSTEM_VIEW);
+    CAS view = aCAS.getView(documentName);
 
     TreeSet<Integer> covered = new TreeSet<>();
     for (String annotationType : Objects.requireNonNull(annotationTypes)) {
@@ -107,7 +115,7 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
           .withBeginTag("\\u2222221B ")
           .withEndTag("\\u2222221E ")
           .withSymbolIndexedDocument(symbolIndexedDocument)
-          .withDestinationName(Views.SYSTEM_VIEW)
+          .withDestinationName(documentName)
           .withBegin(first)
           .withEnd(last)
           .createRegionTagger()
@@ -116,8 +124,9 @@ public class AnnotationInsertingWriter extends CasAnnotator_ImplBase {
 
     String rewrittenDocument = symbolIndexedDocument.getDocument();
 
-    String fileName = FileNameProviders.fromCAS(view, ".rtf");
-    Path file = outputDir.resolve(fileName);
+    Artifact artifact = UimaAdapters.getArtifact(aCAS, null);
+
+    Path file = outputDir.resolve(artifact.getArtifactID() + ".rtf");
 
     try (BufferedWriter bufferedWriter = Files
         .newBufferedWriter(file, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
