@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TextFilesArtifactSource - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.io</a>&nbsp;/&nbsp;<a href="./index.html">TextFilesArtifactSource</a><br/>
+<br/>
+<h1>TextFilesArtifactSource</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TextFilesArtifactSource</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ArtifactSource</span></code>
+<p>Document source that reads text files from a directory and dumps the content into a view</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.7.0</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-s-o-u-r-c-e_-p-a-t-h.html">SOURCE_PATH</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">SOURCE_PATH</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="close.html">close</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">close</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="estimate-total.html">estimateTotal</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">estimateTotal</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="try-advance.html">tryAdvance</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">tryAdvance</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.io.TextFilesArtifactSource$tryAdvance(kotlin.Function1((edu.umn.nlpengine.Artifact, kotlin.Unit)))/consumer">consumer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Artifact</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

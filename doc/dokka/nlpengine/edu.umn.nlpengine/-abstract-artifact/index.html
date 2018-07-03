@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AbstractArtifact - nlpengine</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">nlpengine</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.nlpengine</a>&nbsp;/&nbsp;<a href="./index.html">AbstractArtifact</a><br/>
+<br/>
+<h1>AbstractArtifact</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AbstractArtifact</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-artifact/index.html"><span class="identifier">Artifact</span></a></code>
+<p>An abstract subclass of the <a href="../-artifact/index.html">Artifact</a> interface, used for implementing Artifact in java.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">AbstractArtifact</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>An abstract subclass of the <a href="../-artifact/index.html">Artifact</a> interface, used for implementing Artifact in java.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-artifact/documents.html">documents</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">documents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">&gt;</span></code>
+<p>The <a href="../-document/index.html">Document</a> objects that are attached to this artifact.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-artifact/add-document.html">addDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">addDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-document/index.html"><span class="identifier">Document</span></a></code>
+<p>Creates a new <a href="../-document/index.html">Document</a> attached to this artifact keyed with the given <a href="../-artifact/add-document.html#edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/name">name</a> and containing
+<a href="../-artifact/add-document.html#edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/text">text</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-artifact/copy-document.html">copyDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies <a href="../-artifact/copy-document.html#edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document)/document">document</a> to this artifact.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies <a href="../-artifact/copy-document.html#edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/document">document</a> to this artifact with the specified name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-artifact/copy-documents.html">copyDocuments</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocuments</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocuments(edu.umn.nlpengine.Artifact)/other">other</span><span class="symbol">:</span>&nbsp;<a href="../-artifact/index.html"><span class="identifier">Artifact</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies all documents from <a href="../-artifact/copy-documents.html#edu.umn.nlpengine.Artifact$copyDocuments(edu.umn.nlpengine.Artifact)/other">other</a> to this artifact</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,105 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.tnt - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.tnt</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.tnt</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-known-word-probability-model/index.html">KnownWordProbabilityModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">KnownWordProbabilityModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-word-probability-model/index.html"><span class="identifier">WordProbabilityModel</span></a></code>
+<p>Statistical model used for known words in the TnT tagger. It gives the probability that a word will occur given a part of speech tag and capitalization. It stores these probabilities in a Map from WordPosCap objects to their double probabilities between 0.0 and 1.0. 
+<p>Stores candidates PartOfSpeech values for words for speed, even though this data is recoverable from the probabilities map.</p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-known-words-data-store/index.html">KnownWordsDataStore</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">KnownWordsDataStore</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-suffix-word-probability-model/index.html">SuffixWordProbabilityModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SuffixWordProbabilityModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-word-probability-model/index.html"><span class="identifier">WordProbabilityModel</span></a></code>
+<p>
+<p> Statistical model used for determining the probability of words given the part of speech and capitalization. Is based off a suffix method described in <a href="#"></a></p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tn-t-trainer-processor/index.html">TnTTrainerProcessor</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TnTTrainerProcessor</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ArtifactsProcessor</span></code>
+<p>Trains the TnT model using the tagged parts of speech in all documents.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tnt-model/index.html">TntModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TntModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../edu.umn.biomedicus.common.viterbi/-emission-probability-model/index.html"><span class="identifier">EmissionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">,</span>&nbsp;<a href="../edu.umn.biomedicus.common.tuples/-word-cap/index.html"><span class="identifier">WordCap</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="../edu.umn.biomedicus.common.viterbi/-transition-probability-model/index.html"><span class="identifier">TransitionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">,</span>&nbsp;<a href="../edu.umn.biomedicus.common.grams/-bigram/index.html"><span class="identifier">Bigram</span></a><span class="symbol">&lt;</span><a href="../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-tnt-model-trainer/index.html">TntModelTrainer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TntModelTrainer</span></code>
+<p>Trains a model for the TnT part of speech tagger.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tnt-pos-tagger/index.html">TntPosTagger</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TntPosTagger</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentsProcessor</span></code>
+<p>Part of speech tagger implementation for the TnT algorithm.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-cap-adapter/index.html">WordCapAdapter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">WordCapAdapter</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">UnaryOperator</span><span class="symbol">&lt;</span><a href="../edu.umn.biomedicus.common.tuples/-word-cap/index.html"><span class="identifier">WordCap</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-cap-filter/index.html">WordCapFilter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">WordCapFilter</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Predicate</span><span class="symbol">&lt;</span><a href="../edu.umn.biomedicus.common.tuples/-word-cap/index.html"><span class="identifier">WordCap</span></a><span class="symbol">&gt;</span></code>
+<p>Used to filter certain words from entering the statistics model</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-word-probability-model/index.html">WordProbabilityModel</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">WordProbabilityModel</span></code>
+<p>Interface for word probability models.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,141 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StringsBag - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.dictionary</a>&nbsp;/&nbsp;<a href="./index.html">StringsBag</a><br/>
+<br/>
+<h1>StringsBag</h1>
+<code><span class="keyword">class </span><span class="identifier">StringsBag</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/AbstractCollection.html"><span class="identifier">AbstractCollection</span></a><span class="symbol">&lt;</span><a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">StringsBag</span></a><span class="symbol">&gt;</span></code>
+<p>An unordered bag of terms and their counts. Implemented as a counting map.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.5.0</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-builder/index.html">Builder</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Builder</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StringsBag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$<init>(kotlin.IntArray, kotlin.IntArray)/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int-array/index.html"><span class="identifier">IntArray</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$<init>(kotlin.IntArray, kotlin.IntArray)/counts">counts</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int-array/index.html"><span class="identifier">IntArray</span></a><span class="symbol">)</span></code><code><span class="identifier">StringsBag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$<init>(kotlin.ByteArray)/bytes">bytes</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a><span class="symbol">)</span></code>
+<p>Creates a terms bag from a byte array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="size.html">size</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">size</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="builder.html">builder</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">builder</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-builder/index.html"><span class="identifier">Builder</span></a></code>
+<p>Creates a builder for creating terms bags.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="compare-to.html">compareTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">compareTo</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$compareTo(edu.umn.biomedicus.common.dictionary.StringsBag)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StringsBag</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="contains.html">contains</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">contains</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$contains(edu.umn.biomedicus.common.dictionary.StringIdentifier)/stringIdentifier">stringIdentifier</span><span class="symbol">:</span>&nbsp;<a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Tests whether this bag contains a term.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="count-of.html">countOf</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">countOf</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$countOf(edu.umn.biomedicus.common.dictionary.StringIdentifier)/stringIdentifier">stringIdentifier</span><span class="symbol">:</span>&nbsp;<a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The number of times a specific term occurs in this bag.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="equals.html">equals</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">equals</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StringsBag$equals(kotlin.Any)/other">other</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-bytes.html">getBytes</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getBytes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html"><span class="identifier">ByteArray</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="hash-code.html">hashCode</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">hashCode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="iterator.html">iterator</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">iterator</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterator/index.html"><span class="identifier">MutableIterator</span></a><span class="symbol">&lt;</span><a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="to-terms.html">toTerms</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toTerms</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">&gt;</span></code>
+<p>Converts the bag to a new list of StringIdentifier objects. If a term occurs n times in the bag it will get added to the list n times. The terms are sorted with identifiers ascending.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="unique-terms.html">uniqueTerms</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">uniqueTerms</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The number of unique terms that this bag holds.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

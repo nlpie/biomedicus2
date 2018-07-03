@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>EmissionProbabilityModel - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.viterbi</a>&nbsp;/&nbsp;<a href="./index.html">EmissionProbabilityModel</a><br/>
+<br/>
+<h1>EmissionProbabilityModel</h1>
+<code><span class="identifier">@FunctionalInterface</span> <span class="keyword">interface </span><span class="identifier">EmissionProbabilityModel</span><span class="symbol">&lt;</span><span class="identifier">S</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">Y</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span></code>
+<p>Provides the candidate hidden states and the probability that they will emit a given value.</p>
+<h3>Parameters</h3>
+<p><a name="&lt;S&gt;"></a>
+<code><S></code> - The type of the hidden states.</p>
+<p><a name="&lt;Y&gt;"></a>
+<code><Y></code> - The type of an emitted value.</p>
+<p><strong>Since</strong><br/>
+1.2.0</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-candidates.html">getCandidates</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getCandidates</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel$getCandidates(edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel.Y)/emittedValue">emittedValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#Y"><span class="identifier">Y</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-collection/index.html"><span class="identifier">MutableCollection</span></a><span class="symbol">&lt;</span><a href="../-candidate-probability/index.html"><span class="identifier">CandidateProbability</span></a><span class="symbol">&lt;</span><a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>Gets the CandidateProbability objects for the emitted value. CandidateProbabilities are a hidden state along with the emission probability that this hidden state leads to the emitted value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.tnt/-tnt-model/index.html">TntModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TntModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">EmissionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">,</span>&nbsp;<a href="../../edu.umn.biomedicus.common.tuples/-word-cap/index.html"><span class="identifier">WordCap</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="../-transition-probability-model/index.html"><span class="identifier">TransitionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">,</span>&nbsp;<a href="../../edu.umn.biomedicus.common.grams/-bigram/index.html"><span class="identifier">Bigram</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.common.tuples/-pos-cap/index.html"><span class="identifier">PosCap</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

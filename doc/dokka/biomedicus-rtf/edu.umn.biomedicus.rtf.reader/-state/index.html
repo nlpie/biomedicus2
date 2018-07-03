@@ -1,0 +1,163 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>State - biomedicus-rtf</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-rtf</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.rtf.reader</a>&nbsp;/&nbsp;<a href="./index.html">State</a><br/>
+<br/>
+<h1>State</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">State</span></code>
+<p>Stores the stateful properties of rtf processing.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.3.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">State</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$<init>(kotlin.collections.MutableMap((kotlin.String, edu.umn.biomedicus.rtf.reader.OutputDestination)), edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/outputDestinationMap">outputDestinationMap</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../-output-destination/index.html"><span class="identifier">OutputDestination</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$<init>(kotlin.collections.MutableMap((kotlin.String, edu.umn.biomedicus.rtf.reader.OutputDestination)), edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/outputDestinationFactory">outputDestinationFactory</span><span class="symbol">:</span>&nbsp;<a href="../-output-destination-factory/index.html"><span class="identifier">OutputDestinationFactory</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$<init>(kotlin.collections.MutableMap((kotlin.String, edu.umn.biomedicus.rtf.reader.OutputDestination)), edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/properties">properties</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$<init>(kotlin.collections.MutableMap((kotlin.String, edu.umn.biomedicus.rtf.reader.OutputDestination)), edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/indexListener">indexListener</span><span class="symbol">:</span>&nbsp;<a href="../-index-listener/index.html"><span class="identifier">IndexListener</span></a><span class="symbol">)</span></code>
+<p>Initializes a new state given the map of output destinations, a factory for new output destinations, and the state properties.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="change-destination.html">changeDestination</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeDestination</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$changeDestination(kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Tells the state to change the output destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy.html">copy</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copy</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">State</span></a></code>
+<p>Copies a child state object, which inherits the current values from this state object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="create-state.html">createState</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createState</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$createState(edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/outputDestinationFactory">outputDestinationFactory</span><span class="symbol">:</span>&nbsp;<a href="../-output-destination-factory/index.html"><span class="identifier">OutputDestinationFactory</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$createState(edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/properties">properties</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$createState(edu.umn.biomedicus.rtf.reader.OutputDestinationFactory, kotlin.collections.MutableMap((kotlin.String, kotlin.collections.MutableMap((, kotlin.Int)))), edu.umn.biomedicus.rtf.reader.IndexListener)/indexListener">indexListener</span><span class="symbol">:</span>&nbsp;<a href="../-index-listener/index.html"><span class="identifier">IndexListener</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">State</span></a></code>
+<p>Creates a state with the default output destinations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="direct-write-character.html">directWriteCharacter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">directWriteCharacter</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$directWriteCharacter(kotlin.Char, edu.umn.nlpengine.TextRange)/ch">ch</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char/index.html"><span class="identifier">Char</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$directWriteCharacter(kotlin.Char, edu.umn.nlpengine.TextRange)/originalDocumentTextLocation">originalDocumentTextLocation</span><span class="symbol">:</span>&nbsp;<span class="identifier">TextRange</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Internal method for writing characters to the output destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="finish-state.html">finishState</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">finishState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Finishes the current state, and all destinations in the state.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-property-value.html">getPropertyValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getPropertyValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$getPropertyValue(kotlin.String, kotlin.String)/group">group</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$getPropertyValue(kotlin.String, kotlin.String)/property">property</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns the value of a property.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="handle-keyword.html">handleKeyword</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">handleKeyword</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$handleKeyword(edu.umn.biomedicus.rtf.reader.KeywordAction)/keywordAction">keywordAction</span><span class="symbol">:</span>&nbsp;<a href="../-keyword-action/index.html"><span class="identifier">KeywordAction</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Handles a keyword action encountered by the parser.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="mark-skip-destination-if-unknown.html">markSkipDestinationIfUnknown</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">markSkipDestinationIfUnknown</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Marks to skip the next destination if it is unknown.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reset-property-group.html">resetPropertyGroup</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">resetPropertyGroup</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$resetPropertyGroup(kotlin.String)/group">group</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Resets a property group to zeroes.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-ignore-next-chars.html">setIgnoreNextChars</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setIgnoreNextChars</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setIgnoreNextChars(kotlin.Int)/ignoreNextChars">ignoreNextChars</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the state to ignore a number of following characters.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-property-value.html">setPropertyValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setPropertyValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setPropertyValue(kotlin.String, kotlin.String, kotlin.Int)/group">group</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setPropertyValue(kotlin.String, kotlin.String, kotlin.Int)/property">property</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setPropertyValue(kotlin.String, kotlin.String, kotlin.Int)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets a property value in the state.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-to-binary-input-type.html">setToBinaryInputType</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setToBinaryInputType</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setToBinaryInputType(kotlin.Int)/binaryCharactersToRead">binaryCharactersToRead</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the input type to binary.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-to-hex-input-type.html">setToHexInputType</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setToHexInputType</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$setToHexInputType(kotlin.Int)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the input type to hex.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="write-character.html">writeCharacter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">writeCharacter</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$writeCharacter(kotlin.Int, edu.umn.nlpengine.TextRange)/code">code</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.rtf.reader.State$writeCharacter(kotlin.Int, edu.umn.nlpengine.TextRange)/originalDocumentTextLocation">originalDocumentTextLocation</span><span class="symbol">:</span>&nbsp;<span class="identifier">TextRange</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Writes the character to the output destination.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

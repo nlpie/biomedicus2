@@ -1,0 +1,784 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.sh - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.sh</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.sh</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-alcohol-amount/index.html">AlcoholAmount</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholAmount</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The measurement / amount of an alcohol usage. E.g. 4-8 beers</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-amount-detector/index.html">AlcoholAmountDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholAmountDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-alcohol-amount/index.html">AlcoholAmount</a> in text using the alcohol amount TagEx pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-amount-expr/index.html">AlcoholAmountExpr</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholAmountExpr</span></code>
+<p>The TagEx search expression for alcohol amounts.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-amount-units/index.html">AlcoholAmountUnits</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholAmountUnits</span></code>
+<p>The model for alcohol amount unit detection.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-candidate/index.html">AlcoholCandidate</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholCandidate</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A social history candidate for alcohol usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-cue/index.html">AlcoholCue</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholCue</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates a sentence is an alcohol social history candidate.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-frequency/index.html">AlcoholFrequency</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholFrequency</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The frequency that an alcohol usage occurs. E.g. "daily", "weekly"</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-frequency-detector/index.html">AlcoholFrequencyDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholFrequencyDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-alcohol-frequency/index.html">AlcoholFrequency</a> instances in text using the general <a href="-usage-frequency/index.html">UsageFrequency</a>
+label and resolving alcohol related dependencies.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-method/index.html">AlcoholMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The method</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-method-detector/index.html">AlcoholMethodDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholMethodDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-alcohol-method/index.html">AlcoholMethod</a> using the <a href="-generic-method-phrase/index.html">GenericMethodPhrase</a> labels and the
+alcohol method phrases.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-method-phrases/index.html">AlcoholMethodPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholMethodPhrases</span></code>
+<p>Phrases that indicate the method of alcohol usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-relevant/index.html">AlcoholRelevant</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholRelevant</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A verb indicating dependants are related to alcohol usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-relevant-labeler/index.html">AlcoholRelevantLabeler</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholRelevantLabeler</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects <a href="-alcohol-relevant/index.html">AlcoholRelevant</a> labels from <a href="-alcohol-cue/index.html">AlcoholCue</a> labels in text.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-status/index.html">AlcoholStatus</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholStatus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates whether alcohol usage is ongoing or has ceased.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-status-detector/index.html">AlcoholStatusDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholStatusDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-alcohol-status/index.html">AlcoholStatus</a> in text using <a href="-alcohol-status-phrases/index.html">AlcoholStatusPhrases</a> and pre-labeled
+<a href="-usage-status/index.html">UsageStatus</a> instances. Filters on alcohol related linguistic dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-status-phrases/index.html">AlcoholStatusPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholStatusPhrases</span></code>
+<p>Phrases that indicate the current usage status for alcohol.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-temporal/index.html">AlcoholTemporal</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholTemporal</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The time period alcohol usage occurs or occurred in. Phrases like "for thirty years", "at night"</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-temporal-detector/index.html">AlcoholTemporalDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholTemporalDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-alcohol-temporal/index.html">AlcoholTemporal</a> instances in text using the general <a href="../edu.umn.biomedicus.time/-temporal-phrase/index.html">TemporalPhrase</a> and
+checks for whether there are overlaps with any amounts, frequencies, and whether it is an
+alcohol related parsing dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-type/index.html">AlcoholType</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholType</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The type of alcohol, e.g. beer, liquor.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-type-detector/index.html">AlcoholTypeDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholTypeDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-alcohol-type/index.html">AlcoholType</a> using the alcohol type phrases and filters for alcohol related
+linguistic dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-types/index.html">AlcoholTypes</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholTypes</span></code>
+<p>The model for alcohol types.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-unit/index.html">AlcoholUnit</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlcoholUnit</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The unit of measurement of an alcohol usage measurement, used in <a href="-alcohol-amount/index.html">AlcoholAmount</a> detection.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alcohol-unit-detector/index.html">AlcoholUnitDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlcoholUnitDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Labels <a href="-alcohol-unit/index.html">AlcoholUnit</a> by checking if any phrases match the list of amount units using a sequence
+detector, and verifies using a dependencies sanity check.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-candidate-detection-rules/index.html">CandidateDetectionRules</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">CandidateDetectionRules</span></code>
+<p>The models for the candidate detectors and general social history tasks.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-amount/index.html">DrugAmount</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugAmount</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The measurement / amount of an drug usage. E.g. 4-8 beers</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-amount-detector/index.html">DrugAmountDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugAmountDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-drug-amount/index.html">DrugAmount</a> in text using the drug amount TagEx pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-amount-expr/index.html">DrugAmountExpr</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugAmountExpr</span></code>
+<p>The TagEx search expression for drug amounts.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-amount-units/index.html">DrugAmountUnits</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugAmountUnits</span></code>
+<p>The model for drug amount unit detection.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-candidate/index.html">DrugCandidate</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugCandidate</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A social history candidate for drug usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-cue/index.html">DrugCue</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugCue</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates a sentence is a drug social history candidate.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-frequency/index.html">DrugFrequency</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugFrequency</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The frequency that an drug usage occurs. E.g. "daily", "weekly"</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-frequency-detector/index.html">DrugFrequencyDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugFrequencyDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-drug-frequency/index.html">DrugFrequency</a> instances in text using the general <a href="-usage-frequency/index.html">UsageFrequency</a>
+label and resolving drug related dependencies.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-method/index.html">DrugMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The method</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-method-detector/index.html">DrugMethodDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugMethodDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-drug-method/index.html">DrugMethod</a> using the <a href="-generic-method-phrase/index.html">GenericMethodPhrase</a> labels and the
+drug method phrases.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-method-phrases/index.html">DrugMethodPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugMethodPhrases</span></code>
+<p>Phrases that indicate the method of drug usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-relevant/index.html">DrugRelevant</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugRelevant</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A verb indicating dependants are related to drug usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-relevant-labeler/index.html">DrugRelevantLabeler</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugRelevantLabeler</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects <a href="-drug-relevant/index.html">DrugRelevant</a> labels from <a href="-drug-cue/index.html">DrugCue</a> labels in text.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-status/index.html">DrugStatus</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugStatus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates whether drug usage is ongoing or has ceased.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-status-detector/index.html">DrugStatusDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugStatusDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-drug-status/index.html">DrugStatus</a> in text using pre-labeled <a href="-usage-status/index.html">UsageStatus</a> instances. Filters on
+drug related linguistic dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-temporal/index.html">DrugTemporal</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugTemporal</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The time period drug usage occurs or occurred in. Phrases like "for thirty years", "at night"</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-temporal-detector/index.html">DrugTemporalDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugTemporalDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-drug-temporal/index.html">DrugTemporal</a> instances in text using the general <a href="../edu.umn.biomedicus.time/-temporal-phrase/index.html">TemporalPhrase</a> and
+checks for whether there are overlaps with any amounts, frequencies, and whether it is an
+drug related parsing dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-type/index.html">DrugType</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugType</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The type of drug, e.g. beer, liquor.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-type-detector/index.html">DrugTypeDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugTypeDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-drug-type/index.html">DrugType</a> using the drug type phrases and filters for drug related
+linguistic dependency.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-types/index.html">DrugTypes</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugTypes</span></code>
+<p>The model for drug types.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-unit/index.html">DrugUnit</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DrugUnit</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The unit of measurement of an drug usage measurement, used in <a href="-drug-amount/index.html">DrugAmount</a> detection.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drug-unit-detector/index.html">DrugUnitDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DrugUnitDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Labels <a href="-drug-unit/index.html">DrugUnit</a> by checking if any phrases match the list of amount units using a sequence
+detector, and verifies using a dependencies sanity check.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-generic-method-phrase/index.html">GenericMethodPhrase</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">GenericMethodPhrase</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A general method phrase that could potentially apply to any social history method.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-generic-method-phrase-detector/index.html">GenericMethodPhraseDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GenericMethodPhraseDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects method phrases that could apply to any social history usage type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-generic-method-phrases/index.html">GenericMethodPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GenericMethodPhrases</span></code>
+<p>The model for generic method phrases.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-amount/index.html">NicotineAmount</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineAmount</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The quantity and unit of a nicotine usage measurement. E.g. 1 - 5 packs</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-amount-detector/index.html">NicotineAmountDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineAmountDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-nicotine-amount/index.html">NicotineAmount</a> in text using the nicotine amount TagEx pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-amount-search-expr/index.html">NicotineAmountSearchExpr</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineAmountSearchExpr</span></code>
+<p>The TagEx search expression for nicotine amounts.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-amount-units/index.html">NicotineAmountUnits</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineAmountUnits</span></code>
+<p>The model for nicotine amount units.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-candidate/index.html">NicotineCandidate</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineCandidate</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A social history candidate for nicotine usage.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-cue/index.html">NicotineCue</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineCue</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates a sentence is a nicotine social history candidate.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-frequency/index.html">NicotineFrequency</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineFrequency</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>How often nicotine is used. E.g. daily, infrequently</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-frequency-detector/index.html">NicotineFrequencyDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineFrequencyDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-nicotine-frequency/index.html">NicotineFrequency</a> instances in text using the general <a href="-usage-frequency/index.html">UsageFrequency</a>
+label.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-method/index.html">NicotineMethod</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineMethod</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The method how nicotine usage occurred. E.g. smoked, chewed, etc.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-method-detector/index.html">NicotineMethodDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineMethodDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels instances of <a href="-nicotine-method/index.html">NicotineMethod</a> in text using the <a href="-generic-method-phrase/index.html">GenericMethodPhrase</a>
+instances and the nicotine methods model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-method-phrases/index.html">NicotineMethodPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineMethodPhrases</span></code>
+<p>Nicotine methods model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-relevant/index.html">NicotineRelevant</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineRelevant</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The verb that is a head for nicotine social history information.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-relevant-labeler/index.html">NicotineRelevantLabeler</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineRelevantLabeler</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects <a href="-nicotine-relevant/index.html">NicotineRelevant</a> labels from <a href="-nicotine-cue/index.html">NicotineCue</a> labels in text.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-status/index.html">NicotineStatus</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineStatus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A word that indicates whether usage is ongoing or has ceased.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-status-detector/index.html">NicotineStatusDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineStatusDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects nicotine status phrases in text using the nicotine status model and the general
+<a href="-usage-status-phrases/index.html">UsageStatusPhrases</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-status-phrases/index.html">NicotineStatusPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineStatusPhrases</span></code>
+<p>Model for nicotine status phrases.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-temporal/index.html">NicotineTemporal</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineTemporal</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The time period nicotine usage occurs/occurred in or over. Includes phrases like
+"for thirty years" or "at night" or "weekend nights"</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-temporal-detector/index.html">NicotineTemporalDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineTemporalDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-nicotine-temporal/index.html">NicotineTemporal</a> instances in text using the general <a href="../edu.umn.biomedicus.time/-temporal-phrase/index.html">TemporalPhrase</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-type/index.html">NicotineType</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineType</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The type of nicotine, cigarettes, chewing tobacco, etc.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-type-detector/index.html">NicotineTypeDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineTypeDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-nicotine-type/index.html">NicotineType</a> instances in text using the nicotine types model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-types/index.html">NicotineTypes</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineTypes</span></code>
+<p>The model for nicotine types.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-unit/index.html">NicotineUnit</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NicotineUnit</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>The unit of a nicotine usage measurement, used in <a href="-nicotine-amount/index.html">NicotineAmount</a> detection.
+E.g. cigarettes, packs, tins.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nicotine-unit-detector/index.html">NicotineUnitDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NicotineUnitDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects and labels <a href="-nicotine-unit/index.html">NicotineUnit</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-social-history-candidate-detector/index.html">SocialHistoryCandidateDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SocialHistoryCandidateDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects candidate sentences which may have usage for alcohol, drugs, and nicotine.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-social-history-module/index.html">SocialHistoryModule</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SocialHistoryModule</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">SystemModule</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency/index.html">UsageFrequency</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UsageFrequency</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A general usage frequency that could potentially apply to any social history usage type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency-detector/index.html">UsageFrequencyDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UsageFrequencyDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects <a href="-usage-frequency/index.html">UsageFrequency</a>, generic usage frequency phrases that could apply to any social history
+type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency-pattern/index.html">UsageFrequencyPattern</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UsageFrequencyPattern</span></code>
+<p>The usage frequency tagex pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency-phrase/index.html">UsageFrequencyPhrase</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UsageFrequencyPhrase</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A general known usage frequency phrase that could potentially apply to any social history usage
+type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency-phrase-detector/index.html">UsageFrequencyPhraseDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UsageFrequencyPhraseDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects certain concrete usage frequency phrases from a dictionary of known phrases to be used in
+the labeling of generic usage frequencies.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-frequency-phrases/index.html">UsageFrequencyPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UsageFrequencyPhrases</span></code>
+<p>Generic usage frequency phrases model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-status/index.html">UsageStatus</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UsageStatus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A general usage status that could potentially apply to any social history type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-status-detector/index.html">UsageStatusDetector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UsageStatusDetector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Detects <a href="-usage-status/index.html">UsageStatus</a>, usage status phrases that could apply to any social history usage type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-usage-status-phrases/index.html">UsageStatusPhrases</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">UsageStatusPhrases</span></code>
+<p>The model for generic usage status phrases.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,123 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PosCap - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.tuples</a>&nbsp;/&nbsp;<a href="./index.html">PosCap</a><br/>
+<br/>
+<h1>PosCap</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PosCap</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">PosCap</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html"><span class="identifier">Serializable</span></a></code>
+<p>A double of part of speech and capitalization.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.0.0</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="cardinality.html">cardinality</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">cardinality</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The total number of part of speech capitalizations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="compare-to.html">compareTo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">compareTo</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$compareTo(edu.umn.biomedicus.common.tuples.PosCap)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">PosCap</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="create.html">create</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$create(edu.umn.biomedicus.common.types.syntax.PartOfSpeech, kotlin.Boolean)/partOfSpeech">partOfSpeech</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$create(edu.umn.biomedicus.common.types.syntax.PartOfSpeech, kotlin.Boolean)/capitalized">capitalized</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PosCap</span></a></code>
+<p>Gets the part of speech capitalization for the parameters.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="create-from-ordinal.html">createFromOrdinal</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromOrdinal</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$createFromOrdinal(kotlin.Int)/ordinal">ordinal</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PosCap</span></a></code>
+<p>Creates a Part of speech capitalization from its ordinal.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="equals.html">equals</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">equals</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$equals(kotlin.Any)/other">other</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-capitalized.html">getCapitalized</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">getCapitalized</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$getCapitalized(edu.umn.biomedicus.common.types.syntax.PartOfSpeech)/partOfSpeech">partOfSpeech</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PosCap</span></a></code>
+<p>Gets the Part of speech capitalization for the part of speech and capitalized = true.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-not-capitalized.html">getNotCapitalized</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">getNotCapitalized</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.PosCap$getNotCapitalized(edu.umn.biomedicus.common.types.syntax.PartOfSpeech)/partOfSpeech">partOfSpeech</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PosCap</span></a></code>
+<p>Gets the Part of speech capitalization for the part of speech and capitalized = false.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-part-of-speech.html">getPartOfSpeech</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getPartOfSpeech</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a></code>
+<p>Gets the part of speech component of this tuple.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="hash-code.html">hashCode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hashCode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-capitalized.html">isCapitalized</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isCapitalized</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Gets the capitalization component of this tuple.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="ordinal.html">ordinal</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">ordinal</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The ordinal of the part of speech-capitalization, its integer location in the sequence of all part of speech capitalizations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

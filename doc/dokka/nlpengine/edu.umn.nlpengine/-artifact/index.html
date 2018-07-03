@@ -1,0 +1,112 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Artifact - nlpengine</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">nlpengine</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.nlpengine</a>&nbsp;/&nbsp;<a href="./index.html">Artifact</a><br/>
+<br/>
+<h1>Artifact</h1>
+<code><span class="keyword">interface </span><span class="identifier">Artifact</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-metadata/index.html"><span class="identifier">Metadata</span></a></code>
+<p>A single processing artifact, containing a number of <a href="documents.html">documents</a> of text and their associated
+labels.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="documents.html">documents</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">documents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">&gt;</span></code>
+<p>The <a href="../-document/index.html">Document</a> objects that are attached to this artifact.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-metadata/artifact-i-d.html">artifactID</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">artifactID</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the unique artifact identifier. Generally sourced from the relative path to the
+source file, a primary key/integer unique identifier, or an UUID. It should be a valid
+relative file path in order for writers to properly function.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-metadata/metadata.html">metadata</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">metadata</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html"><span class="identifier">MutableMap</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Returns a map of all the metadata for an artifact.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-document.html">addDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">addDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-document/index.html"><span class="identifier">Document</span></a></code>
+<p>Creates a new <a href="../-document/index.html">Document</a> attached to this artifact keyed with the given <a href="add-document.html#edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/name">name</a> and containing
+<a href="add-document.html#edu.umn.nlpengine.Artifact$addDocument(kotlin.String, kotlin.String)/text">text</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-document.html">copyDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies <a href="copy-document.html#edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document)/document">document</a> to this artifact.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies <a href="copy-document.html#edu.umn.nlpengine.Artifact$copyDocument(edu.umn.nlpengine.Document, kotlin.String)/document">document</a> to this artifact with the specified name.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="copy-documents.html">copyDocuments</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyDocuments</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Artifact$copyDocuments(edu.umn.nlpengine.Artifact)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Artifact</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies all documents from <a href="copy-documents.html#edu.umn.nlpengine.Artifact$copyDocuments(edu.umn.nlpengine.Artifact)/other">other</a> to this artifact</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-abstract-artifact/index.html">AbstractArtifact</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AbstractArtifact</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Artifact</span></a></code>
+<p>An abstract subclass of the <a href="./index.html">Artifact</a> interface, used for implementing Artifact in java.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-standard-artifact/index.html">StandardArtifact</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">StandardArtifact</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Artifact</span></a></code>
+<p>A standard implementation of <a href="./index.html">Artifact</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

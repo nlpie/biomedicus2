@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StandardBidirectionalDictionary - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.dictionary</a>&nbsp;/&nbsp;<a href="./index.html">StandardBidirectionalDictionary</a><br/>
+<br/>
+<h1>StandardBidirectionalDictionary</h1>
+<code><span class="keyword">class </span><span class="identifier">StandardBidirectionalDictionary</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-bidirectional-dictionary/index.html"><span class="identifier">BidirectionalDictionary</span></a></code>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StandardBidirectionalDictionary</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$<init>(edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers, edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Strings)/identifiers">identifiers</span><span class="symbol">:</span>&nbsp;<a href="../-bidirectional-dictionary/-identifiers/index.html"><span class="identifier">Identifiers</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$<init>(edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers, edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Strings)/strings">strings</span><span class="symbol">:</span>&nbsp;<a href="../-bidirectional-dictionary/-strings/index.html"><span class="identifier">Strings</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="close.html">close</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">close</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="contains.html">contains</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">contains</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$contains(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-identifiers.html">getIdentifiers</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getIdentifiers</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-bidirectional-dictionary/-identifiers/index.html"><span class="identifier">Identifiers</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-strings.html">getStrings</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getStrings</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-bidirectional-dictionary/-strings/index.html"><span class="identifier">Strings</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-term.html">getTerm</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getTerm</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTerm(edu.umn.biomedicus.common.dictionary.StringIdentifier)/stringIdentifier">stringIdentifier</span><span class="symbol">:</span>&nbsp;<a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-term-identifier.html">getTermIdentifier</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getTermIdentifier</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTermIdentifier(kotlin.CharSequence)/term">term</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-term-vector.html">getTermVector</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getTermVector</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTermVector(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-strings-vector/index.html"><span class="identifier">StringsVector</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-terms.html">getTerms</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getTerms</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTerms(edu.umn.biomedicus.common.dictionary.StringsVector)/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="../-strings-vector/index.html"><span class="identifier">StringsVector</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">getTerms</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTerms(edu.umn.biomedicus.common.dictionary.StringsBag)/stringsBag">stringsBag</span><span class="symbol">:</span>&nbsp;<a href="../-strings-bag/index.html"><span class="identifier">StringsBag</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-collection/index.html"><span class="identifier">MutableCollection</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-terms-bag.html">getTermsBag</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getTermsBag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$getTermsBag(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-strings-bag/index.html"><span class="identifier">StringsBag</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="in-memory.html">inMemory</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">inMemory</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.StandardBidirectionalDictionary$inMemory(kotlin.Boolean)/inMemory">inMemory</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">StandardBidirectionalDictionary</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="size.html">size</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">size</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RegionTaggerBuilder - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.rtfrewriting</a>&nbsp;/&nbsp;<a href="./index.html">RegionTaggerBuilder</a><br/>
+<br/>
+<h1>RegionTaggerBuilder</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RegionTaggerBuilder</span></code>
+<p>Builds a RegionTagger object.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.3.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">RegionTaggerBuilder</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Builds a RegionTagger object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create.html">create</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Creates a new RegionTaggerBuilder with all fields null.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="create-region-tagger.html">createRegionTagger</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">createRegionTagger</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-region-tagger/index.html"><span class="identifier">RegionTagger</span></a></code>
+<p>Creates the RegionTagger with the previously set properties.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-begin.html">withBegin</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withBegin</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withBegin(kotlin.Int)/beginDestinationIndex">beginDestinationIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the begin index of the tagged region.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-begin-tag.html">withBeginTag</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withBeginTag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withBeginTag(kotlin.String)/beginTag">beginTag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the character to insert as a begin tag.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-destination-name.html">withDestinationName</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withDestinationName</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withDestinationName(kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the destination name that the tag will be in.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-end.html">withEnd</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withEnd</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withEnd(kotlin.Int)/endDestinationIndex">endDestinationIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the end index of the tagged region.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-end-tag.html">withEndTag</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withEndTag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withEndTag(kotlin.String)/endTag">endTag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the character to insert as an end tag.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-symbol-indexed-document.html">withSymbolIndexedDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withSymbolIndexedDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder$withSymbolIndexedDocument(edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument)/symbolIndexedDocument">symbolIndexedDocument</span><span class="symbol">:</span>&nbsp;<a href="../-symbol-indexed-document/index.html"><span class="identifier">SymbolIndexedDocument</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">RegionTaggerBuilder</span></a></code>
+<p>Sets the document to perform the tagging in.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

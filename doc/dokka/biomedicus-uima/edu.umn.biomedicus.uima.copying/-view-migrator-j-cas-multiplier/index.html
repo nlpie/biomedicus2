@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ViewMigratorJCasMultiplier - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.copying</a>&nbsp;/&nbsp;<a href="./index.html">ViewMigratorJCasMultiplier</a><br/>
+<br/>
+<h1>ViewMigratorJCasMultiplier</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ViewMigratorJCasMultiplier</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">JCasMultiplier_ImplBase</span></code>
+<p>UIMA Analysis Engine which duplicates a UIMA view, optionally deleting the original view.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.3.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">ViewMigratorJCasMultiplier</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>UIMA Analysis Engine which duplicates a UIMA view, optionally deleting the original view.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-p-a-r-a-m_-d-e-l-e-t-e_-o-r-i-g-i-n-a-l_-v-i-e-w.html">PARAM_DELETE_ORIGINAL_VIEW</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">PARAM_DELETE_ORIGINAL_VIEW</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>UIMA parameter for whether we should delete the original view</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-p-a-r-a-m_-s-o-u-r-c-e_-v-i-e-w_-n-a-m-e.html">PARAM_SOURCE_VIEW_NAME</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">PARAM_SOURCE_VIEW_NAME</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>UIMA parameter name for the source view name</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-p-a-r-a-m_-t-a-r-g-e-t_-v-i-e-w_-n-a-m-e.html">PARAM_TARGET_VIEW_NAME</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">PARAM_TARGET_VIEW_NAME</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>UIMA parameter name for the target view name</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-p-a-r-a-m_-v-i-e-w_-m-i-g-r-a-t-o-r_-c-l-a-s-s.html">PARAM_VIEW_MIGRATOR_CLASS</a></p>
+</td>
+<td>
+<code><span class="keyword">static</span> <span class="keyword">val </span><span class="identifier">PARAM_VIEW_MIGRATOR_CLASS</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Fully qualified canonical class name for the ViewMigrator to use.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="has-next.html">hasNext</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hasNext</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>{@inheritDoc} 
+<p>It will be true iff we haven't returned the new view we create.</p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="initialize.html">initialize</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">initialize</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.copying.ViewMigratorJCasMultiplier$initialize(org.apache.uima.UimaContext)/aContext">aContext</span><span class="symbol">:</span>&nbsp;<span class="identifier">UimaContext</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>{@inheritDoc} 
+<p>Initializes the 3 parameters, "sourceViewName", "targetViewName", and "deleteOriginalView".</p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="next.html">next</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">next</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AbstractCas</span></code>
+<p>{@inheritDoc} 
+<p>Only returns the one new view created.</p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="process.html">process</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">process</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.copying.ViewMigratorJCasMultiplier$process(org.apache.uima.jcas.JCas)/aJCas">aJCas</span><span class="symbol">:</span>&nbsp;<span class="identifier">JCas</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>{@inheritDoc} 
+<p>Performs the copying of all views in the old view to a new view, and also for the specified view creates a new view optionally copying the old view twice, once to the new name, once to the existing name</p>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SearchExprFactory - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="./index.html">SearchExprFactory</a><br/>
+<br/>
+<h1>SearchExprFactory</h1>
+<code><span class="identifier">@Singleton</span> <span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SearchExprFactory</span></code>
+<p>Factory class providing for instantiation of SearchExpr objects using only their expression.</p>
+<p><strong>Since</strong><br/>
+1.6.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SearchExprFactory</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$<init>(edu.umn.biomedicus.framework.LabelAliases)/labelAliases">labelAliases</span><span class="symbol">:</span>&nbsp;<a href="../-label-aliases/index.html"><span class="identifier">LabelAliases</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="parse.html">parse</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">parse</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$parse(kotlin.String)/expr">expr</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-search-expr/index.html"><span class="identifier">SearchExpr</span></a></code>
+<p>Parses the search expression into a graph so it can be queried against documents.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="read-and-parse.html">readAndParse</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">readAndParse</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String, java.nio.charset.Charset)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-search-expr/index.html"><span class="identifier">SearchExpr</span></a></code>
+<p>Reads the file at the specified path and parses it into a Search Expression.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">readAndParse</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-search-expr/index.html"><span class="identifier">SearchExpr</span></a></code>
+<p>Reads the file at the specified path and parses it into a search expression using the default charset.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

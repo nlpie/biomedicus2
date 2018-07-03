@@ -1,0 +1,202 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AbstractTextRange - nlpengine</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">nlpengine</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.nlpengine</a>&nbsp;/&nbsp;<a href="./index.html">AbstractTextRange</a><br/>
+<br/>
+<h1>AbstractTextRange</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AbstractTextRange</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a></code>
+<p>Used to implement <a href="../-text-range/index.html">TextRange</a> in Java.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">AbstractTextRange</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Used to implement <a href="../-text-range/index.html">TextRange</a> in Java.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-text-range/end-index.html">endIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">endIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The index after any characters included in this label</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/length.html">length</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">length</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>A computed property how long the text range is, number of characters covered by
+this label.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/start-index.html">startIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">startIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The index of the first character</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-text-range/check-indexes.html">checkIndexes</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">checkIndexes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Performs a sanity check to make sure the indexes make sense, that <a href="../-text-range/start-index.html">startIndex</a> is greater
+than or equal to 0, and that <a href="../-text-range/end-index.html">endIndex</a> is greater than or equal to <a href="../-text-range/start-index.html">startIndex</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/compare-location.html">compareLocation</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">compareLocation</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$compareLocation(edu.umn.nlpengine.TextRange)/textRange">textRange</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Compares the location of two labels, first comparing <a href="../-text-range/start-index.html">startIndex</a>, then comparing <a href="../-text-range/end-index.html">endIndex</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/compare-start.html">compareStart</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">compareStart</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$compareStart(edu.umn.nlpengine.TextRange)/textRange">textRange</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Compares the <a href="../-text-range/start-index.html">startIndex</a> of two labels using natural ordering</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/compare-to.html">compareTo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">compareTo</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$compareTo(edu.umn.nlpengine.TextRange)/other">other</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/contains.html">contains</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">contains</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$contains(edu.umn.nlpengine.TextRange)/other">other</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Checks if the label <a href="../-text-range/contains.html#edu.umn.nlpengine.TextRange$contains(edu.umn.nlpengine.TextRange)/other">other</a> is contained by this label</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/covered-string.html">coveredString</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">coveredString</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$coveredString(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Gets a substring of the covered string from <a href="../-text-range/covered-string.html#edu.umn.nlpengine.TextRange$coveredString(kotlin.String)/string">string</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/covered-text.html">coveredText</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">coveredText</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$coveredText(kotlin.CharSequence)/charSequence">charSequence</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
+<p>Gets the sub sequence of covered text from <a href="../-text-range/covered-text.html#edu.umn.nlpengine.TextRange$coveredText(kotlin.CharSequence)/charSequence">charSequence</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/length.html">length</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">length</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>A function which returns the length of this text range.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/location-equals.html">locationEquals</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">locationEquals</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$locationEquals(edu.umn.nlpengine.TextRange)/other">other</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Checks if the location in text of this label equals the location in text of the label <a href="../-text-range/location-equals.html#edu.umn.nlpengine.TextRange$locationEquals(edu.umn.nlpengine.TextRange)/other">other</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/offset.html">offset</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">offset</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$offset(kotlin.Int)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-span/index.html"><span class="identifier">Span</span></a></code>
+<p>Creates a new span by shifting the <a href="../-text-range/index.html">TextRange</a> by <a href="../-text-range/offset.html#edu.umn.nlpengine.TextRange$offset(kotlin.Int)/value">value</a> characters.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/offset-right-by-start-index.html">offsetRightByStartIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">offsetRightByStartIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$offsetRightByStartIndex(edu.umn.nlpengine.TextRange)/textRange">textRange</span><span class="symbol">:</span>&nbsp;<a href="../-text-range/index.html"><span class="identifier">TextRange</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-span/index.html"><span class="identifier">Span</span></a></code>
+<p>Creates a new span by shifting this text range's indexes by <a href="../-text-range/start-index.html">startIndex</a> of <a href="../-text-range/offset-right-by-start-index.html#edu.umn.nlpengine.TextRange$offsetRightByStartIndex(edu.umn.nlpengine.TextRange)/textRange">textRange</a>
+characters. If this object is relative to <a href="../-text-range/offset-right-by-start-index.html#edu.umn.nlpengine.TextRange$offsetRightByStartIndex(edu.umn.nlpengine.TextRange)/textRange">textRange</a> has the effect of normalizing it to the
+same 0-basis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/require-bounds.html">requireBounds</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">requireBounds</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$requireBounds(kotlin.CharSequence)/charSequence">charSequence</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Used to check that the text sequence has a valid <a href="../-text-range/start-index.html">startIndex</a> and <a href="../-text-range/end-index.html">endIndex</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/to-int-range.html">toIntRange</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toIntRange</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.ranges/-int-range/index.html"><span class="identifier">IntRange</span></a></code>
+<p>Converts to an <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.ranges/-int-range/index.html">IntRange</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/to-span.html">toSpan</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toSpan</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-span/index.html"><span class="identifier">Span</span></a></code>
+<p>Transforms this label into a <a href="../-span/index.html">Span</a> of just this label's <a href="../-text-range/start-index.html">startIndex</a> and <a href="../-text-range/end-index.html">endIndex</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-text-range/trim.html">trim</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">trim</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.TextRange$trim(kotlin.CharSequence)/charSequence">charSequence</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-span/index.html"><span class="identifier">Span</span></a></code>
+<p>Returns a new <a href="../-span/index.html">Span</a> which trims all the whitespace from this <a href="../-text-range/index.html">TextRange</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

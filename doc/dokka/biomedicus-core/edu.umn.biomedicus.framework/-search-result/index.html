@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SearchResult - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="./index.html">SearchResult</a><br/>
+<br/>
+<h1>SearchResult</h1>
+<code><span class="keyword">interface </span><span class="identifier">SearchResult</span></code>
+<p>An immutable result of a search expression.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="found.html">found</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">found</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>True after a search or match if the pattern was matched or found, false otherwise.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-begin.html">getBegin</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getBegin</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The beginning index of the span matched by the entire pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-end.html">getEnd</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getEnd</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The end index of the span matched by the entire pattern.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-label.html">getLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getLabel</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchResult$getLabel(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Label</span></code>
+<p>Returns the named label if it matched against anything.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-span.html">getSpan</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getSpan</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.SearchResult$getSpan(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Span</span></code>
+<p>Gets the span of any named group or label.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

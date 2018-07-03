@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>LabelAdapterFactory - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.labels</a>&nbsp;/&nbsp;<a href="./index.html">LabelAdapterFactory</a><br/>
+<br/>
+<h1>LabelAdapterFactory</h1>
+<code><span class="keyword">interface </span><span class="identifier">LabelAdapterFactory</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">&gt;</span></code>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="label-class.html">labelClass</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">labelClass</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="type-name.html">typeName</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">typeName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create.html">create</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.labels.LabelAdapterFactory$create(org.apache.uima.cas.CAS, edu.umn.nlpengine.Document)/cas">cas</span><span class="symbol">:</span>&nbsp;<span class="identifier">CAS</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.labels.LabelAdapterFactory$create(org.apache.uima.cas.CAS, edu.umn.nlpengine.Document)/document">document</span><span class="symbol">:</span>&nbsp;<span class="identifier">Document</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-label-adapter/index.html"><span class="identifier">LabelAdapter</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-auto-adapter/index.html">AutoAdapter</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AutoAdapter</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">LabelAdapterFactory</span></a><span class="symbol">&lt;</span><a href="../-auto-adapter/-label-list-property-mapping/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>An auto-adapter from a <a href="#">Label</a> to an auto-generated UIMA type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

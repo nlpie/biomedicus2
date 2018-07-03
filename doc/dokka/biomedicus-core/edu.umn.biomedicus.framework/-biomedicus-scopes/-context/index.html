@@ -1,0 +1,28 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BiomedicusScopes.Context - biomedicus-core</title>
+<link rel="stylesheet" href="../../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="../index.html">BiomedicusScopes</a>&nbsp;/&nbsp;<a href="./index.html">Context</a><br/>
+<br/>
+<h1>Context</h1>
+<code><span class="keyword">class </span><span class="identifier">Context</span></code>
+<p>A context object, stores a ref to the context ThreadLocal and the map of objects to provide within the scope.  <code><a href="#">#call(Callable)</a></code> causes the current thread to enter the scope so that objects from the map are provided when scoped objects are needed.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="call.html">call</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">call</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.BiomedicusScopes.Context$call(java.util.concurrent.Callable((edu.umn.biomedicus.framework.BiomedicusScopes.Context.call.T)))/callable">callable</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/concurrent/Callable.html"><span class="identifier">Callable</span></a><span class="symbol">&lt;</span><a href="call.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="call.html#T"><span class="identifier">T</span></a></code>
+<p>Runs the callable inside of a context, providing objects from that context for injected types within the context.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

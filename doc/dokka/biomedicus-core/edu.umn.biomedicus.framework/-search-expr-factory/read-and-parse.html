@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SearchExprFactory.readAndParse - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="index.html">SearchExprFactory</a>&nbsp;/&nbsp;<a href="./read-and-parse.html">readAndParse</a><br/>
+<br/>
+<h1>readAndParse</h1>
+<a name="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String, java.nio.charset.Charset)"></a>
+<code><span class="identifier">@Nonnull</span> <span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">readAndParse</span><span class="symbol">(</span><span class="identifier">@Nonnull</span> <span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String, java.nio.charset.Charset)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier">@Nonnull</span> <span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-search-expr/index.html"><span class="identifier">SearchExpr</span></a></code>
+<p>Reads the file at the specified path and parses it into a Search Expression.</p>
+<h3>Parameters</h3>
+<p><a name="path"></a>
+<code>path</code> - the path of the file to read</p>
+<p><a name="charset"></a>
+<code>charset</code> - the charset to use</p>
+<h3>Exceptions</h3>
+<p><a name="IOException"></a>
+<code>IOException</code> - if there is an error reading the file.</p>
+<p><strong>Return</strong><br/>
+SearchExpr from the file</p>
+<a name="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String)"></a>
+<code><span class="identifier">@Nonnull</span> <span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">readAndParse</span><span class="symbol">(</span><span class="identifier">@Nonnull</span> <span class="identifier" id="edu.umn.biomedicus.framework.SearchExprFactory$readAndParse(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-search-expr/index.html"><span class="identifier">SearchExpr</span></a></code>
+<p>Reads the file at the specified path and parses it into a search expression using the default charset.</p>
+<h3>Parameters</h3>
+<p><a name="path"></a>
+<code>path</code> - the path of the file to read</p>
+<h3>Exceptions</h3>
+<p><a name="IOException"></a>
+<code>IOException</code> - if there is an error finding or reading the file.</p>
+<p><strong>Return</strong><br/>
+SearchExpr from the file</p>
+</BODY>
+</HTML>

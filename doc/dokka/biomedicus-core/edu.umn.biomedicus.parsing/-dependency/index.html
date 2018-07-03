@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Dependency - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.parsing</a>&nbsp;/&nbsp;<a href="./index.html">Dependency</a><br/>
+<br/>
+<h1>Dependency</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Dependency</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A dependency relation in text.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">Dependency</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/dep">dep</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.tokenization/-parse-token/index.html"><span class="identifier">ParseToken</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/relation">relation</span><span class="symbol">:</span>&nbsp;<a href="../-u-d-relation/index.html"><span class="identifier">UDRelation</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/head">head</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Dependency</span></a><span class="symbol">?</span><span class="symbol">)</span></code><code><span class="identifier">Dependency</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(kotlin.Int, kotlin.Int, edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/startIndex">startIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(kotlin.Int, kotlin.Int, edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/endIndex">endIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(kotlin.Int, kotlin.Int, edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/dep">dep</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.tokenization/-parse-token/index.html"><span class="identifier">ParseToken</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(kotlin.Int, kotlin.Int, edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/relation">relation</span><span class="symbol">:</span>&nbsp;<a href="../-u-d-relation/index.html"><span class="identifier">UDRelation</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.parsing.Dependency$<init>(kotlin.Int, kotlin.Int, edu.umn.biomedicus.tokenization.ParseToken, edu.umn.biomedicus.parsing.UDRelation, edu.umn.biomedicus.parsing.Dependency)/head">head</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Dependency</span></a><span class="symbol">?</span><span class="symbol">)</span></code>
+<p>A dependency relation in text.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="dep.html">dep</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">dep</span><span class="symbol">: </span><a href="../../edu.umn.biomedicus.tokenization/-parse-token/index.html"><span class="identifier">ParseToken</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="end-index.html">endIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">endIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>the index after the dependant</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="head.html">head</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">head</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Dependency</span></a><span class="symbol">?</span></code>
+<p>the span of the head</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="relation.html">relation</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">relation</span><span class="symbol">: </span><a href="../-u-d-relation/index.html"><span class="identifier">UDRelation</span></a><span class="symbol">?</span></code>
+<p>the relation between dependant and head</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="start-index.html">startIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">startIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>the index the dependant starts at</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="parent-iterator.html">parentIterator</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">parentIterator</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html"><span class="identifier">Iterator</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">Dependency</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="self-and-parent-iterator.html">selfAndParentIterator</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">selfAndParentIterator</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterator/index.html"><span class="identifier">Iterator</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">Dependency</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

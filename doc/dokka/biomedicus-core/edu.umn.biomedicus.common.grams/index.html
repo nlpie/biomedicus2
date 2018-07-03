@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.common.grams - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.common.grams</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.common.grams</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-bigram/index.html">Bigram</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Bigram</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="-bigram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Two objects of the same type in a sequence.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-ngram/index.html">Ngram</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Ngram</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-bigram/index.html"><span class="identifier">Bigram</span></a><span class="symbol">&lt;</span><a href="-ngram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="-trigram/index.html"><span class="identifier">Trigram</span></a><span class="symbol">&lt;</span><a href="-ngram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="-ngram/index.html"><span class="identifier">Ngram</span></a><span class="symbol">&lt;</span><a href="-ngram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">, </span><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html"><span class="identifier">Serializable</span></a><span class="keyword"> where </span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="-ngram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html"><span class="identifier">Serializable</span></a></code>
+<p>An implementation of Bigram and Trigram which uses an subarray.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trigram/index.html">Trigram</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Trigram</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="-trigram/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>A sequence of three objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

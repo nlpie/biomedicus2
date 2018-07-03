@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.normalization - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.normalization</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.normalization</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-norm-form/index.html">NormForm</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NormForm</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-normalization-module/index.html">NormalizationModule</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NormalizationModule</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">SystemModule</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-normalizer/index.html">Normalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Normalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentsProcessor</span></code>
+<p>Performs word normalization on the parse tokens in a document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-normalizer-model/index.html">NormalizerModel</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">NormalizerModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../edu.umn.biomedicus.framework/-lifecycle-managed/index.html"><span class="identifier">LifecycleManaged</span></a></code>
+<p>Interface for a normalizer model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-normalizer-model-builder/index.html">NormalizerModelBuilder</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NormalizerModelBuilder</span></code>
+<p>Responsible for loading a SPECIALIST LRAGR file and creating a normalizer from it.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-normalizer-model-loader.html">NormalizerModelLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NormalizerModelLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../edu.umn.biomedicus.framework/-data-loader/index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="-normalizer-model/index.html"><span class="identifier">NormalizerModel</span></a><span class="symbol">&gt;</span></code>
+<p>Loads the normalizer model for Guice to provide to anything that needs it.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-rocks-d-b-normalizer-model/index.html">RocksDBNormalizerModel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RocksDBNormalizerModel</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-normalizer-model/index.html"><span class="identifier">NormalizerModel</span></a></code>
+<p>Normalizer model which uses RocksDB as a backing map.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

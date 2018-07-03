@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>NamedLabels - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="./index.html">NamedLabels</a><br/>
+<br/>
+<h1>NamedLabels</h1>
+<code><span class="keyword">interface </span><span class="identifier">NamedLabels</span></code>
+<p>Named labels of a TagEx search expression found during search.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="contains-label.html">containsLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">containsLabel</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.NamedLabels$containsLabel(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns whether the label with the specified <a href="contains-label.html#edu.umn.biomedicus.framework.NamedLabels$containsLabel(kotlin.String)/name">name</a> was found</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-label.html">getLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getLabel</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework.NamedLabels$getLabel(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Label</span><span class="symbol">?</span></code>
+<p>Returns the value of the label with the specified <a href="get-label.html#edu.umn.biomedicus.framework.NamedLabels$getLabel(kotlin.String)/name">name</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <a href="./index.html"><span class="identifier">NamedLabels</span></a><span class="symbol">.</span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework$get(edu.umn.biomedicus.framework.NamedLabels, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../get.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
+<p>Get operator function which uses the return type <a href="../get.html#T">T</a> and <a href="../get.html#edu.umn.biomedicus.framework$get(edu.umn.biomedicus.framework.NamedLabels, kotlin.String)/name">name</a> to retrieve a label value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

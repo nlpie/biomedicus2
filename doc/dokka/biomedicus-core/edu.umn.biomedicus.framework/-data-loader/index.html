@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>DataLoader - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="./index.html">DataLoader</a><br/>
+<br/>
+<h1>DataLoader</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DataLoader</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Provider</span><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="../-eager-loadable/index.html"><span class="identifier">EagerLoadable</span></a></code>
+<p>Loads data into, and functions as a provider for, a singleton object.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.5.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">DataLoader</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Loads data into, and functions as a provider for, a singleton object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="eager-load.html">eagerLoad</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">eagerLoad</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.concepts/-concept-dictionary-loader.html">ConceptDictionaryLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ConceptDictionaryLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.concepts/-concept-dictionary/index.html"><span class="identifier">ConceptDictionary</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.stopwords/-stopwords-model/-loader/index.html">Loader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Loader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.stopwords/-stopwords-model/index.html"><span class="identifier">StopwordsModel</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.sentence/-o-n-l-p-sentence-model/-loader/index.html">Loader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Loader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.sentence/-o-n-l-p-sentence-model/index.html"><span class="identifier">ONLPSentenceModel</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.normalization/-normalizer-model-loader.html">NormalizerModelLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NormalizerModelLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.normalization/-normalizer-model/index.html"><span class="identifier">NormalizerModel</span></a><span class="symbol">&gt;</span></code>
+<p>Loads the normalizer model for Guice to provide to anything that needs it.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.measures/-number-model-loader/index.html">NumberModelLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">NumberModelLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><span class="identifier">NumberModel</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../edu.umn.biomedicus.concepts/-semantic-type-network-loader/index.html">SemanticTypeNetworkLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SemanticTypeNetworkLoader</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DataLoader</span></a><span class="symbol">&lt;</span><a href="../../edu.umn.biomedicus.concepts/-semantic-type-network/index.html"><span class="identifier">SemanticTypeNetwork</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WordPosCap - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.tuples</a>&nbsp;/&nbsp;<a href="./index.html">WordPosCap</a><br/>
+<br/>
+<h1>WordPosCap</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">WordPosCap</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-comparable/index.html"><span class="identifier">Comparable</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">WordPosCap</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html"><span class="identifier">Serializable</span></a></code>
+<p>A triplet of a string (word), a part of speech, and a capitalization boolean value.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.0.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WordPosCap</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.WordPosCap$<init>(kotlin.String, edu.umn.biomedicus.common.types.syntax.PartOfSpeech, kotlin.Boolean)/word">word</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.tuples.WordPosCap$<init>(kotlin.String, edu.umn.biomedicus.common.types.syntax.PartOfSpeech, kotlin.Boolean)/partOfSpeech">partOfSpeech</span><span class="symbol">:</span>&nbsp;<a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.tuples.WordPosCap$<init>(kotlin.String, edu.umn.biomedicus.common.types.syntax.PartOfSpeech, kotlin.Boolean)/isCapitalized">isCapitalized</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span></code>
+<p>Default constructor. Initializes the three values in the triplet.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="compare-to.html">compareTo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">compareTo</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.WordPosCap$compareTo(edu.umn.biomedicus.common.tuples.WordPosCap)/other">other</span><span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">WordPosCap</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="equals.html">equals</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">equals</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.tuples.WordPosCap$equals(kotlin.Any)/other">other</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-part-of-speech.html">getPartOfSpeech</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getPartOfSpeech</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../edu.umn.biomedicus.common.types.syntax/-part-of-speech/index.html"><span class="identifier">PartOfSpeech</span></a></code>
+<p>Gets the part of speech of the triplet</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-word.html">getWord</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getWord</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the word part of the (word, pos, cap) triplet.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="hash-code.html">hashCode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hashCode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-capitalized.html">isCapitalized</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isCapitalized</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>The capitalization value of the triplet. Not necessarily whether the word value is capitalized, since the word value could be a suffix.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-pos-cap.html">toPosCap</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toPosCap</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-pos-cap/index.html"><span class="identifier">PosCap</span></a></code>
+<p>Converts this to a double of part of speech and capitalization.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

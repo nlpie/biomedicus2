@@ -1,0 +1,368 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>alltypes - biomedicus-uima</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<h3>All Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-abstract-cas-adapter/index.html">edu.umn.biomedicus.uima.adapter.AbstractCasAdapter</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-adapted-property-cas-mapping/index.html">edu.umn.biomedicus.uima.rtf.AdaptedPropertyCasMapping</a></td>
+<td>
+<p>Created by benknoll on 7/13/15.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-annotation-inserting-writer/index.html">edu.umn.biomedicus.uima.rtfrewriting.AnnotationInsertingWriter</a></td>
+<td>
+<p>Inserts placeholders for annotations into RTF documents.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.util/-annotation-verifier/index.html">edu.umn.biomedicus.uima.util.AnnotationVerifier</a></td>
+<td>
+<p>Logs any illegal annotations that will cause <code><a href="#">AnnotationFS#getCoveredText()</a></code> to fail.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-artifact-source-uima-adapter/index.html">edu.umn.biomedicus.uima.adapter.ArtifactSourceUimaAdapter</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-auto-adapter/index.html">edu.umn.biomedicus.uima.labels.AutoAdapter</a></td>
+<td>
+<p>An auto-adapter from a <a href="#">Label</a> to an auto-generated UIMA type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-auto-adapters/index.html">edu.umn.biomedicus.uima.labels.AutoAdapters</a></td>
+<td>
+<p>Global object responsible for storing <a href="#">Label</a> and <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a> classes from modules, creating their
+UIMA type system counterparts.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-c-a-s-artifact/index.html">edu.umn.biomedicus.uima.adapter.CASArtifact</a></td>
+<td>
+<p>UIMA implementation of the Artifact interface. Uses an empty "metadata" view to hold metadata as well as the document identifier.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-cas-mappings/index.html">edu.umn.biomedicus.uima.rtf.CasMappings</a></td>
+<td>
+<p>Mappings from RTF elements to UIMA CAS elements. Is a POJO/bean that is XML-serializable via JAXB.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-control-word-cas-mapping/index.html">edu.umn.biomedicus.uima.rtf.ControlWordCasMapping</a></td>
+<td>
+<p>XML bean object for a mapping from a RTF control word to a UIMA annotation. When the control word is encountered, the annotation is emitted in the output destination view.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-destination-cas-mapping/index.html">edu.umn.biomedicus.uima.rtf.DestinationCasMapping</a></td>
+<td>
+<p>A mapping from an rtf destination name to an UIMA view name. Controls what rtf destinations output to uima views.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-feature-copier/index.html">edu.umn.biomedicus.uima.copying.FeatureCopier</a></td>
+<td>
+<p>Interface for a method for copying the value of a Feature from one to another.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-feature-getter/index.html">edu.umn.biomedicus.uima.copying.FeatureGetter</a></td>
+<td>
+<p>Interface for the methods on FeatureStructure which return the value of a feature.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-feature-setter/index.html">edu.umn.biomedicus.uima.copying.FeatureSetter</a></td>
+<td>
+<p>Interface for the methods on FeatureStructure which sets the value of a Feature.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.util/-fs-accessor/index.html">edu.umn.biomedicus.uima.util.FsAccessor</a></td>
+<td>
+<p>Allows you to set and retrieve features dynamically on UIMA FeatureStructures. It's probably slow, but not as slow as the time it takes to program a bunch of <code><a href="#">Type#getFeatureByBaseName(String)</a></code> calls. Only use for utility / non-production code. It's missing some things, add them if you need them.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-guice-injector/index.html">edu.umn.biomedicus.uima.adapter.GuiceInjector</a></td>
+<td>
+<p>Guice injector resource implementation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-ignore-output-destination/index.html">edu.umn.biomedicus.uima.rtf.IgnoreOutputDestination</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-initializer-engine/index.html">edu.umn.biomedicus.uima.adapter.InitializerEngine</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-label-adapter/index.html">edu.umn.biomedicus.uima.labels.LabelAdapter</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-label-adapter-factory/index.html">edu.umn.biomedicus.uima.labels.LabelAdapterFactory</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-label-adapters/index.html">edu.umn.biomedicus.uima.labels.LabelAdapters</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.migration/-migrator-engine/index.html">edu.umn.biomedicus.uima.migration.MigratorEngine</a></td>
+<td>
+<p>Migrates one type system to another. Works by doing one to one conversions from the type conversions in the designated migration.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.util/-no-documents-collection-reader/index.html">edu.umn.biomedicus.uima.util.NoDocumentsCollectionReader</a></td>
+<td>
+<p>A collection reader which does nothing</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-no-op-annotator/index.html">edu.umn.biomedicus.uima.adapter.NoOpAnnotator</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.util/-output-type-system/index.html">edu.umn.biomedicus.uima.util.OutputTypeSystem</a></td>
+<td>
+<p>Writes the type system including generated types to a XML file.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-paragraph-annotator/index.html">edu.umn.biomedicus.uima.rtf.ParagraphAnnotator</a></td>
+<td>
+<p>Annotates paragraphs in rtf text using annotations for the \par keyword.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-pipeline-component-uima-adapter/index.html">edu.umn.biomedicus.uima.adapter.PipelineComponentUimaAdapter</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-property-cas-mapping/index.html">edu.umn.biomedicus.uima.rtf.PropertyCasMapping</a></td>
+<td>
+<p>A mapping from some kind of rtf property state to an annotation type for emission in UIMA.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-property-cas-mapping-adapter/index.html">edu.umn.biomedicus.uima.rtf.PropertyCasMappingAdapter</a></td>
+<td>
+<p>XML adapter for PropertyCasMapping.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-region-tagger/index.html">edu.umn.biomedicus.uima.rtfrewriting.RegionTagger</a></td>
+<td>
+<p>Inserts tags before and after a region in an rtf document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-region-tagger-builder/index.html">edu.umn.biomedicus.uima.rtfrewriting.RegionTaggerBuilder</a></td>
+<td>
+<p>Builds a RegionTagger object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-rtf-parser-annotator/index.html">edu.umn.biomedicus.uima.rtf.RtfParserAnnotator</a></td>
+<td>
+<p>Annotator which parses rtf documents.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-rtf-rewriter-cursor/index.html">edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor</a></td>
+<td>
+<p>Class for rewriting an rtf document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.util/-simple-run-c-p-e/index.html">edu.umn.biomedicus.uima.util.SimpleRunCPE</a></td>
+<td>
+<p>
+<p>Class was adapted from the UIMA examples file org.apache.uima.examples.cpe.SimpleRunCPE</p>
+ 
+<p> Main Class that runs a Collection Processing Engine (CPE). This class reads a CPE Descriptor as a command-line argument and instantiates the CPE. It also registers a callback listener with the CPE, which will print progress and statistics to System.out. </p>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-special-table-marker/index.html">edu.umn.biomedicus.uima.rtfrewriting.SpecialTableMarker</a></td>
+<td>
+<p>Inserts a marker at the end of a special table (color table, stylesheet, etc) in rtf, along with the number of entries that table contains.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-special-table-not-found-exception.html">edu.umn.biomedicus.uima.rtfrewriting.SpecialTableNotFoundException</a></td>
+<td>
+<p>Thrown when a special table is not found.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtfrewriting/-symbol-indexed-document/index.html">edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument</a></td>
+<td>
+<p>A rtf document for modification, contains indices to all the symbols, which are entire control words or characters in the rtf document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.rtf/-table-annotator/index.html">edu.umn.biomedicus.uima.rtf.TableAnnotator</a></td>
+<td>
+<p>Annotates table elements from rtf text using the row/cell/nestedcell/nestedrow end annotations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.migration/-type-conversion/index.html">edu.umn.biomedicus.uima.migration.TypeConversion</a></td>
+<td>
+<p>A type conversion from one UIMA type to another.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/org.apache.uima.resource.metadata.-type-system-description/index.html">org.apache.uima.resource.metadata.TypeSystemDescription</a> (extensions in package edu.umn.biomedicus.uima.labels)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.migration/-type-system-migration/index.html">edu.umn.biomedicus.uima.migration.TypeSystemMigration</a></td>
+<td>
+<p>Performs a type system migration between two different UIMA type systems by converting XMI files.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.xmi/-type-system-writer/index.html">edu.umn.biomedicus.uima.xmi.TypeSystemWriter</a></td>
+<td>
+<p>Implementation class for writing the type system.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.adapter/-uima-adapters/index.html">edu.umn.biomedicus.uima.adapter.UimaAdapters</a></td>
+<td>
+<p>Utility class for adapting the UIMA backend to the Biomedicus type system.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-uima-copying/index.html">edu.umn.biomedicus.uima.copying.UimaCopying</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.common/-uima-helpers/index.html">edu.umn.biomedicus.uima.common.UimaHelpers</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-uima-label-index/index.html">edu.umn.biomedicus.uima.labels.UimaLabelIndex</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.labels/-uima-labeler/index.html">edu.umn.biomedicus.uima.labels.UimaLabeler</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-view-copier/index.html">edu.umn.biomedicus.uima.copying.ViewCopier</a></td>
+<td>
+<p>Responsible for creating a new view in a parent CAS and then copying all FSes from an existing view to this new view.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-view-migrator/index.html">edu.umn.biomedicus.uima.copying.ViewMigrator</a></td>
+<td>
+<p>Interface for a class which migrates the data from one UIMA view to another.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.copying/-view-migrator-j-cas-multiplier/index.html">edu.umn.biomedicus.uima.copying.ViewMigratorJCasMultiplier</a></td>
+<td>
+<p>UIMA Analysis Engine which duplicates a UIMA view, optionally deleting the original view.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.xmi/-xmi-collection-reader/index.html">edu.umn.biomedicus.uima.xmi.XmiCollectionReader</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../edu.umn.biomedicus.uima.xmi/-xmi-writer/index.html">edu.umn.biomedicus.uima.xmi.XmiWriter</a></td>
+<td>
+<p>A UIMA analysis engine that writes the contents of CASes to a files in a folder.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

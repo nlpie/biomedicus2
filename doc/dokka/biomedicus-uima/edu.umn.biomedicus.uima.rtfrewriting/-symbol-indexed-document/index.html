@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SymbolIndexedDocument - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.rtfrewriting</a>&nbsp;/&nbsp;<a href="./index.html">SymbolIndexedDocument</a><br/>
+<br/>
+<h1>SymbolIndexedDocument</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SymbolIndexedDocument</span></code>
+<p>A rtf document for modification, contains indices to all the symbols, which are entire control words or characters in the rtf document.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.3.0</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="from-view.html">fromView</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">fromView</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$fromView(org.apache.uima.cas.CAS)/originalDocumentView">originalDocumentView</span><span class="symbol">:</span>&nbsp;<span class="identifier">CAS</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">SymbolIndexedDocument</span></a></code>
+<p>Indexes all the symbols from an original document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-context.html">getContext</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getContext</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$getContext(kotlin.Int)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-document.html">getDocument</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDocument</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Returns the edited document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-original-document-index.html">getOriginalDocumentIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getOriginalDocumentIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$getOriginalDocumentIndex(edu.umn.biomedicus.uima.rtfrewriting.SymbolLocation)/symbolLocation">symbolLocation</span><span class="symbol">:</span>&nbsp;<span class="identifier">SymbolLocation</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Gets the index in the original rtf document for a symbol location object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-before-symbol.html">insertBeforeSymbol</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">insertBeforeSymbol</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$insertBeforeSymbol(kotlin.Int, kotlin.String)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$insertBeforeSymbol(kotlin.Int, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inserts text before the symbol at the index.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-text-after.html">insertTextAfter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">insertTextAfter</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$insertTextAfter(kotlin.Int, kotlin.String)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$insertTextAfter(kotlin.Int, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inserts text after the symbol at the index.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="symbol-index.html">symbolIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">symbolIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$symbolIndex(kotlin.Int, kotlin.String)/characterIndex">characterIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$symbolIndex(kotlin.Int, kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns the index of the symbol from the character index and the destination that a character occurs in.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="symbol-is-outside-destination.html">symbolIsOutsideDestination</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">symbolIsOutsideDestination</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$symbolIsOutsideDestination(kotlin.Int, kotlin.String)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$symbolIsOutsideDestination(kotlin.Int, kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Determines if a symbol is outside of the specified destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="symbol-offset-is-non-zero.html">symbolOffsetIsNonZero</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">symbolOffsetIsNonZero</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument$symbolOffsetIsNonZero(kotlin.Int)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Determines if the offset of a symbol is non-zero.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RocksDbIdentifiers - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.dictionary</a>&nbsp;/&nbsp;<a href="./index.html">RocksDbIdentifiers</a><br/>
+<br/>
+<h1>RocksDbIdentifiers</h1>
+<code><span class="keyword">class </span><span class="identifier">RocksDbIdentifiers</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-abstract-identifiers/index.html"><span class="identifier">AbstractIdentifiers</span></a><span class="symbol">, </span><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html"><span class="identifier">Closeable</span></a></code>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">RocksDbIdentifiers</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.RocksDbIdentifiers$<init>(java.nio.file.Path)/identifiersPath">identifiersPath</span><span class="symbol">:</span>&nbsp;<span class="identifier">Path</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="close.html">close</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">close</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="contains.html">contains</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">contains</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.RocksDbIdentifiers$contains(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="mapping-iterator.html">mappingIterator</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">mappingIterator</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-mapping-iterator/index.html"><span class="identifier">MappingIterator</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="size.html">size</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">size</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-abstract-identifiers/get-term-identifier.html">getTermIdentifier</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTermIdentifier</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.AbstractIdentifiers$getTermIdentifier(kotlin.CharSequence)/term">term</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-abstract-identifiers/get-term-vector.html">getTermVector</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTermVector</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.AbstractIdentifiers$getTermVector(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-strings-vector/index.html"><span class="identifier">StringsVector</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-abstract-identifiers/get-terms-bag.html">getTermsBag</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getTermsBag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.AbstractIdentifiers$getTermsBag(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-strings-bag/index.html"><span class="identifier">StringsBag</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

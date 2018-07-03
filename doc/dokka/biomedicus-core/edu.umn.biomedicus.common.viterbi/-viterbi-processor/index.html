@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ViterbiProcessor - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.viterbi</a>&nbsp;/&nbsp;<a href="./index.html">ViterbiProcessor</a><br/>
+<br/>
+<h1>ViterbiProcessor</h1>
+<code><span class="keyword">interface </span><span class="identifier">ViterbiProcessor</span><span class="symbol">&lt;</span><span class="identifier">S</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">Y</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span></code>
+<p>A Viterbi processor uses the viterbi algorithm for processing hidden Markov models to compute the hidden states for a sequence of emission/output values.</p>
+<h3>Parameters</h3>
+<p><a name="&lt;S&gt;"></a>
+<code><S></code> - the hidden state type</p>
+<p><a name="&lt;Y&gt;"></a>
+<code><Y></code> - the emitted value type.</p>
+<p><strong>Since</strong><br/>
+1.2.0</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="advance.html">advance</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">advance</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.ViterbiProcessor$advance(edu.umn.biomedicus.common.viterbi.ViterbiProcessor.Y)/emittedValue">emittedValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#Y"><span class="identifier">Y</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Advances the processor by one emitted value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="beam-filter.html">beamFilter</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">beamFilter</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.ViterbiProcessor$beamFilter(kotlin.Double)/beamThreshold">beamThreshold</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Filters the states by the beam threshold. The beam threshold is a log 10 probability value, values that are more than the beam threshold less probable than the most probable state are removed from computation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="end.html">end</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.ViterbiProcessor$end(edu.umn.biomedicus.common.viterbi.ViterbiProcessor.S, edu.umn.biomedicus.common.viterbi.ViterbiProcessor.S)/skipValue">skipValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.ViterbiProcessor$end(edu.umn.biomedicus.common.viterbi.ViterbiProcessor.S, edu.umn.biomedicus.common.viterbi.ViterbiProcessor.S)/terminalValue">terminalValue</span><span class="symbol">:</span>&nbsp;<a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="index.html#S"><span class="identifier">S</span></a><span class="symbol">&gt;</span></code>
+<p>Ends the computation returning the most probable sequence of hidden states for the emitted values that were passed into the viterbi processor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

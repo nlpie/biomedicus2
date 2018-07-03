@@ -1,0 +1,105 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.uima.rtf - biomedicus-uima</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.uima.rtf</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.uima.rtf</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-adapted-property-cas-mapping/index.html">AdaptedPropertyCasMapping</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AdaptedPropertyCasMapping</span></code>
+<p>Created by benknoll on 7/13/15.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-cas-mappings/index.html">CasMappings</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">CasMappings</span></code>
+<p>Mappings from RTF elements to UIMA CAS elements. Is a POJO/bean that is XML-serializable via JAXB.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-control-word-cas-mapping/index.html">ControlWordCasMapping</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ControlWordCasMapping</span></code>
+<p>XML bean object for a mapping from a RTF control word to a UIMA annotation. When the control word is encountered, the annotation is emitted in the output destination view.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-destination-cas-mapping/index.html">DestinationCasMapping</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DestinationCasMapping</span></code>
+<p>A mapping from an rtf destination name to an UIMA view name. Controls what rtf destinations output to uima views.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-ignore-output-destination/index.html">IgnoreOutputDestination</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">IgnoreOutputDestination</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">OutputDestination</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-paragraph-annotator/index.html">ParagraphAnnotator</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ParagraphAnnotator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">CasAnnotator_ImplBase</span></code>
+<p>Annotates paragraphs in rtf text using annotations for the \par keyword.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-property-cas-mapping/index.html">PropertyCasMapping</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PropertyCasMapping</span></code>
+<p>A mapping from some kind of rtf property state to an annotation type for emission in UIMA.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-property-cas-mapping-adapter/index.html">PropertyCasMappingAdapter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PropertyCasMappingAdapter</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/javax/xml/bind/annotation/adapters/XmlAdapter.html"><span class="identifier">XmlAdapter</span></a><span class="symbol">&lt;</span><a href="-adapted-property-cas-mapping/index.html"><span class="identifier">AdaptedPropertyCasMapping</span></a><span class="symbol">,</span>&nbsp;<a href="-property-cas-mapping/index.html"><span class="identifier">PropertyCasMapping</span></a><span class="symbol">&gt;</span></code>
+<p>XML adapter for PropertyCasMapping.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-rtf-parser-annotator/index.html">RtfParserAnnotator</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RtfParserAnnotator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">CasAnnotator_ImplBase</span></code>
+<p>Annotator which parses rtf documents.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-table-annotator/index.html">TableAnnotator</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TableAnnotator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">CasAnnotator_ImplBase</span></code>
+<p>Annotates table elements from rtf text using the row/cell/nestedcell/nestedrow end annotations.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

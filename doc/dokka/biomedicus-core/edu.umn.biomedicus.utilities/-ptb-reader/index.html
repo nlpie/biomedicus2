@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PtbReader - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.utilities</a>&nbsp;/&nbsp;<a href="./index.html">PtbReader</a><br/>
+<br/>
+<h1>PtbReader</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">PtbReader</span></code>
+<p>Class for parsing penn treebank style parse trees into a structured tree.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.5.0</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-node/index.html">Node</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">Node</span></code>
+<p>A node in a penn treebank tree. For the node "(NNS patients)" the parent is the immediate node containing that node, the children are empty, the label is</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create.html">create</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$create(java.io.Reader)/reader">reader</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/Reader.html"><span class="identifier">Reader</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new <code>PtbReader</code> from a reader.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$create(java.io.InputStream)/inputStream">inputStream</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html"><span class="identifier">InputStream</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader from an input stream, uses default charset.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$create(java.io.InputStream, java.nio.charset.Charset)/inputStream">inputStream</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html"><span class="identifier">InputStream</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$create(java.io.InputStream, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader from an input stream and a charset</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$create(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader directly from a string.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="create-from-file.html">createFromFile</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.nio.file.Path)/path">path</span><span class="symbol">:</span>&nbsp;<span class="identifier">Path</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader from a path to a file to read from, using the default charset</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.nio.file.Path, java.nio.charset.Charset)/path">path</span><span class="symbol">:</span>&nbsp;<span class="identifier">Path</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.nio.file.Path, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader from a path to a file to read from, using a specified charset.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(kotlin.String)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Create a new ptb reader from a string path to a file to read from, using the default charset.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(kotlin.String, java.nio.charset.Charset)/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(kotlin.String, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Create a new ptb reader from a string path to a file to read from, using a specified charset.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader by reading from file, using the default charset.</p>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">createFromFile</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.io.File, java.nio.charset.Charset)/file">file</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$createFromFile(java.io.File, java.nio.charset.Charset)/charset">charset</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/charset/Charset.html"><span class="identifier">Charset</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PtbReader</span></a></code>
+<p>Creates a new ptb reader by reading from the file, using a specified from a charset</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="main.html">main</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">main</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.utilities.PtbReader$main(kotlin.Array((kotlin.String)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="next-node.html">nextNode</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">nextNode</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/6/docs/api/java/util/Optional.html"><span class="identifier">Optional</span></a><span class="symbol">&lt;</span><a href="-node/index.html"><span class="identifier">Node</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the next top level node in the penn tree set.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

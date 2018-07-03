@@ -1,0 +1,85 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BidirectionalDictionary.Identifiers - biomedicus-core</title>
+<link rel="stylesheet" href="../../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../../index.html">edu.umn.biomedicus.common.dictionary</a>&nbsp;/&nbsp;<a href="../index.html">BidirectionalDictionary</a>&nbsp;/&nbsp;<a href="./index.html">Identifiers</a><br/>
+<br/>
+<h1>Identifiers</h1>
+<code><span class="keyword">interface </span><span class="identifier">Identifiers</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html"><span class="identifier">Closeable</span></a></code>
+<p>A mapping from strings to identifiers.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="contains.html">contains</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">contains</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers$contains(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Whether or not this index contains the specified string</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-term-identifier.html">getTermIdentifier</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getTermIdentifier</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers$getTermIdentifier(kotlin.CharSequence)/term">term</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../-string-identifier/index.html"><span class="identifier">StringIdentifier</span></a></code>
+<p>Gets the indexed term identifier from the full string.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-term-vector.html">getTermVector</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getTermVector</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers$getTermVector(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../-strings-vector/index.html"><span class="identifier">StringsVector</span></a></code>
+<p>The terms vector for the iterable of Char Sequence terms.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-terms-bag.html">getTermsBag</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getTermsBag</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.dictionary.BidirectionalDictionary.Identifiers$getTermsBag(kotlin.collections.MutableIterable((kotlin.CharSequence)))/terms">terms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-iterable/index.html"><span class="identifier">MutableIterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../-strings-bag/index.html"><span class="identifier">StringsBag</span></a></code>
+<p>A terms bag for an iterable of Char Sequence terms.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="mapping-iterator.html">mappingIterator</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">mappingIterator</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../-mapping-iterator/index.html"><span class="identifier">MappingIterator</span></a></code>
+<p>Returns a mapping iterator of all the strings to identifiers mapping stored in this object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="size.html">size</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">size</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns the number of mappings.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../-abstract-identifiers/index.html">AbstractIdentifiers</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AbstractIdentifiers</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Identifiers</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

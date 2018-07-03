@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Strings.generateSuffixes - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.utilities</a>&nbsp;/&nbsp;<a href="index.html">Strings</a>&nbsp;/&nbsp;<a href="./generate-suffixes.html">generateSuffixes</a><br/>
+<br/>
+<h1>generateSuffixes</h1>
+<a name="edu.umn.biomedicus.common.utilities.Strings$generateSuffixes(kotlin.String, kotlin.Int)"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">generateSuffixes</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.utilities.Strings$generateSuffixes(kotlin.String, kotlin.Int)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.utilities.Strings$generateSuffixes(kotlin.String, kotlin.Int)/maxSuffixLength">maxSuffixLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Stream</span><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Creates a stream which generates all suffixes of a word up to a maximum suffix length in order of decreasing size including a final empty string. The suffixes of "computer" of max length 4 would be "uter" "ter" "er" "r" "" in that order.</p>
+<h3>Parameters</h3>
+<p><a name="string"></a>
+<code>string</code> - string to break apart into suffixes.</p>
+<p><a name="maxSuffixLength"></a>
+<code>maxSuffixLength</code> - the number of characters from the end that should be broken into suffixes.</p>
+<p><strong>Return</strong><br/>
+a stream of the suffixes of the string.</p>
+<a name="edu.umn.biomedicus.common.utilities.Strings$generateSuffixes(kotlin.String)"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">generateSuffixes</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.utilities.Strings$generateSuffixes(kotlin.String)/string">string</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Stream</span><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
+<p>Creates a stream which generates the suffixes of a word in order of decreasing size including a final empty string. The suffixes of "computer" would be "computer" "omputer" "mputer" ... "r" "".</p>
+<h3>Parameters</h3>
+<p><a name="string"></a>
+<code>string</code> - string to break apart into suffixes.</p>
+<p><strong>Return</strong><br/>
+a stream of the suffixes of the stream.</p>
+</BODY>
+</HTML>

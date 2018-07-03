@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Viterbi.firstOrder - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.common.viterbi</a>&nbsp;/&nbsp;<a href="index.html">Viterbi</a>&nbsp;/&nbsp;<a href="./first-order.html">firstOrder</a><br/>
+<br/>
+<h1>firstOrder</h1>
+<a name="edu.umn.biomedicus.common.viterbi.Viterbi$firstOrder(edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.Y)), edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, )), edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S)"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">S</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">Y</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">firstOrder</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.Viterbi$firstOrder(edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.Y)), edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, )), edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S)/emissionProbabilityModel">emissionProbabilityModel</span><span class="symbol">:</span>&nbsp;<a href="../-emission-probability-model/index.html"><span class="identifier">EmissionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="first-order.html#S"><span class="identifier">S</span></a><span class="symbol">,</span>&nbsp;<a href="first-order.html#Y"><span class="identifier">Y</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.Viterbi$firstOrder(edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.Y)), edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, )), edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S)/transitionProbabilityModel">transitionProbabilityModel</span><span class="symbol">:</span>&nbsp;<a href="../-transition-probability-model/index.html"><span class="identifier">TransitionProbabilityModel</span></a><span class="symbol">&lt;</span><a href="first-order.html#S"><span class="identifier">S</span></a><span class="symbol">,</span>&nbsp;<a href="first-order.html#S"><span class="identifier">S</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.common.viterbi.Viterbi$firstOrder(edu.umn.biomedicus.common.viterbi.EmissionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.Y)), edu.umn.biomedicus.common.viterbi.TransitionProbabilityModel((edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S, )), edu.umn.biomedicus.common.viterbi.Viterbi.firstOrder.S)/initialState">initialState</span><span class="symbol">:</span>&nbsp;<a href="first-order.html#S"><span class="identifier">S</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-viterbi-processor/index.html"><span class="identifier">ViterbiProcessor</span></a><span class="symbol">&lt;</span><a href="first-order.html#S"><span class="identifier">S</span></a><span class="symbol">,</span>&nbsp;<a href="first-order.html#Y"><span class="identifier">Y</span></a><span class="symbol">&gt;</span></code>
+<p>Creates a new first-order ViterbiProcessor. A first order viterbi processor only relies on the most recent state to compute transition probabilities, and only stores the most probable sequence for each possible most recent state for each step of computation.</p>
+<h3>Parameters</h3>
+<p><a name="emissionProbabilityModel"></a>
+<code>emissionProbabilityModel</code> - a EmissionProbabilityModel to use appropriate types.</p>
+<p><a name="initialState"></a>
+<code>initialState</code> - a unigram of the hidden state type.</p>
+<p><a name="&lt;S&gt;"></a>
+<code><S></code> - the HMM hidden state type</p>
+<p><a name="&lt;Y&gt;"></a>
+<code><Y></code> - the HMM emitted value type</p>
+<p><strong>Return</strong><br/>
+ViterbiProcessor which consumes emitted values and computes the most probable hidden state sequence.</p>
+</BODY>
+</HTML>

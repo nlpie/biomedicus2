@@ -1,0 +1,154 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AbstractDocument - nlpengine</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">nlpengine</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.nlpengine</a>&nbsp;/&nbsp;<a href="./index.html">AbstractDocument</a><br/>
+<br/>
+<h1>AbstractDocument</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AbstractDocument</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a></code>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">AbstractDocument</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.AbstractDocument$<init>(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.AbstractDocument$<init>(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="name.html">name</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the document, a key that identifies documents of a specific type on
+the artifact</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="text.html">text</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">text</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The text of the document</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-document/end-index.html">endIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">endIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The index after any characters included in this label</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-document/start-index.html">startIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">startIndex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>The index of the first character</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-document/copy-index.html">copyIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <span class="identifier">copyIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Document$copyIndex(edu.umn.nlpengine.LabelIndex((edu.umn.nlpengine.Document.copyIndex.T)))/labelIndex">labelIndex</span><span class="symbol">:</span>&nbsp;<a href="../-label-index/index.html"><span class="identifier">LabelIndex</span></a><span class="symbol">&lt;</span><a href="../-document/copy-index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies <a href="../-document/copy-index.html#edu.umn.nlpengine.Document$copyIndex(edu.umn.nlpengine.LabelIndex((edu.umn.nlpengine.Document.copyIndex.T)))/labelIndex">labelIndex</a> to this document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-document/copy-indices.html">copyIndices</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">copyIndices</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Document$copyIndices(edu.umn.nlpengine.Document)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Copies all the label indices from <a href="../-document/copy-indices.html#edu.umn.nlpengine.Document$copyIndices(edu.umn.nlpengine.Document)/document">document</a> to this document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-document/label-index.html">labelIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <span class="identifier">labelIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Document$labelIndex(java.lang.Class((edu.umn.nlpengine.Document.labelIndex.T)))/labelClass">labelClass</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="../-document/label-index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-label-index/index.html"><span class="identifier">LabelIndex</span></a><span class="symbol">&lt;</span><a href="../-document/label-index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the label index for the specific label class.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-document/label-indexes.html">labelIndexes</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">labelIndexes</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-collection/index.html"><span class="identifier">Collection</span></a><span class="symbol">&lt;</span><a href="../-label-index/index.html"><span class="identifier">LabelIndex</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>Returns all the label indices in this document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-document/labeler.html">labeler</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <span class="identifier">labeler</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Document$labeler(java.lang.Class((edu.umn.nlpengine.Document.labeler.T)))/labelClass">labelClass</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="../-document/labeler.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-labeler/index.html"><span class="identifier">Labeler</span></a><span class="symbol">&lt;</span><a href="../-document/labeler.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns a labeler for the specific label class.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../label-all.html">labelAll</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">.</span><span class="identifier">labelAll</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine$labelAll(edu.umn.nlpengine.Document, kotlin.collections.Iterable((edu.umn.nlpengine.labelAll.T)))/labels">labels</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html"><span class="identifier">Iterable</span></a><span class="symbol">&lt;</span><a href="../label-all.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds everything in the collection <a href="../label-all.html#edu.umn.nlpengine$labelAll(edu.umn.nlpengine.Document, kotlin.collections.Iterable((edu.umn.nlpengine.labelAll.T)))/labels">labels</a> to this document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../label-index.html">labelIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">.</span><span class="identifier">labelIndex</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-label-index/index.html"><span class="identifier">LabelIndex</span></a><span class="symbol">&lt;</span><a href="../label-index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the label index of the class specified in the type parameter <a href="../label-index.html#T">T</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../labeler.html">labeler</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span> <a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">.</span><span class="identifier">labeler</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-labeler/index.html"><span class="identifier">Labeler</span></a><span class="symbol">&lt;</span><a href="../labeler.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the labeler for the class specified in the type parameter <a href="../labeler.html#T">T</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

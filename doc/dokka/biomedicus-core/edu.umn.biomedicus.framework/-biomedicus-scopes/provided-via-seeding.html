@@ -1,0 +1,20 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BiomedicusScopes.providedViaSeeding - biomedicus-core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.framework</a>&nbsp;/&nbsp;<a href="index.html">BiomedicusScopes</a>&nbsp;/&nbsp;<a href="./provided-via-seeding.html">providedViaSeeding</a><br/>
+<br/>
+<h1>providedViaSeeding</h1>
+<a name="edu.umn.biomedicus.framework.BiomedicusScopes$providedViaSeeding()"></a>
+<code><span class="keyword">static</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">providedViaSeeding</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Provider</span><span class="symbol">&lt;</span><a href="provided-via-seeding.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>A provider which represents an object that will be provided by seeding into the context via the map arguments on <code><a href="#">#createProcessorContext(Map)</a></code>. Modules can bind objects to this provider in order to satisfy injector dependencies prior to the creation of the scopes. The binding can only be injected inside a scope, and any provision request outside of a ContextScope will cause an IllegalStateException.</p>
+<h3>Parameters</h3>
+<p><a name="&lt;T&gt;"></a>
+<code><T></code> - the provided type.</p>
+<p><strong>Return</strong><br/>
+a provider</p>
+</BODY>
+</HTML>

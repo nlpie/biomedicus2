@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RtfRewriterCursor - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.rtfrewriting</a>&nbsp;/&nbsp;<a href="./index.html">RtfRewriterCursor</a><br/>
+<br/>
+<h1>RtfRewriterCursor</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">RtfRewriterCursor</span></code>
+<p>Class for rewriting an rtf document.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.3.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">RtfRewriterCursor</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$<init>(edu.umn.biomedicus.uima.rtfrewriting.SymbolIndexedDocument)/symbolIndexedDocument">symbolIndexedDocument</span><span class="symbol">:</span>&nbsp;<a href="../-symbol-indexed-document/index.html"><span class="identifier">SymbolIndexedDocument</span></a><span class="symbol">)</span></code>
+<p>Creates a new rtf rewriter cursor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="advance-to-destination.html">advanceToDestination</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">advanceToDestination</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$advanceToDestination(kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Moves the cursor forward until we reach the specified destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="back.html">back</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">back</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Moves the cursor back one symbol.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="forward.html">forward</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">forward</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Moves the cursor forward one symbol.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-context.html">getContext</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getContext</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-symbol-index.html">getSymbolIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getSymbolIndex</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Returns the current symbol index the cursor is at.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-after.html">insertAfter</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">insertAfter</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$insertAfter(kotlin.String)/tag">tag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inserts a tag after the current symbol.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="insert-before.html">insertBefore</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">insertBefore</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$insertBefore(kotlin.String)/tag">tag</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Inserts a tag before the current symbol.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="move-to.html">moveTo</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">moveTo</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$moveTo(kotlin.Int, kotlin.String)/index">index</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$moveTo(kotlin.Int, kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Moves to the symbol at the designated character index in the destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="next-is-outside-destination.html">nextIsOutsideDestination</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">nextIsOutsideDestination</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$nextIsOutsideDestination(kotlin.String)/destinationName">destinationName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Determines whether the next symbol forward is inside or outside the specified destination.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="next-offset-non-zero.html">nextOffsetNonZero</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">nextOffsetNonZero</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Determines if the next index on the cursor has an offset greater than zero.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-symbol-index.html">setSymbolIndex</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setSymbolIndex</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.rtfrewriting.RtfRewriterCursor$setSymbolIndex(kotlin.Int)/symbolIndex">symbolIndex</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the cursor to a specific symbol index.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

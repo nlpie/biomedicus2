@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StandardLabeler - nlpengine</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">nlpengine</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.nlpengine</a>&nbsp;/&nbsp;<a href="./index.html">StandardLabeler</a><br/>
+<br/>
+<h1>StandardLabeler</h1>
+<code><span class="keyword">class </span><span class="identifier">StandardLabeler</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-label/index.html"><span class="identifier">Label</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-labeler/index.html"><span class="identifier">Labeler</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>A standard implementation of <a href="../-labeler/index.html">Labeler</a> which handles the creation of <a href="../-label-index/index.html">LabelIndex</a> instances.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StandardLabeler</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.StandardLabeler$<init>(java.lang.Class((edu.umn.nlpengine.StandardLabeler.T)))/labelClass">labelClass</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span></code>
+<p>Creates a labeler which can be used to store labels without a backing document.</p>
+<code><span class="identifier">StandardLabeler</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.StandardLabeler$<init>(java.lang.Class((edu.umn.nlpengine.StandardLabeler.T)), edu.umn.nlpengine.Document)/labelClass">labelClass</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="edu.umn.nlpengine.StandardLabeler$<init>(java.lang.Class((edu.umn.nlpengine.StandardLabeler.T)), edu.umn.nlpengine.Document)/document">document</span><span class="symbol">:</span>&nbsp;<a href="../-document/index.html"><span class="identifier">Document</span></a><span class="symbol">?</span><span class="symbol">)</span></code>
+<p>Creates a labeler which can be used to add labels to a document.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="--index--.html">index</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">index</span><span class="symbol">: </span><a href="../-label-index/index.html"><span class="identifier">LabelIndex</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Upon first access creates the label index by turning everything added to this labeler into a
+new <a href="../-label-index/index.html">LabelIndex</a>. After this labels can no longer be added to the labeler.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="label-class.html">labelClass</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">labelClass</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span class="identifier">Class</span></a><span class="symbol">&lt;</span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>The <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html">Class</a> of a <a href="../-label/index.html">Label</a> subclass that this will label.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add.html">add</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">add</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.StandardLabeler$add(edu.umn.nlpengine.StandardLabeler.T)/label">label</span><span class="symbol">:</span>&nbsp;<a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds <a href="add.html#edu.umn.nlpengine.StandardLabeler$add(edu.umn.nlpengine.StandardLabeler.T)/label">label</a> to the document</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-labeler/add-all.html">addAll</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addAll</span><span class="symbol">(</span><span class="identifier" id="edu.umn.nlpengine.Labeler$addAll(kotlin.collections.Iterable((edu.umn.nlpengine.Labeler.T)))/elements">elements</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html"><span class="identifier">Iterable</span></a><span class="symbol">&lt;</span><a href="../-labeler/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds all the labels in the <a href="../-labeler/add-all.html#edu.umn.nlpengine.Labeler$addAll(kotlin.collections.Iterable((edu.umn.nlpengine.Labeler.T)))/elements">Iterable</a> to the document.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

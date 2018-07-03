@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>FsAccessor - biomedicus-uima</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">biomedicus-uima</a>&nbsp;/&nbsp;<a href="../index.html">edu.umn.biomedicus.uima.util</a>&nbsp;/&nbsp;<a href="./index.html">FsAccessor</a><br/>
+<br/>
+<h1>FsAccessor</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">FsAccessor</span></code>
+<p>Allows you to set and retrieve features dynamically on UIMA FeatureStructures. It's probably slow, but not as slow as the time it takes to program a bunch of <code><a href="#">Type#getFeatureByBaseName(String)</a></code> calls. Only use for utility / non-production code. It's missing some things, add them if you need them.</p>
+<p><strong>Author</strong><br/>
+Ben Knoll</p>
+<p><strong>Since</strong><br/>
+1.7.0</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">FsAccessor</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$<init>(org.apache.uima.cas.FeatureStructure)/featureStructure">featureStructure</span><span class="symbol">:</span>&nbsp;<span class="identifier">FeatureStructure</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="create.html">create</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">static</span> <span class="keyword">fun </span><span class="identifier">create</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$create(org.apache.uima.cas.text.AnnotationFS)/newNormForm">newNormForm</span><span class="symbol">:</span>&nbsp;<span class="identifier">AnnotationFS</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">FsAccessor</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-boolean-value.html">getBooleanValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getBooleanValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getBooleanValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-double-value.html">getDoubleValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getDoubleValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getDoubleValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-feature.html">getFeature</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getFeature</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getFeature(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Feature</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-feature-value.html">getFeatureValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getFeatureValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getFeatureValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">FeatureStructure</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-float-value.html">getFloatValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getFloatValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getFloatValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html"><span class="identifier">Float</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-int-value.html">getIntValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getIntValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getIntValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-long-value.html">getLongValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getLongValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getLongValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-string-value.html">getStringValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getStringValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$getStringValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="set-feature-value.html">setFeatureValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setFeatureValue</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$setFeatureValue(kotlin.String, kotlin.Any)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="edu.umn.biomedicus.uima.util.FsAccessor$setFeatureValue(kotlin.String, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the feature value based on the type that you're using to set, make sure that your primitives are casted to the right type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.sentences - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.sentences</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.sentences</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-brat-sentences-reader/index.html">BratSentencesReader</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BratSentencesReader</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code>
+<p>Reads in sentences from the brat .ann files and adds them as sentences.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-brat-sentences-writer/index.html">BratSentencesWriter</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BratSentencesWriter</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-segment-text/index.html">SegmentText</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SegmentText</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-sentence/index.html">Sentence</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Sentence</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code>
+<p>A unit of language of multiple words making up a complete thought.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-sentence-deep-learning-writer/index.html">SentenceDeepLearningWriter</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SentenceDeepLearningWriter</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">DocumentTask</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-sentences-evaluator/index.html">SentencesEvaluator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SentencesEvaluator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ArtifactTask</span></code>
+<p>Evaluates sentence segmentation performance using simple accuracy counting the number of
+sentences from the gold standard document that are present in the evaluation document and are not
+present in the evaluation document.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-sentences-module/index.html">SentencesModule</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SentencesModule</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">SystemModule</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-text-segment/index.html">TextSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TextSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Label</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="newline-tab.html">newlineTab</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">newlineTab</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="regex.html">regex</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">regex</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-regex/index.html"><span class="identifier">Regex</span></a></code>
+<p>Segments text according to rules</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

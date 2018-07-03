@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TntModelTrainer.Builder - biomedicus-core</title>
+<link rel="stylesheet" href="../../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="../../index.html">edu.umn.biomedicus.tnt</a>&nbsp;/&nbsp;<a href="../index.html">TntModelTrainer</a>&nbsp;/&nbsp;<a href="./index.html">Builder</a><br/>
+<br/>
+<h1>Builder</h1>
+<code><span class="keyword">class </span><span class="identifier">Builder</span></code>
+<p>builder for the</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="build.html">build</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">build</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../index.html"><span class="identifier">TntModelTrainer</span></a></code>
+<p>Finish building a trainer.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="data-store-factory.html">dataStoreFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">dataStoreFactory</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$dataStoreFactory(edu.umn.biomedicus.tnt.DataStoreFactory)/dataStoreFactory">dataStoreFactory</span><span class="symbol">:</span>&nbsp;<span class="identifier">DataStoreFactory</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="max-suffix-length.html">maxSuffixLength</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">maxSuffixLength</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$maxSuffixLength(kotlin.Int)/maxSuffixLength">maxSuffixLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code>
+<p>Sets the max suffix length, which determines the longest suffixes that have probabilities stored in the suffix model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="max-word-frequency.html">maxWordFrequency</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">maxWordFrequency</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$maxWordFrequency(kotlin.Int)/maxWordFrequency">maxWordFrequency</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code>
+<p>Sets the max word frequency: where words should be cut off from being included in the suffix model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="restrict-to-open-class.html">restrictToOpenClass</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">restrictToOpenClass</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$restrictToOpenClass(kotlin.Boolean)/restrictToOpenClass">restrictToOpenClass</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code>
+<p>Whether we should restrict suffix models to the open class of PartOfSpeech</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="use-capitalization.html">useCapitalization</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">useCapitalization</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$useCapitalization(kotlin.Boolean)/useCapitalization">useCapitalization</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code>
+<p>Whether the models should use the capitalization of words to segment probability sets.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="use-msl-suffix-model.html">useMslSuffixModel</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">useMslSuffixModel</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.tnt.TntModelTrainer.Builder$useMslSuffixModel(kotlin.Boolean)/useMslSuffixModel">useMslSuffixModel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">Builder</span></a></code>
+<p>Whether we should use the maximum suffix length based suffix model.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

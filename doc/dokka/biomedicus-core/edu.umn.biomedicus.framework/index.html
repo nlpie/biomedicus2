@@ -1,0 +1,263 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>edu.umn.biomedicus.framework - biomedicus-core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">biomedicus-core</a>&nbsp;/&nbsp;<a href="./index.html">edu.umn.biomedicus.framework</a><br/>
+<br/>
+<h2>Package edu.umn.biomedicus.framework</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-application/index.html">Application</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Application</span></code>
+<p>A class that provides access to the functionality of Biomedicus. The instances of this class is the "application instance" of Biomedicus.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-artifact-source-runner/index.html">ArtifactSourceRunner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ArtifactSourceRunner</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html"><span class="identifier">Closeable</span></a></code>
+<p>Runs <a href="#">ArtifactSource</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-artifact-task-runner/index.html">ArtifactTaskRunner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ArtifactTaskRunner</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Runner</span></code>
+<p>Runs <a href="#">ArtifactTask</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-artifacts-processor-runner/index.html">ArtifactsProcessorRunner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ArtifactsProcessorRunner</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Runner</span></code>
+<p>Runs <a href="#">ArtifactsProcessor</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-biomedicus-scopes/index.html">BiomedicusScopes</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BiomedicusScopes</span></code>
+<p>Contains the Guice scopes and contexts that store their scoped objects.  There is one default scope: <ul> <li> Processor Scope: contains objects that are one instance per configured document processor. For example, any processor settings. </li>
+  </ul>
+  The primary method for running code in scopes are <code><a href="#">#createProcessorContext(Map)</a></code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-bootstrapper/index.html">Bootstrapper</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Bootstrapper</span></code>
+<p>Class which loads all biomedicus configuration and creates a Guice injector. Should only be used once per application run.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-component-setting-impl/index.html">ComponentSettingImpl</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ComponentSettingImpl</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../edu.umn.biomedicus.annotations/-component-setting/index.html"><span class="identifier">ComponentSetting</span></a><span class="symbol">, </span><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Serializable.html"><span class="identifier">Serializable</span></a></code>
+<p>An implementation of the annotation ComponentSetting so that it can be instantiated and bound to an instance to be used as an injection key.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-data-loader/index.html">DataLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">DataLoader</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Provider</span><span class="symbol">&lt;</span><a href="-data-loader/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><a href="-eager-loadable/index.html"><span class="identifier">EagerLoadable</span></a></code>
+<p>Loads data into, and functions as a provider for, a singleton object.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-document-builder/index.html">DocumentBuilder</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">DocumentBuilder</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-document-task-runner/index.html">DocumentTaskRunner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DocumentTaskRunner</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Runner</span></code>
+<p>Runs <a href="#">DocumentTask</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-documents-processor-runner/index.html">DocumentsProcessorRunner</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DocumentsProcessorRunner</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Runner</span></code>
+<p>Runs <a href="#">DocumentsProcessor</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-eager-loadable/index.html">EagerLoadable</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">EagerLoadable</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-label-aliases/index.html">LabelAliases</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LabelAliases</span></code>
+<p>Maps labels to short aliases for SearchExpr/TagEx.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-lifecycle-managed/index.html">LifecycleManaged</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">LifecycleManaged</span></code>
+<p>Indicates a class that has some kind of resource that needs to be shut-down or closed or freed at the end of the lifecycle of the application.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-lifecycle-manager/index.html">LifecycleManager</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">LifecycleManager</span></code>
+<p>Service responsible for calling all of the lifecycle managed objects and telling them to shut down. Lifecycle managed objects will be automatically registered by the biomedicus guice module.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-named-labels/index.html">NamedLabels</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">NamedLabels</span></code>
+<p>Named labels of a TagEx search expression found during search.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-named-spans/index.html">NamedSpans</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">NamedSpans</span></code>
+<p>Named spans of a TagEx search expression found during search.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-runner-factory/index.html">RunnerFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">RunnerFactory</span></code>
+<p>Creates and initializes runners for the different processor types.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-search-expr/index.html">SearchExpr</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SearchExpr</span></code>
+<p>Class used to search the structure of labels on a document to find specific expressions. Instances of SearchExpr are thread-safe but the instances of Searcher created against specific documents are not.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-search-expr-factory/index.html">SearchExprFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SearchExprFactory</span></code>
+<p>Factory class providing for instantiation of SearchExpr objects using only their expression.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-search-result/index.html">SearchResult</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">SearchResult</span></code>
+<p>An immutable result of a search expression.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-searcher/index.html">Searcher</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Searcher</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">TextRange</span></code>
+<p>Search results from TagEx.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-settings-transformer.html">SettingsTransformer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SettingsTransformer</span></code>
+<p>Takes dictionaries of settings (usually loaded from configuration files, and turns them into a Map of Guice keys so that they can be bound for injection.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tag-ex/index.html">TagEx</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TagEx</span></code>
+<p>A compiled search expression.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tag-ex-factory/index.html">TagExFactory</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TagExFactory</span></code>
+<p>Factory for parsing TagEx expressions into <a href="-tag-ex/index.html">TagEx</a> objects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tag-ex-match/index.html">TagExMatch</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TagExMatch</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">TextRange</span></code>
+<p>The a <a href="-tag-ex/index.html">TagEx</a> search match.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <a href="-named-labels/index.html"><span class="identifier">NamedLabels</span></a><span class="symbol">.</span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="edu.umn.biomedicus.framework$get(edu.umn.biomedicus.framework.NamedLabels, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="get.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
+<p>Get operator function which uses the return type <a href="get.html#T">T</a> and <a href="get.html#edu.umn.biomedicus.framework$get(edu.umn.biomedicus.framework.NamedLabels, kotlin.String)/name">name</a> to retrieve a label value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
