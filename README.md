@@ -18,25 +18,25 @@ machine-level and distributed parallelization.
 under the permissive Apache 2.0 license and pay close attention to intellectual property issues.
 
 To see what tasks the system supports, look at 
-[Pipeline components](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components). If you are 
+[Components and Outputs](https://github.com/nlpie/biomedicus/wiki/Components-and-Outputs). If you are 
 looking for a jumping-in point, see 
 [Installation](https://github.com/nlpie/biomedicus/wiki/Installation).
 
 ## Features
 ### RTF Reader
 BioMedICUS has an 
-[RTF Reader](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#rich-text-format-rtf-reader), 
+[RTF Reader](https://github.com/nlpie/biomedicus/wiki/Components-and-Outputs#rtf-pipeline), 
 which has the ability to read and process notes that are encoding in RTF. In addition, BioMedICUS 
 uses RTF formatting information downstream to improve other components.
 
 ### Acronym Detection
 Included in the standard pipeline is an 
-[acronym detector](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#acronym-detector), 
+[acronym detector](https://github.com/nlpie/biomedicus/wiki/Components-and-Outputs#acronyms), 
 which has the ability to detect and expand acronyms to their equivalent long forms.
 
 ### Concept Detection
 BioMedICUS includes a fast 
-[concept detector](https://github.com/nlpie/biomedicus/wiki/Pipeline-Components#concept-detector) 
+[concept detector](https://github.com/nlpie/biomedicus/wiki/Components-and-Outputs#concepts) 
 which labels instances of UMLS Metathesaurus concepts in text.
 
 ## Downloads
