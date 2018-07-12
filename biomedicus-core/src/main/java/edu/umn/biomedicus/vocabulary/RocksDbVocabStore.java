@@ -28,12 +28,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Vocabulary store using RocksDB as the backend.
  */
+@Singleton
 public class RocksDbVocabStore extends VocabularyStore {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RocksDbVocabStore.class);

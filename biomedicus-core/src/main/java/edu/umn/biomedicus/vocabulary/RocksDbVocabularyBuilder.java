@@ -25,18 +25,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import javax.inject.Singleton;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
+@Singleton
 public class RocksDbVocabularyBuilder extends VocabularyBuilder {
   private static final Pattern MORE_THAN_TWO_NUMBERS_IN_A_ROW = Pattern.compile("[\\p{Nd}]{3,}");
 

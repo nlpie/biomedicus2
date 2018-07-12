@@ -16,14 +16,13 @@
 
 package edu.umn.biomedicus.vocabulary;
 
-import com.google.inject.Inject;
-import com.google.inject.ProvidedBy;
-import com.google.inject.Singleton;
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
 import edu.umn.biomedicus.exc.BiomedicusException;
 import edu.umn.biomedicus.framework.DataLoader;
 import edu.umn.biomedicus.framework.LifecycleManaged;
 import java.io.IOException;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * The default implementation of the Vocabulary class which uses
@@ -73,6 +72,7 @@ class DefaultVocabulary implements LifecycleManaged, Vocabulary {
     }
   }
 
+  @Singleton
   public static class Loader extends DataLoader<Vocabulary> {
 
     private final VocabularyStore store;
