@@ -20,9 +20,12 @@ import edu.umn.biomedicus.common.dictionary.StringIdentifier
 import edu.umn.biomedicus.sentences
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.nlpengine.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 class TokenizationModule : SystemModule() {
     override fun setup() {
+        addLabelClass<EmbeddingToken>()
         addLabelClass<TermToken>()
         addLabelClass<ParseToken>()
         addLabelClass<TokenCandidate>()
@@ -40,21 +43,35 @@ interface Token : TextRange {
     val hasSpaceAfter: Boolean
 }
 
+@LabelMetadata(classpath = "biomedicus.v2_1", distinct = true)
+data class EmbeddingToken(
+    override val startIndex: Int,
+    override val endIndex: Int,
+    override val text: String,
+    override val hasSpaceAfter: Boolean = true
+) : Label(), Token {
+    constructor(
+        textRange: TextRange,
+        text: String,
+        hasSpaceAfter: Boolean = true
+    ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
+}
+
 /**
  * A token which represents a single word or semantic unit. Examples would be the parse tokens
  * "wo" "n't" being merged into "won't".
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TermToken(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        override val text: String,
-        override val hasSpaceAfter: Boolean
+    override val startIndex: Int,
+    override val endIndex: Int,
+    override val text: String,
+    override val hasSpaceAfter: Boolean
 ) : Label(), Token {
     constructor(
-            textRange: TextRange,
-            text: String,
-            hasSpaceAfter: Boolean
+        textRange: TextRange,
+        text: String,
+        hasSpaceAfter: Boolean
     ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 }
 
@@ -64,15 +81,15 @@ data class TermToken(
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class ParseToken(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        override val text: String,
-        override val hasSpaceAfter: Boolean
+    override val startIndex: Int,
+    override val endIndex: Int,
+    override val text: String,
+    override val hasSpaceAfter: Boolean
 ) : Label(), Token {
     constructor(
-            textRange: TextRange,
-            text: String,
-            hasSpaceAfter: Boolean
+        textRange: TextRange,
+        text: String,
+        hasSpaceAfter: Boolean
     ) : this(textRange.startIndex, textRange.endIndex, text, hasSpaceAfter)
 
     val partOfSpeech
@@ -88,8 +105,8 @@ data class ParseToken(
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class TokenCandidate(
-        override val startIndex: Int,
-        override val endIndex: Int
+    override val startIndex: Int,
+    override val endIndex: Int
 ) : Label() {
     constructor(textRange: TextRange) : this(textRange.startIndex, textRange.endIndex)
 
@@ -107,22 +124,57 @@ data class TokenCandidate(
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class WordIndex(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val stringIdentifierIndex: Int
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val stringIdentifierIndex: Int
 ) : Label() {
     constructor(
-            startIndex: Int,
-            endIndex: Int,
-            stringIdentifier: StringIdentifier
+        startIndex: Int,
+        endIndex: Int,
+        stringIdentifier: StringIdentifier
     ) : this(startIndex, endIndex, stringIdentifier.value())
 
     constructor(
-            textRange: TextRange,
-            stringIdentifier: StringIdentifier
+        textRange: TextRange,
+        stringIdentifier: StringIdentifier
     ) : this(textRange.startIndex, textRange.endIndex, stringIdentifier.value())
 
     val stringIdentifier: StringIdentifier get() = StringIdentifier(stringIdentifierIndex)
+}
+
+class EmbeddingTokenDetector : DocumentsProcessor {
+    private val tokens = Regex("[\\p{L}]++|\\p{Nd}|[\\S&&[^\\p{Nd}\\p{L}]]")
+
+    private val remove = Regex("[^\\p{L}\\p{Nd}]")
+
+    override fun process(document: Document) {
+        document.labelAll(detect(document.text).asIterable())
+    }
+
+    fun detect(text: String): Sequence<EmbeddingToken> {
+        return tokens.findAll(text)
+            .map {
+                val replaced = remove.replace(it.value, " ")
+                val tokenText = when (replaced) {
+                    "0" -> "zero"
+                    "1" -> "one"
+                    "2" -> "two"
+                    "3" -> "three"
+                    "4" -> "four"
+                    "5" -> "five"
+                    "6" -> "six"
+                    "7" -> "seven"
+                    "8" -> "eight"
+                    "9" -> "nine"
+                    else -> replaced.toLowerCase()
+                }
+                EmbeddingToken(
+                    it.range.start,
+                    it.range.endInclusive + 1,
+                    tokenText
+                )
+            }
+    }
 }
 
 /**
@@ -132,7 +184,7 @@ class DetectTokenCandidates : DocumentTask {
     override fun run(document: Document) {
         val labeler = document.labeler<TokenCandidate>()
         Tokenizer.tokenize(document.text)
-                .forEach { labeler.add(TokenCandidate(it.startIndex, it.endIndex)) }
+            .forEach { labeler.add(TokenCandidate(it.startIndex, it.endIndex)) }
     }
 }
 
@@ -155,12 +207,12 @@ class DetectParseTokens : DocumentTask {
                     labeler.add(ParseToken(notPeriod, coveredText, false))
 
                     labeler.add(
-                            ParseToken(
-                                    candidate.endIndex - 1,
-                                    candidate.endIndex,
-                                    ".",
-                                    candidate.hasSpaceAfter(text)
-                            )
+                        ParseToken(
+                            candidate.endIndex - 1,
+                            candidate.endIndex,
+                            ".",
+                            candidate.hasSpaceAfter(text)
+                        )
                     )
                 } else {
                     val coveredText = candidate.coveredString(text)

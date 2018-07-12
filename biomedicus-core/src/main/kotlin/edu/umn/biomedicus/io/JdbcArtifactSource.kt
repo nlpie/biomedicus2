@@ -91,12 +91,15 @@ class JdbcArtifactSource @Inject internal constructor(
             val artifact = StandardArtifact(id)
 
             metadataMappings.forEach { column, target ->
-                artifact.metadata[target] = resultSet.getString(column)
+                val metadata : String? = resultSet.getString(column)
+                if (metadata != null) {
+                    artifact.metadata[target] = metadata
+                }
             }
 
-            val text = resultSet.getString(textColumn)
+            val text: String? = resultSet.getString(textColumn)
 
-            artifact.addDocument(documentName, text)
+            artifact.addDocument(documentName, text ?: "")
 
             consumer.invoke(artifact)
 
