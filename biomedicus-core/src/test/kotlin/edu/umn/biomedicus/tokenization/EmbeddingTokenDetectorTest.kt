@@ -19,8 +19,8 @@ package edu.umn.biomedicus.tokenization
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import edu.umn.nlpengine.Document
-import edu.umn.nlpengine.Labeler
+import edu.umn.biomedicus.deidentification.PersonalIdentifier
+import edu.umn.nlpengine.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -62,6 +62,23 @@ class EmbeddingTokenDetectorTest {
             ),
             embeddingTokens
         )
+    }
+
+    @Test
+    internal fun `line entirely of dash or equals`() {
+        val embeddingTokens = embeddingTokenDetector.detect("===\n---\nyeah ok")
+            .toList()
+
+        assertEquals(
+            listOf(
+                EmbeddingToken(0, 3, " ", true),
+                EmbeddingToken(4, 7, " ", true),
+                EmbeddingToken(8, 12, "yeah", true),
+                EmbeddingToken(13, 15, "ok", true)
+            ),
+            embeddingTokens
+        )
+
     }
 
     @Test
@@ -110,6 +127,7 @@ class EmbeddingTokenDetectorTest {
         val document = mock<Document> {
             on(it.text).thenReturn("Hey this is some text.")
             on(it.labeler(EmbeddingToken::class.java)).thenReturn(labeler)
+            on(it.labelIndex(PersonalIdentifier::class.java)).thenReturn(emptyLabelIndex(PersonalIdentifier::class.java))
         }
 
         embeddingTokenDetector.process(document)
@@ -122,5 +140,26 @@ class EmbeddingTokenDetectorTest {
         verify(labeler).add(EmbeddingToken(21, 22, " "))
     }
 
+    @Test
+    internal fun `dont label things inside personal identifiers`() {
+        val labelIndex = StandardLabelIndex(
+            PersonalIdentifier(13, 31)
+        )
 
+        val labeler = mock<Labeler<EmbeddingToken>>()
+
+        val document = mock<Document> {
+            on(it.text).thenReturn("Text with an [** identifier **].")
+            on(it.labelIndex(PersonalIdentifier::class.java)).thenReturn(labelIndex)
+            on(it.labeler(EmbeddingToken::class.java)).thenReturn(labeler)
+        }
+
+        embeddingTokenDetector.process(document)
+
+        verify(labeler).add(EmbeddingToken(0, 4, "text"))
+        verify(labeler).add(EmbeddingToken(5, 9, "with"))
+        verify(labeler).add(EmbeddingToken(10, 12, "an"))
+        verify(labeler).add(EmbeddingToken(13, 31, "IDENTIFIER"))
+        verify(labeler).add(EmbeddingToken(31, 32, " "))
+    }
 }

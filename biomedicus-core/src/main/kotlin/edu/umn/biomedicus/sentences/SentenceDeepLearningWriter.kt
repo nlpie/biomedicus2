@@ -17,7 +17,7 @@
 package edu.umn.biomedicus.sentences
 
 import edu.umn.biomedicus.annotations.ComponentSetting
-import edu.umn.biomedicus.tokenization.TokenCandidate
+import edu.umn.biomedicus.tokenization.EmbeddingToken
 import edu.umn.nlpengine.Document
 import edu.umn.nlpengine.DocumentTask
 import edu.umn.nlpengine.labelIndex
@@ -25,7 +25,7 @@ import java.io.File
 import javax.inject.Inject
 
 class SentenceDeepLearningWriter @Inject constructor(
-        @ComponentSetting("outputDirectory.orig") val outputDirectory: String
+    @ComponentSetting("outputDirectory.orig") val outputDirectory: String
 ) : DocumentTask {
     override fun run(document: Document) {
         val artifactID = document.artifactID
@@ -34,43 +34,71 @@ class SentenceDeepLearningWriter @Inject constructor(
 
         val text = document.text
 
-        val sentences = document.labelIndex<Sentence>()
-        val tokens = document.labelIndex<TokenCandidate>()
+        if (text.isBlank()) return
 
         File(outputDirectory).resolve("$nameWithoutExtension.txt")
-                .writeText(text)
+            .writeText(text)
 
-        val sentenceIt = sentences.iterator()
-        var sentence = if (sentenceIt.hasNext()) sentenceIt.next() else null
+        val segments = document.labelIndex<TextSegment>().iterator()
+        val sentences = document.labelIndex<Sentence>().iterator()
+        val tokens = document.labelIndex<EmbeddingToken>().iterator()
 
-        for ((count, textSegment) in document.labelIndex<TextSegment>().withIndex()) {
-            File(outputDirectory)
-                    .resolve("$nameWithoutExtension-$count.labels")
-                    .bufferedWriter()
-                    .use {
-                        for (token in tokens inside textSegment) {
-                            val prevEnd
-                                    = tokens.backwardFrom(token).first()?.endIndex ?: 0
-                            val nextBegin
-                                    = tokens.forwardFrom(token).first()?.startIndex ?: text.length
 
-                            if (sentence?.contains(token)?.not() == true) {
-                                sentence = if (sentenceIt.hasNext()) sentenceIt.next() else null
-                            }
-                            if (sentence != null) {
-                                val type = when {
-                                    sentence?.sentenceClass == Sentence.unknown -> 'O'
-                                    token == sentence?.let { tokens.inside(it).first() } -> 'B'
-                                    else -> 'I'
-                                }
+        File(outputDirectory)
+            .resolve("$nameWithoutExtension.labels")
+            .bufferedWriter()
+            .use { writer ->
+                if (!segments.hasNext() || !sentences.hasNext()) {
+                    return
+                }
 
-                                it.appendln("$prevEnd ${token.startIndex} ${token.endIndex} $nextBegin $type ${token.coveredText(text)}")
-                            }
+                var segment = segments.next()
+                var segmentIndex = 0
+                var sentence = sentences.next()
+
+                var emptySegment = true
+                var firstToken = true
+                tokens@ while (tokens.hasNext()) {
+                    val token = tokens.next()
+                    while (!segment.contains(token)) {
+                        if (!segments.hasNext()) {
+                            break@tokens
                         }
+                        if (!emptySegment) {
+                            segmentIndex++
+                        }
+                        segment = segments.next()
+                        emptySegment = true
                     }
 
-        }
+                    while (!sentence.contains(token)) {
+                        if (!sentences.hasNext()) {
+                            break@tokens
+                        }
+                        sentence = sentences.next()
+                        firstToken = true
+                    }
 
+                    val type = when {
+                        sentence.sentenceClass == Sentence.unknown -> 'O'
+                        firstToken -> 'B'
+                        else -> 'I'
+                    }
+
+                    val isIdentifier = if ("IDENTIFIER" == token.text) 1 else 0
+                    val coveredText = token.coveredText(text)
+                    val startIndex = token.startIndex
+                    val endIndex = token.endIndex
+                    writer.appendln(
+                        "$segmentIndex $startIndex $endIndex $type $isIdentifier $coveredText"
+                    )
+
+                    firstToken = false
+                    emptySegment = false
+                }
+            }
 
     }
+
 }
+

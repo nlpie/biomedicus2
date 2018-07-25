@@ -18,6 +18,7 @@ package edu.umn.biomedicus
 
 import edu.umn.biomedicus.acronyms.AcronymModule
 import edu.umn.biomedicus.concepts.ConceptModule
+import edu.umn.biomedicus.deidentification.DeidentificationModule
 import edu.umn.biomedicus.family.FamilyModule
 import edu.umn.biomedicus.formatting.FormattingModule
 import edu.umn.biomedicus.measures.MeasuresModule
@@ -39,6 +40,7 @@ class BiomedicusSystem : System() {
     override fun setup() {
         addModule(AcronymModule())
         addModule(ConceptModule())
+        addModule(DeidentificationModule())
         addModule(FamilyModule())
         addModule(FormattingModule())
         addModule(MeasuresModule())

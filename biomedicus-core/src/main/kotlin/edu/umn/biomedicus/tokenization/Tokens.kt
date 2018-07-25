@@ -17,11 +17,10 @@
 package edu.umn.biomedicus.tokenization
 
 import edu.umn.biomedicus.common.dictionary.StringIdentifier
+import edu.umn.biomedicus.deidentification.PersonalIdentifier
 import edu.umn.biomedicus.sentences
 import edu.umn.biomedicus.tagging.PosTag
 import edu.umn.nlpengine.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class TokenizationModule : SystemModule() {
     override fun setup() {
@@ -143,12 +142,21 @@ data class WordIndex(
 }
 
 class EmbeddingTokenDetector : DocumentsProcessor {
-    private val tokens = Regex("[\\p{L}]++|\\p{Nd}|[\\S&&[^\\p{Nd}\\p{L}]]")
+    private val tokens = Regex("(^=++\$)|(^-++\$)|[\\p{L}]++|\\p{Nd}|[\\S&&[^\\p{Nd}\\p{L}]]", RegexOption.MULTILINE)
 
-    private val remove = Regex("[^\\p{L}\\p{Nd}]")
+    private val remove = Regex("[^\\p{L}\\p{Nd}]+")
 
     override fun process(document: Document) {
-        document.labelAll(detect(document.text).asIterable())
+        val personalIdentifiers = document.labelIndex<PersonalIdentifier>()
+
+        val labeler = document.labeler<EmbeddingToken>()
+
+        personalIdentifiers.map { EmbeddingToken(it, "IDENTIFIER") }
+            .forEach { labeler.add(it) }
+
+        detect(document.text)
+            .filter { personalIdentifiers.containing(it).isEmpty() }
+            .forEach { labeler.add(it) }
     }
 
     fun detect(text: String): Sequence<EmbeddingToken> {
