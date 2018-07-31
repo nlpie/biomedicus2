@@ -260,7 +260,7 @@ public final class Bootstrapper {
     }
 
     modules.add(new SystemsModule(systems));
-    modules.add(new BiomedicusModule());
+    modules.add(new BiomedicusModule(homePath()));
     modules.add(settingsBinder.createModule());
   }
 

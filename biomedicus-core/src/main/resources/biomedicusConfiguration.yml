@@ -117,3 +117,15 @@ settings:
       methodPhrasesPath: sh/nicotine/methodPhrases.txt
       statusPhrasesPath: sh/nicotine/statusPhrases.txt
       typesPath: sh/nicotine/types.txt
+  python:
+    executable: python3
+    home: python
+    server:
+      launch: yes
+      host: localhost
+      port: 8888
+    sentences:
+      vocabPath: sentences/vocab
+      wordsModel: mimic.100.vec
+      configPath: sentences/hparams.yml
+      weightsPath: sentences/weights.hdf5

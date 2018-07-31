@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 /**
  * An internal class implementing a stateful Viterbi processor. Responsible for performing Viterbi
  * decoding on arbitrary order HMMs. <p>This class is not thread safe or reusable. It is designed to
- * be used for a single process of viterbi decoding. </p>
+ * be used for a single createProcessBuilder of viterbi decoding. </p>
  *
  * @param <S> The hidden state type.
  * @param <Y> The output/emitted-value type
