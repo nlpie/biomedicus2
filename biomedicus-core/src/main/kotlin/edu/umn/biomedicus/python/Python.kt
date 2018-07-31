@@ -36,7 +36,7 @@ class PythonEnvironment @Inject constructor(
         @Setting("python.home") pyHome: String,
         @Setting("python.executable") pyExec: String
 ) {
-    private val pythonHome: Path = home.resolve(pyHome)
+    val pythonHome: Path = home.resolve(pyHome)
 
     private val venv: Path
 
@@ -111,5 +111,52 @@ class PythonValidation @Inject constructor(
 
     companion object {
         val logger = LoggerFactory.getLogger(PythonValidation::class.java)
+    }
+}
+
+/**
+ * Maintains a connection to the BioMedICUS python server.
+ */
+@Singleton
+class PythonServer @Inject constructor(
+        @Setting("python.home") pyHome: String,
+        @Setting("python.server.launch") launch: Boolean,
+        @Setting("python.server.host") private val host: String,
+        @Setting("python.server.port") private val port: Int,
+        @Setting("python.sentences.vocabPath") vocabPath: Path,
+        @Setting("python.sentences.wordsModel") wordsModel: String,
+        @Setting("python.sentences.configPath") configPath: Path,
+        @Setting("python.sentences.weightsPath") weightsPath: Path,
+        environmentProvider: Provider<PythonEnvironment>
+) {
+    private val environment: PythonEnvironment by lazy { environmentProvider.get() }
+
+    fun install() {
+        val kcWhl = environment.pythonHome.resolve("keras_contrib-2.0.8-py2.py3-none-any.whl")
+        javaClass.getResourceAsStream("/keras_contrib-2.0.8-py2.py3-none-any.whl").use { input ->
+            Files.newOutputStream(kcWhl).use { output ->
+                        input.copyTo(output)
+                    }
+        }
+        val kcInstall = environment.createProcessBuilder("-m", "pip", "install", kcWhl.toString())
+                .start()
+
+        val exit = kcInstall.waitFor()
+
+        if (exit != 0) {
+            BufferedReader(InputStreamReader(kcInstall.errorStream)).useLines {
+                it.forEach { logger.error(it) }
+            }
+            error("Non-zero exit code installing keras-contrib")
+        }
+
+    }
+
+    fun startup() {
+
+    }
+
+    companion object {
+        val logger = LoggerFactory.getLogger(PythonServer::class.java)
     }
 }
