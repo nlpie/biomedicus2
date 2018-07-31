@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses a document by calling out to the Google syntaxnet parser using a createProcessBuilder command.
+ * Parses a document by calling out to the Google syntaxnet parser using a process command.
  *
  * @author Ben Knoll
  * @since 1.5.0
