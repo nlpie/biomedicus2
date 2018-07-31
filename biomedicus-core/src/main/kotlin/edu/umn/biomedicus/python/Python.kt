@@ -17,17 +17,22 @@
 package edu.umn.biomedicus.python
 
 import edu.umn.biomedicus.annotations.Setting
+import edu.umn.biomedicus.framework.LifecycleManaged
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.ArtifactsProcessor
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.PosixFilePermission
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.concurrent.thread
+import kotlin.math.log
 
 
 @Singleton
@@ -128,32 +133,100 @@ class PythonServer @Inject constructor(
         @Setting("python.sentences.configPath") configPath: Path,
         @Setting("python.sentences.weightsPath") weightsPath: Path,
         environmentProvider: Provider<PythonEnvironment>
-) {
+) : LifecycleManaged {
     private val environment: PythonEnvironment by lazy { environmentProvider.get() }
+
+    var serverProcess: Process? = null
+
+    init {
+        if (launch) {
+            if (!installCheck()) {
+                install()
+            }
+
+            startup()
+        }
+    }
+
+    fun installCheck(): Boolean {
+        val biomedicusCheck = environment.createProcessBuilder("-c", "\"import biomedicus\"")
+                .start()
+
+        return biomedicusCheck.waitFor() == 0
+    }
 
     fun install() {
         val kcWhl = environment.pythonHome.resolve("keras_contrib-2.0.8-py2.py3-none-any.whl")
         javaClass.getResourceAsStream("/keras_contrib-2.0.8-py2.py3-none-any.whl").use { input ->
-            Files.newOutputStream(kcWhl).use { output ->
-                        input.copyTo(output)
-                    }
+            Files.newOutputStream(kcWhl, StandardOpenOption.CREATE_NEW).use { output ->
+                input.copyTo(output)
+            }
         }
         val kcInstall = environment.createProcessBuilder("-m", "pip", "install", kcWhl.toString())
                 .start()
 
-        val exit = kcInstall.waitFor()
+        logger.info("Installing keras_contrib for biomedicus python")
 
-        if (exit != 0) {
-            BufferedReader(InputStreamReader(kcInstall.errorStream)).useLines {
-                it.forEach { logger.error(it) }
-            }
+        if (kcInstall.waitFor() != 0) {
+            writeErrorStream(kcInstall)
             error("Non-zero exit code installing keras-contrib")
         }
 
+        logger.info("Installing tensorflow for biomedicus python")
+
+        val tfInstall = environment.createProcessBuilder("-m", "pip", "install", "tensorflow")
+                .start()
+
+        if (tfInstall.waitFor() != 0) {
+            writeErrorStream(tfInstall)
+            error("Non-zero exit code installing tensorflow")
+        }
+
+        val bioWhl = environment.pythonHome.resolve("biomedicus_python-1.0-py2.py3-none-any.whl")
+        javaClass.getResourceAsStream("/biomedicus_python-1.0-py2.py3-none-any.whl").use { input ->
+            Files.newOutputStream(bioWhl, StandardOpenOption.CREATE_NEW).use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        logger.info("Installing biomedicus python")
+
+        val bioInstall = environment.createProcessBuilder("-m", "pip", "install", bioWhl.toString())
+                .start()
+
+        if (bioInstall.waitFor() != 0) {
+            writeErrorStream(bioInstall)
+            error("Non-zero exit code installing biomedicus")
+        }
+    }
+
+    private fun writeErrorStream(process: Process) {
+        BufferedReader(InputStreamReader(process.errorStream)).useLines {
+            it.forEach { logger.error(it) }
+        }
     }
 
     fun startup() {
+        val serverProcess = environment.createProcessBuilder("-m", "biomedicus.server",
+                host, port.toString()).start()
 
+        thread(start = true, name = "Listener-biomedicus-server-debug-logging") {
+            BufferedReader(InputStreamReader(serverProcess.inputStream)).useLines {
+                it.forEach { logger.debug(it) }
+            }
+        }.start()
+
+        thread(start = true, name = "Listener-biomedicus-server-error-logging") {
+            BufferedReader(InputStreamReader(serverProcess.errorStream)).useLines {
+                it.forEach { logger.error(it) }
+            }
+        }
+
+        this.serverProcess = serverProcess
+    }
+
+    override fun doShutdown() {
+        serverProcess?.also { it.destroy() }?.waitFor()
     }
 
     companion object {
