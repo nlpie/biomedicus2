@@ -97,8 +97,5 @@ class SentenceDeepLearningWriter @Inject constructor(
                     emptySegment = false
                 }
             }
-
     }
-
 }
-

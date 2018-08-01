@@ -20,22 +20,26 @@ import edu.umn.biomedicus.common.utilities.Patterns
 import edu.umn.biomedicus.structure.Paragraph
 import edu.umn.nlpengine.*
 
-/**
- * Segments text according to rules
- */
-val regex = Regex("\n\n")
+val regex = Regex("\n{2,}|\\Z")
+val singleNewline = Regex("\n(?!\n)")
 
+/**
+ * Segments text by breaking every time it encounters two or more newlines unless the document is
+ * double spaced.
+ */
 class SegmentText : DocumentTask {
     override fun run(document: Document) {
         val breaks = HashSet<Int>()
 
         val text = document.text
 
+        val labeler = document.labeler<TextSegment>()
+
+        if (!singleNewline.containsMatchIn(text)) labeler.add(TextSegment(document))
+
         regex.findAll(text).forEach { breaks.add(it.range.endInclusive + 1) }
 
         document.labelIndex<Paragraph>().forEach { breaks.add(it.startIndex) }
-
-        val labeler = document.labeler<TextSegment>()
 
         var prev = 0
         for (segmentBreak in breaks.sorted()) {
