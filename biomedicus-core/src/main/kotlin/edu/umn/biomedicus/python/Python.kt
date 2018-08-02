@@ -55,6 +55,8 @@ class PythonEnvironment @Inject constructor(
         script = pythonHome.resolve("pyRun.sh")
 
         if (Files.notExists(venv)) {
+            // TODO: if virtualenv isn't installed, install it
+
             val createVenv = ProcessBuilder(pyExec, "-m", "virtualenv", venv.toString())
             val process = createVenv.start()
             val exit = process.waitFor()
@@ -207,7 +209,7 @@ class PythonServer @Inject constructor(
     }
 
     fun startup() {
-        val serverProcess = environment.createProcessBuilder("-m", "biomedicus.server",
+        val serverProcess = environment.createProcessBuilder("-m", "biomedicus_server",
                 host, port.toString()).start()
 
         thread(start = true, name = "Listener-biomedicus-server-debug-logging") {
