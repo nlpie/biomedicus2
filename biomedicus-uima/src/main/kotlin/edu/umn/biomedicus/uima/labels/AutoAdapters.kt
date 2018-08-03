@@ -79,6 +79,8 @@ class AutoAdapters @Inject constructor(
 }
 
 
+val reservedProperties = setOf("Type")
+
 /**
  * An auto-adapter from a [Label] to an auto-generated UIMA type.
  */
@@ -183,6 +185,7 @@ class AutoAdapter<T : Label>(
             property: KProperty1<T, *>,
             parameter: KParameter
     ): PropertyMapping<*> {
+        if (reservedProperties.contains(property.name)) error("${property.name} is reserved.")
         return when (property.returnType.classifier) {
             Boolean::class -> {
                 checkPrimitiveProperty(property)

@@ -34,135 +34,135 @@ enum class Foo {
 
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class HasEnum(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val foo: Foo
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val foo: Foo
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableEnum(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val foo: Foo?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val foo: Foo?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasEnumArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val enums: Array<Foo>
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val enums: Array<Foo>
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableEnumArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val enums: Array<Foo>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val enums: Array<Foo>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasEnumList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val enums: List<Foo>
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val enums: List<Foo>
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableEnumList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val enums: List<Foo>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val enums: List<Foo>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasBigDecimal(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val bigDecimal: BigDecimal
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val bigDecimal: BigDecimal
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableBigDecimal(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val bigDecimal: BigDecimal?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val bigDecimal: BigDecimal?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasSpan(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val span: Span
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val span: Span
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableSpan(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val span: Span?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val span: Span?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasSpanArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val spans: Array<Span>
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val spans: Array<Span>
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasNullableSpanArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val spans: Array<Span>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val spans: Array<Span>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasSpanList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val spans: List<Span>
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val spans: List<Span>
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasLabel(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val hasBoolean: HasBoolean?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val hasBoolean: HasBoolean?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasLabelArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val hasBooleans: Array<HasBoolean>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val hasBooleans: Array<HasBoolean>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasLabelList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val hasBooleans: List<HasBoolean>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val hasBooleans: List<HasBoolean>?
 ) : Label()
 
 @LabelMetadata(classpath = "test", distinct = true)
 data class HasBoolean(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val boolean: Boolean
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val boolean: Boolean
 ) : Label()
 
 @LabelMetadata(classpath = "test", distinct = true)
 data class HasByte(
-        val byte: Byte,
-        override val startIndex: Int,
-        override val endIndex: Int
+    val byte: Byte,
+    override val startIndex: Int,
+    override val endIndex: Int
 ) : Label()
 
 @LabelMetadata(classpath = "test", distinct = true)
 data class HasShort(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val short: Short
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val short: Short
 ) : Label()
 
 @LabelMetadata(classpath = "test")
@@ -170,142 +170,142 @@ data class HasInt(override val startIndex: Int, override val endIndex: Int, val 
 
 @LabelMetadata(classpath = "test")
 data class HasLong(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val long: Long
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val long: Long
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasFloat(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val float: Float
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val float: Float
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasDouble(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val double: Double
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val double: Double
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasString(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val string: String?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val string: String?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasBooleanArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val booleanArray: BooleanArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val booleanArray: BooleanArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasByteArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val byteArray: ByteArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val byteArray: ByteArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasShortArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val shortArray: ShortArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val shortArray: ShortArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasIntArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val intArray: IntArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val intArray: IntArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasLongArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val longArray: LongArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val longArray: LongArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasFloatArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val floatArray: FloatArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val floatArray: FloatArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasDoubleArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val doubleArray: DoubleArray?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val doubleArray: DoubleArray?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasStringArray(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val stringArray: Array<String>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val stringArray: Array<String>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasBooleanList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val booleans: List<Boolean>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val booleans: List<Boolean>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasByteList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val bytes: List<Byte>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val bytes: List<Byte>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasShortList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val shorts: List<Short>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val shorts: List<Short>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasIntList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val ints: List<Int>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val ints: List<Int>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasLongList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val longs: List<Long>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val longs: List<Long>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasFloatList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val floats: List<Float>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val floats: List<Float>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasDoubleList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val doubles: List<Double>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val doubles: List<Double>?
 ) : Label()
 
 @LabelMetadata(classpath = "test")
 data class HasStringList(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val strings: List<String>?
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val strings: List<String>?
 ) : Label()
 
 class AutoAdapterTest {
@@ -400,7 +400,7 @@ class AutoAdapterTest {
     @Test
     fun testNullableEnumFeatureAnnotationToLabel() {
         val hasEnumAdapter = labelAdapters.getLabelAdapterFactory(HasNullableEnum::class.java)
-                .create(cas, null)
+            .create(cas, null)
         val annotation = cas.createAnnotation<AnnotationFS>(hasEnumAdapter.type, 0, 5)
         val feature = hasEnumAdapter.type.getFeatureByBaseName("foo")
         annotation.setStringValue(feature, "BAR")
@@ -412,7 +412,7 @@ class AutoAdapterTest {
     @Test
     fun testNullableEnumFeatureLabelToAnnotation() {
         val hasEnumAdapter = labelAdapters.getLabelAdapterFactory(HasNullableEnum::class.java)
-                .create(cas, null)
+            .create(cas, null)
 
         val label = HasNullableEnum(0, 5, Foo.BAR)
 
@@ -425,7 +425,7 @@ class AutoAdapterTest {
     @Test
     fun testNullableEnumFeatureAnnotationToLabelNullValue() {
         val hasEnumAdapter = labelAdapters.getLabelAdapterFactory(HasNullableEnum::class.java)
-                .create(cas, null)
+            .create(cas, null)
         val annotation = cas.createAnnotation<AnnotationFS>(hasEnumAdapter.type, 0, 5)
         val label = hasEnumAdapter.annotationToLabel(annotation)
         assertEquals(label.foo, null)
@@ -434,7 +434,7 @@ class AutoAdapterTest {
     @Test
     fun testNullableEnumFeatureLabelToAnnotationValue() {
         val hasEnumAdapter = labelAdapters.getLabelAdapterFactory(HasNullableEnum::class.java)
-                .create(cas, null)
+            .create(cas, null)
         val label = HasNullableEnum(0, 5, null)
         val annotation = hasEnumAdapter.labelToAnnotation(label)
         val feature = annotation.type.getFeatureByBaseName("foo")
@@ -992,10 +992,12 @@ class AutoAdapterTest {
     @Test
     fun testLabelArrayFeatureToAnnotation() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasLabelArray::class.java).create(cas, null)
-        val label = HasLabelArray(0, 5, arrayOf(
+        val label = HasLabelArray(
+            0, 5, arrayOf(
                 HasBoolean(10, 15, true),
                 HasBoolean(15, 20, false)
-        ))
+            )
+        )
         val annotation = adapter.labelToAnnotation(label)
 
         val arrayFS = annotation.getFeatureValue(annotation.type.getFeatureByBaseName("hasBooleans")) as ArrayFS?
@@ -1068,10 +1070,12 @@ class AutoAdapterTest {
     @Test
     fun testLabelListFeatureToAnnotation() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasLabelList::class.java).create(cas, null)
-        val label = HasLabelList(0, 5, listOf(
+        val label = HasLabelList(
+            0, 5, listOf(
                 HasBoolean(10, 15, true),
                 HasBoolean(15, 20, false)
-        ))
+            )
+        )
         val annotation = adapter.labelToAnnotation(label)
 
         val arrayFS = annotation.getFeatureValue(annotation.type.getFeatureByBaseName("hasBooleans")) as ArrayFS?
@@ -1496,7 +1500,7 @@ class AutoAdapterTest {
 
         assertNull(arrayFS)
     }
-    
+
     @Test
     fun testLongArrayFeatureToLabel() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasLongArray::class.java).create(cas, null)
@@ -1808,7 +1812,7 @@ class AutoAdapterTest {
 
         assertNull(arrayFS)
     }
-    
+
     @Test
     fun testShortListFeatureToLabel() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasShortList::class.java).create(cas, null)
@@ -2016,7 +2020,7 @@ class AutoAdapterTest {
 
         assertNull(arrayFS)
     }
-    
+
     @Test
     fun testDoubleListFeatureToLabel() {
         val adapter = labelAdapters.getLabelAdapterFactory(HasDoubleList::class.java).create(cas, null)
@@ -2133,7 +2137,13 @@ class AutoAdapterTest {
         hasLabelAdapter.labelToAnnotation(hasLabel)
 
         assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 1)
-        assertNotNull(cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBoolean")))
+        assertNotNull(
+            cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(
+                hasLabelAdapter.type.getFeatureByBaseName(
+                    "hasBoolean"
+                )
+            )
+        )
     }
 
     @Test
@@ -2150,7 +2160,13 @@ class AutoAdapterTest {
         hasLabelAdapter.labelToAnnotation(hasLabelList)
 
         assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 2)
-        assertEquals((cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBooleans")) as ArrayFS).size(), 2)
+        assertEquals(
+            (cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(
+                hasLabelAdapter.type.getFeatureByBaseName(
+                    "hasBooleans"
+                )
+            ) as ArrayFS).size(), 2
+        )
     }
 
     @Test
@@ -2167,6 +2183,26 @@ class AutoAdapterTest {
         hasLabelAdapter.labelToAnnotation(hasLabelList)
 
         assertEquals(cas.getAnnotationIndex<AnnotationFS>(hasBooleanAdapter.type).size(), 2)
-        assertEquals((cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(hasLabelAdapter.type.getFeatureByBaseName("hasBooleans")) as ArrayFS).size(), 2)
+        assertEquals(
+            (cas.getAnnotationIndex<AnnotationFS>(hasLabelAdapter.type).first().getFeatureValue(
+                hasLabelAdapter.type.getFeatureByBaseName(
+                    "hasBooleans"
+                )
+            ) as ArrayFS).size(), 2
+        )
+    }
+
+    @LabelMetadata(classpath = "test")
+    data class HasPropertyNamedType(
+        val type: String,
+        override val startIndex: Int,
+        override val endIndex: Int
+    ) : Label()
+
+    @Test
+    fun `should reject properties named type`() {
+        assertFails {
+            labelAdapters.getLabelAdapterFactory(HasPropertyNamedType::class.java)
+        }
     }
 }

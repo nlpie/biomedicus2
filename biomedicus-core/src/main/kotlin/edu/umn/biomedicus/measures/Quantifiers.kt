@@ -16,8 +16,6 @@
 
 package edu.umn.biomedicus.measures
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.common.SequenceDetector
 import edu.umn.biomedicus.framework.TagEx
@@ -26,6 +24,7 @@ import edu.umn.biomedicus.sentences.Sentence
 import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
 import edu.umn.nlpengine.*
+import javax.inject.Inject
 
 /**
  * A type of indefinite quantifier
@@ -51,23 +50,23 @@ enum class IndefiniteQuantifierType {
  *
  * @property startIndex the start of cue phrase
  * @property endIndex the end of the cue phrase
- * @property type
+ * @property indefiniteQuantifierType
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class IndefiniteQuantifierCue(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val type: String
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val indefiniteQuantifierType: String
 ) : Label() {
     constructor(
-            textRange: TextRange,
-            type: String
+        textRange: TextRange,
+        type: String
     ) : this(textRange.startIndex, textRange.endIndex, type)
 
     constructor(
-            startIndex: Int,
-            endIndex: Int,
-            indefiniteQuantifierType: IndefiniteQuantifierType
+        startIndex: Int,
+        endIndex: Int,
+        indefiniteQuantifierType: IndefiniteQuantifierType
     ) : this(startIndex, endIndex, indefiniteQuantifierType.toString())
 }
 
@@ -83,8 +82,8 @@ data class FuzzyValue(override val startIndex: Int, override val endIndex: Int) 
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class StandaloneQuantifier(
-        override val startIndex: Int,
-        override val endIndex: Int
+    override val startIndex: Int,
+    override val endIndex: Int
 ) : Label()
 
 /**
@@ -92,12 +91,16 @@ data class StandaloneQuantifier(
  */
 @LabelMetadata(classpath = "biomedicus.v2", distinct = true)
 data class Quantifier(
-        override val startIndex: Int,
-        override val endIndex: Int,
-        val isExact: Boolean
+    override val startIndex: Int,
+    override val endIndex: Int,
+    val isExact: Boolean
 ) : Label() {
 
-    constructor(range: TextRange, isExact: Boolean) : this(range.startIndex, range.endIndex, isExact)
+    constructor(range: TextRange, isExact: Boolean) : this(
+        range.startIndex,
+        range.endIndex,
+        isExact
+    )
 }
 
 private val test: (String, Token) -> Boolean = { word, token: Token ->
@@ -109,21 +112,21 @@ private val test: (String, Token) -> Boolean = { word, token: Token ->
  * [IndefiniteQuantifierType] and also detects [FuzzyValue].
  */
 class IndefiniteQuantifierDetector(
-        private val left: SequenceDetector<String, Token>,
-        private val right: SequenceDetector<String, Token>,
-        private val local: SequenceDetector<String, Token>,
-        private val fuzzy: SequenceDetector<String, Token>
+    private val left: SequenceDetector<String, Token>,
+    private val right: SequenceDetector<String, Token>,
+    private val local: SequenceDetector<String, Token>,
+    private val fuzzy: SequenceDetector<String, Token>
 ) : DocumentsProcessor {
     @Inject internal constructor(
-            @Setting("measures.indefiniteQuantifiers.leftPath") leftPath: String,
-            @Setting("measures.indefiniteQuantifiers.rightPath") rightPath: String,
-            @Setting("measures.indefiniteQuantifiers.localPath") localPath: String,
-            @Setting("measures.indefiniteQuantifiers.fuzzyPath") fuzzyPath: String
+        @Setting("measures.indefiniteQuantifiers.leftPath") leftPath: String,
+        @Setting("measures.indefiniteQuantifiers.rightPath") rightPath: String,
+        @Setting("measures.indefiniteQuantifiers.localPath") localPath: String,
+        @Setting("measures.indefiniteQuantifiers.fuzzyPath") fuzzyPath: String
     ) : this(
-            SequenceDetector.loadFromFile(leftPath, test),
-            SequenceDetector.loadFromFile(rightPath, test),
-            SequenceDetector.loadFromFile(localPath, test),
-            SequenceDetector.loadFromFile(fuzzyPath, test)
+        SequenceDetector.loadFromFile(leftPath, test),
+        SequenceDetector.loadFromFile(rightPath, test),
+        SequenceDetector.loadFromFile(localPath, test),
+        SequenceDetector.loadFromFile(fuzzyPath, test)
     )
 
     override fun process(document: Document) {
@@ -137,25 +140,39 @@ class IndefiniteQuantifierDetector(
             val sentenceTokens = tokens.inside(sentence).asList()
 
             left.detectAll(sentenceTokens).forEach {
-                cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
-                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LEFT.name))
+                cueLabeler.add(
+                    IndefiniteQuantifierCue(
+                        sentenceTokens[it.first].startIndex,
+                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LEFT.name
+                    )
+                )
             }
 
             right.detectAll(sentenceTokens).forEach {
-                cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
-                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.RIGHT.name))
+                cueLabeler.add(
+                    IndefiniteQuantifierCue(
+                        sentenceTokens[it.first].startIndex,
+                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.RIGHT.name
+                    )
+                )
             }
 
             local.detectAll(sentenceTokens).forEach {
-                cueLabeler.add(IndefiniteQuantifierCue(sentenceTokens[it.first].startIndex,
-                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LOCAL.name))
+                cueLabeler.add(
+                    IndefiniteQuantifierCue(
+                        sentenceTokens[it.first].startIndex,
+                        sentenceTokens[it.last].endIndex, IndefiniteQuantifierType.LOCAL.name
+                    )
+                )
             }
 
             fuzzy.detectAll(sentenceTokens).forEach {
-                fuzzyLabeler.add(FuzzyValue(
+                fuzzyLabeler.add(
+                    FuzzyValue(
                         sentenceTokens[it.first].startIndex,
                         sentenceTokens[it.last].endIndex
-                ))
+                    )
+                )
             }
         }
     }
@@ -165,10 +182,10 @@ class IndefiniteQuantifierDetector(
  * Detects instances of [StandaloneQuantifier] labels.
  */
 class StandaloneQuantifierDetector(
-        val detector: SequenceDetector<String, Token>
+    val detector: SequenceDetector<String, Token>
 ) : DocumentsProcessor {
     @Inject constructor(
-            @Setting("measures.standaloneQuantifiersPath") path: String
+        @Setting("measures.standaloneQuantifiersPath") path: String
     ) : this(SequenceDetector.loadFromFile(path, test))
 
     override fun process(document: Document) {
@@ -178,13 +195,17 @@ class StandaloneQuantifierDetector(
         val labeler = document.labeler<StandaloneQuantifier>()
 
         sentences
-                .map { tokens.inside(it).asList() }
-                .forEach { sentenceTokens ->
-                    detector.detectAll(sentenceTokens).forEach {
-                        labeler.add(StandaloneQuantifier(sentenceTokens[it.first].startIndex,
-                                sentenceTokens[it.last].endIndex))
-                    }
+            .map { tokens.inside(it).asList() }
+            .forEach { sentenceTokens ->
+                detector.detectAll(sentenceTokens).forEach {
+                    labeler.add(
+                        StandaloneQuantifier(
+                            sentenceTokens[it.first].startIndex,
+                            sentenceTokens[it.last].endIndex
+                        )
+                    )
                 }
+            }
     }
 }
 
@@ -193,10 +214,12 @@ class StandaloneQuantifierDetector(
  */
 class QuantifierDetector(private val expr: TagEx) : DocumentsProcessor {
     @Inject constructor(factory: TagExFactory) : this(
-            factory.parse("""([?indef:IndefiniteQuantifierCue] ->)?
+        factory.parse(
+            """([?indef:IndefiniteQuantifierCue] ->)?
                                    ([?NumberRange] | [?Number] | [?fuzz:FuzzyValue]
                                      | [?PosTag<getPartOfSpeech=eDT> ParseToken<getText="a">])"""
-            ))
+        )
+    )
 
     override fun process(document: Document) {
         val labeler = document.labeler<Quantifier>()
