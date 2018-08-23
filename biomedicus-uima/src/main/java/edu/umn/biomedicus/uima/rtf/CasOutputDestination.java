@@ -54,8 +54,8 @@ class CasOutputDestination implements OutputDestination {
   private final Collection<AnnotationFS> completedAnnotations;
 
   /**
-   * The annotation property watchers, which are responsible for watching
-   * property changes and creating annotations.
+   * The annotation property watchers, which are responsible for watching property changes and
+   * creating annotations.
    */
   private final Collection<AnnotationPropertyWatcher>
       annotationPropertyWatchers;
@@ -74,6 +74,8 @@ class CasOutputDestination implements OutputDestination {
 
   private final Feature valueFeat;
 
+  private final boolean writeTables;
+
   private boolean inSuperSub = false;
 
   /**
@@ -82,11 +84,14 @@ class CasOutputDestination implements OutputDestination {
    * @param destinationView The view to write to.
    * @param casMappings The property cas mappings
    * @param annotationTypeForControlWord The annotation type to create for control words.
+   * @param name the name of the view
    */
   CasOutputDestination(CAS destinationView,
       List<PropertyCasMapping> casMappings,
       Map<String, Type> annotationTypeForControlWord,
-      String name) {
+      String name,
+      boolean writeTables
+  ) {
     this.destinationView = destinationView;
     this.sofaBuilder = new StringBuilder();
     this.completedAnnotations = new ArrayList<>();
@@ -95,6 +100,7 @@ class CasOutputDestination implements OutputDestination {
         .collect(Collectors.toList());
     this.annotationTypeForControlWord = annotationTypeForControlWord;
     this.name = name;
+    this.writeTables = writeTables;
     TypeSystem typeSystem = destinationView.getTypeSystem();
     illegalCharType = typeSystem.getType("biomedicus.v2.rtf.IllegalXmlCharacter");
     valueFeat = illegalCharType.getFeatureByBaseName("value");
@@ -104,19 +110,22 @@ class CasOutputDestination implements OutputDestination {
   public int writeChar(char ch, State state) {
     for (AnnotationPropertyWatcher propertyWatcher : annotationPropertyWatchers) {
       AnnotationFS newAnnotation = propertyWatcher
-          .handleChanges(sofaBuilder.length(), state,
-              destinationView);
+          .handleChanges(sofaBuilder.length(), state, destinationView);
       if (newAnnotation != null) {
         completedAnnotations.add(newAnnotation);
       }
     }
 
-    if (state.getPropertyValue("CharacterFormatting", "Hidden") == 0) {
+    if (state.getPropertyValue("CharacterFormatting", "Hidden") == 0
+        && (writeTables || state.getPropertyValue("ParagraphFormatting", "InTable") == 0)) {
       if (!isValidXml(ch)) {
         // add zero-width space and annotate it as an illegal xml character.
         sofaBuilder.append((char) 0x200B);
-        AnnotationFS annotation = destinationView.createAnnotation(illegalCharType,
-            sofaBuilder.length() - 1, sofaBuilder.length());
+        AnnotationFS annotation = destinationView.createAnnotation(
+            illegalCharType,
+            sofaBuilder.length() - 1,
+            sofaBuilder.length()
+        );
         annotation.setIntValue(valueFeat, (int) ch);
         completedAnnotations.add(annotation);
       } else {

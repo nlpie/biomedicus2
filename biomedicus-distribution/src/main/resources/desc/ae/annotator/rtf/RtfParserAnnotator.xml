@@ -65,6 +65,14 @@
         </description>
         <type>String</type>
       </configurationParameter>
+      <configurationParameter>
+        <name>writeTables</name>
+        <description>
+          Whether to include tables in the output from RTF conversion.
+        </description>
+        <type>Boolean</type>
+        <mandatory>true</mandatory>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
@@ -95,6 +103,12 @@
         <name>rtfCasMappingsDesc</name>
         <value>
           <string>edu/umn/biomedicus/config/rtf/CasMappings.xml</string>
+        </value>
+      </nameValuePair>
+      <nameValuePair>
+        <name>writeTables</name>
+        <value>
+          <boolean>true</boolean>
         </value>
       </nameValuePair>
     </configurationParameterSettings>

@@ -52,6 +52,8 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
    */
   private final CAS cas;
 
+  private final boolean writeTables;
+
   /**
    * Constructs a new factory for {@link CasOutputDestination} objects.
    *
@@ -60,17 +62,20 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
    * @param propertyCasMappings the property watchers which create annotations for those
    * properties.
    * @param cas the parent view to create new views in.
+   * @param writeTables whether to write tables
    */
   CasOutputDestinationFactory(
       List<DestinationCasMapping> destinationCasMappings,
       Map<String, Type> annotationTypeForSymbolName,
       List<PropertyCasMapping> propertyCasMappings,
-      CAS cas
+      CAS cas,
+      boolean writeTables
   ) {
     this.destinationCasMappings = destinationCasMappings;
     this.annotationTypeForSymbolName = annotationTypeForSymbolName;
     this.propertyCasMappings = propertyCasMappings;
     this.cas = cas;
+    this.writeTables = writeTables;
   }
 
   @Override
@@ -86,7 +91,12 @@ class CasOutputDestinationFactory implements OutputDestinationFactory {
     }
 
     CAS newView = cas.createView(matchingCasMapping.getViewName());
-    return new CasOutputDestination(newView, propertyCasMappings,
-        annotationTypeForSymbolName, destinationName);
+    return new CasOutputDestination(
+        newView,
+        propertyCasMappings,
+        annotationTypeForSymbolName,
+        destinationName,
+        writeTables
+    );
   }
 }

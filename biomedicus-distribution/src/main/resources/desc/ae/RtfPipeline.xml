@@ -89,6 +89,16 @@
           <param>parser/rtfCasMappingsDesc</param>
         </overrides>
       </configurationParameter>
+      <configurationParameter>
+        <name>writeTables</name>
+        <description>
+          Whether to include tables in the output from RTF conversion.
+        </description>
+        <type>Boolean</type>
+        <overrides>
+          <param>parser/writeTables</param>
+        </overrides>
+      </configurationParameter>
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>

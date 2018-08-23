@@ -45,22 +45,32 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
    * UIMA Parameter for the original document view name.
    */
   public static final String PARAM_ORIGINAL_DOCUMENT_VIEW_NAME = "rtfDocumentName";
+
   /**
    * UIMA Parameter for the target view name
    */
   public static final String PARAM_TARGET_VIEW_NAME = "documentName";
+
   /**
    * UIMA Parameter for the rtf properties descriptor classpath reference.
    */
   public static final String PARAM_RTF_PROPERTIES_DESC = "rtfPropertiesDesc";
+
   /**
    * UIMA parameter for the control keywords descriptor classpath reference.
    */
   public static final String PARAM_RTF_CONTROL_KEYWORDS_DESC = "rtfControlKeywordsDesc";
+
   /**
    * UIMA parameter for the cas mappings descriptor classpath reference.
    */
   public static final String PARAM_RTF_CAS_MAPPINGS_DESC = "rtfCasMappingsDesc";
+
+  /**
+   * UIMA parameter for whether RTF tables should be written to CAS.
+   */
+  public static final String PARAM_WRITE_TABLES = "writeTables";
+
   /**
    * Class logger.
    */
@@ -97,8 +107,14 @@ public class RtfParserAnnotator extends CasAnnotator_ImplBase {
     String rtfCasMappingsDesc = (String) aContext
         .getConfigParameterValue(PARAM_RTF_CAS_MAPPINGS_DESC);
 
-    rtfParserFactory = RtfParserFactory
-        .createByLoading(rtfPropertiesDesc, rtfControlKeywordsDesc, rtfCasMappingsDesc);
+    Boolean writeTables = (Boolean) aContext.getConfigParameterValue(PARAM_WRITE_TABLES);
+
+    rtfParserFactory = RtfParserFactory.createByLoading(
+        rtfPropertiesDesc,
+        rtfControlKeywordsDesc,
+        rtfCasMappingsDesc,
+        writeTables
+    );
 
     originalDocumentViewName = (String) aContext
         .getConfigParameterValue(PARAM_ORIGINAL_DOCUMENT_VIEW_NAME);

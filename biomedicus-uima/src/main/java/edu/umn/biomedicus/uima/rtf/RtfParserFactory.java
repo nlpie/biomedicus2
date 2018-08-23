@@ -57,6 +57,8 @@ class RtfParserFactory {
    */
   private final CasMappings casMappings;
 
+  private final boolean writeTables;
+
   /**
    * Creates a CAS rtf parser with the given properties.
    *
@@ -67,11 +69,13 @@ class RtfParserFactory {
   RtfParserFactory(
       Map<String, Map<String, Integer>> initialProperties,
       RtfKeywordParser rtfKeywordParser,
-      CasMappings casMappings
+      CasMappings casMappings,
+      boolean writeTables
   ) {
     this.initialProperties = initialProperties;
     this.rtfKeywordParser = rtfKeywordParser;
     this.casMappings = casMappings;
+    this.writeTables = writeTables;
   }
 
   /**
@@ -88,7 +92,8 @@ class RtfParserFactory {
   static RtfParserFactory createByLoading(
       String propertiesDescriptionClasspathRef,
       String controlKeywordsDescriptionClasspathRef,
-      String casMappingsDescriptionClassPathRef
+      String casMappingsDescriptionClassPathRef,
+      boolean writeTables
   ) {
     PropertiesDescription propertiesDescription = PropertiesDescription
         .loadFromFile(propertiesDescriptionClasspathRef);
@@ -106,7 +111,7 @@ class RtfParserFactory {
 
     RtfKeywordParser rtfKeywordParser = new RtfKeywordParser(keywordActionMap);
 
-    return new RtfParserFactory(properties, rtfKeywordParser, casMappings);
+    return new RtfParserFactory(properties, rtfKeywordParser, casMappings, writeTables);
   }
 
   /**
@@ -131,7 +136,8 @@ class RtfParserFactory {
         destinationCasMappings,
         annotationTypeForSymbolName,
         casMappings.getPropertyCasMappings(),
-        cas
+        cas,
+        writeTables
     );
 
     CAS originalDocumentView = cas.getView(DocumentIdentifiers.ORIGINAL_DOCUMENT);
