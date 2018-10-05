@@ -23,7 +23,6 @@ import edu.umn.nlpengine.ArtifactsProcessor
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
@@ -32,14 +31,13 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 import kotlin.concurrent.thread
-import kotlin.math.log
 
 
 @Singleton
 class PythonEnvironment @Inject constructor(
-        @Setting("biomedicus.paths.home") val home: Path,
-        @Setting("python.home") pyHome: String,
-        @Setting("python.executable") pyExec: String
+    @Setting("biomedicus.paths.home") val home: Path,
+    @Setting("python.home") pyHome: String,
+    @Setting("python.executable") pyExec: String
 ) {
     val pythonHome: Path = home.resolve(pyHome)
 
@@ -72,13 +70,21 @@ class PythonEnvironment @Inject constructor(
                     input.copyTo(output)
                 }
             }
-            Files.setPosixFilePermissions(script, setOf(PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.OWNER_EXECUTE))
+            Files.setPosixFilePermissions(
+                script,
+                setOf(
+                    PosixFilePermission.OWNER_READ,
+                    PosixFilePermission.OWNER_EXECUTE
+                )
+            )
         }
     }
 
     fun createProcessBuilder(vararg args: String): ProcessBuilder {
-        return ProcessBuilder(script.toString(), venv.resolve("bin").resolve("activate").toString(), *args)
+        return ProcessBuilder(
+            script.toString(), venv.resolve("bin").resolve("activate").toString(),
+            *args
+        )
     }
 
     companion object {
@@ -90,7 +96,7 @@ class PythonEnvironment @Inject constructor(
  * Pipeline component which validates the ability to use a python environment.
  */
 class PythonValidation @Inject constructor(
-        pythonEnvironment: PythonEnvironment
+    pythonEnvironment: PythonEnvironment
 ) : ArtifactsProcessor {
     init {
         val process = pythonEnvironment.createProcessBuilder("-V").start()
@@ -126,15 +132,15 @@ class PythonValidation @Inject constructor(
  */
 @Singleton
 class PythonServer @Inject constructor(
-        @Setting("python.home") pyHome: String,
-        @Setting("python.server.launch") launch: Boolean,
-        @Setting("python.server.host") private val host: String,
-        @Setting("python.server.port") private val port: Int,
-        @Setting("python.sentences.vocabPath") vocabPath: Path,
-        @Setting("python.sentences.wordsModel") wordsModel: String,
-        @Setting("python.sentences.configPath") configPath: Path,
-        @Setting("python.sentences.weightsPath") weightsPath: Path,
-        environmentProvider: Provider<PythonEnvironment>
+    @Setting("python.home") pyHome: String,
+    @Setting("python.server.launch") launch: Boolean,
+    @Setting("python.server.host") private val host: String,
+    @Setting("python.server.port") private val port: Int,
+    @Setting("python.sentences.vocabPath") private val vocabPath: Path,
+    @Setting("python.sentences.wordsModel") private val wordsModel: String,
+    @Setting("python.sentences.configPath") private val configPath: Path,
+    @Setting("python.sentences.weightsPath") private val weightsPath: Path,
+    environmentProvider: Provider<PythonEnvironment>
 ) : LifecycleManaged {
     private val environment: PythonEnvironment by lazy { environmentProvider.get() }
 
@@ -152,7 +158,7 @@ class PythonServer @Inject constructor(
 
     fun installCheck(): Boolean {
         val biomedicusCheck = environment.createProcessBuilder("-c", "\"import biomedicus\"")
-                .start()
+            .start()
 
         return biomedicusCheck.waitFor() == 0
     }
@@ -165,7 +171,7 @@ class PythonServer @Inject constructor(
             }
         }
         val kcInstall = environment.createProcessBuilder("-m", "pip", "install", kcWhl.toString())
-                .start()
+            .start()
 
         logger.info("Installing keras_contrib for biomedicus python")
 
@@ -177,7 +183,7 @@ class PythonServer @Inject constructor(
         logger.info("Installing tensorflow for biomedicus python")
 
         val tfInstall = environment.createProcessBuilder("-m", "pip", "install", "tensorflow")
-                .start()
+            .start()
 
         if (tfInstall.waitFor() != 0) {
             writeErrorStream(tfInstall)
@@ -194,7 +200,7 @@ class PythonServer @Inject constructor(
         logger.info("Installing biomedicus python")
 
         val bioInstall = environment.createProcessBuilder("-m", "pip", "install", bioWhl.toString())
-                .start()
+            .start()
 
         if (bioInstall.waitFor() != 0) {
             writeErrorStream(bioInstall)
@@ -209,8 +215,19 @@ class PythonServer @Inject constructor(
     }
 
     fun startup() {
-        val serverProcess = environment.createProcessBuilder("-m", "biomedicus_server",
-                host, port.toString()).start()
+        val processBuilder = environment.createProcessBuilder(
+            "-m", "biomedicus_server",
+            host,
+            port.toString()
+        )
+
+        val env = processBuilder.environment()
+        env["BIOMEDICUS_SENTENCES_VOCAB_DIR"] = vocabPath.toString()
+        env["BIOMEDICUS_SENTENCES_CONFIG"] = configPath.toString()
+        env["BIOMEDICUS_SENTENCES_WEIGHTS"] = weightsPath.toString()
+        env["BIOMEDICUS_SENTENCES_WORDS_MODEL"] = wordsModel
+
+        val serverProcess = processBuilder.start()
 
         thread(start = true, name = "Listener-biomedicus-server-debug-logging") {
             BufferedReader(InputStreamReader(serverProcess.inputStream)).useLines {
