@@ -51,7 +51,7 @@ data class Relative(
  */
 @Singleton
 class RelativeModel @Inject constructor(
-        @Setting("family.relativesPath") relativesPath: Path
+        @Setting("family.relatives.asDataPath") relativesPath: Path
 ) {
     private val relatives: List<String> = Files.readAllLines(relativesPath)
 

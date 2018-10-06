@@ -34,6 +34,7 @@ import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
 import edu.umn.nlpengine.*
 import org.slf4j.LoggerFactory
+import java.nio.file.Path
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -191,11 +192,11 @@ internal val tokenTextEquals: (String, Token) -> Boolean = { a, b: Token ->
  */
 @Singleton
 class CandidateDetectionRules @Inject constructor(
-        @Setting("sh.alcohol.candidateCuesPath") alcoholCuePath: String,
-        @Setting("sh.alcohol.cueIgnorePath") alcoholIgnorePath: String,
-        @Setting("sh.alcohol.nonalcoholicDrinksPath") nonalcoholicDrinksPath: String,
-        @Setting("sh.drugs.candidateCuesPath") drugCuePath: String,
-        @Setting("sh.nicotine.candidateCuesPath") nicotineCuePath: String
+        @Setting("sh.alcohol.candidateCues.asDataPath") alcoholCuePath: Path,
+        @Setting("sh.alcohol.cueIgnore.asDataPath") alcoholIgnorePath: Path,
+        @Setting("sh.alcohol.nonalcoholicDrinks.asDataPath") nonalcoholicDrinksPath: Path,
+        @Setting("sh.drugs.candidateCues.asDataPath") drugCuePath: Path,
+        @Setting("sh.nicotine.candidateCues.asDataPath") nicotineCuePath: Path
 ) {
     val alcoholCueDetector: SequenceDetector<String, Token>
 
@@ -337,7 +338,7 @@ class SocialHistoryCandidateDetector(
  */
 @Singleton
 class UsageFrequencyPhrases @Inject constructor(
-        @Setting("sh.usageFrequencyPhrasesPath") path: String
+        @Setting("sh.usageFrequencyPhrases.asDataPath") path: Path
 ) {
     val detector = SequenceDetector.loadFromFile(path) { a, b: Token ->
         b.text.compareTo(a, true) == 0
@@ -435,7 +436,7 @@ class UsageFrequencyDetector(private val expr: SearchExpr) : DocumentTask {
 @Singleton
 class UsageStatusPhrases(val detector: SequenceDetector<String, Token>) {
     @Inject constructor(
-            @Setting("sh.statusPhrasesPath") path: String
+            @Setting("sh.statusPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
@@ -478,7 +479,7 @@ class UsageStatusDetector(
 @Singleton
 class GenericMethodPhrases(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.genericMethodPhrasesPath") path: String
+            @Setting("sh.genericMethodPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 

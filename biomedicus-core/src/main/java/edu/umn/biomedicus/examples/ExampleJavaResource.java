@@ -34,7 +34,7 @@ public class ExampleJavaResource {
   }
 
   @Inject
-  public ExampleJavaResource(@Setting("example.valuesFile") Path valuesFile) throws IOException {
+  public ExampleJavaResource(@Setting("example.valuesFile.asDataPath") Path valuesFile) throws IOException {
     this(Files.readAllLines(valuesFile));
   }
 

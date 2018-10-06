@@ -57,7 +57,7 @@ class RocksDbDataStoreFactory implements DataStoreFactory, LifecycleManaged {
   private Path dbPath;
 
   @Inject
-  public RocksDbDataStoreFactory(@Setting("tnt.word.dbPath") Path dbPath,
+  public RocksDbDataStoreFactory(@Setting("tnt.word.db.asDataPath") Path dbPath,
       @Setting("tnt.word.inMemory") boolean inMemory) {
     this.dbPath = dbPath;
     this.inMemory = inMemory;

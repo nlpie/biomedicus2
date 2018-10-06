@@ -136,10 +136,10 @@ class PythonServer @Inject constructor(
     @Setting("python.server.launch") launch: Boolean,
     @Setting("python.server.host") private val host: String,
     @Setting("python.server.port") private val port: Int,
-    @Setting("python.sentences.vocabPath") private val vocabPath: Path,
+    @Setting("python.sentences.vocab.asDataPath") private val vocabPath: Path,
     @Setting("python.sentences.wordsModel") private val wordsModel: String,
-    @Setting("python.sentences.configPath") private val configPath: Path,
-    @Setting("python.sentences.weightsPath") private val weightsPath: Path,
+    @Setting("python.sentences.config.asDataPath") private val configPath: Path,
+    @Setting("python.sentences.weights.asDataPath") private val weightsPath: Path,
     environmentProvider: Provider<PythonEnvironment>
 ) : LifecycleManaged {
     private val environment: PythonEnvironment by lazy { environmentProvider.get() }

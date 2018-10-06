@@ -59,7 +59,7 @@ public class StopwordsModel implements Stopwords {
     private final Path stopwordsPath;
 
     @Inject
-    public Loader(@Setting("stopwords.fileBased.path") Path stopwordsPath) {
+    public Loader(@Setting("stopwords.fileBased.asDataPath") Path stopwordsPath) {
       this.stopwordsPath = stopwordsPath;
     }
 

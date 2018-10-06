@@ -32,7 +32,7 @@ import javax.inject.Inject
  * to a single file.
  */
 class Word2VecTrainingWriter @Inject constructor(
-    @ComponentSetting("outputFile.orig") outputFile: String
+    @ComponentSetting("outputFile") outputFile: String
 ) : DocumentsProcessor {
     private val outputWriter = File(outputFile).bufferedWriter(StandardCharsets.UTF_8)
 

@@ -69,7 +69,7 @@ public class AcronymExpansionsModel {
     private final Path expansionsModelPath;
 
     @Inject
-    Loader(@Setting("acronym.expansionsModel.path") Path expansionsModelPath) {
+    Loader(@Setting("acronym.expansionsModel.asDataPath") Path expansionsModelPath) {
       this.expansionsModelPath = expansionsModelPath;
     }
 

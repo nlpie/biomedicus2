@@ -38,7 +38,7 @@ public final class NormalizerModelLoader extends DataLoader<NormalizerModel> {
   private final boolean inMemory;
 
   @Inject
-  NormalizerModelLoader(@Setting("normalization.db.path") Path dbPath,
+  NormalizerModelLoader(@Setting("normalization.db.asDataPath") Path dbPath,
       @Setting("normalization.inMemory") boolean inMemory) {
     this.dbPath = dbPath;
     this.inMemory = inMemory;

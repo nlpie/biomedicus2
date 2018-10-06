@@ -118,10 +118,10 @@ class IndefiniteQuantifierDetector(
     private val fuzzy: SequenceDetector<String, Token>
 ) : DocumentsProcessor {
     @Inject internal constructor(
-        @Setting("measures.indefiniteQuantifiers.leftPath") leftPath: String,
-        @Setting("measures.indefiniteQuantifiers.rightPath") rightPath: String,
-        @Setting("measures.indefiniteQuantifiers.localPath") localPath: String,
-        @Setting("measures.indefiniteQuantifiers.fuzzyPath") fuzzyPath: String
+        @Setting("measures.indefiniteQuantifiers.left.asDataPath") leftPath: String,
+        @Setting("measures.indefiniteQuantifiers.right.asDataPath") rightPath: String,
+        @Setting("measures.indefiniteQuantifiers.local.asDataPath") localPath: String,
+        @Setting("measures.indefiniteQuantifiers.fuzzy.asDataPath") fuzzyPath: String
     ) : this(
         SequenceDetector.loadFromFile(leftPath, test),
         SequenceDetector.loadFromFile(rightPath, test),
@@ -185,7 +185,7 @@ class StandaloneQuantifierDetector(
     val detector: SequenceDetector<String, Token>
 ) : DocumentsProcessor {
     @Inject constructor(
-        @Setting("measures.standaloneQuantifiersPath") path: String
+        @Setting("measures.standaloneQuantifiers.asDataPath") path: String
     ) : this(SequenceDetector.loadFromFile(path, test))
 
     override fun process(document: Document) {

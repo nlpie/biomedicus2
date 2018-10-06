@@ -47,7 +47,7 @@ public class TnTTrainerProcessor implements ArtifactsProcessor {
   @Inject
   TnTTrainerProcessor(
       @ComponentSetting("tnt.train.viewName") String viewName,
-      @ComponentSetting("tnt.train.outputDir") Path outputDir,
+      @ComponentSetting("tnt.train.outputDir.asPath") Path outputDir,
       DataStoreFactory dataStoreFactory
   ) {
     this.viewName = viewName;

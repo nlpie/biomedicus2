@@ -202,7 +202,7 @@ public class OrthographicAcronymModel implements Serializable {
     private IndexMap<Character> symbols;
 
     @Inject
-    Loader(@Setting("acronym.orthographicModel.path") Path orthographicModel) {
+    Loader(@Setting("acronym.orthographicModel.asDataPath") Path orthographicModel) {
       this.orthographicModel = orthographicModel;
     }
 

@@ -62,7 +62,7 @@ public class ONLPSentenceModel {
     private final Path path;
 
     @Inject
-    public Loader(@Setting("opennlp.sentence.model.path") Path path) {
+    public Loader(@Setting("opennlp.sentence.model.asDataPath") Path path) {
       this.path = path;
     }
 

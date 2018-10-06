@@ -102,10 +102,10 @@ public class ConceptDictionaryBuilder {
 
   @Inject
   ConceptDictionaryBuilder(
-      @Setting("concepts.filters.sui.path") Path filteredSuisPath,
-      @Setting("concepts.filters.cui.path") Path filteredCuisPath,
-      @Setting("concepts.filters.suicui.path") Path filteredSuiCuisPath,
-      @Setting("concepts.filters.tui.path") Path filteredTuisPath,
+      @Setting("concepts.filters.sui.asDataPath") Path filteredSuisPath,
+      @Setting("concepts.filters.cui.asDataPath") Path filteredCuisPath,
+      @Setting("concepts.filters.suicui.asDataPath") Path filteredSuiCuisPath,
+      @Setting("concepts.filters.tui.asDataPath") Path filteredTuisPath,
       Vocabulary vocabulary
   ) throws IOException {
     Pattern splitter = Pattern.compile(",");

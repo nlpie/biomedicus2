@@ -55,7 +55,7 @@ public class RocksDbVocabStore extends VocabularyStore {
 
   @Inject
   public RocksDbVocabStore(
-      @Setting("vocabulary.db.path") Path dbPath,
+      @Setting("vocabulary.db.asDataPath") Path dbPath,
       @Setting("vocabulary.inMemory") Boolean inMemory
   ) {
     this.dbPath = dbPath;

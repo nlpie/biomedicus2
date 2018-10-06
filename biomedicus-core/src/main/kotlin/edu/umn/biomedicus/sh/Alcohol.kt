@@ -29,6 +29,7 @@ import edu.umn.biomedicus.tokenization.Token
 import edu.umn.biomedicus.tokens
 import edu.umn.nlpengine.*
 import java.io.File
+import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -130,7 +131,7 @@ class AlcoholAmountUnits(
         val detector: SequenceDetector<String, Token>
 ) {
     @Inject internal constructor(
-            @Setting("sh.alcohol.amountUnitsPath") path: String
+            @Setting("sh.alcohol.amountUnits.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenStartsWith))
 }
 
@@ -167,8 +168,8 @@ class AlcoholUnitDetector(
 class AlcoholAmountExpr(val expr: TagEx) {
     @Inject internal constructor(
             factory: TagExFactory,
-            @Setting("sh.alcohol.amountExprPath") path: String
-    ) : this(factory.parse(File(path).readText()))
+            @Setting("sh.alcohol.amountExpr.asDataPath") path: Path
+    ) : this(factory.parse(path.toFile().readText()))
 }
 
 /**
@@ -238,7 +239,7 @@ class AlcoholTemporalDetector : DocumentTask {
 @Singleton
 class AlcoholTypes(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.alcohol.typesPath") path: String
+            @Setting("sh.alcohol.types.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
@@ -268,7 +269,7 @@ class AlcoholTypeDetector(
 @Singleton
 class AlcoholStatusPhrases(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.alcohol.statusPhrasesPath") path: String
+            @Setting("sh.alcohol.statusPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
@@ -305,7 +306,7 @@ class AlcoholStatusDetector(
 @Singleton
 class AlcoholMethodPhrases(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.alcohol.methodPhrasesPath") path: String
+            @Setting("sh.alcohol.methodPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 

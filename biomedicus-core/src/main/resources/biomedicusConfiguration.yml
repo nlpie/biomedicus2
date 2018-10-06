@@ -5,127 +5,128 @@ paths:
   #data: /absolute-path
   #settings ending in path will be loaded as Path, if not absolute they will be resolved against the data directory
 settings:
-  vocabulary:
-    db.path: vocabulary
-    inMemory: no
-  spelling:
-    arpa.path: spell/UPMC.arpa
-    maxEditDistance: 4
-  measures:
-    numbers:
-      nrnumPath: measures/NRNUM
-      nrvarPath: measures/NRVAR
-      includeFractions: yes
-      includePercent: no
-    units:
-      modelPath: measures/concepts.tsv
-    indefiniteQuantifiers:
-      leftPath: measures/leftIndefiniteQuantifiers.txt
-      rightPath: measures/rightIndefiniteQuantifiers.txt
-      localPath: measures/localIndefiniteQuantifiers.txt
-      fuzzyPath: measures/fuzzyValues.txt
-    standaloneQuantifiersPath: measures/standaloneQuantifiers.txt
-    timeUnitsPath: measures/timeUnits.txt
-    timeFrequencyUnitsPath: measures/timeFrequencyUnits.txt
-  time:
-    daysPath: time/days.txt
-    monthsPath: time/months.txt
-    timesOfDayPath: time/timesOfDay.txt
-    seasonsPath: time/seasons.txt
-  tnt:
-    trigram.path: tnt/trigram.yml
-    word:
-      inMemory: no
-      dbPath: tnt/words
-      metadataPath: tnt/wordMetadata.yml
-    beam.threshold: 2.0
-  stopwords:
-    model: fileBased
-    fileBased.path: stopwords/PubMedStopwords.txt
-  normalization:
-    db.path: normalization
-    inMemory: no
   acronym:
     checkParseTokens: yes
     labelOtherSenses: yes
     useAlignment: no
-    expansionsModel.path: acronym/expansions.txt
-    alignmentModel.path: acronym-alignment/alignment.yml
+    expansionsModel: acronym/expansions.txt
+    alignmentModel: acronym-alignment/alignment.yml
     model: vector
     cutoffScore: 0.001
     vector:
-      model.path: acronym/vectorSpace.yml
+      model: acronym/vectorSpace.yml
       trainer:
-        expansionMap.path: REPLACE_ME_PATH_TO
-        uniqueIdMap.path: REPLACE_ME_PATH_TO
-        longforms.path: REPLACE_ME_PATH_TO
-        outputDir.path: REPLACE_ME_PATH_TO
+        expansionMap: REPLACE_ME_PATH_TO
+        uniqueIdMap: REPLACE_ME_PATH_TO
+        longforms: REPLACE_ME_PATH_TO
+        outputDir: REPLACE_ME_PATH_TO
     senseMap:
-      path: acronym/senseVectors
+      senseVectors: acronym/senseVectors
       inMemory: no
-    orthographicModel.path: acronym-orthographic/orthographicModel.yml
-  semanticNetwork:
-    srdef.path: semnetwork/SRDEF
-    semgroups.path: semnetwork/SemGroups.txt
+    orthographicModel: acronym-orthographic/orthographicModel.yml
   concepts:
-    db.path: concepts
+    db: concepts
     inMemory: no
     filters:
-      sui.path: conceptFilters/filteredSuis.txt
-      suicui.path: conceptFilters/filteredSuiCuis.txt
-      cui.path: conceptFilters/filteredCuis.txt
-      tui.path: conceptFilters/filteredTuis.txt
-  sections.headers.path: sections/headers.txt
-  parser.implementation: opennlp
+      sui: conceptFilters/filteredSuis.txt
+      suicui: conceptFilters/filteredSuiCuis.txt
+      cui: conceptFilters/filteredCuis.txt
+      tui: conceptFilters/filteredTuis.txt
+  family:
+    relatives: family/relatives.txt
+  measures:
+    numbers:
+      nrnum: measures/NRNUM
+      nrvar: measures/NRVAR
+      includeFractions: yes
+      includePercent: no
+    units:
+      model: measures/concepts.tsv
+    indefiniteQuantifiers:
+      left: measures/leftIndefiniteQuantifiers.txt
+      right: measures/rightIndefiniteQuantifiers.txt
+      local: measures/localIndefiniteQuantifiers.txt
+      fuzzy: measures/fuzzyValues.txt
+    standaloneQuantifiers: measures/standaloneQuantifiers.txt
+    timeUnits: measures/timeUnits.txt
+    timeFrequencyUnits: measures/timeFrequencyUnits.txt
+  modification:
+    history: modification/history.yml
+    negation: modification/negation.yml
+    probability: modification/probability.yml
+  normalization:
+    db: normalization
+    inMemory: no
   opennlp:
     sentence:
-      model.path: opennlp/sentence.bin
-  syntaxnet:
-    installationDir.path: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
-    modelDir: syntaxnet/models/parsey_mcparseface
-  specialist.path: SPECIALIST/LEX
-  modification:
-    history.path: modification/history.yml
-    negation.path: modification/negation.yml
-    probability.path: modification/probability.yml
-  family:
-    relativesPath: family/relatives.txt
-  sh:
-    usageFrequencyPhrasesPath: sh/usageFrequencyPhrases.txt
-    usageFrequencyPatternsPath: sh/usageFrequencyPatterns.txt
-    statusPhrasesPath: sh/genericStatusPhrases.txt
-    genericMethodPhrasesPath: sh/genericMethodPhrases.txt
-    alcohol:
-      amountExprPath: sh/alcohol/amountSearchExpr.txt
-      amountUnitsPath: sh/alcohol/amountUnits.txt
-      candidateCuesPath: sh/alcohol/candidateCues.txt
-      cueIgnorePath: sh/alcohol/alcoholIgnore.txt
-      methodPhrasesPath: sh/alcohol/methodPhrases.txt
-      nonalcoholicDrinksPath: sh/alcohol/nonalcoholicDrinks.txt
-      statusPhrasesPath: sh/alcohol/statusPhrases.txt
-      typesPath: sh/alcohol/types.txt
-    drugs:
-      amountExprPath: sh/drugs/amountSearchExpr.txt
-      amountUnitsPath: sh/drugs/amountUnits.txt
-      candidateCuesPath: sh/drugs/candidateCues.txt
-      methodPhrasesPath: sh/drugs/methodPhrases.txt
-      typesPath: sh/drugs/types.txt
-    nicotine:
-      amountExprPath: sh/nicotine/amountSearchExpr.txt
-      amountUnitsPath: sh/nicotine/amountUnits.txt
-      candidateCuesPath: sh/nicotine/candidateCues.txt
-      methodPhrasesPath: sh/nicotine/methodPhrases.txt
-      statusPhrasesPath: sh/nicotine/statusPhrases.txt
-      typesPath: sh/nicotine/types.txt
+      model: opennlp/sentence.bin
+  parser.implementation: opennlp
   python:
     executable: python3
     home: python
+    data:
     server:
       launch: yes
       host: localhost
       port: 8888
     sentences:
-      vocabPath: sentences/vocab
+      vocab: sentences/vocab
       wordsModel: mimic.100.vec
-      configPath: sentences/hparams.yml
-      weightsPath: sentences/weights.hdf5
+      config: sentences/hparams.yml
+      weights: sentences/weights.hdf5
+  time:
+    days: time/days.txt
+    months: time/months.txt
+    timesOfDay: time/timesOfDay.txt
+    seasons: time/seasons.txt
+  tnt:
+    trigram: tnt/trigram.yml
+    word:
+      inMemory: no
+      db: tnt/words
+      metadata: tnt/wordMetadata.yml
+    beam.threshold: 2.0
+  sections.headers: sections/headers.txt
+  semanticNetwork:
+    srdef: semnetwork/SRDEF
+    semgroups: semnetwork/SemGroups.txt
+  sh:
+    usageFrequencyPhrases: sh/usageFrequencyPhrases.txt
+    usageFrequencyPatterns: sh/usageFrequencyPatterns.txt
+    statusPhrases: sh/genericStatusPhrases.txt
+    genericMethodPhrases: sh/genericMethodPhrases.txt
+    alcohol:
+      amountExpr: sh/alcohol/amountSearchExpr.txt
+      amountUnits: sh/alcohol/amountUnits.txt
+      candidateCues: sh/alcohol/candidateCues.txt
+      cueIgnore: sh/alcohol/alcoholIgnore.txt
+      methodPhrases: sh/alcohol/methodPhrases.txt
+      nonalcoholicDrinks: sh/alcohol/nonalcoholicDrinks.txt
+      statusPhrases: sh/alcohol/statusPhrases.txt
+      types: sh/alcohol/types.txt
+    drugs:
+      amountExpr: sh/drugs/amountSearchExpr.txt
+      amountUnits: sh/drugs/amountUnits.txt
+      candidateCues: sh/drugs/candidateCues.txt
+      methodPhrases: sh/drugs/methodPhrases.txt
+      types: sh/drugs/types.txt
+    nicotine:
+      amountExpr: sh/nicotine/amountSearchExpr.txt
+      amountUnits: sh/nicotine/amountUnits.txt
+      candidateCues: sh/nicotine/candidateCues.txt
+      methodPhrases: sh/nicotine/methodPhrases.txt
+      statusPhrases: sh/nicotine/statusPhrases.txt
+      types: sh/nicotine/types.txt
+  specialist: SPECIALIST/LEX
+  spelling:
+    arpa: spell/UPMC.arpa
+    maxEditDistance: 4
+  stopwords:
+    model: fileBased
+    fileBased: stopwords/PubMedStopwords.txt
+  syntaxnet:
+    installationDir: REPLACE_ME_PATH_TO_/GoogleParser/models/syntaxnet
+    modelDir: syntaxnet/models/parsey_mcparseface
+  vocabulary:
+    db: vocabulary
+    inMemory: no

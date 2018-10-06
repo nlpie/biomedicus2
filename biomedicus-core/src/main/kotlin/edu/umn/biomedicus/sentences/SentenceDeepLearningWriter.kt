@@ -25,7 +25,7 @@ import java.io.File
 import javax.inject.Inject
 
 class SentenceDeepLearningWriter @Inject constructor(
-    @ComponentSetting("outputDirectory.orig") val outputDirectory: String
+    @ComponentSetting("outputDirectory.asPath") val outputDirectory: String
 ) : DocumentTask {
     override fun run(document: Document) {
         val artifactID = document.artifactID

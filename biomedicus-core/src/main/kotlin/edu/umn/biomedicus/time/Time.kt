@@ -27,6 +27,7 @@ import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.nlpengine.*
 import java.io.File
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -103,7 +104,9 @@ data class TemporalPhrase(override val startIndex: Int, override val endIndex: I
  */
 @Singleton
 class DaysOfWeek(val values: List<String>) {
-    @Inject constructor(@Setting("time.daysPath") path: String) : this(File(path).readLines())
+    @Inject constructor(
+            @Setting("time.days.asDataPath") path: Path
+    ) : this(path.toFile().readLines())
 }
 
 /**
@@ -131,7 +134,7 @@ class DetectDaysOfWeek(val values: List<String>) : DocumentTask {
 
 @Singleton
 class TimesOfDay(val values: List<String>) {
-    @Inject constructor(@Setting("time.timesOfDayPath") path: String) : this(
+    @Inject constructor(@Setting("time.timesOfDay.asDataPath") path: String) : this(
             File(path).readLines(StandardCharsets.UTF_8)
     )
 }
@@ -151,8 +154,10 @@ class DetectTimesOfDay(val values: List<String>) : DocumentTask {
 
 @Singleton
 class Seasons(val values: List<String>) {
-    @Inject constructor(@Setting("time.seasonsPath") path: String) : this(
-            File(path).readLines(StandardCharsets.UTF_8)
+    @Inject constructor(
+            @Setting("time.seasons.asDataPath") path: Path
+    ) : this(
+            path.toFile().readLines(StandardCharsets.UTF_8)
     )
 }
 
@@ -175,8 +180,8 @@ class DetectSeasonWords(val values: List<String>) : DocumentTask {
 @Singleton
 class Months(val months: List<String>) {
     @Inject constructor(
-            @Setting("time.monthsPath") path: String
-    ) : this(File(path).readLines())
+            @Setting("time.months.asDataPath") path: Path
+    ) : this(path.toFile().readLines())
 }
 
 /**

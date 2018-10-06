@@ -44,7 +44,7 @@ data class TimeFrequencyUnit(override val startIndex: Int, override val endIndex
 
 class TimeUnitDetector(val words: List<String>) : DocumentsProcessor {
     @Inject constructor(
-            @Setting("measures.timeUnitsPath") timeUnitsPath: String
+            @Setting("measures.timeUnits.asDataPath") timeUnitsPath: String
     ): this(File(timeUnitsPath).readLines(StandardCharsets.UTF_8))
 
     override fun process(document: Document) {
@@ -64,7 +64,7 @@ class TimeUnitDetector(val words: List<String>) : DocumentsProcessor {
 
 data class TimeFrequencyUnitDetector(val units: List<String>) : DocumentsProcessor {
     @Inject constructor(
-            @Setting("measures.timeFrequencyUnitsPath") path: String
+            @Setting("measures.timeFrequencyUnits.asDataPath") path: String
     ) : this(File(path).readLines(StandardCharsets.UTF_8))
 
     override fun process(document: Document) {
