@@ -64,16 +64,8 @@ settings:
   python:
     executable: python3
     home: python
-    data:
-    server:
-      launch: yes
-      host: localhost
-      port: 8888
-    sentences:
-      vocab: sentences/vocab
-      wordsModel: mimic.100.vec
-      config: sentences/hparams.yml
-      weights: sentences/weights.hdf5
+    biomedicus: biomedicus_python-1.0-py3-none-any.whl
+    keras_contrib: keras_contrib-2.0.8-py3-none-any.whl
   time:
     days: time/days.txt
     months: time/months.txt
@@ -90,6 +82,15 @@ settings:
   semanticNetwork:
     srdef: semnetwork/SRDEF
     semgroups: semnetwork/SemGroups.txt
+  sentences:
+    launch: no
+    host: localhost
+    port: 8888
+    url: http://localhost:8888/
+    vocab: sentences/vocab
+    words: sentences/vocab/mimic.300.vec
+    config: sentences/hparams.yml
+    weights: sentences/weights.hdf5
   sh:
     usageFrequencyPhrases: sh/usageFrequencyPhrases.txt
     usageFrequencyPatterns: sh/usageFrequencyPatterns.txt

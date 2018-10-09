@@ -20,13 +20,12 @@ import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.framework.LifecycleManaged
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.ArtifactsProcessor
+import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardOpenOption
-import java.nio.file.attribute.PosixFilePermission
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -35,48 +34,34 @@ import kotlin.concurrent.thread
 
 @Singleton
 class PythonEnvironment @Inject constructor(
-    @Setting("biomedicus.paths.home") val home: Path,
-    @Setting("python.home") pyHome: String,
-    @Setting("python.executable") pyExec: String
+        @Setting("python.home.asDataPath") pythonHome: Path,
+        @Setting("python.executable") pyExec: String,
+        @Setting("python.biomedicus") biomedicusWheel: String,
+        @Setting("python.keras_contrib") kcWheel: String
 ) {
-    val pythonHome: Path = home.resolve(pyHome)
+    private val venv: Path = pythonHome.resolve("venv")
 
-    private val venv: Path
+    private val script: Path = pythonHome.resolve("pyRun.sh")
 
-    private val script: Path
+    private val bioWhl: Path = pythonHome.resolve(biomedicusWheel)
+
+    private val kcWhl: Path = pythonHome.resolve(kcWheel)
 
     init {
-        Files.createDirectories(pythonHome)
-
-        venv = pythonHome.resolve("venv")
-
-        script = pythonHome.resolve("pyRun.sh")
-
         if (Files.notExists(venv)) {
-            // TODO: if virtualenv isn't installed, install it
-
-            val createVenv = ProcessBuilder(pyExec, "-m", "virtualenv", venv.toString())
-            val process = createVenv.start()
-            val exit = process.waitFor()
-            if (exit != 0) {
-                BufferedReader(InputStreamReader(process.errorStream)).useLines {
-                    it.forEach { logger.error(it) }
-                }
+            val installVenv = ProcessBuilder(pyExec, "-m", "pip", "install", "virtualenv").start()
+            val venvExit = installVenv.waitFor()
+            if (venvExit != 0) {
+                writeErrorStream(installVenv)
                 error("Non-zero exit code while trying to create the virtual environment")
             }
 
-            javaClass.getResourceAsStream("/pyRun.sh").use { input ->
-                Files.newOutputStream(script).use { output ->
-                    input.copyTo(output)
-                }
+            val createVenv = ProcessBuilder(pyExec, "-m", "virtualenv", venv.toString()).start()
+            val exit = createVenv.waitFor()
+            if (exit != 0) {
+                writeErrorStream(createVenv)
+                error("Non-zero exit code while trying to create the virtual environment")
             }
-            Files.setPosixFilePermissions(
-                script,
-                setOf(
-                    PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.OWNER_EXECUTE
-                )
-            )
         }
     }
 
@@ -90,6 +75,48 @@ class PythonEnvironment @Inject constructor(
     companion object {
         val logger = LoggerFactory.getLogger(PythonEnvironment::class.java)
     }
+
+    fun installCheck() {
+        val biomedicusCheck = createProcessBuilder("-c", "\"import biomedicus\"")
+                .start()
+
+        if (biomedicusCheck.waitFor() != 0) {
+            install()
+        }
+    }
+
+    fun install() {
+        logger.info("Installing keras_contrib for biomedicus python")
+        val kcInstall = createProcessBuilder("-m", "pip", "install", kcWhl.toString())
+                .start()
+        if (kcInstall.waitFor() != 0) {
+            writeErrorStream(kcInstall)
+            error("Non-zero exit code installing keras-contrib")
+        }
+
+        logger.info("Installing tensorflow for biomedicus python")
+        val tfInstall = createProcessBuilder("-m", "pip", "install", "tensorflow")
+                .start()
+        if (tfInstall.waitFor() != 0) {
+            writeErrorStream(tfInstall)
+            error("Non-zero exit code installing tensorflow")
+        }
+
+        logger.info("Installing biomedicus python")
+        val bioInstall = createProcessBuilder("-m", "pip", "install", bioWhl.toString())
+                .start()
+        if (bioInstall.waitFor() != 0) {
+            writeErrorStream(bioInstall)
+            error("Non-zero exit code installing biomedicus")
+        }
+    }
+
+    private fun writeErrorStream(process: Process) {
+        BufferedReader(InputStreamReader(process.errorStream)).useLines {
+            it.forEach { logger.error(it) }
+        }
+    }
+
 }
 
 /**
@@ -123,132 +150,7 @@ class PythonValidation @Inject constructor(
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(PythonValidation::class.java)
+        private val logger = LoggerFactory.getLogger(PythonValidation::class.java)
     }
 }
 
-/**
- * Maintains a connection to the BioMedICUS python server.
- */
-@Singleton
-class PythonServer @Inject constructor(
-    @Setting("python.home") pyHome: String,
-    @Setting("python.server.launch") launch: Boolean,
-    @Setting("python.server.host") private val host: String,
-    @Setting("python.server.port") private val port: Int,
-    @Setting("python.sentences.vocab.asDataPath") private val vocabPath: Path,
-    @Setting("python.sentences.wordsModel") private val wordsModel: String,
-    @Setting("python.sentences.config.asDataPath") private val configPath: Path,
-    @Setting("python.sentences.weights.asDataPath") private val weightsPath: Path,
-    environmentProvider: Provider<PythonEnvironment>
-) : LifecycleManaged {
-    private val environment: PythonEnvironment by lazy { environmentProvider.get() }
-
-    var serverProcess: Process? = null
-
-    init {
-        if (launch) {
-            if (!installCheck()) {
-                install()
-            }
-
-            startup()
-        }
-    }
-
-    fun installCheck(): Boolean {
-        val biomedicusCheck = environment.createProcessBuilder("-c", "\"import biomedicus\"")
-            .start()
-
-        return biomedicusCheck.waitFor() == 0
-    }
-
-    fun install() {
-        val kcWhl = environment.pythonHome.resolve("keras_contrib-2.0.8-py2.py3-none-any.whl")
-        javaClass.getResourceAsStream("/keras_contrib-2.0.8-py2.py3-none-any.whl").use { input ->
-            Files.newOutputStream(kcWhl, StandardOpenOption.CREATE_NEW).use { output ->
-                input.copyTo(output)
-            }
-        }
-        val kcInstall = environment.createProcessBuilder("-m", "pip", "install", kcWhl.toString())
-            .start()
-
-        logger.info("Installing keras_contrib for biomedicus python")
-
-        if (kcInstall.waitFor() != 0) {
-            writeErrorStream(kcInstall)
-            error("Non-zero exit code installing keras-contrib")
-        }
-
-        logger.info("Installing tensorflow for biomedicus python")
-
-        val tfInstall = environment.createProcessBuilder("-m", "pip", "install", "tensorflow")
-            .start()
-
-        if (tfInstall.waitFor() != 0) {
-            writeErrorStream(tfInstall)
-            error("Non-zero exit code installing tensorflow")
-        }
-
-        val bioWhl = environment.pythonHome.resolve("biomedicus_python-1.0-py2.py3-none-any.whl")
-        javaClass.getResourceAsStream("/biomedicus_python-1.0-py2.py3-none-any.whl").use { input ->
-            Files.newOutputStream(bioWhl, StandardOpenOption.CREATE_NEW).use { output ->
-                input.copyTo(output)
-            }
-        }
-
-        logger.info("Installing biomedicus python")
-
-        val bioInstall = environment.createProcessBuilder("-m", "pip", "install", bioWhl.toString())
-            .start()
-
-        if (bioInstall.waitFor() != 0) {
-            writeErrorStream(bioInstall)
-            error("Non-zero exit code installing biomedicus")
-        }
-    }
-
-    private fun writeErrorStream(process: Process) {
-        BufferedReader(InputStreamReader(process.errorStream)).useLines {
-            it.forEach { logger.error(it) }
-        }
-    }
-
-    fun startup() {
-        val processBuilder = environment.createProcessBuilder(
-            "-m", "biomedicus_server",
-            host,
-            port.toString()
-        )
-
-        val env = processBuilder.environment()
-        env["BIOMEDICUS_SENTENCES_VOCAB_DIR"] = vocabPath.toString()
-        env["BIOMEDICUS_SENTENCES_CONFIG"] = configPath.toString()
-        env["BIOMEDICUS_SENTENCES_WEIGHTS"] = weightsPath.toString()
-        env["BIOMEDICUS_SENTENCES_WORDS_MODEL"] = wordsModel
-
-        val serverProcess = processBuilder.start()
-
-        thread(start = true, name = "Listener-biomedicus-server-debug-logging") {
-            BufferedReader(InputStreamReader(serverProcess.inputStream)).useLines {
-                it.forEach { logger.debug(it) }
-            }
-        }.start()
-
-        thread(start = true, name = "Listener-biomedicus-server-error-logging") {
-            BufferedReader(InputStreamReader(serverProcess.errorStream)).useLines {
-                it.forEach { logger.error(it) }
-            }
-        }
-
-        this.serverProcess = serverProcess
-    }
-
-    override fun doShutdown() {
-        serverProcess?.also { it.destroy() }?.waitFor()
-    }
-
-    companion object {
-        val logger = LoggerFactory.getLogger(PythonServer::class.java)
-    }
-}
