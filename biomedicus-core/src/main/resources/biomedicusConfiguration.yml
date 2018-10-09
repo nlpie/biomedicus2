@@ -88,7 +88,7 @@ settings:
     port: 8888
     url: http://localhost:8888/
     vocab: sentences/vocab
-    words: sentences/vocab/mimic.300.vec
+    wordsList: sentences/vocab/words.txt
     config: sentences/hparams.yml
     weights: sentences/weights.hdf5
   sh:
