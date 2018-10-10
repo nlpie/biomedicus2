@@ -16,30 +16,26 @@
 
 package edu.umn.biomedicus.framework;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import edu.umn.biomedicus.exc.BiomedicusException;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Tested;
 import org.junit.jupiter.api.Test;
 
 class LifecycleManagerTest {
 
-  @Tested
-  private LifecycleManager lifecycleManager;
-
-  @Mocked
-  LifecycleManaged lifecycleManaged;
 
   /**
    * All registered managed objects should be shutdown even if previous objects threw exceptions.
    */
   @Test
   void testShutdownWithExceptions() throws Exception {
-    new Expectations() {{
-      lifecycleManaged.doShutdown(); times = 3; result = new BiomedicusException();
-    }};
+    LifecycleManager lifecycleManager = new LifecycleManager();
+
+    LifecycleManaged lifecycleManaged = mock(LifecycleManaged.class);
+    doThrow(new BiomedicusException(), new BiomedicusException(), new BiomedicusException())
+        .when(lifecycleManaged).doShutdown();
 
     lifecycleManager.register(lifecycleManaged);
     lifecycleManager.register(lifecycleManaged);

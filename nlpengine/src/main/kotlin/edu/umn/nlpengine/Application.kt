@@ -24,7 +24,8 @@ class Systems {
     val systems: Collection<System> = object : Collection<System> by _collection {}
 
     fun addSystem(className: String) {
-        val system = Class.forName(className).asSubclass(System::class.java).newInstance()
+        val system = Class.forName(className).asSubclass(System::class.java)
+                .getConstructor().newInstance()
         system.doSetup()
         _collection.add(system)
     }

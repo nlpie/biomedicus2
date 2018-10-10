@@ -31,7 +31,7 @@
   <description>Core NLP and analysis functionality</description>
 
   <properties>
-    <jackson.version>2.9.5</jackson.version>
+    <jackson.version>2.9.7</jackson.version>
     <guice.version>4.2.0</guice.version>
   </properties>
 

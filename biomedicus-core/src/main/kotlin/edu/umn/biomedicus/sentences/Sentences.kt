@@ -17,7 +17,6 @@
 package edu.umn.biomedicus.sentences
 
 import com.google.gson.Gson
-import edu.umn.biomedicus.annotations.ComponentSetting
 import edu.umn.biomedicus.annotations.Setting
 import edu.umn.biomedicus.framework.LifecycleManaged
 import edu.umn.biomedicus.python.PythonEnvironment
@@ -29,7 +28,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ConnectException
 import java.nio.file.Path
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import javax.inject.Inject
 import javax.inject.Provider
@@ -189,9 +187,9 @@ class SentencesService @Inject constructor(
         repeat(100) {
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null) {
-                    return gson.fromJson(body.string(), SentenceResponse::class.java)
+                val responseBody = response.body()
+                if (responseBody != null) {
+                    return gson.fromJson(responseBody.string(), SentenceResponse::class.java)
                 }
             }
             Thread.sleep((min(60_000.0, timeout) * random.nextDouble()).roundToLong())

@@ -1403,12 +1403,24 @@ public class SearchExpr {
       if (0 < min) {
         search.locals[countLocal] = 1;
         result = body.search(search, state);
+        State nextResult = next.search(search, result);
+        if (nextResult.isMiss()) {
+          return nextResult;
+        }
+        return nextResult.setBegin(result.begin);
       } else if (0 < max) {
         search.locals[countLocal] = 1;
         result = body.search(search, state);
         State nextResult = next.search(search, state);
         if (result.isMiss() || nextResult.begin < result.begin) {
           result = nextResult;
+        } else {
+          nextResult = next.search(search, result);
+          if (!nextResult.isMiss()) {
+            result = nextResult.setBegin(result.begin);
+          } else {
+            result = nextResult;
+          }
         }
       } else {
         search.locals[countLocal] = 1;
@@ -1444,7 +1456,7 @@ public class SearchExpr {
         State result = body.search(search, state);
         if (result.isMiss()) {
           search.locals[countLocal] = count;
-          return next.search(search, state);
+          return state;
         } else {
           return result;
         }
@@ -1456,7 +1468,7 @@ public class SearchExpr {
           return State.miss();
         } else {
           search.locals[countLocal] = count;
-          return next.search(search, state);
+          return state;
         }
       }
     }
