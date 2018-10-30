@@ -64,8 +64,14 @@ settings:
   python:
     executable: python3
     home: python
-    biomedicus: biomedicus_python-1.0-py3-none-any.whl
-    keras_contrib: keras_contrib-2.0.8-py3-none-any.whl
+    nlpnewt:
+      dist: nlpnewt-0.1.tar.gz
+      doc_service:
+        launch: no
+        port: 50150
+        url: localhost:50150
+    biomedicus: biomedicus-1.0.tar.gz
+    keras_contrib: keras_contrib-2.0.8.tar.gz
   time:
     days: time/days.txt
     months: time/months.txt
@@ -84,9 +90,8 @@ settings:
     semgroups: semnetwork/SemGroups.txt
   sentences:
     launch: no
-    host: localhost
-    port: 8888
-    url: http://localhost:8888/
+    port: 50151
+    url: localhost:50151
     vocab: sentences/vocab
     wordsList: sentences/vocab/words.txt
     config: sentences/hparams.yml

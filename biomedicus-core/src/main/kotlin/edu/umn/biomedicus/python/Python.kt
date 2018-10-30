@@ -17,35 +17,34 @@
 package edu.umn.biomedicus.python
 
 import edu.umn.biomedicus.annotations.Setting
-import edu.umn.biomedicus.framework.LifecycleManaged
 import edu.umn.nlpengine.Artifact
 import edu.umn.nlpengine.ArtifactsProcessor
-import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.inject.Singleton
-import kotlin.concurrent.thread
 
 
 @Singleton
 class PythonEnvironment @Inject constructor(
         @Setting("python.home.asDataPath") pythonHome: Path,
         @Setting("python.executable") pyExec: String,
-        @Setting("python.biomedicus") biomedicusWheel: String,
-        @Setting("python.keras_contrib") kcWheel: String
+        @Setting("python.nlpnewt.dist") newt: String,
+        @Setting("python.biomedicus") biomedicus: String,
+        @Setting("python.keras_contrib") kc: String
 ) {
     private val venv: Path = pythonHome.resolve("venv")
 
     private val script: Path = pythonHome.resolve("pyRun.sh")
 
-    private val bioWhl: Path = pythonHome.resolve(biomedicusWheel)
+    private val bioDist: Path = pythonHome.resolve(biomedicus)
 
-    private val kcWhl: Path = pythonHome.resolve(kcWheel)
+    private val kcDist: Path = pythonHome.resolve(kc)
+
+    private val newtDist: Path = pythonHome.resolve(newt)
 
     init {
         if (Files.notExists(venv)) {
@@ -87,7 +86,7 @@ class PythonEnvironment @Inject constructor(
 
     fun install() {
         logger.info("Installing keras_contrib for biomedicus python")
-        val kcInstall = createProcessBuilder("-m", "pip", "install", kcWhl.toString())
+        val kcInstall = createProcessBuilder("-m", "pip", "install", kcDist.toString())
                 .start()
         if (kcInstall.waitFor() != 0) {
             writeErrorStream(kcInstall)
@@ -102,8 +101,16 @@ class PythonEnvironment @Inject constructor(
             error("Non-zero exit code installing tensorflow")
         }
 
+        logger.info("Installing nlp-newt for biomedicus python")
+        val newtInstall = createProcessBuilder("-m", "pip", "install", newtDist.toString())
+                .start()
+        if (newtInstall.waitFor() != 0) {
+            writeErrorStream(newtInstall)
+            error("Non-zero exit code installing nlp-newt")
+        }
+
         logger.info("Installing biomedicus python")
-        val bioInstall = createProcessBuilder("-m", "pip", "install", bioWhl.toString())
+        val bioInstall = createProcessBuilder("-m", "pip", "install", bioDist.toString())
                 .start()
         if (bioInstall.waitFor() != 0) {
             writeErrorStream(bioInstall)
@@ -116,6 +123,14 @@ class PythonEnvironment @Inject constructor(
             it.forEach { logger.error(it) }
         }
     }
+}
+
+@Singleton
+class NewtDocumentsService @Inject constructor(
+        @Setting("python.nlpnewt.doc_service.launch") launch: Boolean,
+        @Setting("python.nlpnewt.doc_service.port") port: Int,
+        @Setting("python.nlpnewt.doc_service.url") private val url: String
+) {
 
 }
 
@@ -153,4 +168,3 @@ class PythonValidation @Inject constructor(
         private val logger = LoggerFactory.getLogger(PythonValidation::class.java)
     }
 }
-

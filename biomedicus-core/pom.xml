@@ -33,6 +33,7 @@
   <properties>
     <jackson.version>2.9.7</jackson.version>
     <guice.version>4.2.0</guice.version>
+    <grpc.version>1.15.1</grpc.version>
   </properties>
 
   <build>
@@ -60,6 +61,21 @@
       <groupId>com.google.inject.extensions</groupId>
       <artifactId>guice-multibindings</artifactId>
       <version>${guice.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
