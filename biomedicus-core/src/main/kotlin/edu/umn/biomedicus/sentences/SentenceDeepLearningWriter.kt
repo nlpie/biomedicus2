@@ -25,7 +25,7 @@ import java.io.File
 import javax.inject.Inject
 
 class SentenceDeepLearningWriter @Inject constructor(
-    @ComponentSetting("outputDirectory.asPath") val outputDirectory: String
+    @ComponentSetting("outputDirectory") val outputDirectory: String
 ) : DocumentTask {
     override fun run(document: Document) {
         val artifactID = document.artifactID
@@ -39,49 +39,21 @@ class SentenceDeepLearningWriter @Inject constructor(
         File(outputDirectory).resolve("$nameWithoutExtension.txt")
             .writeText(text)
 
-        val segments = document.labelIndex<TextSegment>().iterator()
-        val sentences = document.labelIndex<Sentence>().iterator()
-        val tokens = document.labelIndex<EmbeddingToken>().iterator()
+        val segments = document.labelIndex<TextSegment>()
+        val sentences = document.labelIndex<Sentence>()
+        val tokens = document.labelIndex<EmbeddingToken>()
 
 
         File(outputDirectory)
             .resolve("$nameWithoutExtension.labels")
             .bufferedWriter()
             .use { writer ->
-                if (!segments.hasNext() || !sentences.hasNext()) {
-                    return
-                }
-
-                var segment = segments.next()
-                var segmentIndex = 0
-                var sentence = sentences.next()
-
-                var emptySegment = true
-                var firstToken = true
-                tokens@ while (tokens.hasNext()) {
-                    val token = tokens.next()
-                    while (!segment.contains(token)) {
-                        if (!segments.hasNext()) {
-                            break@tokens
-                        }
-                        if (!emptySegment) {
-                            segmentIndex++
-                        }
-                        segment = segments.next()
-                        emptySegment = true
-                    }
-
-                    while (!sentence.contains(token)) {
-                        if (!sentences.hasNext()) {
-                            break@tokens
-                        }
-                        sentence = sentences.next()
-                        firstToken = true
-                    }
+                tokens@ for (token in tokens) {
+                    val sentence = sentences.containing(token).first() ?: continue@tokens
 
                     val type = when {
                         sentence.sentenceClass == Sentence.unknown -> 'O'
-                        firstToken -> 'B'
+                        tokens.inside(sentence).firstOrNull()?.locationEquals(token) ?: false -> 'B'
                         else -> 'I'
                     }
 
@@ -90,11 +62,8 @@ class SentenceDeepLearningWriter @Inject constructor(
                     val startIndex = token.startIndex
                     val endIndex = token.endIndex
                     writer.appendln(
-                        "$segmentIndex $startIndex $endIndex $type $isIdentifier $coveredText"
+                        "0 $startIndex $endIndex $type $isIdentifier $coveredText"
                     )
-
-                    firstToken = false
-                    emptySegment = false
                 }
             }
     }
