@@ -82,5 +82,5 @@ Funding for this work was provided by:
 The following people have made code contributions not represented in the commit history:
  *  Robert Bill
  *  Arun Kumar
- *  Serguei Pakhmomov
+ *  Serguei Pakhomov
  *  Yan Wang
