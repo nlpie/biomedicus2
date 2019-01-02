@@ -55,7 +55,7 @@ public final class SyntaxnetParser implements DocumentTask {
 
   @Inject
   SyntaxnetParser(
-      @Setting("syntaxnet.installationDir.path") Path installationDir,
+      @Setting("syntaxnet.installationDir.asPath") Path installationDir,
       @Setting("syntaxnet.modelDir") String modelDirString
   ) {
     this.installationDir = installationDir;

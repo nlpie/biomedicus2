@@ -65,7 +65,7 @@ public class PTBArtifactSource implements ArtifactSource {
 
   @Inject
   PTBArtifactSource(
-      @ComponentSetting("inputDirectory") Path directoryPath,
+      @ComponentSetting("inputDirectory.asPath") Path directoryPath,
       @ComponentSetting("extension") String extension,
       @ComponentSetting("charsetName") String charsetName,
       @ComponentSetting("documentName") String documentName

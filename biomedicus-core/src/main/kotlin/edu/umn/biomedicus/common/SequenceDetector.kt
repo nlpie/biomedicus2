@@ -19,6 +19,7 @@ package edu.umn.biomedicus.common
 import edu.umn.nlpengine.Span
 import edu.umn.nlpengine.TextRange
 import java.io.File
+import java.nio.file.Path
 import java.util.*
 
 /**
@@ -57,13 +58,21 @@ class SequenceDetector<T, U>(
                 filename: String,
                 test: (String, U) -> Boolean
         ): SequenceDetector<String, U> {
-            return File(filename).useLines { SequenceDetector(
+            return File(filename).useLines {
+                SequenceDetector(
                         sequences = *it.filter { it.isNotEmpty() }
                                 .map { it.split(" ") }
                                 .toList()
                                 .toTypedArray(),
                         test = test)
             }
+        }
+
+        fun <U> loadFromFile(
+                filename: Path,
+                test: (String, U) -> Boolean
+        ): SequenceDetector<String, U> {
+            return loadFromFile(filename.toString(), test)
         }
     }
 }
@@ -73,8 +82,6 @@ fun <U : TextRange> SequenceDetector<*, U>.detectAllSpans(sequence: List<U>): Li
     return createMatcher().detectAll(sequence)
             .map { Span(sequence[it.first].startIndex, sequence[it.last].endIndex) }
 }
-
-
 
 
 /**

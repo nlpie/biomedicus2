@@ -36,7 +36,7 @@ import javax.inject.Inject
  */
 class JdbcArtifactSource @Inject internal constructor(
         @ComponentSetting("documentName") private val documentName: String,
-        @ComponentSetting("configFile") private val configFile: Path
+        @ComponentSetting("configFile.asPath") private val configFile: Path
 ) : ArtifactSource {
 
     private val connection: Connection

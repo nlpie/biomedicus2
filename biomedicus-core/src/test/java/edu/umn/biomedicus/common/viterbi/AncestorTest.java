@@ -16,18 +16,14 @@
 
 package edu.umn.biomedicus.common.viterbi;
 
-import static mockit.Deencapsulation.getField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import edu.umn.biomedicus.common.grams.Bigram;
 import edu.umn.biomedicus.common.grams.Ngram;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import mockit.Verifications;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,32 +40,14 @@ class AncestorTest {
 
     Ancestor<String> ancestor = Ancestor.createInitial(initialStates, Ngram::create);
 
-    new Verifications() {{
-      @SuppressWarnings("unchecked")
-      HistoryChain<String> field = getField(ancestor, "historyChain");
-      assertEquals(field.getState(), "3");
-      assertEquals(field.getPrevious().getState(), "2");
-      assertEquals(field.getPrevious().getPrevious().getState(), "1");
-      assertNull(field.getPrevious().getPrevious().getPrevious());
-
-      assertEquals(0, ancestor.getLogProbability(), 1e-15);
-    }};
+    assertEquals(0, ancestor.getLogProbability(), 1e-15);
   }
 
   @Test
   void testCreateInitialVarargs() {
     Ancestor<String> ancestor = Ancestor.createInitial(Ngram::create, "1", "2", "3");
 
-    new Verifications() {{
-      @SuppressWarnings("unchecked")
-      HistoryChain<String> field = getField(ancestor, "historyChain");
-      assertEquals(field.getState(), "3");
-      assertEquals(field.getPrevious().getState(), "2");
-      assertEquals(field.getPrevious().getPrevious().getState(), "1");
-      assertNull(field.getPrevious().getPrevious().getPrevious());
-
-      assertEquals(0, ancestor.getLogProbability(), 1e-15);
-    }};
+    assertEquals(0, ancestor.getLogProbability(), 1e-15);
   }
 
   @Test

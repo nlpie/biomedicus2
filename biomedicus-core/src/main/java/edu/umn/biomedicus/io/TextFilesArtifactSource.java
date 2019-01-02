@@ -57,7 +57,7 @@ public class TextFilesArtifactSource implements ArtifactSource {
 
   @Inject
   TextFilesArtifactSource(
-      @ComponentSetting("inputDirectory.orig") String directoryPath,
+      @ComponentSetting("inputDirectory") String directoryPath,
       @ComponentSetting("extension") String extension,
       @ComponentSetting("charsetName") String charsetName,
       @ComponentSetting("documentName") String documentName

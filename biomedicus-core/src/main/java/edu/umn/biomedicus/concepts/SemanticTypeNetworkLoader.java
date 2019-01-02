@@ -35,8 +35,10 @@ public class SemanticTypeNetworkLoader extends DataLoader<SemanticTypeNetwork> {
   private final Path semgroupsPath;
 
   @Inject
-  public SemanticTypeNetworkLoader(@Setting("semanticNetwork.srdef.path") Path srdefPath,
-      @Setting("semanticNetwork.semgroups.path") Path semgroupsPath) {
+  public SemanticTypeNetworkLoader(
+      @Setting("semanticNetwork.srdef.asDataPath") Path srdefPath,
+      @Setting("semanticNetwork.semgroups.asDataPath") Path semgroupsPath
+  ) {
     this.srdefPath = srdefPath;
     this.semgroupsPath = semgroupsPath;
   }

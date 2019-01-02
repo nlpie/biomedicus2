@@ -40,14 +40,14 @@ data class Sentence(
             sentenceClass: Int
     ) : this(textRange.startIndex, textRange.endIndex, sentenceClass)
 
-    constructor(startIndex: Int, endIndex: Int): this(startIndex, endIndex, 1)
+    constructor(startIndex: Int, endIndex: Int) : this(startIndex, endIndex, 1)
 
-    constructor(textRange: TextRange): this(textRange, 1)
+    constructor(textRange: TextRange) : this(textRange, 1)
 
     /**
      * Retrieves a label index of all the [ParseToken] labels inside of this sentence.
      */
-    fun tokens() : LabelIndex<ParseToken> {
+    fun tokens(): LabelIndex<ParseToken> {
         return document?.labelIndex<ParseToken>()?.inside(this)
                 ?: throw IllegalStateException("This sentence has not been added to a document.")
     }

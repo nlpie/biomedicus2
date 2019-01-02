@@ -28,6 +28,7 @@ import edu.umn.biomedicus.tokenization.ParseToken
 import edu.umn.biomedicus.tokenization.Token
 import edu.umn.nlpengine.*
 import java.io.File
+import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -132,7 +133,7 @@ class NicotineAmountUnits(
         val detector: SequenceDetector<String, Token>
 ) {
     @Inject internal constructor(
-            @Setting("sh.nicotine.amountUnitsPath") path: String
+            @Setting("sh.nicotine.amountUnits.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path) { a, b: Token ->
         b.text.startsWith(a, true)
     })
@@ -180,8 +181,8 @@ class NicotineUnitDetector(
 class NicotineAmountSearchExpr(val expr: TagEx) {
     @Inject internal constructor(
             searchExprFactory: TagExFactory,
-            @Setting("sh.nicotine.amountExprPath") path: String
-    ) : this(searchExprFactory.parse(File(path).readText()))
+            @Setting("sh.nicotine.amountExpr.asDataPath") path: Path
+    ) : this(searchExprFactory.parse(path.toFile().readText()))
 }
 
 /**
@@ -261,7 +262,7 @@ class NicotineTemporalDetector : DocumentTask {
 @Singleton
 class NicotineTypes(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.nicotine.typesPath") path: String
+            @Setting("sh.nicotine.types.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
@@ -300,7 +301,7 @@ class NicotineTypeDetector(
 @Singleton
 class NicotineStatusPhrases(val detector: SequenceDetector<String, ParseToken>) {
     @Inject internal constructor(
-            @Setting("sh.nicotine.statusPhrasesPath") path: String
+            @Setting("sh.nicotine.statusPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path) { string, token: ParseToken ->
         token.text.compareTo(string, true) == 0
     })
@@ -349,7 +350,7 @@ class NicotineStatusDetector(
 @Singleton
 class NicotineMethodPhrases(val detector: SequenceDetector<String, ParseToken>) {
     @Inject internal constructor(
-            @Setting("sh.nicotine.methodPhrasesPath") path: String
+            @Setting("sh.nicotine.methodPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path) { string, token: ParseToken ->
         token.text.compareTo(string, true) == 0
     })

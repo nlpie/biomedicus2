@@ -27,7 +27,7 @@ import javax.inject.Inject
 val newlineTab = Regex(" *\\n+ *")
 
 class BratSentencesWriter @Inject internal constructor(
-        @ComponentSetting("outputDirectory.orig") private val outputDirectory: Path
+        @ComponentSetting("outputDirectory.asPath") private val outputDirectory: Path
 ) : DocumentTask {
     override fun run(document: Document) {
         val documentId = java.lang.String.format("%07d", document.artifactID.toInt())

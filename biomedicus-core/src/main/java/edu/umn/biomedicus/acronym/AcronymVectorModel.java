@@ -268,8 +268,8 @@ class AcronymVectorModel implements AcronymModel {
     public Loader(
         @Nullable Provider<AlignmentModel> alignmentModel,
         @Setting("acronym.useAlignment") Boolean useAlignment,
-        @Setting("acronym.vector.model.path") Path vectorSpacePath,
-        @Setting("acronym.senseMap.path") Path senseMapPath,
+        @Setting("acronym.vector.model.asDataPath") Path vectorSpacePath,
+        @Setting("acronym.senseMap.senseVectors.asDataPath") Path senseMapPath,
         @Setting("acronym.senseMap.inMemory") Boolean sensesInMemory,
         @Setting("acronym.cutoffScore") Double cutoffScore,
         AcronymExpansionsModel expansionsModel

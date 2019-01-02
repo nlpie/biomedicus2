@@ -142,7 +142,7 @@ data class WordIndex(
 }
 
 class EmbeddingTokenDetector : DocumentsProcessor {
-    private val tokens = Regex("(^=++\$)|(^-++\$)|[\\p{L}]++|\\p{Nd}|[\\S&&[^\\p{Nd}\\p{L}]]", RegexOption.MULTILINE)
+    private val tokens = Regex("(^=++\$)|(^-++\$)|[\\p{L}]++|[\\S&&[^\\p{L}]]", RegexOption.MULTILINE)
 
     private val remove = Regex("[^\\p{L}\\p{Nd}]+")
 

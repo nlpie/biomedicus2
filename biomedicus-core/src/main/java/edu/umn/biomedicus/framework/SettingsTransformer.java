@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Named;
 import edu.umn.biomedicus.annotations.Setting;
+
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,12 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Takes dictionaries of settings (usually loaded from configuration files, and turns them into
- * a Map of Guice keys so that they can be bound for injection.
+ * Takes dictionaries of settings (usually loaded from configuration files, and turns them into a
+ * Map of Guice keys so that they can be bound for injection.
  *
  * @author Ben Knoll
  * @since 1.5.0
@@ -78,11 +80,35 @@ public class SettingsTransformer {
 
       if (value instanceof Map) {
         throw new IllegalStateException("Maps should already be collapsed at this point.");
-      } else if (value instanceof String && endsWithPathFileDir(key)) {
-        Path path = absoluteOrResolveAgainstData(Paths.get((String) value));
-        settings.putIfAbsent(Key.get(Path.class, annotationFunction.apply(key)), path);
-        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key)), path.toString());
-        settings.putIfAbsent(Key.get(String.class, annotationFunction.apply(key + ".orig")), value);
+      } else if (value instanceof String) {
+        settings.putIfAbsent(
+            Key.get(String.class, annotationFunction.apply(key)),
+            value
+        );
+        Path path = Paths.get((String) value);
+        settings.putIfAbsent(
+            Key.get(Path.class, annotationFunction.apply(key + ".asPath")),
+            path
+        );
+        if (!path.isAbsolute()) {
+          settings.putIfAbsent(
+              Key.get(Path.class, annotationFunction.apply(key + ".asDataPath")),
+              dataPath.resolve(path)
+          );
+          settings.putIfAbsent(
+              Key.get(String.class, annotationFunction.apply(key + ".asDataPath")),
+              dataPath.resolve(path).toString()
+          );
+        } else {
+          settings.putIfAbsent(
+              Key.get(Path.class, annotationFunction.apply(key + ".asDataPath")),
+              path
+          );
+          settings.putIfAbsent(
+              Key.get(String.class, annotationFunction.apply(key + ".asDataPath")),
+              path.toString()
+          );
+        }
       } else {
         addSetting(key, value, value.getClass());
       }

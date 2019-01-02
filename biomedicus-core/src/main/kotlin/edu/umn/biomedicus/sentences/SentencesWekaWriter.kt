@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 class SentencesWekaWriter @Inject constructor(
-    @ComponentSetting("outputFile.orig") outputFile: String
+    @ComponentSetting("outputFile") outputFile: String
 ) : DocumentsProcessor {
     private val outputWriter = File(outputFile).bufferedWriter(StandardCharsets.UTF_8)
 

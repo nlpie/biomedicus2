@@ -34,8 +34,8 @@ public class NumberModelLoader extends DataLoader<NumberModel> {
 
   @Inject
   public NumberModelLoader(
-      @Setting("measures.numbers.nrnumPath") Path nrnumPath,
-      @Setting("measures.numbers.nrvarPath") Path nrvarPath
+      @Setting("measures.numbers.nrnum.asDataPath") Path nrnumPath,
+      @Setting("measures.numbers.nrvar.asDataPath") Path nrvarPath
   ) {
     this.nrnumPath = nrnumPath;
     this.nrvarPath = nrvarPath;

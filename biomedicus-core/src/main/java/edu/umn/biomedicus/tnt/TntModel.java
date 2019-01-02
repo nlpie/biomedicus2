@@ -130,9 +130,12 @@ public class TntModel implements EmissionProbabilityModel<PosCap, WordCap>,
     private final DataStoreFactory dataStoreFactory;
 
     @Inject
-    public Loader(@Setting("tnt.trigram.path") Path trigram,
-        @Setting("tnt.word.metadataPath") Path wordMetadata,
-        DataStoreFactory dataStoreFactory) {
+    public Loader(
+        @Setting("tnt.trigram.asDataPath") Path trigram,
+        @Setting("tnt.word.metadata.asDataPath"
+        ) Path wordMetadata,
+        DataStoreFactory dataStoreFactory
+    ) {
       this.trigram = trigram;
       this.wordMetadata = wordMetadata;
       this.dataStoreFactory = dataStoreFactory;

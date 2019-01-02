@@ -35,7 +35,7 @@ public class PtbTagsWriter implements DocumentTask {
 
   @Inject
   public PtbTagsWriter(
-      @ComponentSetting("writer.ptbTags.outputDir.path") Path outputDir
+      @ComponentSetting("writer.ptbTags.outputDir.asPath") Path outputDir
   ) {
     this.outputDir = outputDir;
   }

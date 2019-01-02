@@ -47,7 +47,7 @@ public class ConceptDictionaryLoader extends DataLoader<ConceptDictionary> {
   private final boolean inMemory;
 
   @Inject
-  ConceptDictionaryLoader(@Setting("concepts.db.path") Path dbPath,
+  ConceptDictionaryLoader(@Setting("concepts.db.asDataPath") Path dbPath,
       @Setting("concepts.inMemory") boolean inMemory) {
     this.dbPath = dbPath;
     this.inMemory = inMemory;

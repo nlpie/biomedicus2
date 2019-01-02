@@ -44,7 +44,7 @@ class ExampleKotlinTask @Inject constructor(
 @Singleton
 class ExampleKotlinResource(val values: List<String>) {
     @Inject constructor(
-        @Setting("example.valuesFile") valuesFile: Path
+        @Setting("example.valuesFile.asDataPath") valuesFile: Path
     ) : this(Files.readAllLines(valuesFile))
 
     fun isInValues(cs: CharSequence): Boolean {

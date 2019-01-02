@@ -260,7 +260,7 @@ class AlignmentModel implements Serializable {
     private final Path modelPath;
 
     @Inject
-    public Loader(@Setting("acronym.alignmentModel.path") Path modelPath) {
+    public Loader(@Setting("acronym.alignmentModel.asDataPath") Path modelPath) {
       this.modelPath = modelPath;
     }
 

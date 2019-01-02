@@ -29,6 +29,7 @@ import edu.umn.biomedicus.tokenization.Token
 import edu.umn.biomedicus.tokens
 import edu.umn.nlpengine.*
 import java.io.File
+import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -130,7 +131,7 @@ class DrugAmountUnits(
         val detector: SequenceDetector<String, Token>
 ) {
     @Inject internal constructor(
-            @Setting("sh.drugs.amountUnitsPath") path: String
+            @Setting("sh.drugs.amountUnits.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenStartsWith))
 }
 
@@ -167,7 +168,7 @@ class DrugUnitDetector(
 class DrugAmountExpr(val expr: TagEx) {
     @Inject internal constructor(
             factory: TagExFactory,
-            @Setting("sh.drugs.amountExprPath") path: String
+            @Setting("sh.drugs.amountExpr.asDataPath") path: String
     ) : this(factory.parse(File(path).readText()))
 }
 
@@ -238,7 +239,7 @@ class DrugTemporalDetector : DocumentTask {
 @Singleton
 class DrugTypes(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.drugs.typesPath") path: String
+            @Setting("sh.drugs.types.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 
@@ -284,7 +285,7 @@ class DrugStatusDetector : DocumentTask {
 @Singleton
 class DrugMethodPhrases(val detector: SequenceDetector<String, Token>) {
     @Inject internal constructor(
-            @Setting("sh.drugs.methodPhrasesPath") path: String
+            @Setting("sh.drugs.methodPhrases.asDataPath") path: Path
     ) : this(SequenceDetector.loadFromFile(path, tokenTextEquals))
 }
 

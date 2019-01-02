@@ -66,7 +66,7 @@ public class ONLPSentenceTrainer implements ArtifactsProcessor {
   @Inject
   ONLPSentenceTrainer(
       AcronymExpansionsModel acronymExpansionsModel,
-      @ComponentSetting("outputDirectory.orig") Path outputPath,
+      @ComponentSetting("outputDirectory.asPath") Path outputPath,
       @ComponentSetting("documentName") String documentName,
       @ComponentSetting("eosChars") String eosChars,
       @ComponentSetting("useTokenEnd") Boolean useTokenEnd,

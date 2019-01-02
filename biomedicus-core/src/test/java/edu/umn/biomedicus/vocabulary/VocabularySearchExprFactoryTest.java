@@ -17,54 +17,53 @@
 package edu.umn.biomedicus.vocabulary;
 
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import edu.umn.biomedicus.common.dictionary.BidirectionalDictionary;
+import edu.umn.biomedicus.common.dictionary.StringIdentifier;
 import edu.umn.biomedicus.framework.SearchExprFactory;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-import mockit.Tested;
-import mockit.Verifications;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class VocabularySearchExprFactoryTest {
 
-  @Tested
   VocabularySearchExprFactory factory;
 
-  @Injectable
-  SearchExprFactory orignal;
+  SearchExprFactory original;
 
-  @Injectable
   Vocabulary vocabulary;
 
-  @Mocked
   BidirectionalDictionary dictionary;
+
+  @BeforeEach
+  void setUp() {
+    vocabulary = mock(Vocabulary.class);
+    original = mock(SearchExprFactory.class);
+    dictionary = mock(BidirectionalDictionary.class);
+    when(vocabulary.getWordsIndex()).thenReturn(dictionary);
+    when(vocabulary.getNormsIndex()).thenReturn(dictionary);
+    when(vocabulary.getTermsIndex()).thenReturn(dictionary);
+    factory = new VocabularySearchExprFactory(vocabulary, original);
+  }
 
   @Test
   public void testNoReplace() {
     String expr = "someExpr";
-
     factory.parseExpression(expr);
-
-    new Verifications() {{
-      orignal.parse("someExpr");
-    }};
+    verify(original).parse(expr);
   }
 
   @Test
   public void testReplace() {
     String expr = "abc$words\"blah\"123$norms\"foo\"xyz$terms\"aTerm\"";
 
-    new Expectations(){{
-      dictionary.getTermIdentifier("blah"); result = 1;
-      dictionary.getTermIdentifier("foo"); result = 2;
-      dictionary.getTermIdentifier("aTerm"); result = 3;
-    }};
+    when(dictionary.getTermIdentifier("blah")).thenReturn(StringIdentifier.withValue(1));
+    when(dictionary.getTermIdentifier("foo")).thenReturn(StringIdentifier.withValue(2));
+    when(dictionary.getTermIdentifier("aTerm")).thenReturn(StringIdentifier.withValue(3));
 
     factory.parseExpression(expr);
-
-    new Verifications() {{
-      orignal.parse("abc11232xyz3");
-    }};
+    verify(original).parse("abc11232xyz3");
   }
 }

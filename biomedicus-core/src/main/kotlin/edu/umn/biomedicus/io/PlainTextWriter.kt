@@ -29,7 +29,7 @@ import javax.inject.Inject
  * Writes the contents of a view to a directory.
  */
 class PlainTextWriter @Inject constructor(
-        @ComponentSetting("outputDirectory.orig") private val outputDirectory: Path,
+        @ComponentSetting("outputDirectory.asPath") private val outputDirectory: Path,
         @ComponentSetting("charset") private val charsetName: String
 ) : DocumentTask {
     init {

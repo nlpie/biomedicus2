@@ -19,41 +19,27 @@ package edu.umn.biomedicus.common.viterbi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import mockit.Injectable;
-import mockit.Tested;
-import mockit.Verifications;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link SimpleCandidateProbability}.
  */
 class SimpleCandidateProbabilityTest {
-
-  @Tested
-  private
   SimpleCandidateProbability<String> simpleCandidateProbability;
 
-  @Injectable(value = "state")
-  String candidate;
-
-  @Injectable(value = "-1.0")
-  double emissionLogProbability;
+  @BeforeEach
+  void setUp() {
+    simpleCandidateProbability = new SimpleCandidateProbability<>("state", -1.0);
+  }
 
   @Test
   void testGetCandidate() {
-    String candidate = simpleCandidateProbability.getCandidate();
-
-    new Verifications() {{
-      assertEquals(candidate, "state");
-    }};
+    assertEquals(simpleCandidateProbability.getCandidate(), "state");
   }
 
   @Test
   void testGetEmissionLogProbability() {
-    double emissionLogProbability = simpleCandidateProbability.getEmissionLogProbability();
-
-    new Verifications() {{
-      assertEquals(emissionLogProbability, -1.0d);
-    }};
+    assertEquals(simpleCandidateProbability.getEmissionLogProbability(), -1.0d);
   }
 }

@@ -49,7 +49,7 @@ public class NumberContextWriter implements DocumentTask {
 
   @Inject
   public NumberContextWriter(
-      @ComponentSetting("outputDirectory.orig") Path outputDirectory,
+      @ComponentSetting("outputDirectory.asPath") Path outputDirectory,
       @ComponentSetting("contextSize") Integer contextSize
   ) {
     this.outputDirectory = outputDirectory;

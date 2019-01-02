@@ -49,7 +49,7 @@ public class RuleBasedSectionHeaderDetector implements DocumentsProcessor {
    */
   @Inject
   RuleBasedSectionHeaderDetector(
-      @ComponentSetting("sections.headers.path") Path path
+      @ComponentSetting("sections.headers.asDataPath") Path path
   ) throws BiomedicusException {
     headers = Patterns.loadPatternByJoiningLines(path);
   }

@@ -44,7 +44,7 @@ public class MipacqSourceReader implements ArtifactSource {
 
   @Inject
   public MipacqSourceReader(
-      @ComponentSetting("inputDirectory") Path inputDirectory,
+      @ComponentSetting("inputDirectory.asPath") Path inputDirectory,
       @ComponentSetting("documentName") String documentName
   ) throws IOException {
     this.documentName = documentName;

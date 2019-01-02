@@ -24,66 +24,121 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.attribute.PosixFilePermission
 import javax.inject.Inject
-import javax.inject.Provider
 import javax.inject.Singleton
 
 
 @Singleton
 class PythonEnvironment @Inject constructor(
-        @Setting("biomedicus.paths.home") val home: Path,
-        @Setting("python.home") pyHome: String,
-        @Setting("python.executable") pyExec: String
+        @Setting("python.home.asDataPath") pythonHome: Path,
+        @Setting("python.executable") pyExec: String,
+        @Setting("python.nlpnewt.dist") newt: String,
+        @Setting("python.biomedicus") biomedicus: String,
+        @Setting("python.keras_contrib") kc: String
 ) {
-    private val pythonHome: Path = home.resolve(pyHome)
+    private val venv: Path = pythonHome.resolve("venv")
 
-    private val venv: Path
+    private val script: Path = pythonHome.resolve("pyRun.sh")
 
-    private val script: Path
+    private val bioDist: Path = pythonHome.resolve(biomedicus)
+
+    private val kcDist: Path = pythonHome.resolve(kc)
+
+    private val newtDist: Path = pythonHome.resolve(newt)
 
     init {
-        Files.createDirectories(pythonHome)
-
-        venv = pythonHome.resolve("venv")
-
-        script = pythonHome.resolve("pyRun.sh")
-
         if (Files.notExists(venv)) {
-            val createVenv = ProcessBuilder(pyExec, "-m", "virtualenv", venv.toString())
-            val process = createVenv.start()
-            val exit = process.waitFor()
-            if (exit != 0) {
-                BufferedReader(InputStreamReader(process.errorStream)).useLines {
-                    it.forEach { logger.error(it) }
-                }
+            val installVenv = ProcessBuilder(pyExec, "-m", "pip", "install", "virtualenv").start()
+            val venvExit = installVenv.waitFor()
+            if (venvExit != 0) {
+                writeErrorStream(installVenv)
                 error("Non-zero exit code while trying to create the virtual environment")
             }
 
-            javaClass.getResourceAsStream("/pyRun.sh").use { input ->
-                Files.newOutputStream(script).use { output ->
-                    input.copyTo(output)
-                }
+            val createVenv = ProcessBuilder(pyExec, "-m", "virtualenv", venv.toString()).start()
+            val exit = createVenv.waitFor()
+            if (exit != 0) {
+                writeErrorStream(createVenv)
+                error("Non-zero exit code while trying to create the virtual environment")
             }
-            Files.setPosixFilePermissions(script, setOf(PosixFilePermission.OWNER_READ,
-                    PosixFilePermission.OWNER_EXECUTE))
         }
     }
 
     fun createProcessBuilder(vararg args: String): ProcessBuilder {
-        return ProcessBuilder(script.toString(), venv.resolve("bin").resolve("activate").toString(), *args)
+        return ProcessBuilder(
+            script.toString(), venv.resolve("bin").resolve("activate").toString(),
+            *args
+        )
     }
 
     companion object {
         val logger = LoggerFactory.getLogger(PythonEnvironment::class.java)
     }
+
+    fun installCheck() {
+        val biomedicusCheck = createProcessBuilder("-c", "\"import biomedicus\"")
+                .start()
+
+        if (biomedicusCheck.waitFor() != 0) {
+            install()
+        }
+    }
+
+    fun install() {
+        logger.info("Installing keras_contrib for biomedicus python")
+        val kcInstall = createProcessBuilder("-m", "pip", "install", kcDist.toString())
+                .start()
+        if (kcInstall.waitFor() != 0) {
+            writeErrorStream(kcInstall)
+            error("Non-zero exit code installing keras-contrib")
+        }
+
+        logger.info("Installing tensorflow for biomedicus python")
+        val tfInstall = createProcessBuilder("-m", "pip", "install", "tensorflow")
+                .start()
+        if (tfInstall.waitFor() != 0) {
+            writeErrorStream(tfInstall)
+            error("Non-zero exit code installing tensorflow")
+        }
+
+        logger.info("Installing nlp-newt for biomedicus python")
+        val newtInstall = createProcessBuilder("-m", "pip", "install", newtDist.toString())
+                .start()
+        if (newtInstall.waitFor() != 0) {
+            writeErrorStream(newtInstall)
+            error("Non-zero exit code installing nlp-newt")
+        }
+
+        logger.info("Installing biomedicus python")
+        val bioInstall = createProcessBuilder("-m", "pip", "install", bioDist.toString())
+                .start()
+        if (bioInstall.waitFor() != 0) {
+            writeErrorStream(bioInstall)
+            error("Non-zero exit code installing biomedicus")
+        }
+    }
+
+    private fun writeErrorStream(process: Process) {
+        BufferedReader(InputStreamReader(process.errorStream)).useLines {
+            it.forEach { logger.error(it) }
+        }
+    }
+}
+
+@Singleton
+class NewtDocumentsService @Inject constructor(
+        @Setting("python.nlpnewt.doc_service.launch") launch: Boolean,
+        @Setting("python.nlpnewt.doc_service.port") port: Int,
+        @Setting("python.nlpnewt.doc_service.url") private val url: String
+) {
+
 }
 
 /**
  * Pipeline component which validates the ability to use a python environment.
  */
 class PythonValidation @Inject constructor(
-        pythonEnvironment: PythonEnvironment
+    pythonEnvironment: PythonEnvironment
 ) : ArtifactsProcessor {
     init {
         val process = pythonEnvironment.createProcessBuilder("-V").start()
@@ -110,6 +165,6 @@ class PythonValidation @Inject constructor(
     }
 
     companion object {
-        val logger = LoggerFactory.getLogger(PythonValidation::class.java)
+        private val logger = LoggerFactory.getLogger(PythonValidation::class.java)
     }
 }
