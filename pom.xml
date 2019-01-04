@@ -21,11 +21,11 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>biomedicus</artifactId>
   <packaging>pom</packaging>
-  <version>2.1.0-SNAPSHOT</version>
+  <version>2.1.0</version>
   <parent>
     <groupId>edu.umn.biomedicus</groupId>
     <artifactId>biomedicus-base-jdk8-kotlin</artifactId>
-    <version>1.2</version>
+    <version>1.5</version>
   </parent>
 
   <modules>
@@ -45,7 +45,7 @@
   <url>https://nlpie.github.io/biomedicus</url>
 
   <properties>
-    <biomedicus.version>2.1.0-SNAPSHOT</biomedicus.version>
+    <biomedicus.version>2.1.0</biomedicus.version>
     <top.basedir>${project.basedir}</top.basedir>
   </properties>
 
