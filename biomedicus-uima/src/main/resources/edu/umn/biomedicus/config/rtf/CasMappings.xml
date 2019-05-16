@@ -76,7 +76,7 @@
       <zeroLengthEmitted>false</zeroLengthEmitted>
     </propertyCasMapping>
     <propertyCasMapping>
-      <annotationClassName>biomedicus.v2.Underline</annotationClassName>
+      <annotationClassName>biomedicus.v2.Underlined</annotationClassName>
       <minimumValue>1</minimumValue>
       <propertyGroup>CharacterFormatting</propertyGroup>
       <propertyName>Underline</propertyName>
