@@ -1,5 +1,0 @@
-Note: BioMedICUS does not use traditional Cas Consumers as they are functionally no different than Analysis Engines,
-and in the current UIMA documentation it is recommended that all Cas Consumers be developed as Analysis Engines moving
-forward.
-
-Therefore, all BioMedICUS document writer AE descriptors can be found in the ae/writer/ folder.
