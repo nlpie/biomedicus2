@@ -1,0 +1,32 @@
+title: BioMedICUS
+author: University of Minnesota NLP/IE Group
+email: nlp-ie@umn.edu
+description: > # this means to ignore newlines until "show_excerpts:"
+
+
+show_excerpts: true # set to false to hide excerpts on the blog page
+
+
+# If you want to link only specific pages in your header, uncomment
+# this and add the path to the pages in order as they should show up
+header_pages:
+ - blog.md
+ - components.md
+ - installation.md
+
+right_headers:
+  - name: Downloads
+    href: https://nlpie.umn.edu/downloads
+  - name: GitHub
+    href: https://github.com/nlpie/biomedicus3
+  - name: MTAP
+    href: https://nlpie.github.io/mtap
+  - name: NLP/IE
+    href: https://nlpie.umn.edu
+
+highlighter: rouge
+
+remote_theme: nlpie/mtap-jekyll-theme
+
+plugins:
+  - jekyll-remote-theme
