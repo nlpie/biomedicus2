@@ -10,7 +10,7 @@ excerpt: >
 
 Sentence boundary disambiguation or sentence splitting is often the first step in any pipeline and excluding RTF parsing or any other pre-processing that's the case in BioMedICUS as well. The detected Sentence units are then used in most downstream components as a dependency, either to split sequences of tokens for analysis or as a unit of analysis itself.
 
-Despite sentence boundary disambiguation being a mostly "solved" problem in the space of general language, we would often see poor sentence splitting performance on the clinical notes that we process. As sentences are the first analysis component in our pipeline, these errors would often propagate downstream to other analysis. In order to resolve the issues we were having with sentences, we set about developing a new sentence splitter for BioMedICUS.
+Despite sentence boundary disambiguation being a mostly "solved" problem in the space of general language,  poor sentence splitting performance on the clinical notes is common. As sentences are the first analysis component in our pipeline, these errors would often propagate downstream to other analysis. In order to resolve the issues we set about developing a new sentence splitter for BioMedICUS.
 
 
 ## Network Architecture
@@ -28,7 +28,12 @@ Our input mapping is done in the [InputMapping class](https://github.com/nlpie/b
 
 #### Character identifiers
 
-The character identifiers are a unique integer identifier assigned to each character, using these identifiers we create vectors for each word from the characters after the previous word and before this word, the characters within the word itself, and the characters after the word and before the next word. Marker identifiers are inserted at boundaries in order to assist the neural network.
+The character identifiers are a unique integer identifier assigned to each character. The character identifiers from each word come from the following components:
+- The characters in the span between the previous word and this word.
+- The characters within the word itself
+- The characters in the span between this word and the next word.
+
+We include characters between words in order to pick up on punctuation and whitespace which may be cues for sentence splitting. Marker identifiers are inserted at boundaries in order to assist the neural network.
 
 ```python
 def transform_word(self, i, start_of_sequence, text, tokens):
@@ -60,11 +65,11 @@ def lookup_char_ids(self, prior, word, post, start_of_sequence):
         return char_ids
 ```
 
-These character identifier vectors are padded or cut off to a set length using the padding character identifier: 0. These character identifier vectors make up a matrix where each row is a word, this matrix is padded to a specific size using character ID vectors made entirely of padding IDs. A single sample contains one of these matrices.
+These character identifier vectors are padded or cut off to a set length using the padding character identifier: 0. These character identifier vectors make up a matrix where each row is a word; this matrix is padded to a specific size using character ID vectors made entirely of padding IDs. A single example contains one of these matrices.
 
 #### Word identifiers
 
-Also created is a vector containing a unique identifier for each word looked up from a table of words, with unknown words all mapped to a specific value. The word is lowercased, certain characters are substituted (digits) and are deleted (punctuation). This same substitution was used when training the word embeddings. Words that match a very specific pattern used in our MIMIC training dataset to replace personally identifiable information are entirely substituted for the word 'IDENTIFIER' (capitalized unlike any other words). In the future we may consider doing NER to recognize identifiers prior to sentence detection on text that hasn't been de-identified.
+The network also uses a vector containing a unique identifier for each word looked up from a table of words, with unknown words all mapped to a specific value. The word is lowercased, certain characters are substituted (digits) and are deleted (punctuation). This same substitution was used when training the word embeddings. The MIMIC training dataset uses the sequence "[\** ... \**]" to replace personally identifiable information. We replace all instances of that sequence with the word 'IDENTIFIER' (capitalized unlike any other words), so that the network does not train on the words within the brackets. In the future we may consider doing NER to recognize identifiers prior to sentence detection on text that hasn't been de-identified.
 
 ```python
 def lookup_word_id(self, word):
@@ -139,12 +144,12 @@ Now that we've covered the Python input layer, we can look at the PyTorch model 
 ```
 
 We have
-- The character CNN sub-model
-- A word embedding lookup against pre-trained word embeddings
-- The bi-directional LSTM itself
-- A batch normalization to be performed after the concatenation
-- A linear projection from the bi-lstm generated contextual word representation to "begin of sentence" logits.
-- A dropout layer that gets applied in-between layers.
+- ``self.char_cnn``: The character CNN sub-model.
+- ``self.word_embeddings``: A word embedding lookup against pre-trained word embeddings.
+- ``self.lstm``: The bi-directional LSTM itself.
+- ``self.batch_norm``: A batch normalization to be performed after the concatenation.
+- ``self.hidden2bos``: A linear projection from the bi-lstm generated contextual word representation to "begin of sentence" logits.
+- ``self.dropout``: A dropout layer that gets applied in-between layers.
 
 ### Forward pass
 
@@ -192,8 +197,8 @@ def forward(self, chars, words, sequence_lengths):
 The steps are in order
 1. Run the character ids through a CNN using the flattened representation from a PackedSequence, reshape the results back into their padded form.
 2. Look up the word embeddings using the word ids.
-3. Concatenate these into a combined word representation, perform batch normalization. Batch normalization is a deep learning technique that prevents the mean and variance of representations from wildly fluctuating between batches by normalizing to a distribution computed from a running mean and variance. This provides stability and speeds up training, it gets turned off during inference.
-4. Again form the padded combined representation sequences into PackedSequence. PackedSequence is nifty PyTorch tool that accomplishes two things: First, recurrent neural networks like the LSTM used here don't have to spend time iterating over and computing results for pad values. Second, gradients don't flow backwards for pad values. These packed sequences are run through the Bi-LSTM and then unpacked back into padded sequences.
+3. Concatenate these into a combined word representation, and perform batch normalization. Batch normalization is a deep learning technique that prevents the mean and variance of representations from wildly fluctuating between batches by normalizing to a distribution computed from a running mean and variance. This provides stability and speeds up training; it gets turned off during inference.
+4. Pack the padded combined representation sequences into PackedSequence. PackedSequence is a nifty PyTorch tool that provides a couple benefits: First, recurrent neural networks like the LSTM used here don't have to spend time iterating over and computing results for pad values. Second, gradients don't flow backwards for pad values. These packed sequences are run through the Bi-LSTM and then unpacked back into padded sequences.
 5. Project the contextual word representation to a single "begin of sentence" logit for each word. A logit is the log-odds of a probability $$l = \log\left(\frac{p}{1-p}\right) $$, it's a representation of a probability (domain 0 to 1.0) on the domain of the entire real line ($$-\infty$$ to $$\infty$$) with all positive values mapping to the positive class "1" and all negative values mapping to the negative class "0". The output of a linear projection is naturally in this domain, but how we make it output logits is controlled during training, specifically through our choice of a loss function.
 
 
@@ -212,9 +217,9 @@ def __init__(self, conf, characters):
 ```
 
 There are 3 layers here:
-- A lookup of 30 dimension learned character embeddings from the character identifiers. This is because the character identifiers are not quantitative, they are categorical. During training we instead learn optimal quantitative representations of characters, each character receives a vector that together form a basis for a vector space representing characters.
-- A dropout layer.
-- A convolutional layer.
+- ``self.character_embeddings``: A lookup of 30 dimension learned character embeddings from the character identifiers. This is because the character identifiers are not quantitative, they are categorical. During training we instead learn optimal quantitative representations of characters, each character receives a vector that together form a basis for a vector space representing characters.
+- ``self.dropout``: A dropout layer.
+- ``self.char_conv``: A 1-D convolutional layer, that will treat the character embeddings as input channels, looking at 5 characters at once to output ``conf.char_cnn_output_channels`` values.
 
 #### CharCNN Network forward pass
 
@@ -232,7 +237,7 @@ def forward(self, words):
 This performs the following steps:
 1. Look up the character embeddings.
 2. Randomly dropout a portion of the character embedding values to prevent overfitting to the training data.
-3. Run the convolutional layer on the character embeddings. The convolutional layer looks at sequences of 5 character embeddings to learn "shapes". An example of a "shape" might be a newline embedding, followed by the embedding for the start of word marker, followed by an embedding for a capitalized letter, followed by an embedding for an uncapitalized letter, which would probably indicate a higher probability of "begin of sentence". It learns ``conf.char_cnn_output_channels`` such "shapes", creating a vector of values representing how much each subsequence matches the shape we are looking for.
+3. Run the convolutional layer on the character embeddings. The convolutional layer looks at sequences of 5 character embeddings to learn "shapes", for example like ``['\n', 'TOKEN_BEGIN', '[A-Z]', '[a-z]', '[a-z]']``. It learns ``conf.char_cnn_output_channels`` such "shapes", creating a vector of values representing how much each subsequence matches the shape we are looking for.
 4. Perform max pooling. Max pooling takes the highest value for each shape in all of the subsequences of the word. By doing this, the network becomes invariant to differences in the length of words, or in how many characters occur after the previous word and before this word. So a shape that occurs at characters 6-10 of the word has the same value as it would characters 3-7, which is again why we insert marker characters for the previous word, begin of word, end of word, etc.
 
 ## Training
