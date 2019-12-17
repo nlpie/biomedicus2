@@ -160,38 +160,35 @@ def forward(self, chars, words, sequence_lengths):
   assert chars.shape[0] == words.shape[0]
   assert chars.shape[1] == words.shape[1]
   # flatten the batch and sequence dims into words (batch * sequence, word_len, 1)
-  word_chars = pack_padded_sequence(chars, sequence_lengths, batch_first=True,
-                                    enforce_sorted=False)
+  sequence_lengths, sorted_indices = torch.sort(sequence_lengths, descending=True)
+  chars = chars.index_select(0, sorted_indices)
+  words = words.index_select(0, sorted_indices)
+  word_chars = pack_padded_sequence(chars, sequence_lengths, batch_first=True)
   # run the char_cnn on it and then reshape back to [batch, sequence, ...]
-  char_pools = PackedSequence(self.char_cnn(word_chars.data), word_chars.batch_sizes,
-                              word_chars.sorted_indices, word_chars.unsorted_indices)
-  char_pools, _ = pad_packed_sequence(char_pools, batch_first=True)
+  char_pools = self.char_cnn(word_chars.data)
   char_pools = torch.squeeze(char_pools, -1)
 
   # Look up the word embeddings
-  embeddings = self.word_embeddings(words)
-  embeddings = self.dropout(embeddings)
+  words = pack_padded_sequence(words, sequence_lengths, batch_first=True)
+  embeddings = self.word_embeddings(words.data)
 
   # Create word representations from the concatenation of the char-cnn derived representation
   # and the word embedding representation
   word_reps = torch.cat((char_pools, embeddings), -1)
 
-  # batch normalization, batch-normalize all words
-  word_reps = word_reps.view(-1, word_reps.shape[-1])
+  # bath normalization, batch-normalize all words
   word_reps = self.batch_norm(word_reps)
-  word_reps = word_reps.view(embeddings.shape[0], embeddings.shape[1], -1)
-  word_reps = self.dropout(word_reps)
 
   # Run LSTM on the sequences of word representations to create contextual word
   # representations
-  packed_word_reps = pack_padded_sequence(word_reps, sequence_lengths,
-                                          batch_first=True,
-                                          enforce_sorted=False)
-  packed_contextual_word_reps, _ = self.lstm(packed_word_reps)
-  contextual_word_reps, _ = pad_packed_sequence(packed_contextual_word_reps, batch_first=True)
+  word_reps = PackedSequence(word_reps, sequence_lengths, sorted_indices=sorted_indices)
+  contextual_word_reps, _ = self.lstm(word_reps)
   # Project to the "begin of sentence" space for each word
+  contextual_word_reps = contextual_word_reps.data
   contextual_word_reps = self.dropout(contextual_word_reps)
-  return self.hidden2bos(contextual_word_reps)
+  bos = self.hidden2bos(contextual_word_reps)
+  bos = PackedSequence(bos, sequence_lengths, sorted_indices=sorted_indices)
+  return pad_packed_sequence(bos, batch_first=True)[0]
 ```
 
 The steps are in order
