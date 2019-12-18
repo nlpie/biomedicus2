@@ -14,6 +14,7 @@ permalink: /installation
 
 ```bash
 pip install biomedicus\[torch]
+```
 
 ## Deploying the default BioMedICUS Pipeline
 
