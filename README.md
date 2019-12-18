@@ -1,7 +1,15 @@
+# New Version
+
+BioMedICUS has a new version: https://github.com/nlpie/biomedicus3
+
+The code on this repository is mature but will not be receiving any further updates.
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
 [![](https://zenodo.org/badge/51161341.svg)](https://zenodo.org/badge/latestdoi/51161341)
 [![](https://travis-ci.org/nlpie/biomedicus.svg?branch=master)](https://travis-ci.org/nlpie/biomedicus)
 
-# BioMedICUS
+# BioMedICUS (Old)
 The BioMedical Information Collection and Understanding System (BioMedICUS) is a system for 
 large-scale text analysis and processing of biomedical and clinical reports. The system is being 
 developed by the [Natural Language Processing and Information Extraction Program](https://nlpie.github.io/) at the University of 
