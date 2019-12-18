@@ -5,9 +5,17 @@ permalink: /components
 description: The processing components for your project.
 ---
 
-This is an example of automatically generated documentation for processing
-components available in your system. During build, "processors.yml" from
-the "\_data" folder will be transformed into this list of components.
+## Default BioMedICUS pipeline
 
-This page itself can be customized by adding a components.md file to your
-project root.
+By default BioMedICUS runs the following components in the following order:
+
+- [Sentences Detector]({{ '/components#biomedicus-sentences' | relative_url }})
+- [Part of Speech Tagger]({{ '/components#biomedicus-tnt-tagger' | relative_url }})
+- [Acronym Detector]({{ '/components#biomedicus-acronyms' | relative_url }})
+- [Concept Detector]({{ '/components#biomedicus-concepts' | relative_url }})
+
+## Other processors
+
+By default, normalization is run as part of the concept detector, but it can also be deployed as a [standalone processor]({{ '/components#biomedicus-normalizer' | relative_url }})
+
+In addition, BioMedICUS provides functionality for transforming RTF documents into plaintext documents as input for the system via the [RTF Reader]({{ '/components#biomedicus-rtf-processor' | relative_url }}).
