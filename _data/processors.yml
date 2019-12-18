@@ -22,7 +22,7 @@
     name: output_document_name
     required: false
 - description: Labels sentences given document text.
-  entry_point: biomedicus.sentences.processor
+  entry_point: biomedicus.sentences.bi_lstm processor
   human_name: Sentence Detector
   implementation_lang: Python
   name: biomedicus-sentences

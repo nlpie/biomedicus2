@@ -165,8 +165,7 @@ def forward(self, chars, words, sequence_lengths):
   words = words.index_select(0, sorted_indices)
   word_chars = pack_padded_sequence(chars, sequence_lengths, batch_first=True)
   # run the char_cnn on it and then reshape back to [batch, sequence, ...]
-  char_pools = self.char_cnn(word_chars.data)
-  char_pools = torch.squeeze(char_pools, -1)
+  char_pools = self.char_cnn(word_chars.data).squeeze(-1)
 
   # Look up the word embeddings
   words = pack_padded_sequence(words, sequence_lengths, batch_first=True)
@@ -181,22 +180,25 @@ def forward(self, chars, words, sequence_lengths):
 
   # Run LSTM on the sequences of word representations to create contextual word
   # representations
-  word_reps = PackedSequence(word_reps, sequence_lengths, sorted_indices=sorted_indices)
+  word_reps = PackedSequence(word_reps, batch_sizes=word_chars.batch_sizes,
+                             sorted_indices=sorted_indices)
   contextual_word_reps, _ = self.lstm(word_reps)
   # Project to the "begin of sentence" space for each word
-  contextual_word_reps = contextual_word_reps.data
-  contextual_word_reps = self.dropout(contextual_word_reps)
-  bos = self.hidden2bos(contextual_word_reps)
-  bos = PackedSequence(bos, sequence_lengths, sorted_indices=sorted_indices)
-  return pad_packed_sequence(bos, batch_first=True)[0]
+  contextual_word_reps = self.dropout(contextual_word_reps.data)
+  bos = self.hidden2bos(contextual_word_reps).squeeze(-1)
+  bos, _ = pad_packed_sequence(PackedSequence(bos, batch_sizes=word_chars.batch_sizes,
+                                              sorted_indices=sorted_indices),
+                               batch_first=True)
+  return bos
 ```
 
 The steps are in order
-1. Run the character ids through a CNN using the flattened representation from a PackedSequence, reshape the results back into their padded form.
+1. Run the character ids through a CNN using the flattened representation from a PackedSequence. PackedSequence is a nifty PyTorch tool that provides a couple benefits: First, recurrent neural networks like the LSTM used here don't have to spend time iterating over and computing results for pad values. Second, gradients don't flow backwards for pad values.
 2. Look up the word embeddings using the word ids.
-3. Concatenate these into a combined word representation, and perform batch normalization. Batch normalization is a deep learning technique that prevents the mean and variance of representations from wildly fluctuating between batches by normalizing to a distribution computed from a running mean and variance. This provides stability and speeds up training; it gets turned off during inference.
-4. Pack the padded combined representation sequences into PackedSequence. PackedSequence is a nifty PyTorch tool that provides a couple benefits: First, recurrent neural networks like the LSTM used here don't have to spend time iterating over and computing results for pad values. Second, gradients don't flow backwards for pad values. These packed sequences are run through the Bi-LSTM and then unpacked back into padded sequences.
+3. Concatenate these into a combined word representation, and perform batch normalization. [Batch normalization](https://mlexplained.com/2018/01/10/an-intuitive-explanation-of-why-batch-normalization-really-works-normalization-in-deep-learning-part-1/) is a deep learning technique that prevents the covariate shifts between batches by normalizing to a distribution computed from a running mean and variance. This provides stability and speeds up training; it gets turned off during inference.
+4. Run the through results through the Bi-LSTM.
 5. Project the contextual word representation to a single "begin of sentence" logit for each word. A logit is the log-odds of a probability $$l = \log\left(\frac{p}{1-p}\right) $$, it's a representation of a probability (domain 0 to 1.0) on the domain of the entire real line ($$-\infty$$ to $$\infty$$) with all positive values mapping to the positive class "1" and all negative values mapping to the negative class "0". The output of a linear projection is naturally in this domain, but how we make it output logits is controlled during training, specifically through our choice of a loss function.
+6. Unpack the PackedSequence back into the same form as the input.
 
 
 ### Character representation of words (CNN)
@@ -239,7 +241,7 @@ This performs the following steps:
 
 ## Training
 
-The important part of training can be found in the ``train_on_data`` method of the ``bi_lstm`` module linked above.
+The important part of training can be found in the ``_step`` method of the ``Training`` class in the ``bi_lstm`` module linked above.
 
 ```python
 # compute the logits for the batch
