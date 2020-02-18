@@ -22,19 +22,20 @@
     name: output_document_name
     required: false
 - description: Labels sentences given document text.
-  entry_point: biomedicus.sentences.bi_lstm processor
+  entry_point: biomedicus.sentences.bi_lstm
   human_name: Sentence Detector
   implementation_lang: Python
   name: biomedicus-sentences
   outputs:
   - name: sentences
     optional: false
-  parameters:
-  - data_type: int
-    description: The batch size, number of sets of 32 tokens that are processed at
-      once.
-    name: batch_size
-    required: false
+- description: Labels sentences where each line in the input document is a sentence.
+  human_name: One per Line Sentences
+  implementation_lang: Python
+  name: biomedicus-sentences-one-per-line
+  outputs:
+  - name: sentences
+    optional: false
 - description: Labels part of speech tags on the document.
   entry_point: edu.umn.biomedicus.tagging.tnt.TntPosTaggerProcessor
   human_name: TnT Part of Speech Tagger
@@ -139,7 +140,7 @@
   name: biomedicus-concepts
   outputs:
   - description: The UMLS concepts that appear in the text.
-    name: concepts
+    name: umls_concepts
     properties:
     - data_type: str
       description: The UMLS Source Unique Identifier for the concept.
@@ -163,4 +164,52 @@
       name: score
       nullable: false
   - description: Text that is covered by one or more concepts.
-    name: terms
+    name: umls_terms
+- description: Detects Historical, Negated, and Uncertain modifications on umls terms
+  entry_point: edu.umn.biomedicus.modification.ModificationDetector
+  human_name: BioMedICUS Modification Detector
+  implementation_lang: Java
+  inputs:
+  - name: sentences
+    reference: biomedicus-sentences/sentences
+  - name: pos_tags
+    reference: biomedicus-tnt-tagger/pos_tags
+  - name: umls_terms
+    name_from_parameter: terms_index
+    reference: biomedicus-concepts/umls_terms
+  name: biomedicus-modification
+  outputs:
+  - description: Spans of negated terms.
+    name: negated
+  - description: Spans of terms that are uncertain.
+    name: uncertain
+  - description: Spans of terms that are historical.
+    name: historical
+  parameters:
+  - data_type: str
+    name: terms_index
+    required: false
+- description: Detects which UMLS terms are negated.
+  human_name: Negex Negation Detector
+  implementation_lang: Python
+  inputs:
+  - name: sentences
+    optional: false
+    reference: biomedicus-sentences/sentences
+  - name: umls_terms
+    name_from_parameter: terms_index
+    optional: false
+    reference: biomedicus-concepts/umls_terms
+  name: biomedicus-negex
+  outputs:
+  - description: Spans of negated terms.
+    name: negated
+    optional: false
+  - description: Spans of phrases that trigger negation.
+    name: negation_trigger
+    optional: false
+  parameters:
+  - data_type: str
+    description: The label index containing terms that should be checked for negation
+    name: terms_index
+    required: false
