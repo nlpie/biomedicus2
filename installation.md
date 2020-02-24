@@ -10,10 +10,32 @@ permalink: /installation
 - [Python 3.5+](https://www.python.org/)
 - [Java JDK 8.0+](https://adoptopenjdk.net/index.html). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
 
+## Virtual Environment
+
+We recommend that you use a [Python 3 virtual environment](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv), a local environment of installed packages, to avoid any dependency conflicts.
+
+Linux / MacOS
+```bash
+pip3 install virtualenv
+python3 -m virtualenv biomedicus_venv
+source biomedicus_venv/bin/activate
+```
+
+Windows
+```bat
+pip3 install virtualenv
+python3 -m virtualenv biomedicus_venv
+biomedicus_venv\Scripts\activate
+```
+
+## PyTorch
+
+BioMedICUS requires PyTorch, a machine learning framework. Installation instructions for PyTorch can be found [here](https://pytorch.org/get-started/locally/). Select your platform and "Pip", and "None" for CUDA unless you have a NVIDIA graphics card and have installed the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads).
+
 ## Installation
 
 ```bash
-pip install biomedicus\[torch]
+pip3 install biomedicus
 ```
 
 ## Deploying the default BioMedICUS Pipeline
@@ -40,8 +62,22 @@ Individual processors can be launched via their entry point on the [Components P
 
 ### Examples
 
+#### Deploying the MTAP events service
+
+The MTAP events service is a shared service for all processors that is responsible for the distributed data model, the mechanism for sharing data between processors.
+
+```bash
+python3 -m mtap events --port 9090
+```
+
+#### Java
+
+```bash
+biomedicus java edu.umn.biomedicus.tagging.tnt.TntPosTaggerProcessor -- -p 9092 --events localhost:9090
+```
+
 #### Python
 
 ```bash
-python -m biomedicus.sentences.bi_lstm processor -p 9091 --events localhost:9090
+python3 -m biomedicus.sentences.bi_lstm processor -p 9091 --events localhost:9090
 ```
