@@ -51,33 +51,7 @@ biomedicus deploy --download-data
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run /path/to/input_dir /path/to/output_dir
+biomedicus run --include-text /path/to/input_dir /path/to/output_dir
 ```
 
 This will process the documents in the directory using BioMedICUS and save the results as json-serialized MTAP Events to output directory.
-
-## Launching individual processors
-
-Individual processors can be launched via their entry point on the [Components Page]({{ '/components' | relative_url }})
-
-### Examples
-
-#### Deploying the MTAP events service
-
-The MTAP events service is a shared service for all processors that is responsible for the distributed data model, the mechanism for sharing data between processors.
-
-```bash
-python3 -m mtap events --port 9090
-```
-
-#### Java
-
-```bash
-biomedicus java edu.umn.biomedicus.tagging.tnt.TntPosTaggerProcessor -- -p 9092 --events localhost:9090
-```
-
-#### Python
-
-```bash
-python3 -m biomedicus.sentences.bi_lstm processor -p 9091 --events localhost:9090
-```
