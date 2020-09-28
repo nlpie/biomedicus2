@@ -8,7 +8,7 @@ permalink: /installation
 ## Prerequisites
 
 - [Python 3.5+](https://www.python.org/)
-- [Java JDK 8.0+](https://adoptopenjdk.net/index.html). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
+- [Java JDK 9.0+](https://adoptopenjdk.net/index.html). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
 
 ## Virtual Environment
 
