@@ -51,7 +51,7 @@ biomedicus deploy --download-data
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run --include-text /path/to/input_dir /path/to/output_dir
+biomedicus run --include-label-text /path/to/input_dir /path/to/output_dir
 ```
 
 This will process the documents in the directory using BioMedICUS and save the results as json-serialized MTAP Events to output directory.
