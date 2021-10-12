@@ -11,8 +11,9 @@ show_excerpts: true # set to false to hide excerpts on the blog page
 # this and add the path to the pages in order as they should show up
 header_pages:
  - blog.md
- - components.md
  - installation.md
+ - docs.md
+ - components.md
 
 right_headers:
   - name: Downloads
