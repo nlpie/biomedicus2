@@ -15,6 +15,7 @@ As a starting point let's write the default BioMedICUS deployment script to our 
 ```bash
 biomedicus write-config deploy
 ```
+[biomedicus write-config deploy ERRORS OUT WITH: FileNotFoundError: [Errno 2] No such file or directory: 'deploy/biomedicusConfig.yml'. LEAVING OFF THE deploy ARG WRITES OUT TO biomedicusConfig.yml]
 
 <div class="alert alert-warning">
 Note this requires the BioMedICUS virtual environment created during installation to be active.
@@ -22,7 +23,9 @@ Note this requires the BioMedICUS virtual environment created during installatio
 
 This command will create a file named ``biomedicus_deploy_config.yml`` in the current folder. Open that file in your favorite editor.
 
-## Adding our processor
+[I THINK THIS TUTORIAL REFERENCES AN UNCOMMITTED BRANCH? 'write-config deploy' ERRORS OUT. LEAVING OFF THE deploy ARG WRITES OUT biomedicusConfig.yml WHICH DOES NOT CONTAIN THE processors' BLOCK REFREENCED NEXT]
+
+## Adding the processor
 
 This file contains some global configuration, configuration for the event service, and configuration shared by processors, but what we're interested in is the section that starts with:
 

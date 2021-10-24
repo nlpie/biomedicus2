@@ -16,6 +16,7 @@ We'll start by writing out the configuration file for the pipeline.
 ```bash
 biomedicus write-config pipeline
 ```
+[biomedicus write-config pipeline ERRORS OUT WITH: FileNotFoundError: [Errno 2] No such file or directory: 'pipeline/biomedicusConfig.yml']
 
 This creates a file named ``biomedicus_default_pipeline.yml`` which we will edit to add our processor we wrote and deployed earlier. Open that file in your favorite text editor.
 
