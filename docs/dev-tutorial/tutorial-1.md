@@ -15,7 +15,8 @@ In this example we will be looking at BioMedICUS-labeled UMLS concepts to find i
 
 Before starting this tutorial, [install BioMedICUS using these instructions.](../../installation)
 
-BioMedICUS uses a framework we developed called MTAP as its data model. You can find more about MTAP on [this web site](https://nlpie.github.io/mtap/docs), including short [instructions on creating a generic python processor](https://nlpie.github.io/mtap/docs/tutorials/python.html) like we will be doing here. [SINCE EVERYTHING IS A PROCESSOR, IT IS NOT CLEAR WHY ONE WOULD CREATE AN MTAP VS A B9 PROCESSOR - MAYBE A SHORT ORIENTATION HERE TO PREVENT THE UNITITATED FROM THINKING THEY SHOULD CREATE AN MTAP PROCESSOR. LET'S DISCUSS THIS TO MAKE SURE WE GET THE DISTINCTION RIGHT]
+BioMedICUS uses a framework we developed called MTAP as its data model. You can find more about MTAP on [this web site](https://nlpie.github.io/mtap/docs), including short [instructions on creating a generic python processor](https://nlpie.github.io/mtap/docs/tutorials/python.html). We will also be creating a processor in this tutorial, albeit one designed specifically to work with BioMedICUS.
+
 
 ## Creating the Processor File
 
@@ -32,7 +33,7 @@ Next, we'll create the file which will contain the processor, calling it ``medic
 
 ## Adding the MTAP Processor Skeleton
 
-The first step is to place the skeleton of what will become our processor. This represents an interface used by MTAP to deploy our logic in a way that it can be called using remote requests. [IT'S REASONABLY PROBABLE THAT THOSE FAMILIAR WITH NLP ENGINES WHO ARE NEW TO B9v3 WILL BE COMING FROM UIMA/JAVA LAND. FOR THESE USERS, MYSELF AMONG THEM, THE TERM 'interface' IS OVERLOADED. IT WOULD HELP TO EXPLAIN WHAT YOU MEAN BY THAT TERM IN THIS CONTEXT AND EXPLAIN ANY PYTHON-SPECIFIC ATTRIBUTES OF THE MEANING] 
+The first step is to place the skeleton of what will become our processor. This skeleton is a well-defined entry point and class structure used by MTAP to deploy our code in a way that it can be deployed as a service and called using remote requests.
 
 ```python
 import mtap
