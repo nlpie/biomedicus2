@@ -10,7 +10,7 @@ permalink: /installation
 - [Python 3.5+](https://www.python.org/)
 - [Java JDK 9.0+](https://adoptopenjdk.net/index.html). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
 
-## Virtual Environment
+## Create a Virtual Environment
 
 We recommend that you use a [Python 3 virtual environment](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv), a local environment of installed packages, to avoid any dependency conflicts.
 
@@ -28,17 +28,17 @@ python3 -m virtualenv biomedicus_venv
 biomedicus_venv\Scripts\activate
 ```
 
-## PyTorch
+## Install PyTorch Libraries
 
 BioMedICUS requires PyTorch, a machine learning framework. Installation instructions for PyTorch can be found [here](https://pytorch.org/get-started/locally/). Select your platform and "Pip", and "None" for CUDA unless you have a NVIDIA graphics card and have installed the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads).
 
-## Installation
+## Install BioMedICUS
 
 ```bash
 pip3 install biomedicus
 ```
 
-## Deploying the default BioMedICUS Pipeline
+## Deploy the default BioMedICUS Pipeline
 
 The following command runs a script that will start up all of the BioMedICUS services for processing clinical notes:
 
@@ -46,7 +46,7 @@ The following command runs a script that will start up all of the BioMedICUS ser
 biomedicus deploy --download-data
 ```
 
-## Processing a directory of text files using BioMedICUS
+## Process a directory of text files using BioMedICUS
 
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 

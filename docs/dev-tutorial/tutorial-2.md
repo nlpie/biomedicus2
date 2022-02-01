@@ -22,7 +22,8 @@ Note this requires the BioMedICUS virtual environment created during installatio
 
 This command will create a file named ``biomedicus_deploy_config.yml`` in the current folder. Open that file in your favorite editor.
 
-## Adding our processor
+
+## Adding the processor
 
 This file contains some global configuration, configuration for the event service, and configuration shared by processors, but what we're interested in is the section that starts with:
 
