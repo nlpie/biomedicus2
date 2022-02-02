@@ -155,7 +155,7 @@
       name: tui
       nullable: false
     - data_type: str
-      description: The UMLS source dictionary the concept originated from
+      description: The UMLS source vocabulary the concept originated from
       name: source
       nullable: false
     - data_type: float
