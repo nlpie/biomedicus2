@@ -1,9 +1,15 @@
 sections:
+  - title: User Tutorials
+    docs:
+      - title: Installation
+        url: /guides/installation.html
+      - title: RTF Processing
+        url: /guides/rtf-processing.html
   - title: Developer Tutorial
     docs:
       - title: 1. Creating a Processor
-        url: /docs/dev-tutorial/tutorial-1.html
+        url: /guides/dev-tutorial/tutorial-1.html
       - title: 2. Deploying the Processor
-        url: /docs/dev-tutorial/tutorial-2.html
+        url: /guides/dev-tutorial/tutorial-2.html
       - title: 3. Processing Documents
-        url: /docs/dev-tutorial/tutorial-3.html
+        url: /guides/dev-tutorial/tutorial-3.html

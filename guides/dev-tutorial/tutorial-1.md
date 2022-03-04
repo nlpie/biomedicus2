@@ -2,7 +2,8 @@
 layout: doc
 title: Part 1. Creating a Processor
 description: Learn to create a Processor which analyzes and adds to BioMedICUS's output
-subpage: Documentation
+subpage: Guides
+redirect_from: /docs/dev-tutorial/tutorial-1
 ---
 
 ## About
@@ -13,7 +14,7 @@ In this example we will be looking at BioMedICUS-labeled UMLS concepts to find i
 
 ## Prerequisites
 
-Before starting this tutorial, [install BioMedICUS using these instructions.](../../installation)
+Before starting this tutorial, [install BioMedICUS using these instructions.](../installation)
 
 BioMedICUS uses a framework we developed called MTAP as its data model. You can find more about MTAP on [this web site](https://nlpie.github.io/mtap/docs), including short [instructions on creating a generic python processor](https://nlpie.github.io/mtap/docs/tutorials/python.html). We will also be creating a processor in this tutorial, albeit one designed specifically to work with BioMedICUS.
 

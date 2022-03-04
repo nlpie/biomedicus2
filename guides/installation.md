@@ -1,8 +1,9 @@
 ---
-layout: page
+layout: doc
 title: Installation
 description: Getting started with BioMedICUS
-permalink: /installation
+subpage: Guides
+redirect_from: /installation
 ---
 
 ## Prerequisites
@@ -38,7 +39,7 @@ BioMedICUS requires PyTorch, a machine learning framework. Installation instruct
 pip3 install biomedicus
 ```
 
-## Deploy the default BioMedICUS Pipeline
+## Deploy the default BioMedICUS processors
 
 The following command runs a script that will start up all of the BioMedICUS services for processing clinical notes:
 

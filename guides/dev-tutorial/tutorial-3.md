@@ -2,7 +2,7 @@
 layout: doc
 title: Part 3. Adding the Processor to the Pipeline and Running
 description: How to add the new processor to the BioMedICUS pipeline and run it on clinical documents.
-subpage: Documentation
+subpage: Guides
 ---
 
 ## About
