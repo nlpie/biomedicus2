@@ -52,7 +52,15 @@ biomedicus deploy --download-data
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run --include-label-text /path/to/input_dir /path/to/output_dir
+biomedicus run --include-label-text /path/to/input_dir -o /path/to/output_dir
 ```
 
 This will process the documents in the directory using BioMedICUS and save the results as json-serialized MTAP Events to output directory.
+
+## Viewing results
+
+The default BioMedICUS pipeline and run command will serialize the documents as json. By default the files are not prettified, but you can do that by running the following:
+
+```bash
+python -m json.tool /path/to/output_file.json
+```

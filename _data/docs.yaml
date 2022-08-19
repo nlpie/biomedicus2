@@ -5,6 +5,10 @@ sections:
         url: /guides/installation.html
       - title: RTF Processing
         url: /guides/rtf-processing.html
+  - title: Advanced Tutorials
+    docs:
+      - title: Custom Document Input
+        url: /guides/reading-from-db.html
   - title: Developer Tutorial
     docs:
       - title: 1. Creating a Processor

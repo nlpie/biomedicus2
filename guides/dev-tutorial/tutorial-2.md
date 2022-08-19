@@ -3,6 +3,7 @@ layout: doc
 title: Part 2. Deploying the Processor
 description: How to include your processor in a BioMedICUS deployment configuration.
 subpage: Guides
+redirect_from: /docs/dev-tutorial/tutorial-2
 ---
 
 ## About

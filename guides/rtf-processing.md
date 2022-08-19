@@ -29,7 +29,7 @@ biomedicus deploy --download-data --rtf
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run --rtf --include-label-text /path/to/input_dir /path/to/output_dir
+biomedicus run --rtf --include-label-text /path/to/input_dir -o /path/to/output_dir
 ```
 
 This will processing all documents in the input directory and its child directories with the extension ".rtf" and output serialized

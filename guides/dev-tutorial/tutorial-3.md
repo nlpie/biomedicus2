@@ -3,6 +3,7 @@ layout: doc
 title: Part 3. Adding the Processor to the Pipeline and Running
 description: How to add the new processor to the BioMedICUS pipeline and run it on clinical documents.
 subpage: Guides
+redirect_from: /docs/dev-tutorial/tutorial-3
 ---
 
 ## About
@@ -47,7 +48,7 @@ First, we need some documents to process, if you don't have any you can use an [
 We're finally ready to run our processor we created along with the rest of the BioMedICUS pipeline, which you can do with the following command:
 
 ```bash
-biomedicus run --config biomedicus_default_pipeline.yml --include-label-text INPUT_DIRECTORY OUTPUT_DIRECTORY
+biomedicus run --config biomedicus_default_pipeline.yml --include-label-text INPUT_DIRECTORY -o OUTPUT_DIRECTORY
 ```
 
 Replace the input directory with the directory where the documents you want processed are and the output directory with the directory where you want results stored.
