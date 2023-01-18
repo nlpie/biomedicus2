@@ -21,7 +21,7 @@ How to process RTF documents using the full BioMedICUS pipeline.
 The following command runs a script that will start up all of the BioMedICUS services for processing clinical notes:
 
 ```bash
-biomedicus deploy --download-data --rtf
+b9 deploy --download-data --rtf
 ```
 
 ### Process a directory of RTF files using BioMedICUS
@@ -29,7 +29,7 @@ biomedicus deploy --download-data --rtf
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run --rtf --include-label-text /path/to/input_dir -o /path/to/output_dir
+b9client run --rtf --include-label-text /path/to/input_dir -o /path/to/output_dir
 ```
 
 This will processing all documents in the input directory and its child directories with the extension ".rtf" and output serialized
@@ -43,7 +43,7 @@ How to convert RTF documents to plain text using the rtf-to-text utilities.
 The following command runs a script that will start up the BioMedICUS service for RTF text conversion:
 
 ```bash
-biomedicus deploy-rtf-to-text
+b9 deploy-rtf-to-text
 ```
 
 ### Process a directory of RTF into plain text files
@@ -51,5 +51,5 @@ biomedicus deploy-rtf-to-text
 After deploying the BioMedICUS RTF conversion processor, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run-rtf-to-text /path/to/input_dir /path/to/output_dir
+b9client run-rtf-to-text /path/to/input_dir /path/to/output_dir
 ```
