@@ -16,13 +16,13 @@ header_pages:
 
 right_headers:
   - name: Downloads
-    href: https://nlpie.umn.edu/downloads
+    href: https://nlpie.github.io/downloads
   - name: GitHub
     href: https://github.com/nlpie/biomedicus3
   - name: MTAP
     href: https://nlpie.github.io/mtap
   - name: NLP/IE
-    href: https://nlpie.umn.edu
+    href: https://nlpie.github.io
 
 highlighter: rouge
 
