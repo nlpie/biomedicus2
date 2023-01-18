@@ -15,7 +15,7 @@ In the final part of our guide that started with [creating our own processor](tu
 We'll start by writing out the configuration file for the pipeline.
 
 ```bash
-biomedicus write-config pipeline
+b9client write-config pipeline
 ```
 
 This creates a file named ``biomedicus_default_pipeline.yml`` which we will edit to add our processor we wrote and deployed earlier. Open that file in your favorite text editor.
@@ -48,7 +48,7 @@ First, we need some documents to process, if you don't have any you can use an [
 We're finally ready to run our processor we created along with the rest of the BioMedICUS pipeline, which you can do with the following command:
 
 ```bash
-biomedicus run --config biomedicus_default_pipeline.yml --include-label-text INPUT_DIRECTORY -o OUTPUT_DIRECTORY
+b9client run --config biomedicus_default_pipeline.yml --include-label-text INPUT_DIRECTORY -o OUTPUT_DIRECTORY
 ```
 
 Replace the input directory with the directory where the documents you want processed are and the output directory with the directory where you want results stored.

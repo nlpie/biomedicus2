@@ -8,8 +8,8 @@ redirect_from: /installation
 
 ## Prerequisites
 
-- [Python 3.5+](https://www.python.org/)
-- [Java JDK 9.0+](https://adoptopenjdk.net/index.html). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
+- [Python >=3.7,<3.11](https://www.python.org/). 3.11 is not supported yet as 
+- [Java JDK 8.0+](https://adoptium.net). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
 
 ## Create a Virtual Environment
 
@@ -39,20 +39,24 @@ BioMedICUS requires PyTorch, a machine learning framework. Installation instruct
 pip3 install biomedicus
 ```
 
+This will install two packages, ``biomedicus`` and ``biomedicus_client``, with the command line programs ``b9`` and ``b9client`` respectively. The main ``biomedicus`` package contains all of the BioMedICUS processor servers and the ``biomedicus_client`` package contains functionality for connecting to the servers and processing documents.
+
 ## Deploy the default BioMedICUS processors
 
 The following command runs a script that will start up all of the BioMedICUS services for processing clinical notes:
 
 ```bash
-biomedicus deploy --download-data
+b9 deploy
 ```
+
+It will ask you to download the BioMedICUS model files if you have not already.
 
 ## Process a directory of text files using BioMedICUS
 
 After deploying BioMedICUS, you can process a directory of documents using the following command:
 
 ```bash
-biomedicus run --include-label-text /path/to/input_dir -o /path/to/output_dir
+b9client run --include-label-text /path/to/input_dir -o /path/to/output_dir
 ```
 
 This will process the documents in the directory using BioMedICUS and save the results as json-serialized MTAP Events to output directory.

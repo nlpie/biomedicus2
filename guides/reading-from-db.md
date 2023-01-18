@@ -37,7 +37,7 @@ will be the path to the input sqlite file.
 import sqlite3
 from argparse import ArgumentParser
 
-from biomedicus import default_pipeline
+from biomedicus.deployment import default_pipeline
 from mtap import Event
 
 if __name__ == '__main__':
@@ -144,7 +144,7 @@ the BioMedICUS processors. In one console window in a BioMedICUS virtual
 environment run the following:
 
 ```bash
-biomedicus deploy
+b9 deploy
 ```
 
 Once the ``Done deploying all servers`` line shows up, open another console

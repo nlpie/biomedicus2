@@ -60,7 +60,7 @@ There are two objects we'll need to work with on the document--a way to add new 
 First, we'll set up the label indices that we need to inspect. Replace the
 ```python
 # Empty for now
-    pass
+pass
 ```
 block with the following:
 ```python

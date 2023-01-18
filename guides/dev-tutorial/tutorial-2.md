@@ -14,7 +14,7 @@ Now that we've created the processor in [the previous tutorial](tutorial-1), how
 As a starting point let's write the default BioMedICUS deployment script to our current directory using the following command:
 
 ```bash
-biomedicus write-config deploy
+b9 write-config deploy
 ```
 
 <div class="alert alert-warning">
@@ -55,7 +55,7 @@ Here we're telling it to use Python, look for a module (file) named ``medication
 Now that we've saved our updated configuration file, we can deploy the entire pipeline, to do so run the following command:
 
 ```bash
-biomedicus deploy --config biomedicus_deploy_config.yml
+b9 deploy --config biomedicus_deploy_config.yml
 ```
 
 After you see
