@@ -29,7 +29,7 @@ off by creating a file ``sql_pipeline.py`` in your favorite text editor or IDE.
 
 We will start by creating an instance of the default BioMedICUS pipeline. This
 is done by parsing the pipeline's options from the command line, done here by
-using the ``parents=[default_pipeline.argument_parser()]`` argument when
+using the ``parents=[deployment.deployment_parser()]`` argument when
 creating a new parser. We will also add our own argument ``input_file`` which
 will be the path to the input sqlite file.
 
@@ -37,25 +37,25 @@ will be the path to the input sqlite file.
 import sqlite3
 from argparse import ArgumentParser
 
-from biomedicus.deployment import default_pipeline
+from biomedicus import deployment
 from mtap import Event
 
 if __name__ == '__main__':
-    parser = ArgumentParser(add_help=True, parents=[default_pipeline.argument_parser()])
+    parser = ArgumentParser(add_help=True, parents=[deployment.deployment_parser()])
     parser.add_argument('input_file')
     args = parser.parse_args()
-    with default_pipeline.from_args(args) as default_pipeline:
+    with deployment.deploy(args) as pipeline:
         pass
 ```
 
 ## Creating a sqlite Document Source
 
 Next, we will create a document source. Update the above code starting
-with ``with default_pipeline`` to the following, replacing the ``pass``
+with ``with deployment.deploy(args) as pipeline:`` to the following, replacing the ``pass``
 statement:
 
 ```python
-with default_pipeline.from_args(args) as default_pipeline:
+with deployment.deploy(args) as pipeline:
   client = pipeline.events_client
   con = sqlite3.connect(args.input_file)
   cur = con.cursor()
@@ -87,7 +87,7 @@ use ``print_times`` to print statistics about the different processors run
 times, and will close our sqlite connection using ``con.close()``.
 
 ```python
-with default_pipeline.from_args(args) as pipeline:
+with deployment.deploy(args) as pipeline:
     ...
 
     def source():
@@ -113,14 +113,14 @@ The script in its final state is shown below:
 from argparse import ArgumentParser
 import sqlite3
 
-from biomedicus import default_pipeline
+from biomedicus import deployment
 from mtap import Event
 
 if __name__ == '__main__':
-    parser = ArgumentParser(add_help=True, parents=[default_pipeline.argument_parser()])
+    parser = ArgumentParser(add_help=True, parents=[deployment.deployment_parser()])
     parser.add_argument('input_file')
     args = parser.parse_args()
-    with default_pipeline.from_args(args) as pipeline:
+    with deployment.deploy(args) as pipeline:
         client = pipeline.events_client
         con = sqlite3.connect(args.input_file)
         cur = con.cursor()
