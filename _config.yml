@@ -1,6 +1,6 @@
 title: BioMedICUS
 description: A system for large-scale text analysis and processing of biomedical and clinical reports
-theme: just-the-docs
+theme: pmarsceill/just-the-docs
 
 url: https://nlpie.github.io/biomedicus
 
