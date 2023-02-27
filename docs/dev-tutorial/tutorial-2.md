@@ -1,9 +1,8 @@
 ---
-layout: doc
-title: Part 2. Deploying the Processor
-description: How to include your processor in a BioMedICUS deployment configuration.
-subpage: Guides
-redirect_from: /docs/dev-tutorial/tutorial-2
+layout: default
+title: 2. Deploying the Processor
+parent: Developer Tutorial
+nav_order: 2
 ---
 
 ## About
@@ -17,9 +16,8 @@ As a starting point let's write the default BioMedICUS deployment script to our 
 b9 write-config deploy
 ```
 
-<div class="alert alert-warning">
+{: .note }
 Note this requires the BioMedICUS virtual environment created during installation to be active.
-</div>
 
 This command will create a file named ``biomedicus_deploy_config.yml`` in the current folder. Open that file in your favorite editor.
 
@@ -67,9 +65,8 @@ Done deploying all servers.
 
 That means that the deployment finished and all servers are running in your current terminal window in the foreground.
 
-<div class='alert alert-info' role='alert'>
+{: .note }
 When you want to shut down all the servers press Ctrl+C and it will cleanly shut down all processors before exiting.
-</div>
 
 ## What did we just do
 

@@ -1,9 +1,8 @@
 ---
-layout: doc
-title: Part 1. Creating a Processor
-description: Learn to create a Processor which analyzes and adds to BioMedICUS's output
-subpage: Guides
-redirect_from: /docs/dev-tutorial/tutorial-1
+layout: default
+title: 1. Creating a Processor
+parent: Developer Tutorial
+nav_order: 1
 ---
 
 ## About
@@ -21,16 +20,19 @@ BioMedICUS uses a framework we developed called MTAP as its data model. You can 
 
 ## Creating the Processor File
 
-First, if it isn't already active, we'll start by activating the BioMedICUS virtual environment as shown in the installation instructions.
+First, if it isn't already active, we'll start by activating the BioMedICUS virtual environment as shown in the installation instructions. In a terminal window run the following command:
 
-**Linux / MacOS**
 ```bash
 source biomedicus_venv/bin/activate
 ```
 
+Next, we'll create the file which will contain the processor, calling it ``medications.py``.
 
+```bash
+touch medications.py
+```
 
-Next, we'll create the file which will contain the processor, calling it ``medications.py``. Open this file using the text editor of your choice.
+Open this file using the text editor or IDE of your choice.
 
 ## Adding the MTAP Processor Skeleton
 
@@ -69,10 +71,8 @@ umls_concepts = document.labels['umls_concepts']
 ```
 These are both ``LabelIndex`` objects, which represent a collection of all the labels of a specific type that have been added to the document by BioMedICUS before this processor is called.
 
-<div class='alert alert-info' role='alert'>
+{: .highlight }
 Curious about the <code class="highligher-rogue">LabelIndex</code> type and its functionality? Learn about them from the <a href="https://nlpie.github.io/mtap-python-api/mtap.html#mtap.data.LabelIndex" class="alert-link">MTAP documentation</a>.
-</div>
-
 
 Second, we'll create the ``Labeler`` for our new ``medication_sentences`` index. Beneath the index objects add the following:
 ```python
@@ -100,10 +100,6 @@ The ``medication_concepts`` list is where we will store our results. To perform 
 if concept.tui == 'T121':
     medication_concepts.append(concept)
 ```
-
-<div class='alert alert-info' role='alert'>
-The concept type, including its tui field, is explained on the <a href="../../components" class="alert-link">BioMedICUS Components</a> page.
-</div>
 
 Finally, we will use the ``MedicationSentence`` labeler to create the actual labels by replacing ``#create label`` with the following:
 

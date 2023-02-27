@@ -1,8 +1,6 @@
 ---
-layout: doc
+layout: default
 title: Custom Document Input
-description: Reading from Databases and Other Sources
-subpage: Guides
 ---
 ## About
 
@@ -72,9 +70,8 @@ database, create an MTAP ``Document`` object, and then yield that object. This
 function will be used by the pipeline to provide all the documents it needs to
 process.
 
-<div class='alert alert-info' role='alert'>
-Note here that we've pre-populated the SQL <code class="highligher-rogue">SELECT</code> statement with the <code class="highligher-rogue">NAME</code> and <code class="highligher-rogue">TEXT</code> fields and the <code class="highligher-rogue">DOCUMENTS</code> table. If you have a database in mind you can substitute your own fields and table or even parameterize them using the <code class="highlighter-rogue">ArgumentParser</code>.
-</div>
+{: .note }
+We've pre-populated the SQL <code class="highligher-rogue">SELECT</code> statement with the <code class="highligher-rogue">NAME</code> and <code class="highligher-rogue">TEXT</code> fields and the <code class="highligher-rogue">DOCUMENTS</code> table. If you have a database in mind you can substitute your own fields and table or even parameterize them using the <code class="highlighter-rogue">ArgumentParser</code>.
 
 ## Passing the Document Source to Pipeline
 
@@ -99,9 +96,8 @@ with default_pipeline.from_args(args) as pipeline:
     con.close()
 ```
 
-<div class='alert alert-info' role='alert'>
-Notice we use the Pipeline's <code class="highligher-rogue">run_multithread</code> method here. You can learn more about this method in the <a href="https://nlpie.github.io/mtap-python-api/mtap.html#mtap.Pipeline.run_multithread" class="alert-link">MTAP documentation</a>.
-</div>
+{: .note }
+We use the Pipeline's <code class="highligher-rogue">run_multithread</code> method here. You can learn more about this method in the <a href="https://nlpie.github.io/mtap-python-api/mtap.html#mtap.Pipeline.run_multithread" class="alert-link">MTAP documentation</a>.
 
 We're done with this file now. Save the changes to the file.
 

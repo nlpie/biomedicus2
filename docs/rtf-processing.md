@@ -1,8 +1,7 @@
 ---
-layout: doc
+layout: default
 title: RTF Processing
-description: Processing Rich Text Format documents using BioMedICUS
-subpage: Guides
+nav_order: 2
 ---
 ## About
 

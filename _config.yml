@@ -1,33 +1,34 @@
 title: BioMedICUS
-author: University of Minnesota NLP/IE Group
-email: nlp-ie@umn.edu
-description: > # this means to ignore newlines until "show_excerpts:"
+description: A system for large-scale text analysis and processing of biomedical and clinical reports
+theme: just-the-docs
+
+url: https://nlpie.github.io/biomedicus
+
+aux_links:
+  GitHub: https://github.com/nlpie/biomedicus
+
+nav_external_links:
+  - title: BioMedICUS GitHub
+    url: https://github.com/nlpie/biomedicus
+  - title: MTAP Documentation
+    url: https://nlpie.github.io/mtap
+  - title: NLP-IE Group
+    url: https://nlpie.github.io/
 
 
-show_excerpts: true # set to false to hide excerpts on the blog page
-
-
-# If you want to link only specific pages in your header, uncomment
-# this and add the path to the pages in order as they should show up
-header_pages:
- - blog.md
- - guides.md
- - components.md
-
-right_headers:
-  - name: Downloads
-    href: https://nlpie.github.io/downloads
-  - name: GitHub
-    href: https://github.com/nlpie/biomedicus3
-  - name: MTAP
-    href: https://nlpie.github.io/mtap
-  - name: NLP/IE
-    href: https://nlpie.github.io
-
-highlighter: rouge
-
-remote_theme: nlpie/mtap-jekyll-theme
-
-plugins:
-  - jekyll-remote-theme
-  - jekyll-redirect-from
+callouts_level: quiet # or loud
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red

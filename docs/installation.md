@@ -1,32 +1,26 @@
 ---
-layout: doc
+layout: default
 title: Installation
-description: Getting started with BioMedICUS
-subpage: Guides
-redirect_from: /installation
+nav_order: 1
 ---
 
 ## Prerequisites
 
-- [Python >=3.7,<3.11](https://www.python.org/). 3.11 is not supported yet as 
+- Linux or macOS Operating System
+- [Python >=3.7,<3.11](https://www.python.org/). 3.11 is not supported yet as PyTorch does not support.
 - [Java JDK 8.0+](https://adoptium.net). Note, you will need to have the ["java" command on the your "$PATH"](https://www.java.com/en/download/help/path.xml).
+
+{: .warning }
+BioMedICUS is memory-intensive, requiring approximately 10gb of free memory to run.
 
 ## Create a Virtual Environment
 
 We recommend that you use a [Python 3 virtual environment](https://docs.python-guide.org/dev/virtualenvs/#lower-level-virtualenv), a local environment of installed packages, to avoid any dependency conflicts.
 
-Linux / MacOS
 ```bash
 pip3 install virtualenv
 python3 -m virtualenv biomedicus_venv
 source biomedicus_venv/bin/activate
-```
-
-Windows
-```bat
-pip3 install virtualenv
-python3 -m virtualenv biomedicus_venv
-biomedicus_venv\Scripts\activate
 ```
 
 ## Install PyTorch Libraries
@@ -49,7 +43,14 @@ The following command runs a script that will start up all of the BioMedICUS ser
 b9 deploy
 ```
 
-It will ask you to download the BioMedICUS model files if you have not already.
+It will ask you to download the BioMedICUS model files if you have not already. When you see the following line of output, it is done deploying:
+
+```bash
+Done deploying all servers.
+```
+
+{: .note }
+The servers run in the foreground in your terminal window. When you want to shut down all the servers press Ctrl+C and it will cleanly shut down all processors before exiting.
 
 ## Process a directory of text files using BioMedICUS
 

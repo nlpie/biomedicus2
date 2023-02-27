@@ -1,9 +1,8 @@
 ---
-layout: doc
-title: Part 3. Adding the Processor to the Pipeline and Running
-description: How to add the new processor to the BioMedICUS pipeline and run it on clinical documents.
-subpage: Guides
-redirect_from: /docs/dev-tutorial/tutorial-3
+layout: default
+title: 3. Running the Pipeline
+parent: Developer Tutorial
+nav_order: 3
 ---
 
 ## About
@@ -20,9 +19,8 @@ b9client write-config pipeline
 
 This creates a file named ``biomedicus_default_pipeline.yml`` which we will edit to add our processor we wrote and deployed earlier. Open that file in your favorite text editor.
 
-<div class="alert alert-warning">
-Note this requires the BioMedICUS virtual environment created during installation to be active.
-</div>
+{: .note }
+This requires the BioMedICUS virtual environment created during installation to be active.
 
 ## Adding our processor
 
@@ -53,9 +51,8 @@ b9client run --config biomedicus_default_pipeline.yml --include-label-text INPUT
 
 Replace the input directory with the directory where the documents you want processed are and the output directory with the directory where you want results stored.
 
-<div class="alert alert-warning">
+{: .note }
 Note this requires that the BioMedICUS processors be deployed and running in another terminal window or tab.
-</div>
 
 ## Viewing results
 
