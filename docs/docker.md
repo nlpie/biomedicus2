@@ -34,7 +34,7 @@ cd b9
 After that we can launch the docker image using the following command:
 
 ```bash
-docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpie/biomedicus:latest
+docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpieumn/biomedicus:latest
 ```
 
 {: .highlight }
@@ -103,7 +103,7 @@ docker rm --force b9
 Now to start up BioMedICUS using the modified deployment configuration run the following command:
 
 ```bash
-docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpie/biomedicus:latest --config biomedicus_deploy_config.yml
+docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpieumn/biomedicus:latest --config biomedicus_deploy_config.yml
 ```
 
 After the services finish launching you can process documents using the modified pipeline configuration with the following command:
@@ -117,13 +117,13 @@ docker exec -it b9 b9client run --config biomedicus_default_pipeline.yml --inclu
 From the previous section you may have noticed that you can modify the deployment command by appending arguments to the ``docker run`` command. Using this method it is also possible to enable RTF processing:
 
 ```bash
-docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpie/biomedicus:latest --rtf
+docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpieumn/biomedicus:latest --rtf
 ```
 
 Or even RTF processing with a custom deployment configuration:
 
 ```bash
-docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpie/biomedicus:latest --rtf --config biomedicus_deploy_config.yml
+docker run -it -d -v $(pwd):/b9/ -w /b9/ --name b9 nlpieumn/biomedicus:latest --rtf --config biomedicus_deploy_config.yml
 ```
 
 To process rtf add the rtf flag to the ``docker exec`` command to run the pipeline:
@@ -143,7 +143,7 @@ docker export b9 | gzip > biomedicus-latest.tgz
 And then after transferring it to the server which has restricted internet access you can import as an image using the following command:
 
 ```bash
-zcat biomedicus-latest.tgz | docker import - nlpie/biomedicus:latest
+zcat biomedicus-latest.tgz | docker import - nlpieumn/biomedicus:latest
 ```
 
 From there, the ``docker run`` command at the start of this guide will work.
