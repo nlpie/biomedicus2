@@ -1,6 +1,6 @@
 # New Version
 
-BioMedICUS has a new version: https://github.com/nlpie/biomedicus3
+BioMedICUS has a new version: https://github.com/nlpie/biomedicus
 
 The code on this repository is mature but will not be receiving any further updates.
 
